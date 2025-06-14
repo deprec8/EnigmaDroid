@@ -1,0 +1,27 @@
+EnigmaDroid ist eine moderne, benutzerfreundliche App, mit der Sie Ihre Enigma2-basierte Satelliten- oder Kabel-Set-Top-Box direkt von Ihrem Android-Gerät aus steuern können. EnigmaDroid basiert auf OpenWebif und verwandelt Ihr Telefon oder Tablet in eine leistungsstarke Fernbedienung und einen Streaming-Begleiter für Ihren Fernseher.
+
+Mit EnigmaDroid haben Sie überall im Haus vollen Zugriff auf die Funktionen Ihres Receivers. Sie können die Senderliste durchsuchen, zu Ihrem Lieblingssender zappen, Timer und Aufnahmen verwalten oder Live-TV und Aufnahmen direkt auf Ihr Gerät streamen.
+
+Die Funktionen umfassen:
+
+- Live-TV-Streaming: Sehen Sie sich Live-Übertragungen von Ihrer Enigma2-Box auf Ihrem Android-Gerät mit einem kompatiblen Video-Player an.
+- Wiedergabe von Aufnahmen: Durchsuchen Sie Ihre gespeicherten Sendungen und Filme und spielen Sie sie ab.
+- Kanal- und Bouquet-Liste: Navigieren Sie schnell durch Ihr komplettes Programmangebot und Ihre Lieblingsbouquets.
+- Fernbedienung: Vollständige Bildschirmfernbedienung mit Tastenfeld.
+- Timer-Verwaltung: Hinzufügen, Entfernen oder Bearbeiten von Timern und geplanten Aufnahmen.
+- EPG-Unterstützung: Anzeige der Daten des elektronischen Programmführers mit detaillierten Informationen zu den Sendungen.
+- Suchen und Filtern: Finden Sie Kanäle oder Programme mit der integrierten Suche auf jeder Seite.
+- Unterstützung mehrerer Boxen: Verbinden Sie sich mit mehreren Receivern und schalten Sie zwischen ihnen um.
+
+Voraussetzungen:
+
+- Eine Set-Top-Box, auf der Enigma2 läuft.
+- OpenWebif-Plugin aktiviert und konfiguriert.
+
+Kompatibilität:
+
+Getestet mit gängigen Enigma2-Images wie VTi.
+
+Frei & Open Source:
+
+EnigmaDroid ist vollständig quelloffen, respektiert Ihre Privatsphäre und enthält keine Werbung oder Tracker. Beiträge und Funktionswünsche sind auf dem GitHub-Repository des Projekts willkommen.

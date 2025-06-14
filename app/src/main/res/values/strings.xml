@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (C) 2025 deprec8
+  ~
+  ~ This file is part of EnigmaDroid.
+  ~
+  ~ EnigmaDroid is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ EnigmaDroid is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="app_name" translatable="false">EnigmaDroid</string>
+    <string name="tv">TV</string>
+    <string name="movies">Movies</string>
+    <string name="timers">Timers</string>
+    <string name="device">Device</string>
+    <string name="settings">Settings</string>
+    <string name="content">Content</string>
+    <string name="deviceinfo">Device info</string>
+    <string name="stream">Stream</string>
+    <string name="creator">Creator</string>
+    <string name="version">Version</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="name">Name</string>
+    <string name="dinfo_imageversion">Image version</string>
+    <string name="dinfo_guiversion">GUI version</string>
+    <string name="dinfo_frontpversion">FrontP version</string>
+    <string name="dinfo_interfaceversion">Interface version</string>
+    <string name="tuner">Tuner</string>
+    <string name="network">Network</string>
+    <string name="storage">Storage</string>
+    <string name="free">free</string>
+    <string name="about">About</string>
+    <string name="ip_address">IP Address</string>
+    <string name="port">Port</string>
+    <string name="https">HTTPS</string>
+    <string name="login">Login</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="edit_device">Edit device</string>
+    <string name="add_device">Add device</string>
+    <string name="devices">Devices</string>
+    <string name="add_timer">Add timer</string>
+    <string name="description">Description</string>
+    <string name="title">Title</string>
+    <string name="all_services">All services</string>
+    <string name="connected">Connected</string>
+    <string name="search_timers">Search timers</string>
+    <string name="search_movies">Search movies</string>
+    <string name="radio">Radio</string>
+    <string name="signal">Signal</string>
+    <string name="open_number_pad">Open number pad</string>
+    <string name="remote">Remote</string>
+    <string name="toggle_standby">Toggle standby</string>
+    <string name="restart">Restart</string>
+    <string name="restart_gui">Restart GUI</string>
+    <string name="shutdown">Shutdown</string>
+    <string name="close">Close</string>
+    <string name="start_by_adding_one_device">Start by adding one device, you can add more later.</string>
+    <string name="finish_setup">Finish setup</string>
+    <string name="welcome_to_enigmadroid">Welcome to EnigmaDroid</string>
+    <string name="live_port">Live Port</string>
+    <string name="current">Current</string>
+    <string name="stream_current">Stream current program</string>
+    <string name="kernel_version">Kernel Version</string>
+    <string name="uptime">Uptime</string>
+    <string name="model">Model</string>
+    <string name="brand">Brand</string>
+    <string name="open_menu">Open Menu</string>
+    <string name="open_remote">Open remote</string>
+    <string name="tunertype">Tunertype</string>
+    <string name="tunernumber">Tunernumber</string>
+    <string name="snr">SNR</string>
+    <string name="channel_down">Channel down</string>
+    <string name="general">General</string>
+    <string name="current_device">Current device</string>
+    <string name="editing_menu">Editing menu</string>
+    <string name="no_results">No results</string>
+    <string name="close_search">Close search</string>
+    <string name="clear_search">Clear search</string>
+    <string name="delete_movie">Delete movie</string>
+    <string name="if_you_delete_this_movie_it_will_not_be_recoverable">If you delete this movie it will not be recoverable.</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
+    <string name="rename_movie">Rename movie</string>
+    <string name="new_name">New name</string>
+    <string name="move_movie">Move movie</string>
+    <string name="new_location">New location</string>
+    <string name="rename">Rename</string>
+    <string name="move">Move</string>
+    <string name="channel">Channel</string>
+    <string name="provider">Provider</string>
+    <string name="now">Now</string>
+    <string name="next">Next</string>
+    <string name="save">Save</string>
+    <string name="rewind">Rewind</string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="forward">Forward</string>
+    <string name="record">Record</string>
+    <string name="stop">Stop</string>
+    <string name="volume_up">Volume up</string>
+    <string name="volume_down">Volume down</string>
+    <string name="mute">Mute</string>
+    <string name="arrow_up">Arrow up</string>
+    <string name="arrow_left">Arrow left</string>
+    <string name="arrow_right">Arrow right</string>
+    <string name="arrow_down">Arrow down</string>
+    <string name="red">Red</string>
+    <string name="green">Green</string>
+    <string name="yellow">Yellow</string>
+    <string name="blue">Blue</string>
+    <string name="bouquet_down">Bouquet down</string>
+    <string name="bouquet_up">Bouquet up</string>
+    <string name="license">License</string>
+    <string name="app_source" translatable="false">github.com/deprec8/EnigmaDroid/</string>
+    <string name="app_license" translatable="false">GNU General Public License 3</string>
+    <string name="open_action_menu">Open action menu</string>
+    <string name="enabled">Enabled</string>
+    <string name="device_not_connected">Device not connected</string>
+    <string name="no_device_available">No device available</string>
+    <string name="version_not_found">Version not found</string>
+    <string name="app_developer" translatable="false">github.com/deprec8</string>
+    <string name="open_openwebif">Open OpenWebif</string>
+    <string name="toggle_password_visibility">Toggle password visibility</string>
+    <string name="delete_timer">Delete timer</string>
+    <string name="if_you_delete_this_timer_it_will_not_be_recoverable">If you delete this timer it will not be recoverable.</string>
+    <string name="third_party_libraries">Third Party Libraries</string>
+    <string name="source_code">Source Code</string>
+    <string name="libraries">%1$s Libraries</string>
+    <string name="searching_for_device">Searching for device…</string>
+    <string name="channel_up">Channel up</string>
+    <string name="retry">Retry</string>
+    <string name="no_devices_found">No devices found</string>
+    <string name="skip">Skip</string>
+    <string name="delete_device">Delete device</string>
+    <string name="if_you_delete_this_device_it_will_not_be_recoverable">If you delete this device it will not be recoverable.</string>
+    <string name="pin_webif">Pin WebIf</string>
+    <string name="standby">Standby</string>
+    <string name="automatic">Automatic</string>
+    <string name="afterevent">After event</string>
+    <string name="screenshot">Screenshot</string>
+    <string name="add_a_device_to_connect_to">Add a device to connect to</string>
+    <string name="app_license_url" translatable="false">https://www.gnu.org/licenses/gpl-3.0.de.html</string>
+    <string name="app_source_url" translatable="false">https://github.com/deprec8/EnigmaDroid/</string>
+    <string name="app_developer_url" translatable="false">https://github.com/deprec8</string>
+    <string name="device_is_not_playing_any_channel">Device is not playing any channel</string>
+    <string name="edit_timer">Edit Timer</string>
+    <string name="tv_epg">TV EPG</string>
+    <string name="radio_epg">Radio EPG</string>
+    <string name="add_reminder">Add Reminder</string>
+    <string name="search_epg">Search EPG</string>
+    <string name="search_events">Search events</string>
+    <string name="switch_channel">Switch</string>
+    <string name="service">Service</string>
+    <string name="open_search">Open search</string>
+    <string name="no_browser_found">No browser found.</string>
+    <string name="no_calender_found">No calender found.</string>
+    <string name="no_video_player_installed">No video player installed.</string>
+    <string name="download">Download</string>
+    <string name="downloading">Downloading %1$s</string>
+    <string name="fetching_screenshot">Fetching screenshot</string>
+    <string name="refresh_page">Refresh page</string>
+    <string name="app_issue" translatable="false">github.com/deprec8/enigmadroid/issues</string>
+    <string name="issue_tracker">Issue tracker</string>
+    <string name="app_issue_url" translatable="false">https://github.com/deprec8/EnigmaDroid/issues</string>
+    <string name="ok">OK</string>
+    <string name="select_time">Select time</string>
+    <string name="toggle_time_picker_type">Toggle time picker type</string>
+    <string name="begin_date">Begin date</string>
+    <string name="begin_time">Begin time</string>
+    <string name="end_date">End date</string>
+    <string name="end_time">End time</string>
+    <string name="justplay" translatable="false">JustPlay</string>
+    <string name="monday">Monday</string>
+    <string name="tuesday">Tuesday</string>
+    <string name="wednesday">Wednesday</string>
+    <string name="thursday">Thursday</string>
+    <string name="friday">Friday</string>
+    <string name="saturday">Saturday</string>
+    <string name="sunday">Sunday</string>
+    <string name="create">Create</string>
+    <string name="discard">Discard</string>
+    <string name="discard_unsaved_changes">Discard unsaved changes?</string>
+    <string name="you_may_have_changes_that_won_t_be_saved_if_you_close">You may have changes that won\'t be saved if you close.</string>
+    <string name="repeats_on">Repeats on:</string>
+</resources>

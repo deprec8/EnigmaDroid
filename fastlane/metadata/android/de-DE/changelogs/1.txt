@@ -1,0 +1,5 @@
+Dies ist die erste Version von EnigmaDroid, einer neuen Anwendung, die für die Fernsteuerung und Verwaltung von Enigma2-basierten Empfängern entwickelt wurde.
+
+Diese Version bietet bereits die meisten OpenWebif-Funktionen und wird in Zukunft noch verbessert werden. Der vollständige Quellcode für EnigmaDroid ist auf GitHub verfügbar. Sie sind herzlich eingeladen, das Repository zu erkunden, Probleme zu melden und zur Weiterentwicklung des Projekts beizutragen.
+
+Für weitere Details und um einen Beitrag zu leisten, besuchen Sie bitte das GitHub-Repository.

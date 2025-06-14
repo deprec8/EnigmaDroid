@@ -1,0 +1,136 @@
+/*
+ * Copyright (C) 2025 deprec8
+ *
+ * This file is part of EnigmaDroid.
+ *
+ * EnigmaDroid is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * EnigmaDroid is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package io.github.deprec8.enigmadroid.ui.timers
+
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.deprec8.enigmadroid.data.ApiRepository
+import io.github.deprec8.enigmadroid.data.LoadingRepository
+import io.github.deprec8.enigmadroid.model.ServiceList
+import io.github.deprec8.enigmadroid.model.Timer
+import io.github.deprec8.enigmadroid.model.TimerList
+import io.github.deprec8.enigmadroid.utils.FilterUtils
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class TimersViewModel @Inject constructor(
+    private val apiRepository: ApiRepository,
+    private val loadingRepository: LoadingRepository
+) : ViewModel() {
+
+    var input by mutableStateOf("")
+        private set
+
+    private val _active = MutableStateFlow(false)
+    val active: StateFlow<Boolean> = _active.asStateFlow()
+
+    private val _filteredTimers = MutableStateFlow<List<Timer>>(emptyList())
+    val filteredTimers: StateFlow<List<Timer>> = _filteredTimers.asStateFlow()
+
+    private val _timerList = MutableStateFlow<TimerList>(TimerList())
+    val timerList: StateFlow<TimerList> = _timerList.asStateFlow()
+
+    private val _loadingState = MutableStateFlow<Int?>(null)
+    val loadingState: StateFlow<Int?> = _loadingState.asStateFlow()
+
+    private val _services = MutableStateFlow<List<ServiceList>>(emptyList())
+    val services: StateFlow<List<ServiceList>> = _services.asStateFlow()
+
+    private val _searchInput = MutableStateFlow("")
+
+    private var fetchJob: Job? = null
+
+    init {
+        viewModelScope.launch {
+            loadingRepository.getLoadingState().collectLatest { state ->
+                _loadingState.value = state
+            }
+        }
+        viewModelScope.launch {
+            combine(_timerList, _searchInput) { timerList, input ->
+                if (input != "") {
+                    FilterUtils.filterTimers(input, timerList.timers)
+                } else {
+                    emptyList()
+                }
+            }.collectLatest {
+                _filteredTimers.value = it
+            }
+        }
+    }
+
+    suspend fun updateLoadingState(forceUpdate: Boolean) {
+        loadingRepository.updateLoadingState(forceUpdate)
+    }
+
+    fun fetchData() {
+        fetchJob?.cancel()
+        _timerList.value = TimerList()
+        _services.value = emptyList<ServiceList>()
+        fetchJob = viewModelScope.launch {
+            _timerList.value = apiRepository.fetchTimerList()
+            _services.value = apiRepository.fetchTimerServices()
+        }
+    }
+
+    fun updateInput(newInput: String) {
+        input = newInput
+    }
+
+    fun deleteTimer(timer: Timer) {
+        viewModelScope.launch {
+            apiRepository.deleteTimer(timer)
+            fetchData()
+        }
+    }
+
+    fun updateActive(isActive: Boolean) {
+        _active.value = isActive
+    }
+
+    fun updateSearchInput() {
+        _searchInput.value = input
+    }
+
+    fun addTimer(newTimer: Timer) {
+        viewModelScope.launch {
+            apiRepository.addTimer(newTimer)
+            fetchData()
+        }
+    }
+
+    fun editTimer(oldTimer: Timer, newTimer: Timer) {
+        viewModelScope.launch {
+            apiRepository.editTimer(oldTimer, newTimer)
+            fetchData()
+        }
+    }
+}

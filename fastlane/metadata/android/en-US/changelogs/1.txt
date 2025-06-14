@@ -1,0 +1,5 @@
+This is the initial release of EnigmaDroid, a new application designed for remote control and management of Enigma2-based receivers.
+
+This version already provides most OpenWebif functions and will be improved in the future. The complete source code for EnigmaDroid is available on GitHub. You are welcome to explore the repository, report any issues, and contribute to the project's ongoing development.
+
+For further details and to contribute, please visit the GitHub repository.
