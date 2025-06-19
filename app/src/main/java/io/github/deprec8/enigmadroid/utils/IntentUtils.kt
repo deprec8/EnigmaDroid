@@ -31,7 +31,6 @@ import android.widget.Toast
 import androidx.browser.customtabs.CustomTabsClient
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
-import androidx.media3.common.MimeTypes
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.model.EPGEvent
@@ -116,7 +115,7 @@ object IntentUtils {
     fun playMedia(context: Context, url: String, title: String) {
         val intent = Intent(Intent.ACTION_VIEW).apply {
             setDataAndTypeAndNormalize(
-                url.toUri(), MimeTypes.APPLICATION_MP4
+                url.toUri(), "video/mp4"
             )
             putExtra("title", title)
         }
