@@ -32,3 +32,9 @@ Tested with popular Enigma2 images like **VTi**.
 ## Installation
 
 [<img src="badge_github.png" alt="Get it on GitHub" height="80">](https://github.com/deprec8/EnigmaDroid/releases)
+
+## Screenshots
+
+| <img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/1.jpg" alt="Navigation drawer" /> | <img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/2.jpg" alt="Remote" /> | <img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/3.jpg" alt="Add timer" />    |
+| ------------------------------------------------------ | ----------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| <img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/4.jpg" alt="Devices" />   | <img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/5.jpg" alt="Edit device"/>
