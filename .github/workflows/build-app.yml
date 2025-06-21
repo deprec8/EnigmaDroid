@@ -16,6 +16,7 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '24'
+        cache: 'gradle'
        
 
     - name: Decode Keystore
@@ -38,4 +39,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: app-release-apk
-        path: app/release/app-release.apk
+        path: app/build/outputs/apk/release/app-release.apk
