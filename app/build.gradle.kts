@@ -56,6 +56,10 @@ android {
         }
     }
 
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
+    }
     buildTypes {
         release {
             isMinifyEnabled = true
@@ -67,6 +71,7 @@ android {
             )
             isJniDebuggable = false
             signingConfig = signingConfigs.getByName("release")
+            vcsInfo.include = false
         }
     }
     compileOptions {
