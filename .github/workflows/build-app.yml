@@ -16,8 +16,6 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '24'
-        cache: 'gradle'
-       
 
     - name: Decode Keystore
       env:
