@@ -25,7 +25,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import dagger.hilt.android.AndroidEntryPoint
-import io.github.deprec8.enigmadroid.ui.root.RootNavHost
+import io.github.deprec8.enigmadroid.ui.main.MainPage
 import io.github.deprec8.enigmadroid.ui.theme.EnigmaDroidTheme
 
 @AndroidEntryPoint
@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             EnigmaDroidTheme {
-                RootNavHost()
+                MainPage()
             }
         }
     }

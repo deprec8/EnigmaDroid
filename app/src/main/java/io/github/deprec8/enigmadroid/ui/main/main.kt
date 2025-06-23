@@ -36,6 +36,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -49,17 +50,16 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainPage(
     mainViewModel: MainViewModel = hiltViewModel(),
-    snackbarHostState: SnackbarHostState,
-    onNavigateToRemote: () -> Unit,
 ) {
 
     val currentDevice by mainViewModel.currentDevice.collectAsStateWithLifecycle()
     val deviceStatus by mainViewModel.loadingState.collectAsStateWithLifecycle()
     val isOnboardingNeeded by mainViewModel.isOnboardingNeeded.collectAsStateWithLifecycle()
 
-    val mainNavController = rememberNavController()
+    val navController = rememberNavController()
     val modalDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+    val snackbarHostState = remember { SnackbarHostState() }
 
     val scope = rememberCoroutineScope()
 
@@ -98,7 +98,7 @@ fun MainPage(
                     ) {
                         NavDrawerContent(
                             currentDevice = currentDevice,
-                            navController = mainNavController,
+                            navController = navController,
                             modalDrawerState = modalDrawerState,
                             updateDeviceStatus = {
                                 scope.launch {
@@ -114,11 +114,11 @@ fun MainPage(
                 },
                 drawerState = modalDrawerState
             ) {
-                MainNavHost(
-                    mainNavController,
+                NavHost(
+                    navController,
                     modalDrawerState,
                     snackbarHostState,
-                ) { onNavigateToRemote() }
+                )
             }
         } else {
             PermanentNavigationDrawer(
@@ -138,7 +138,7 @@ fun MainPage(
                     ) {
                         NavDrawerContent(
                             currentDevice = currentDevice,
-                            navController = mainNavController,
+                            navController = navController,
                             modalDrawerState = modalDrawerState,
                             updateDeviceStatus = {
                                 scope.launch {
@@ -153,9 +153,9 @@ fun MainPage(
                     }
                 }
             ) {
-                MainNavHost(
-                    mainNavController, modalDrawerState, snackbarHostState,
-                ) { onNavigateToRemote() }
+                NavHost(
+                    navController, modalDrawerState, snackbarHostState,
+                )
             }
         }
     }
