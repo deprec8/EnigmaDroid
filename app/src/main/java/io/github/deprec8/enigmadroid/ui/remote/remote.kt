@@ -188,7 +188,7 @@ fun RemotePage(
                     ) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.close)
+                            contentDescription = stringResource(R.string.navigate_back)
                         )
                     }
                 }, scrollBehavior = scrollBehavior, actions = {

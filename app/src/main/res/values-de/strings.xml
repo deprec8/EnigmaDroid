@@ -184,4 +184,7 @@
     <string name="begin_date">Anfangsdatum</string>
     <string name="begin_time">Anfangszeit</string>
     <string name="repeats_on">Wiederholt sich am:</string>
+    <string name="navigate_back">Zurück navigieren</string>
+    <string name="manage_your_devices_and_connect_to_them">Verwalten Sie Ihre Geräte und stellen Sie eine Verbindung zu ihnen her.</string>
+    <string name="information_about_the_app">Informationen über die App.</string>
 </resources>

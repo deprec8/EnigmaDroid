@@ -43,23 +43,21 @@ import androidx.compose.material.icons.automirrored.filled.Dvr
 import androidx.compose.material.icons.automirrored.filled.LibraryBooks
 import androidx.compose.material.icons.automirrored.outlined.Dvr
 import androidx.compose.material.icons.automirrored.outlined.LibraryBooks
-import androidx.compose.material.icons.filled.Devices
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LiveTv
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Radio
 import androidx.compose.material.icons.filled.RestartAlt
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Tv
 import androidx.compose.material.icons.filled.Web
-import androidx.compose.material.icons.outlined.Devices
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.LiveTv
 import androidx.compose.material.icons.outlined.Movie
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.Radio
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Speed
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material.icons.outlined.Tv
@@ -180,17 +178,11 @@ fun NavDrawerContent(
             stringResource(R.string.settings),
             listOf(
                 DrawerPage(
-                    stringResource(R.string.devices),
-                    MainPages.Devices,
-                    Icons.Outlined.Devices,
-                    Icons.Filled.Devices
+                    stringResource(R.string.settings),
+                    MainPages.Settings,
+                    Icons.Outlined.Settings,
+                    Icons.Filled.Settings
                 ),
-                DrawerPage(
-                    stringResource(R.string.about),
-                    MainPages.About,
-                    Icons.Outlined.Info,
-                    Icons.Filled.Info
-                )
             )
         )
     )

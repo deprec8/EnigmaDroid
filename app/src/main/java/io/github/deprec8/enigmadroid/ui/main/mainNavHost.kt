@@ -30,13 +30,15 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import io.github.deprec8.enigmadroid.model.navigation.MainPages
-import io.github.deprec8.enigmadroid.ui.about.AboutPage
+import io.github.deprec8.enigmadroid.model.navigation.SettingsPages
+import io.github.deprec8.enigmadroid.ui.settings.about.AboutPage
 import io.github.deprec8.enigmadroid.ui.current.CurrentPage
 import io.github.deprec8.enigmadroid.ui.deviceInfo.DInfoPage
-import io.github.deprec8.enigmadroid.ui.devices.DevicesPage
 import io.github.deprec8.enigmadroid.ui.movies.MoviesPage
 import io.github.deprec8.enigmadroid.ui.radio.RadioPage
 import io.github.deprec8.enigmadroid.ui.radioEPG.RadioEPGPage
+import io.github.deprec8.enigmadroid.ui.settings.SettingsPage
+import io.github.deprec8.enigmadroid.ui.settings.devices.DevicesPage
 import io.github.deprec8.enigmadroid.ui.signal.SignalPage
 import io.github.deprec8.enigmadroid.ui.timers.TimersPage
 import io.github.deprec8.enigmadroid.ui.tv.TvPage
@@ -123,16 +125,26 @@ fun MainNavHost(
                 modalDrawerState
             )
         }
-        composable<MainPages.About> {
-            AboutPage(
+        composable<MainPages.Settings> {
+            SettingsPage(
+                modalDrawerState,
                 snackbarHostState,
-                modalDrawerState
+                onNavigateToSubPage = {
+                    mainNavController.navigate(it)
+                }
             )
         }
-        composable<MainPages.Devices> {
+        composable<SettingsPages.About> {
+            AboutPage(
+                snackbarHostState,
+                onNavigateBack = { mainNavController.navigateUp() }
+            )
+        }
+        composable<SettingsPages.Devices> {
             DevicesPage(
-                modalDrawerState,
-                snackbarHostState
+                snackbarHostState,
+                onNavigateBack = {
+                    mainNavController.navigateUp() }
             )
         }
     }
