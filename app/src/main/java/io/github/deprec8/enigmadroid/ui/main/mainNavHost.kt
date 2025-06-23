@@ -53,11 +53,7 @@ fun MainNavHost(
 ) {
     NavHost(
         navController = mainNavController, startDestination = MainPages.TV,
-        enterTransition = {
-            fadeIn() + scaleIn(initialScale = 0.8f)
-        }, exitTransition = {
-            fadeOut() + scaleOut(targetScale = 0.8f)
-        }
+        enterTransition = { fadeIn() }, exitTransition = { fadeOut() },
     ) {
         // Content
         composable<MainPages.TV> {
