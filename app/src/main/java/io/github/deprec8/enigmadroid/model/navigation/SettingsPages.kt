@@ -22,37 +22,12 @@ package io.github.deprec8.enigmadroid.model.navigation
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed class MainPages : Page {
+sealed class SettingsPages : Page {
 
     @Serializable
-    data object TV : MainPages()
+    data object About : SettingsPages()
 
     @Serializable
-    data object TVEPG : MainPages()
-
-    @Serializable
-    data object RadioEPG : MainPages()
-
-    @Serializable
-    data object DeviceInfo : MainPages()
-
-    @Serializable
-    data object Movies : MainPages()
-
-    @Serializable
-    data object Timers : MainPages()
-
-    @Serializable
-    data object Radio : MainPages()
-
-    @Serializable
-    data object Signal : MainPages()
-
-    @Serializable
-    data object Current : MainPages()
-
-    @Serializable
-    data object Settings : MainPages()
-
+    data object Devices : SettingsPages()
 
 }
