@@ -55,7 +55,7 @@ fun MainNavHost(
         navController = mainNavController, startDestination = MainPages.TV,
         enterTransition = { fadeIn() }, exitTransition = { fadeOut() },
     ) {
-        // Content
+
         composable<MainPages.TV> {
             TvPage(
                 onNavigateToRemote = { onNavigateToRemote() },
@@ -106,7 +106,6 @@ fun MainNavHost(
             )
         }
 
-        // Device
         composable<MainPages.Signal> {
             SignalPage(
                 onNavigateToRemote = { onNavigateToRemote() },
