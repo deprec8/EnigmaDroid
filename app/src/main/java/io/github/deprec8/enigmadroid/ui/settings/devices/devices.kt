@@ -140,8 +140,9 @@ fun DevicesPage(
         if (devices.isEmpty()) {
             Column(
                 Modifier
-                    .padding(innerPadding)
-                    .consumeWindowInsets(innerPadding),
+                    .consumeWindowInsets(innerPadding)
+                    .fillMaxSize()
+                    .padding(innerPadding),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
