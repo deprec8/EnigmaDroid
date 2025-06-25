@@ -221,7 +221,8 @@ fun TimerSetupDialog(
                         value = if (serviceReference == "") {
                             ""
                         } else {
-                            services.flatMap { it.services.flatMap { it.subservices } }
+                            services
+                                .flatMap { it.services.flatMap { service -> service.subservices } }
                                 .find { it.serviceReference == serviceReference }?.serviceName
                                 ?: ""
                         },

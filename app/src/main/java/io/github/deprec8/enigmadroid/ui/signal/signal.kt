@@ -152,86 +152,90 @@ fun SignalPage(
             .nestedScroll(scrollBehavior.nestedScrollConnection),
 
         ) { innerPadding ->
-        if (signalInfo.inStandby == "false") {
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .consumeWindowInsets(innerPadding)
-                    .verticalScroll(scrollState)
-                    .padding(innerPadding),
-                verticalArrangement = Arrangement.Center
-            ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .padding(20.dp)
-                        .fillMaxWidth()
+        when (signalInfo.inStandby) {
+            "false" -> {
+                Column(
+                    Modifier
+                        .fillMaxSize()
+                        .consumeWindowInsets(innerPadding)
+                        .verticalScroll(scrollState)
+                        .padding(innerPadding),
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    CircularProgressIndicator(
-                        progress = { 1f },
-                        modifier = Modifier.size(300.dp),
-                        strokeCap = StrokeCap.Round,
-                        color = MaterialTheme.colorScheme.surfaceContainer
-                    )
-                    CircularProgressIndicator(
-                        progress = {
-                            if (signalInfo.agc.isNotBlank()) {
-                                signalInfo.agc.toFloat() / 100
-                            } else {
-                                0f
-                            }
-                        },
-                        modifier = Modifier.size(300.dp),
-                        strokeCap = StrokeCap.Round
-                    )
-                    Text(
-                        modifier = Modifier.align(Alignment.Center),
-                        textAlign = TextAlign.Center,
-                        text = "${(signalInfo.agc)}%",
-                        fontSize = 40.sp
-                    )
-                }
-                ListItem(
-                    headlineContent = { Text(text = stringResource(R.string.tunertype)) },
-                    supportingContent = {
-                        Text(
-                            text = signalInfo.tunerType
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .padding(20.dp)
+                            .fillMaxWidth()
+                    ) {
+                        CircularProgressIndicator(
+                            progress = { 1f },
+                            modifier = Modifier.size(300.dp),
+                            strokeCap = StrokeCap.Round,
+                            color = MaterialTheme.colorScheme.surfaceContainer
                         )
-                    })
-                ListItem(
-                    headlineContent = { Text(text = stringResource(R.string.tunernumber)) },
-                    supportingContent = {
-                        Text(
-                            text = signalInfo.tunerNumber
+                        CircularProgressIndicator(
+                            progress = {
+                                if (signalInfo.agc.isNotBlank()) {
+                                    signalInfo.agc.toFloat() / 100
+                                } else {
+                                    0f
+                                }
+                            },
+                            modifier = Modifier.size(300.dp),
+                            strokeCap = StrokeCap.Round
                         )
-                    })
-                ListItem(
-                    headlineContent = { Text(text = stringResource(R.string.snr)) },
-                    supportingContent = {
                         Text(
-                            text = signalInfo.snr + "%"
+                            modifier = Modifier.align(Alignment.Center),
+                            textAlign = TextAlign.Center,
+                            text = "${(signalInfo.agc)}%",
+                            fontSize = 40.sp
                         )
-                    })
-
-            }
-        } else if (signalInfo.inStandby == "true") {
-            NoResults(
-                Modifier
-                    .consumeWindowInsets(innerPadding)
-                    .padding(innerPadding)
-            )
-        } else {
-            LoadingScreen(
-                Modifier
-                    .consumeWindowInsets(innerPadding)
-                    .padding(innerPadding),
-                loadingState = loadingState,
-                updateLoadingState = {
-                    scope.launch {
-                        signalViewModel.updateLoadingState(false)
                     }
+                    ListItem(
+                        headlineContent = { Text(text = stringResource(R.string.tunertype)) },
+                        supportingContent = {
+                            Text(
+                                text = signalInfo.tunerType
+                            )
+                        })
+                    ListItem(
+                        headlineContent = { Text(text = stringResource(R.string.tunernumber)) },
+                        supportingContent = {
+                            Text(
+                                text = signalInfo.tunerNumber
+                            )
+                        })
+                    ListItem(
+                        headlineContent = { Text(text = stringResource(R.string.snr)) },
+                        supportingContent = {
+                            Text(
+                                text = signalInfo.snr + "%"
+                            )
+                        })
+
                 }
-            )
+            }
+            "true"  -> {
+                NoResults(
+                    Modifier
+                        .consumeWindowInsets(innerPadding)
+                        .padding(innerPadding)
+                )
+            }
+            else    -> {
+                LoadingScreen(
+                    Modifier
+                        .consumeWindowInsets(innerPadding)
+                        .padding(innerPadding),
+                    loadingState = loadingState,
+                    updateLoadingState = {
+                        scope.launch {
+                            signalViewModel.updateLoadingState(false)
+                        }
+                    }
+                )
+            }
         }
     }
 }

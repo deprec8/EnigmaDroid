@@ -55,7 +55,7 @@ class TimersViewModel @Inject constructor(
     private val _filteredTimers = MutableStateFlow<List<Timer>>(emptyList())
     val filteredTimers: StateFlow<List<Timer>> = _filteredTimers.asStateFlow()
 
-    private val _timerList = MutableStateFlow<TimerList>(TimerList())
+    private val _timerList = MutableStateFlow(TimerList())
     val timerList: StateFlow<TimerList> = _timerList.asStateFlow()
 
     private val _loadingState = MutableStateFlow<Int?>(null)
@@ -94,7 +94,7 @@ class TimersViewModel @Inject constructor(
     fun fetchData() {
         fetchJob?.cancel()
         _timerList.value = TimerList()
-        _services.value = emptyList<ServiceList>()
+        _services.value = emptyList()
         fetchJob = viewModelScope.launch {
             _timerList.value = apiRepository.fetchTimerList()
             _services.value = apiRepository.fetchTimerServices()

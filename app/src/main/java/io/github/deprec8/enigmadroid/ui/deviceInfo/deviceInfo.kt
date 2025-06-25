@@ -261,7 +261,7 @@ fun DInfoPage(
                         })
                 }
             }
-        } else if (deviceInfo.result == true) {
+        } else if (deviceInfo.result) {
             NoResults(
                 Modifier
                     .padding(innerPadding)

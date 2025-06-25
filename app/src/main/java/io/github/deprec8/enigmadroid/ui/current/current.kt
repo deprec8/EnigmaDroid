@@ -159,130 +159,134 @@ fun CurrentPage(
         modifier = Modifier
             .nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { innerPadding ->
-        if (currentEventInfo.info.result == true) {
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .consumeWindowInsets(innerPadding)
-                    .verticalScroll(scrollState)
-                    .padding(innerPadding)
-            ) {
-                ListItem(
-                    headlineContent = { Text(text = stringResource(R.string.channel)) },
-                    supportingContent = {
-                        Text(text = currentEventInfo.now.serviceName)
-                    }
-                )
-                ListItem(
-                    headlineContent = { Text(text = stringResource(R.string.provider)) },
-                    supportingContent = {
-                        Text(text = currentEventInfo.now.provider)
-                    }
-                )
-                ListItem(
-                    overlineContent = {
-                        Text(text = stringResource(R.string.now))
-                    },
-                    headlineContent = { Text(text = currentEventInfo.now.title) },
-                    supportingContent = {
-                        Column {
-                            if (currentEventInfo.now.shortDescription.isNotBlank()) {
-                                Text(
-                                    text = currentEventInfo.now.shortDescription,
-                                    maxLines = 1
-                                )
-                            }
-                            Text(
-                                text = TimestampUtils.formatApiTimestampToTime(
-                                    currentEventInfo.now.beginTimestamp
-                                ) + " - " + TimestampUtils.formatApiTimestampToTime(currentEventInfo.now.beginTimestamp + currentEventInfo.now.durationInSeconds),
-                                maxLines = 1
-                            )
-                        }
-                    }
-                )
-                LinearProgressIndicator(
-                    progress = {
-                        if (currentEventInfo.now.durationInSeconds > 0) {
-                            ((currentEventInfo.now.nowTimestamp - currentEventInfo.now.beginTimestamp).toFloat() / currentEventInfo.now.durationInSeconds)
-                        } else {
-                            0f
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            start = 16.dp,
-                            end = 16.dp
-                        ),
-                    strokeCap = StrokeCap.Round,
-                )
-                Spacer(Modifier.size(8.dp))
-                ListItem(
-                    overlineContent = {
-                        Text(text = stringResource(R.string.next))
-                    },
-                    headlineContent = { Text(text = currentEventInfo.next.title) },
-                    supportingContent = {
-                        Column {
-                            if (currentEventInfo.next.shortDescription.isNotBlank()) {
-                                Text(
-                                    text = currentEventInfo.next.shortDescription,
-                                    maxLines = 1
-                                )
-                            }
-                            Text(
-                                text = TimestampUtils.formatApiTimestampToTime(
-                                    currentEventInfo.next.beginTimestamp
-                                ) + " - " + TimestampUtils.formatApiTimestampToTime(currentEventInfo.next.beginTimestamp + currentEventInfo.next.durationInSeconds),
-                                maxLines = 1
-                            )
-                        }
-                    }
-                )
-                OutlinedButton(
-                    onClick = {
-                        scope.launch {
-                            IntentUtils.playMedia(
-                                context,
-                                currentViewModel.buildStreamUrl(currentEventInfo.now.serviceReference),
-                                currentEventInfo.now.serviceName
-                            )
-                        }
-                    },
+        when (currentEventInfo.info.result) {
+            true  -> {
+                Column(
                     Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
+                        .fillMaxSize()
+                        .consumeWindowInsets(innerPadding)
+                        .verticalScroll(scrollState)
+                        .padding(innerPadding)
                 ) {
-                    Text(text = stringResource(R.string.stream_current))
+                    ListItem(
+                        headlineContent = { Text(text = stringResource(R.string.channel)) },
+                        supportingContent = {
+                            Text(text = currentEventInfo.now.serviceName)
+                        }
+                    )
+                    ListItem(
+                        headlineContent = { Text(text = stringResource(R.string.provider)) },
+                        supportingContent = {
+                            Text(text = currentEventInfo.now.provider)
+                        }
+                    )
+                    ListItem(
+                        overlineContent = {
+                            Text(text = stringResource(R.string.now))
+                        },
+                        headlineContent = { Text(text = currentEventInfo.now.title) },
+                        supportingContent = {
+                            Column {
+                                if (currentEventInfo.now.shortDescription.isNotBlank()) {
+                                    Text(
+                                        text = currentEventInfo.now.shortDescription,
+                                        maxLines = 1
+                                    )
+                                }
+                                Text(
+                                    text = TimestampUtils.formatApiTimestampToTime(
+                                        currentEventInfo.now.beginTimestamp
+                                    ) + " - " + TimestampUtils.formatApiTimestampToTime(currentEventInfo.now.beginTimestamp + currentEventInfo.now.durationInSeconds),
+                                    maxLines = 1
+                                )
+                            }
+                        }
+                    )
+                    LinearProgressIndicator(
+                        progress = {
+                            if (currentEventInfo.now.durationInSeconds > 0) {
+                                ((currentEventInfo.now.nowTimestamp - currentEventInfo.now.beginTimestamp).toFloat() / currentEventInfo.now.durationInSeconds)
+                            } else {
+                                0f
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                start = 16.dp,
+                                end = 16.dp
+                            ),
+                        strokeCap = StrokeCap.Round,
+                    )
+                    Spacer(Modifier.size(8.dp))
+                    ListItem(
+                        overlineContent = {
+                            Text(text = stringResource(R.string.next))
+                        },
+                        headlineContent = { Text(text = currentEventInfo.next.title) },
+                        supportingContent = {
+                            Column {
+                                if (currentEventInfo.next.shortDescription.isNotBlank()) {
+                                    Text(
+                                        text = currentEventInfo.next.shortDescription,
+                                        maxLines = 1
+                                    )
+                                }
+                                Text(
+                                    text = TimestampUtils.formatApiTimestampToTime(
+                                        currentEventInfo.next.beginTimestamp
+                                    ) + " - " + TimestampUtils.formatApiTimestampToTime(currentEventInfo.next.beginTimestamp + currentEventInfo.next.durationInSeconds),
+                                    maxLines = 1
+                                )
+                            }
+                        }
+                    )
+                    OutlinedButton(
+                        onClick = {
+                            scope.launch {
+                                IntentUtils.playMedia(
+                                    context,
+                                    currentViewModel.buildStreamUrl(currentEventInfo.now.serviceReference),
+                                    currentEventInfo.now.serviceName
+                                )
+                            }
+                        },
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        Text(text = stringResource(R.string.stream_current))
+                    }
                 }
             }
-        } else if (currentEventInfo.info.result == false) {
-            Box(
-                modifier = Modifier
-                    .consumeWindowInsets(innerPadding)
-                    .fillMaxSize()
-                    .padding(innerPadding), contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = stringResource(R.string.device_is_not_playing_any_channel),
-                    textAlign = TextAlign.Center
+            false -> {
+                Box(
+                    modifier = Modifier
+                        .consumeWindowInsets(innerPadding)
+                        .fillMaxSize()
+                        .padding(innerPadding), contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.device_is_not_playing_any_channel),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+            else  -> {
+                LoadingScreen(
+                    Modifier
+                        .consumeWindowInsets(innerPadding)
+                        .padding(innerPadding),
+                    updateLoadingState = {
+                        scope.launch {
+                            currentViewModel.updateLoadingState(
+                                it
+                            )
+                        }
+                    },
+                    loadingState = loadingState
                 )
             }
-        } else {
-            LoadingScreen(
-                Modifier
-                    .consumeWindowInsets(innerPadding)
-                    .padding(innerPadding),
-                updateLoadingState = {
-                    scope.launch {
-                        currentViewModel.updateLoadingState(
-                            it
-                        )
-                    }
-                },
-                loadingState = loadingState
-            )
         }
     }
 }

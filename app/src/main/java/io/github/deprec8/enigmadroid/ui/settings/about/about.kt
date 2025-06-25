@@ -68,7 +68,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.mikepenz.aboutlibraries.entity.Library
 import com.mikepenz.aboutlibraries.ui.compose.android.rememberLibraries
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
@@ -207,7 +206,7 @@ fun AboutPage(
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(230.dp),
             ) {
-                items(libraries.value?.libraries ?: emptyList<Library>()) { library ->
+                items(libraries.value?.libraries ?: emptyList()) { library ->
                     ListItem(
                         modifier = Modifier.clickable {
                             if (library.website != null) {
