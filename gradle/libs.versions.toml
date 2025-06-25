@@ -1,12 +1,12 @@
 [versions]
 aboutlibraries = "12.2.3"
-agp = "8.10.1"
+agp = "8.11.0"
 browser = "1.8.0"
 coreSplashscreen = "1.0.1"
 datastorePreferences = "1.1.7"
 hilt = "2.56.2"
 hiltNavigationCompose = "1.2.0"
-kotlin = "2.1.20"
+kotlin = "2.2.0"
 kotlinxSerializationJson = "1.8.1"
 ktor = "3.1.3"
 navigationCompose = "2.9.0"
@@ -18,7 +18,7 @@ compose = "1.8.3"
 material3 = "1.3.2"
 activity = "1.10.1"
 composeBom = "2025.06.01"
-ksp = "2.1.20-1.0.32"
+ksp = "2.2.0-2.0.2"
 icons = "1.7.8"
 
 [libraries]
