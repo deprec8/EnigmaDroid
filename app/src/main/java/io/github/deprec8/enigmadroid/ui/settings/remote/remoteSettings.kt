@@ -39,6 +39,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
@@ -58,7 +59,7 @@ fun RemoteSettingsPage(
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val scrollState = rememberScrollState()
-    val remoteVibration = remoteSettingsViewModel.remoteVibration.collectAsStateWithLifecycle()
+    val remoteVibration by remoteSettingsViewModel.remoteVibration.collectAsStateWithLifecycle()
 
     Scaffold(
         contentWindowInsets = contentWithDrawerWindowInsets(),
@@ -94,7 +95,7 @@ fun RemoteSettingsPage(
                 .verticalScroll(scrollState)
                 .padding(innerPadding)
         ) {
-            remoteVibration.value?.let { remoteVibration ->
+            remoteVibration?.let { remoteVibration ->
                 ListItem(
                     headlineContent = {
                         Text(stringResource(R.string.haptic_feedback))
