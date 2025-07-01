@@ -19,7 +19,6 @@
 
 package io.github.deprec8.enigmadroid.ui.remote.modules
 
-import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
@@ -47,7 +46,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -55,8 +53,7 @@ import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.ui.remote.RemoteViewModel
 
 @Composable
-fun MediaButtons(remoteViewModel: RemoteViewModel, enabled: Boolean) {
-    val view = LocalView.current
+fun MediaButtons(remoteViewModel: RemoteViewModel, enabled: Boolean, performHaptic: () -> Unit) {
 
     Row(
         Modifier
@@ -80,7 +77,7 @@ fun MediaButtons(remoteViewModel: RemoteViewModel, enabled: Boolean) {
             OutlinedButton(
                 onClick = {
                     remoteViewModel.volUP()
-                    view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                    performHaptic()
                 },
                 shape = MaterialTheme.shapes.extraLarge,
                 contentPadding = PaddingValues(),
@@ -110,7 +107,7 @@ fun MediaButtons(remoteViewModel: RemoteViewModel, enabled: Boolean) {
             OutlinedButton(
                 onClick = {
                     remoteViewModel.volDown()
-                    view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                    performHaptic()
                 },
                 shape = MaterialTheme.shapes.extraLarge,
                 contentPadding = PaddingValues(),
@@ -135,7 +132,7 @@ fun MediaButtons(remoteViewModel: RemoteViewModel, enabled: Boolean) {
             FilledTonalButton(
                 onClick = {
                     remoteViewModel.audio()
-                    view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                    performHaptic()
                 },
                 shape = MaterialTheme.shapes.extraLarge,
                 contentPadding = PaddingValues(),
@@ -152,7 +149,7 @@ fun MediaButtons(remoteViewModel: RemoteViewModel, enabled: Boolean) {
             FilledTonalButton(
                 onClick = {
                     remoteViewModel.volMute()
-                    view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                    performHaptic()
                 },
                 shape = MaterialTheme.shapes.extraLarge,
                 contentPadding = PaddingValues(),
@@ -171,7 +168,7 @@ fun MediaButtons(remoteViewModel: RemoteViewModel, enabled: Boolean) {
             FilledTonalButton(
                 onClick = {
                     remoteViewModel.help()
-                    view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                    performHaptic()
                 },
                 shape = MaterialTheme.shapes.extraLarge,
                 contentPadding = PaddingValues(),
@@ -203,7 +200,7 @@ fun MediaButtons(remoteViewModel: RemoteViewModel, enabled: Boolean) {
             OutlinedButton(
                 onClick = {
                     remoteViewModel.chUP()
-                    view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                    performHaptic()
                 },
                 contentPadding = PaddingValues(),
                 enabled = enabled,
@@ -233,7 +230,7 @@ fun MediaButtons(remoteViewModel: RemoteViewModel, enabled: Boolean) {
             OutlinedButton(
                 onClick = {
                     remoteViewModel.chDown()
-                    view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                    performHaptic()
                 },
                 contentPadding = PaddingValues(),
                 enabled = enabled,

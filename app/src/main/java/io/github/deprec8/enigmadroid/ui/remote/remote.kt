@@ -19,6 +19,7 @@
 
 package io.github.deprec8.enigmadroid.ui.remote
 
+import android.view.HapticFeedbackConstants
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -77,6 +78,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -115,9 +117,17 @@ fun RemotePage(
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val remoteVibration by remoteViewModel.remoteVibration.collectAsStateWithLifecycle()
+    val view = LocalView.current
 
     LaunchedEffect(Unit) {
         remoteViewModel.updateLoadingState(false)
+    }
+
+    fun performHaptic(){
+        if (remoteVibration){
+            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+        }
     }
 
     @Composable
@@ -332,11 +342,11 @@ fun RemotePage(
                         .align(Alignment.Center)
                         .fillMaxSize()
                 ) {
-                    ColorButtons(remoteViewModel, loadingState == 0)
-                    ArrowButtons(remoteViewModel, loadingState == 0)
-                    BouquetButtons(remoteViewModel, loadingState == 0)
-                    MediaButtons(remoteViewModel, loadingState == 0)
-                    ControlButtons(remoteViewModel, loadingState == 0)
+                    ColorButtons(remoteViewModel, loadingState == 0) { performHaptic() }
+                    ArrowButtons(remoteViewModel, loadingState == 0) { performHaptic() }
+                    BouquetButtons(remoteViewModel, loadingState == 0) { performHaptic() }
+                    MediaButtons(remoteViewModel, loadingState == 0) { performHaptic() }
+                    ControlButtons(remoteViewModel, loadingState == 0) { performHaptic() }
                 }
                 if (showNumbers) {
                     ModalBottomSheet(
@@ -351,7 +361,7 @@ fun RemotePage(
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            NumberButtons(remoteViewModel, loadingState == 0)
+                            NumberButtons(remoteViewModel, loadingState == 0) { performHaptic() }
                         }
                     }
                 }
@@ -373,9 +383,9 @@ fun RemotePage(
                                 .padding(20.dp)
                                 .weight(1f)
                         ) {
-                            ColorButtons(remoteViewModel, loadingState == 0)
-                            ArrowButtons(remoteViewModel, loadingState == 0)
-                            MediaButtons(remoteViewModel, loadingState == 0)
+                            ColorButtons(remoteViewModel, loadingState == 0) { performHaptic() }
+                            ArrowButtons(remoteViewModel, loadingState == 0) { performHaptic() }
+                            MediaButtons(remoteViewModel, loadingState == 0) { performHaptic() }
                         }
                         Column(
                             verticalArrangement = Arrangement.Center,
@@ -384,9 +394,9 @@ fun RemotePage(
                                 .padding(20.dp)
                                 .weight(1f)
                         ) {
-                            BouquetButtons(remoteViewModel, loadingState == 0)
-                            NumberButtons(remoteViewModel, loadingState == 0)
-                            ControlButtons(remoteViewModel, loadingState == 0)
+                            BouquetButtons(remoteViewModel, loadingState == 0) { performHaptic() }
+                            NumberButtons(remoteViewModel, loadingState == 0) { performHaptic() }
+                            ControlButtons(remoteViewModel, loadingState == 0) { performHaptic() }
                         }
                     }
                 }

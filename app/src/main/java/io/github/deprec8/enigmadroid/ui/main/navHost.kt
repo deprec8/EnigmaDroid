@@ -42,6 +42,7 @@ import io.github.deprec8.enigmadroid.ui.remote.RemotePage
 import io.github.deprec8.enigmadroid.ui.settings.SettingsPage
 import io.github.deprec8.enigmadroid.ui.settings.about.AboutPage
 import io.github.deprec8.enigmadroid.ui.settings.devices.DevicesPage
+import io.github.deprec8.enigmadroid.ui.settings.remote.RemoteSettingsPage
 import io.github.deprec8.enigmadroid.ui.signal.SignalPage
 import io.github.deprec8.enigmadroid.ui.timers.TimersPage
 import io.github.deprec8.enigmadroid.ui.tv.TvPage
@@ -140,6 +141,14 @@ fun NavHost(
             }
             composable<SettingsPages.Devices> {
                 DevicesPage(
+                    snackbarHostState,
+                    onNavigateBack = {
+                        navController.navigateUp()
+                    }
+                )
+            }
+            composable<SettingsPages.Remote> {
+                RemoteSettingsPage(
                     snackbarHostState,
                     onNavigateBack = {
                         navController.navigateUp()

@@ -24,4 +24,5 @@ object PreferencesKeys {
     const val CURRENT_DEVICE = "current_device"
     const val LOADING_STATE = "loading_state"
     const val ONBOARDING_NEEDED = "onboarding_needed"
+    const val REMOTE_VIBRATION = "remote_vibration"
 }

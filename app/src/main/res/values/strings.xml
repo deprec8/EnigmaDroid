@@ -197,4 +197,7 @@
     <string name="navigate_back">Navigate back</string>
     <string name="manage_your_devices_and_connect_to_them">Manage your devices and connect to them.</string>
     <string name="information_about_the_app">Information about the app.</string>
+    <string name="configure_your_remote">Configure your remote.</string>
+    <string name="haptic_feedback">Haptic feedback</string>
+    <string name="vibrate_when_buttons_are_pressed">Vibrate when buttons are pressed.</string>
 </resources>

@@ -26,6 +26,7 @@ import io.github.deprec8.enigmadroid.data.ApiRepository
 import io.github.deprec8.enigmadroid.data.DevicesRepository
 import io.github.deprec8.enigmadroid.data.DownloadRepository
 import io.github.deprec8.enigmadroid.data.LoadingRepository
+import io.github.deprec8.enigmadroid.data.SettingsRepository
 import io.github.deprec8.enigmadroid.data.objects.RemoteButtons
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,7 +41,8 @@ class RemoteViewModel @Inject constructor(
     private val apiRepository: ApiRepository,
     private val devicesRepository: DevicesRepository,
     private val loadingRepository: LoadingRepository,
-    private val downloadRepository: DownloadRepository
+    private val downloadRepository: DownloadRepository,
+    private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
     private val _loadingState = MutableStateFlow<Int?>(null)
@@ -48,6 +50,9 @@ class RemoteViewModel @Inject constructor(
 
     private val _currentDevice = MutableStateFlow<Device?>(null)
     val currentDevice: StateFlow<Device?> = _currentDevice.asStateFlow()
+
+    private val _remoteVibration = MutableStateFlow(false)
+    val remoteVibration: StateFlow<Boolean> = _remoteVibration.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -58,6 +63,11 @@ class RemoteViewModel @Inject constructor(
         viewModelScope.launch {
             loadingRepository.getLoadingState().collectLatest { state ->
                 _loadingState.value = state ?: 3
+            }
+        }
+        viewModelScope.launch {
+            settingsRepository.getRemoteVibration().collectLatest { vibration ->
+                _remoteVibration.value = vibration
             }
         }
     }

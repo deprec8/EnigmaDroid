@@ -19,7 +19,6 @@
 
 package io.github.deprec8.enigmadroid.ui.remote.modules
 
-import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -31,16 +30,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.model.RemoteButton
 import io.github.deprec8.enigmadroid.ui.remote.RemoteViewModel
 
 @Composable
-fun NumberButtons(remoteViewModel: RemoteViewModel, enabled: Boolean) {
-
-    val view = LocalView.current
+fun NumberButtons(remoteViewModel: RemoteViewModel, enabled: Boolean, performHaptic: () -> Unit) {
 
     val numberButtons = listOf(
         listOf(
@@ -96,7 +92,7 @@ fun NumberButtons(remoteViewModel: RemoteViewModel, enabled: Boolean) {
                     FilledTonalButton(
                         onClick = {
                             button.onClick()
-                            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                            performHaptic()
                         },
                         contentPadding = PaddingValues(),
                         enabled = enabled,

@@ -187,4 +187,7 @@
     <string name="navigate_back">Zurück navigieren</string>
     <string name="manage_your_devices_and_connect_to_them">Verwalten Sie Ihre Geräte und stellen Sie eine Verbindung zu ihnen her.</string>
     <string name="information_about_the_app">Informationen über die App.</string>
+    <string name="configure_your_remote">Konfigurieren Sie Ihre Fernbedienung.</string>
+    <string name="haptic_feedback">Haptisches Feedback</string>
+    <string name="vibrate_when_buttons_are_pressed">Vibrieren beim Drücken von Tasten.</string>
 </resources>
