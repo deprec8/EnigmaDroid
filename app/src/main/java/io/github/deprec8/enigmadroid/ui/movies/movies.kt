@@ -95,7 +95,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MoviesPage(
-    onNavigateToRemote: () -> Unit,
+    onNavigateToRemoteControl: () -> Unit,
     snackbarHostState: SnackbarHostState,
     drawerState: DrawerState, moviesViewModel: MoviesViewModel = hiltViewModel()
 ) {
@@ -370,7 +370,7 @@ fun MoviesPage(
                     Content(list = filteredMovies, calculateSearchTopAppBarContentPaddingValues())
                 },
                 drawerState = drawerState,
-                onNavigateToRemote = { onNavigateToRemote() },
+                onNavigateToRemote = { onNavigateToRemoteControl() },
                 onSearch = {
                     moviesViewModel.updateSearchInput()
                 },

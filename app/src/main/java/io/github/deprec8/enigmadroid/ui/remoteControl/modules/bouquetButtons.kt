@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.remote.modules
+package io.github.deprec8.enigmadroid.ui.remoteControl.modules
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -25,55 +25,49 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.TripOrigin
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.model.RemoteButton
-import io.github.deprec8.enigmadroid.ui.remote.RemoteViewModel
+import io.github.deprec8.enigmadroid.model.RemoteControlButton
+import io.github.deprec8.enigmadroid.ui.remoteControl.RemoteControlViewModel
 
 @Composable
-fun ColorButtons(remoteViewModel: RemoteViewModel, enabled: Boolean, performHaptic: () -> Unit) {
+fun BouquetButtons(remoteControlViewModel: RemoteControlViewModel, enabled: Boolean, performHaptic: () -> Unit) {
 
-    val colorButtons = listOf(
-        RemoteButton(
-            icon = Icons.Default.TripOrigin,
-            iconLabel = stringResource(R.string.red),
-            iconTint = Color.Red,
-            onClick = remoteViewModel::red
+    val bouquetButtons = listOf(
+        RemoteControlButton(
+            icon = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+            iconLabel = stringResource(R.string.bouquet_down),
+            onClick = remoteControlViewModel::bouDOWN
         ),
-        RemoteButton(
-            icon = Icons.Default.TripOrigin,
-            iconLabel = stringResource(R.string.green),
-            iconTint = Color.Green,
-            onClick = remoteViewModel::green
+        RemoteControlButton(
+            text = "INFO",
+            onClick = remoteControlViewModel::info
         ),
-        RemoteButton(
-            icon = Icons.Default.TripOrigin,
-            iconLabel = stringResource(R.string.yellow),
-            iconTint = Color.Yellow,
-            onClick = remoteViewModel::yellow
+        RemoteControlButton(
+            text = "TEXT",
+            onClick = remoteControlViewModel::text
         ),
-        RemoteButton(
-            icon = Icons.Default.TripOrigin,
-            iconLabel = stringResource(R.string.blue),
-            iconTint = Color.Blue,
-            onClick = remoteViewModel::blue
+        RemoteControlButton(
+            icon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            iconLabel = stringResource(R.string.bouquet_up),
+            onClick = remoteControlViewModel::bouUP
         ),
     )
-
     Row(
         Modifier
             .widthIn(0.dp, 450.dp)
     ) {
-        colorButtons.forEach { button ->
+        bouquetButtons.forEach { button ->
             FilledTonalButton(
                 onClick = {
                     button.onClick()
@@ -87,15 +81,18 @@ fun ColorButtons(remoteViewModel: RemoteViewModel, enabled: Boolean, performHapt
                     .aspectRatio(1.5f),
                 shape = MaterialTheme.shapes.extraLarge,
             ) {
-                Icon(
-                    button.icon !!,
-                    contentDescription = button.iconLabel !!,
-                    tint = if (! enabled) {
-                        ButtonDefaults.buttonColors().disabledContentColor
-                    } else {
-                        button.iconTint !!
-                    }
-                )
+                button.icon?.let { icon ->
+                    Icon(
+                        icon,
+                        contentDescription = button.iconLabel
+                    )
+                }
+                button.text?.let { text ->
+                    Text(
+                        text,
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
         }
     }

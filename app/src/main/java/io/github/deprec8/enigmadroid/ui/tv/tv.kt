@@ -85,7 +85,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TvPage(
-    onNavigateToRemote: () -> Unit,
+    onNavigateToRemoteControl: () -> Unit,
     snackbarHostState: SnackbarHostState,
     drawerState: DrawerState, tvViewModel: TVViewModel = hiltViewModel()
 ) {
@@ -239,7 +239,7 @@ fun TvPage(
                     )
                 },
                 drawerState = drawerState,
-                onNavigateToRemote = { onNavigateToRemote() },
+                onNavigateToRemote = { onNavigateToRemoteControl() },
                 onSearch = {
                     tvViewModel.updateSearchInput(selectedTabIndex.value)
                 },

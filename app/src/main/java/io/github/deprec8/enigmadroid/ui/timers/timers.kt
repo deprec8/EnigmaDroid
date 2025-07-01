@@ -90,7 +90,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun TimersPage(
-    onNavigateToRemote: () -> Unit,
+    onNavigateToRemoteControl: () -> Unit,
     snackbarHostState: SnackbarHostState,
     drawerState: DrawerState,
     timersViewModel: TimersViewModel = hiltViewModel()
@@ -293,7 +293,7 @@ fun TimersPage(
                 onSearch = {
                     timersViewModel.updateSearchInput()
                 },
-                onNavigateToRemote = { onNavigateToRemote() }
+                onNavigateToRemote = { onNavigateToRemoteControl() }
             )
 
         }, floatingActionButton = {

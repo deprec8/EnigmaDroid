@@ -20,12 +20,12 @@
 <shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
     <shortcut
         android:enabled="true"
-        android:icon="@mipmap/ic_shortcut_remote"
-        android:shortcutId="open_remote"
-        android:shortcutLongLabel="@string/open_remote"
-        android:shortcutShortLabel="@string/remote">
+        android:icon="@mipmap/ic_shortcut_remote_control"
+        android:shortcutId="open_remote_control"
+        android:shortcutLongLabel="@string/open_remote_control"
+        android:shortcutShortLabel="@string/remote_control">
         <intent
             android:action="android.intent.action.VIEW"
-            android:data="enigmadroid://remote"/>
+            android:data="enigmadroid://remotecontrol"/>
     </shortcut>
 </shortcuts>

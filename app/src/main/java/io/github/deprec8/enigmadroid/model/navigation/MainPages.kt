@@ -55,5 +55,5 @@ sealed class MainPages : Page {
     data object Settings : MainPages()
 
     @Serializable
-    data object Remote : MainPages()
+    data object RemoteControl : MainPages()
 }

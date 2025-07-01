@@ -59,7 +59,7 @@
     <string name="radio">Radio</string>
     <string name="signal">Signal</string>
     <string name="open_number_pad">Nummernfeld öffnen</string>
-    <string name="remote">Fernbedienung</string>
+    <string name="remote_control">Fernbedienung</string>
     <string name="toggle_standby">Standby umschalten</string>
     <string name="restart">Neustarten</string>
     <string name="restart_gui">GUI neustarten</string>
@@ -76,7 +76,7 @@
     <string name="model">Model</string>
     <string name="brand">Marke</string>
     <string name="open_menu">Menü öffnen</string>
-    <string name="open_remote">Fernbedienung öffnen</string>
+    <string name="open_remote_control">Fernbedienung öffnen</string>
     <string name="tunertype">Tunertyp</string>
     <string name="tunernumber">Tunernummer</string>
     <string name="snr">SNR</string>
@@ -187,7 +187,7 @@
     <string name="navigate_back">Zurück navigieren</string>
     <string name="manage_your_devices_and_connect_to_them">Verwalten Sie Ihre Geräte und stellen Sie eine Verbindung zu ihnen her.</string>
     <string name="information_about_the_app">Informationen über die App.</string>
-    <string name="configure_your_remote">Konfigurieren Sie Ihre Fernbedienung.</string>
+    <string name="configure_your_remote_control">Konfigurieren Sie Ihre Fernbedienung.</string>
     <string name="haptic_feedback">Haptisches Feedback</string>
     <string name="vibrate_when_buttons_are_pressed">Vibrieren beim Drücken von Tasten.</string>
 </resources>

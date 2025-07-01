@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.remote.modules
+package io.github.deprec8.enigmadroid.ui.remoteControl.modules
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -32,55 +32,55 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import io.github.deprec8.enigmadroid.model.RemoteButton
-import io.github.deprec8.enigmadroid.ui.remote.RemoteViewModel
+import io.github.deprec8.enigmadroid.model.RemoteControlButton
+import io.github.deprec8.enigmadroid.ui.remoteControl.RemoteControlViewModel
 
 @Composable
-fun NumberButtons(remoteViewModel: RemoteViewModel, enabled: Boolean, performHaptic: () -> Unit) {
+fun NumberButtons(remoteControlViewModel: RemoteControlViewModel, enabled: Boolean, performHaptic: () -> Unit) {
 
     val numberButtons = listOf(
         listOf(
-            RemoteButton(
+            RemoteControlButton(
                 text = "1",
-                onClick = { remoteViewModel.number(1) }
+                onClick = { remoteControlViewModel.number(1) }
             ),
-            RemoteButton(
+            RemoteControlButton(
                 text = "4 ghi",
-                onClick = { remoteViewModel.number(4) }
+                onClick = { remoteControlViewModel.number(4) }
             ),
-            RemoteButton(
+            RemoteControlButton(
                 text = "7 pqrs",
-                onClick = { remoteViewModel.number(7) }
+                onClick = { remoteControlViewModel.number(7) }
             ),
         ), listOf(
-            RemoteButton(
+            RemoteControlButton(
                 text = "2 abc",
-                onClick = { remoteViewModel.number(2) }
+                onClick = { remoteControlViewModel.number(2) }
             ),
-            RemoteButton(
+            RemoteControlButton(
                 text = "5 jkl",
-                onClick = { remoteViewModel.number(5) }
+                onClick = { remoteControlViewModel.number(5) }
             ),
-            RemoteButton(
+            RemoteControlButton(
                 text = "8 tuv",
-                onClick = { remoteViewModel.number(8) }
+                onClick = { remoteControlViewModel.number(8) }
             ),
-            RemoteButton(
+            RemoteControlButton(
                 text = "0",
-                onClick = { remoteViewModel.number(0) }
+                onClick = { remoteControlViewModel.number(0) }
             ),
         ), listOf(
-            RemoteButton(
+            RemoteControlButton(
                 text = "3 def",
-                onClick = { remoteViewModel.number(3) }
+                onClick = { remoteControlViewModel.number(3) }
             ),
-            RemoteButton(
+            RemoteControlButton(
                 text = "6 mno",
-                onClick = { remoteViewModel.number(6) }
+                onClick = { remoteControlViewModel.number(6) }
             ),
-            RemoteButton(
+            RemoteControlButton(
                 text = "9 wxyz",
-                onClick = { remoteViewModel.number(9) }
+                onClick = { remoteControlViewModel.number(9) }
             ),
         )
     )

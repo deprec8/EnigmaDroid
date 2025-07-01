@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.settings.remote
+package io.github.deprec8.enigmadroid.ui.settings.remoteControl
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -52,14 +52,14 @@ import io.github.deprec8.enigmadroid.ui.components.horizontalSafeContentPadding
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RemoteSettingsPage(
+fun RemoteControlSettingsPage(
     snackbarHostState: SnackbarHostState,
     onNavigateBack: () -> Unit,
-    remoteSettingsViewModel: RemoteSettingsViewModel = hiltViewModel()
+    remoteControlSettingsViewModel: RemoteControlSettingsViewModel = hiltViewModel()
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val scrollState = rememberScrollState()
-    val remoteVibration by remoteSettingsViewModel.remoteVibration.collectAsStateWithLifecycle()
+    val remoteVibration by remoteControlSettingsViewModel.remoteVibration.collectAsStateWithLifecycle()
 
     Scaffold(
         contentWindowInsets = contentWithDrawerWindowInsets(),
@@ -68,7 +68,7 @@ fun RemoteSettingsPage(
                 modifier = Modifier.horizontalSafeContentPadding(true),
                 title = {
                     Text(
-                        text = stringResource(id = R.string.remote),
+                        text = stringResource(id = R.string.remote_control),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -107,7 +107,7 @@ fun RemoteSettingsPage(
                         Switch(
                             checked = remoteVibration,
                             onCheckedChange = {
-                                remoteSettingsViewModel.setRemoteVibration(it)
+                                remoteControlSettingsViewModel.setRemoteVibration(it)
                             }
                         )
                     }

@@ -30,15 +30,15 @@ import javax.inject.Inject
 
 class SettingsRepository @Inject constructor(private val dataStore: DataStore<Preferences>) {
 
-    private val remoteVibrationKey = booleanPreferencesKey(PreferencesKeys.REMOTE_VIBRATION)
+    private val remoteControlVibrationKey = booleanPreferencesKey(PreferencesKeys.REMOTE_CONTROL_VIBRATION)
 
-    fun getRemoteVibration(): Flow<Boolean> = dataStore.data.map { preferences ->
-        preferences[remoteVibrationKey] ?: true
+    fun getRemoteControlVibration(): Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[remoteControlVibrationKey] ?: true
     }
 
-    suspend fun setRemoteVibration(value: Boolean) {
+    suspend fun setRemoteControlVibration(value: Boolean) {
         dataStore.edit { preferences ->
-            preferences[remoteVibrationKey] = value
+            preferences[remoteControlVibrationKey] = value
         }
     }
 }

@@ -83,7 +83,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RadioEPGPage(
-    onNavigateToRemote: () -> Unit,
+    onNavigateToRemoteControl: () -> Unit,
     snackbarHostState: SnackbarHostState,
     drawerState: DrawerState,
     radioEPGViewModel: RadioEPGViewModel = hiltViewModel()
@@ -226,7 +226,7 @@ fun RadioEPGPage(
                     )
                 },
                 drawerState = drawerState,
-                onNavigateToRemote = { onNavigateToRemote() },
+                onNavigateToRemote = { onNavigateToRemoteControl() },
                 onSearch = {
                     radioEPGViewModel.updateSearchInput()
                 },

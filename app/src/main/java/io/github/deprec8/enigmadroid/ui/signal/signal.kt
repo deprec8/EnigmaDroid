@@ -79,7 +79,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignalPage(
-    onNavigateToRemote: () -> Unit,
+    onNavigateToRemoteControl: () -> Unit,
     snackbarHostState: SnackbarHostState,
     drawerState: DrawerState, signalViewModel: SignalViewModel = hiltViewModel()
 ) {
@@ -140,10 +140,10 @@ fun SignalPage(
                         }
                     }
                 }, actions = {
-                    IconButton(onClick = { onNavigateToRemote() }) {
+                    IconButton(onClick = { onNavigateToRemoteControl() }) {
                         Icon(
                             Icons.Default.Dialpad,
-                            contentDescription = stringResource(id = R.string.open_remote)
+                            contentDescription = stringResource(id = R.string.open_remote_control)
                         )
                     }
                 })

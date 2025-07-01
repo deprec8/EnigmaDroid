@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.remote.modules
+package io.github.deprec8.enigmadroid.ui.remoteControl.modules
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -41,52 +41,52 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.model.RemoteButton
-import io.github.deprec8.enigmadroid.ui.remote.RemoteViewModel
+import io.github.deprec8.enigmadroid.model.RemoteControlButton
+import io.github.deprec8.enigmadroid.ui.remoteControl.RemoteControlViewModel
 
 @Composable
-fun ControlButtons(remoteViewModel: RemoteViewModel, enabled: Boolean, performHaptic: () -> Unit) {
+fun ControlButtons(remoteControlViewModel: RemoteControlViewModel, enabled: Boolean, performHaptic: () -> Unit) {
 
     val controlButtons = listOf(
         listOf(
-            RemoteButton(
+            RemoteControlButton(
                 icon = Icons.Default.FastRewind,
                 iconLabel = stringResource(R.string.rewind),
-                onClick = remoteViewModel::rewind
+                onClick = remoteControlViewModel::rewind
             ),
-            RemoteButton(
+            RemoteControlButton(
                 icon = Icons.Default.PlayArrow,
                 iconLabel = stringResource(R.string.play),
-                onClick = remoteViewModel::play
+                onClick = remoteControlViewModel::play
             ),
-            RemoteButton(
+            RemoteControlButton(
                 icon = Icons.Default.Pause,
                 iconLabel = stringResource(R.string.pause),
-                onClick = remoteViewModel::pause
+                onClick = remoteControlViewModel::pause
             ),
-            RemoteButton(
+            RemoteControlButton(
                 icon = Icons.Default.FastForward,
                 iconLabel = stringResource(R.string.forward),
-                onClick = remoteViewModel::forward
+                onClick = remoteControlViewModel::forward
             ),
         ), listOf(
-            RemoteButton(
+            RemoteControlButton(
                 text = "TV",
-                onClick = remoteViewModel::tv
+                onClick = remoteControlViewModel::tv
             ),
-            RemoteButton(
+            RemoteControlButton(
                 icon = Icons.Default.Circle,
                 iconLabel = stringResource(R.string.record),
-                onClick = remoteViewModel::record
+                onClick = remoteControlViewModel::record
             ),
-            RemoteButton(
+            RemoteControlButton(
                 icon = Icons.Default.Stop,
                 iconLabel = stringResource(R.string.stop),
-                onClick = remoteViewModel::stop
+                onClick = remoteControlViewModel::stop
             ),
-            RemoteButton(
+            RemoteControlButton(
                 text = "RADIO",
-                onClick = remoteViewModel::radio
+                onClick = remoteControlViewModel::radio
             ),
         )
     )

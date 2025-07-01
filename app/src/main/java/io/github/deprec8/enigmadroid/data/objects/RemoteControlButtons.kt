@@ -19,7 +19,7 @@
 
 package io.github.deprec8.enigmadroid.data.objects
 
-data object RemoteButtons {
+data object RemoteControlButtons {
 
     const val PREVIOUS_CHANNEL = 403
     const val NEXT_CHANNEL = 402

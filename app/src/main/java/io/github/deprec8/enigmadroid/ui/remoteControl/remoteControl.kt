@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.remote
+package io.github.deprec8.enigmadroid.ui.remoteControl
 
 import android.view.HapticFeedbackConstants
 import androidx.compose.animation.AnimatedContent
@@ -88,20 +88,20 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowWidthSizeClass
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.ui.components.horizontalSafeContentPadding
-import io.github.deprec8.enigmadroid.ui.remote.modules.ArrowButtons
-import io.github.deprec8.enigmadroid.ui.remote.modules.BouquetButtons
-import io.github.deprec8.enigmadroid.ui.remote.modules.ColorButtons
-import io.github.deprec8.enigmadroid.ui.remote.modules.ControlButtons
-import io.github.deprec8.enigmadroid.ui.remote.modules.MediaButtons
-import io.github.deprec8.enigmadroid.ui.remote.modules.NumberButtons
+import io.github.deprec8.enigmadroid.ui.remoteControl.modules.ArrowButtons
+import io.github.deprec8.enigmadroid.ui.remoteControl.modules.BouquetButtons
+import io.github.deprec8.enigmadroid.ui.remoteControl.modules.ColorButtons
+import io.github.deprec8.enigmadroid.ui.remoteControl.modules.ControlButtons
+import io.github.deprec8.enigmadroid.ui.remoteControl.modules.MediaButtons
+import io.github.deprec8.enigmadroid.ui.remoteControl.modules.NumberButtons
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RemotePage(
+fun RemoteControlPage(
     onNavigateBack: () -> Unit,
     snackbarHostState: SnackbarHostState,
-    remoteViewModel: RemoteViewModel = hiltViewModel()
+    remoteControlViewModel: RemoteControlViewModel = hiltViewModel()
 ) {
 
     var showNumbers by rememberSaveable {
@@ -112,16 +112,16 @@ fun RemotePage(
     }
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
-    val loadingState by remoteViewModel.loadingState.collectAsStateWithLifecycle()
-    val currentDevice by remoteViewModel.currentDevice.collectAsStateWithLifecycle()
+    val loadingState by remoteControlViewModel.loadingState.collectAsStateWithLifecycle()
+    val currentDevice by remoteControlViewModel.currentDevice.collectAsStateWithLifecycle()
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    val remoteVibration by remoteViewModel.remoteVibration.collectAsStateWithLifecycle()
+    val remoteVibration by remoteControlViewModel.remoteVibration.collectAsStateWithLifecycle()
     val view = LocalView.current
 
     LaunchedEffect(Unit) {
-        remoteViewModel.updateLoadingState(false)
+        remoteControlViewModel.updateLoadingState(false)
     }
 
     fun performHaptic(){
@@ -157,7 +157,7 @@ fun RemotePage(
                         overflow = TextOverflow.Ellipsis
                     )
                     1, 2    -> IconButton(
-                        onClick = { scope.launch { remoteViewModel.updateLoadingState(true) } },
+                        onClick = { scope.launch { remoteControlViewModel.updateLoadingState(true) } },
                         modifier = Modifier
                             .padding(12.dp)
                             .size(24.dp)
@@ -188,7 +188,7 @@ fun RemotePage(
                 modifier = Modifier.horizontalSafeContentPadding(),
                 title = {
                     Text(
-                        text = stringResource(R.string.remote),
+                        text = stringResource(R.string.remote_control),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -235,7 +235,7 @@ fun RemotePage(
                                     onClick = {
                                         showMenu = false
                                         scope.launch {
-                                            remoteViewModel.fetchScreenshot()
+                                            remoteControlViewModel.fetchScreenshot()
                                         }
                                     },
                                     leadingIcon = {
@@ -257,7 +257,7 @@ fun RemotePage(
                                     },
                                     onClick = {
                                         showMenu = false
-                                        remoteViewModel.power(0)
+                                        remoteControlViewModel.power(0)
                                     },
                                     leadingIcon = {
                                         Icon(
@@ -275,7 +275,7 @@ fun RemotePage(
                                     },
                                     onClick = {
                                         showMenu = false
-                                        remoteViewModel.power(2)
+                                        remoteControlViewModel.power(2)
                                     },
                                     leadingIcon = {
                                         Icon(
@@ -293,7 +293,7 @@ fun RemotePage(
                                     },
                                     onClick = {
                                         showMenu = false
-                                        remoteViewModel.power(3)
+                                        remoteControlViewModel.power(3)
                                     },
                                     leadingIcon = {
                                         Icon(
@@ -311,7 +311,7 @@ fun RemotePage(
                                     },
                                     onClick = {
                                         showMenu = false
-                                        remoteViewModel.power(1)
+                                        remoteControlViewModel.power(1)
                                     },
                                     leadingIcon = {
                                         Icon(
@@ -342,11 +342,11 @@ fun RemotePage(
                         .align(Alignment.Center)
                         .fillMaxSize()
                 ) {
-                    ColorButtons(remoteViewModel, loadingState == 0) { performHaptic() }
-                    ArrowButtons(remoteViewModel, loadingState == 0) { performHaptic() }
-                    BouquetButtons(remoteViewModel, loadingState == 0) { performHaptic() }
-                    MediaButtons(remoteViewModel, loadingState == 0) { performHaptic() }
-                    ControlButtons(remoteViewModel, loadingState == 0) { performHaptic() }
+                    ColorButtons(remoteControlViewModel, loadingState == 0) { performHaptic() }
+                    ArrowButtons(remoteControlViewModel, loadingState == 0) { performHaptic() }
+                    BouquetButtons(remoteControlViewModel, loadingState == 0) { performHaptic() }
+                    MediaButtons(remoteControlViewModel, loadingState == 0) { performHaptic() }
+                    ControlButtons(remoteControlViewModel, loadingState == 0) { performHaptic() }
                 }
                 if (showNumbers) {
                     ModalBottomSheet(
@@ -361,7 +361,7 @@ fun RemotePage(
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            NumberButtons(remoteViewModel, loadingState == 0) { performHaptic() }
+                            NumberButtons(remoteControlViewModel, loadingState == 0) { performHaptic() }
                         }
                     }
                 }
@@ -383,9 +383,9 @@ fun RemotePage(
                                 .padding(20.dp)
                                 .weight(1f)
                         ) {
-                            ColorButtons(remoteViewModel, loadingState == 0) { performHaptic() }
-                            ArrowButtons(remoteViewModel, loadingState == 0) { performHaptic() }
-                            MediaButtons(remoteViewModel, loadingState == 0) { performHaptic() }
+                            ColorButtons(remoteControlViewModel, loadingState == 0) { performHaptic() }
+                            ArrowButtons(remoteControlViewModel, loadingState == 0) { performHaptic() }
+                            MediaButtons(remoteControlViewModel, loadingState == 0) { performHaptic() }
                         }
                         Column(
                             verticalArrangement = Arrangement.Center,
@@ -394,9 +394,9 @@ fun RemotePage(
                                 .padding(20.dp)
                                 .weight(1f)
                         ) {
-                            BouquetButtons(remoteViewModel, loadingState == 0) { performHaptic() }
-                            NumberButtons(remoteViewModel, loadingState == 0) { performHaptic() }
-                            ControlButtons(remoteViewModel, loadingState == 0) { performHaptic() }
+                            BouquetButtons(remoteControlViewModel, loadingState == 0) { performHaptic() }
+                            NumberButtons(remoteControlViewModel, loadingState == 0) { performHaptic() }
+                            ControlButtons(remoteControlViewModel, loadingState == 0) { performHaptic() }
                         }
                     }
                 }

@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.remote.modules
+package io.github.deprec8.enigmadroid.ui.remoteControl.modules
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -39,55 +39,55 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.model.RemoteButton
-import io.github.deprec8.enigmadroid.ui.remote.RemoteViewModel
+import io.github.deprec8.enigmadroid.model.RemoteControlButton
+import io.github.deprec8.enigmadroid.ui.remoteControl.RemoteControlViewModel
 
 @Composable
-fun ArrowButtons(remoteViewModel: RemoteViewModel, enabled: Boolean, performHaptic: () -> Unit) {
+fun ArrowButtons(remoteControlViewModel: RemoteControlViewModel, enabled: Boolean, performHaptic: () -> Unit) {
 
     val arrowButtons = listOf(
         listOf(
-            RemoteButton(
+            RemoteControlButton(
                 text = "PVR",
-                onClick = remoteViewModel::pvr
+                onClick = remoteControlViewModel::pvr
             ),
-            RemoteButton(
+            RemoteControlButton(
                 icon = Icons.Default.KeyboardArrowUp,
                 iconLabel = stringResource(R.string.arrow_up),
-                onClick = remoteViewModel::aUP
+                onClick = remoteControlViewModel::aUP
             ),
-            RemoteButton(
+            RemoteControlButton(
                 text = "MENU",
-                onClick = remoteViewModel::menu
+                onClick = remoteControlViewModel::menu
             ),
         ), listOf(
-            RemoteButton(
+            RemoteControlButton(
                 icon = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                 iconLabel = stringResource(R.string.arrow_left),
-                onClick = remoteViewModel::aLeft
+                onClick = remoteControlViewModel::aLeft
             ),
-            RemoteButton(
+            RemoteControlButton(
                 text = "OK",
-                onClick = remoteViewModel::ok
+                onClick = remoteControlViewModel::ok
             ),
-            RemoteButton(
+            RemoteControlButton(
                 icon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 iconLabel = stringResource(R.string.arrow_right),
-                onClick = remoteViewModel::aRight
+                onClick = remoteControlViewModel::aRight
             ),
         ), listOf(
-            RemoteButton(
+            RemoteControlButton(
                 text = "EPG",
-                onClick = remoteViewModel::epg
+                onClick = remoteControlViewModel::epg
             ),
-            RemoteButton(
+            RemoteControlButton(
                 icon = Icons.Default.KeyboardArrowDown,
                 iconLabel = stringResource(R.string.arrow_down),
-                onClick = remoteViewModel::aDown
+                onClick = remoteControlViewModel::aDown
             ),
-            RemoteButton(
+            RemoteControlButton(
                 text = "EXIT",
-                onClick = remoteViewModel::exit
+                onClick = remoteControlViewModel::exit
             ),
         )
     )

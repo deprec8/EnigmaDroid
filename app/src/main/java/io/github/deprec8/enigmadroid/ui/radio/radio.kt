@@ -86,7 +86,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RadioPage(
-    onNavigateToRemote: () -> Unit,
+    onNavigateToRemoteControl: () -> Unit,
     snackbarHostState: SnackbarHostState,
     drawerState: DrawerState, radioViewModel: RadioViewModel = hiltViewModel()
 ) {
@@ -243,7 +243,7 @@ fun RadioPage(
                     )
                 },
                 drawerState = drawerState,
-                onNavigateToRemote = { onNavigateToRemote() },
+                onNavigateToRemote = { onNavigateToRemoteControl() },
                 onSearch = {
                     radioViewModel.updateSearchInput(selectedTabIndex.value)
                 },

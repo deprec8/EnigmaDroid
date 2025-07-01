@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.settings.remote
+package io.github.deprec8.enigmadroid.ui.settings.remoteControl
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RemoteSettingsViewModel @Inject constructor(private var settingsRepository: SettingsRepository) :
+class RemoteControlSettingsViewModel @Inject constructor(private var settingsRepository: SettingsRepository) :
     ViewModel() {
 
     private val _remoteVibration = MutableStateFlow<Boolean?>(null)
@@ -39,7 +39,7 @@ class RemoteSettingsViewModel @Inject constructor(private var settingsRepository
 
     init {
         viewModelScope.launch {
-            settingsRepository.getRemoteVibration().collectLatest {
+            settingsRepository.getRemoteControlVibration().collectLatest {
                 _remoteVibration.value = it
             }
         }
@@ -47,7 +47,7 @@ class RemoteSettingsViewModel @Inject constructor(private var settingsRepository
 
     fun setRemoteVibration(value: Boolean) {
         viewModelScope.launch {
-            settingsRepository.setRemoteVibration(value)
+            settingsRepository.setRemoteControlVibration(value)
         }
     }
 }

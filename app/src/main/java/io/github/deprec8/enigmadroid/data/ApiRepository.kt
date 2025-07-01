@@ -327,8 +327,8 @@ class ApiRepository @Inject constructor(
         }
     }
 
-    suspend fun remoteCall(command: Int) {
-        networkDataSource.remoteCall(command)
+    suspend fun remoteControlCall(command: Int) {
+        networkDataSource.remoteControlCall(command)
     }
 
     suspend fun setPowerState(command: Int) {

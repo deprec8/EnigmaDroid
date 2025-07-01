@@ -31,6 +31,6 @@ sealed class SettingsPages : Page {
     data object Devices : SettingsPages()
 
     @Serializable
-    data object Remote : SettingsPages()
+    data object RemoteControl : SettingsPages()
 
 }

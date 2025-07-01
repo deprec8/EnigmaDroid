@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.remote.modules
+package io.github.deprec8.enigmadroid.ui.remoteControl.modules
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -50,10 +50,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.ui.remote.RemoteViewModel
+import io.github.deprec8.enigmadroid.ui.remoteControl.RemoteControlViewModel
 
 @Composable
-fun MediaButtons(remoteViewModel: RemoteViewModel, enabled: Boolean, performHaptic: () -> Unit) {
+fun MediaButtons(remoteControlViewModel: RemoteControlViewModel, enabled: Boolean, performHaptic: () -> Unit) {
 
     Row(
         Modifier
@@ -76,7 +76,7 @@ fun MediaButtons(remoteViewModel: RemoteViewModel, enabled: Boolean, performHapt
         ) {
             OutlinedButton(
                 onClick = {
-                    remoteViewModel.volUP()
+                    remoteControlViewModel.volUP()
                     performHaptic()
                 },
                 shape = MaterialTheme.shapes.extraLarge,
@@ -106,7 +106,7 @@ fun MediaButtons(remoteViewModel: RemoteViewModel, enabled: Boolean, performHapt
             )
             OutlinedButton(
                 onClick = {
-                    remoteViewModel.volDown()
+                    remoteControlViewModel.volDown()
                     performHaptic()
                 },
                 shape = MaterialTheme.shapes.extraLarge,
@@ -131,7 +131,7 @@ fun MediaButtons(remoteViewModel: RemoteViewModel, enabled: Boolean, performHapt
         ) {
             FilledTonalButton(
                 onClick = {
-                    remoteViewModel.audio()
+                    remoteControlViewModel.audio()
                     performHaptic()
                 },
                 shape = MaterialTheme.shapes.extraLarge,
@@ -148,7 +148,7 @@ fun MediaButtons(remoteViewModel: RemoteViewModel, enabled: Boolean, performHapt
             }
             FilledTonalButton(
                 onClick = {
-                    remoteViewModel.volMute()
+                    remoteControlViewModel.volMute()
                     performHaptic()
                 },
                 shape = MaterialTheme.shapes.extraLarge,
@@ -167,7 +167,7 @@ fun MediaButtons(remoteViewModel: RemoteViewModel, enabled: Boolean, performHapt
             }
             FilledTonalButton(
                 onClick = {
-                    remoteViewModel.help()
+                    remoteControlViewModel.help()
                     performHaptic()
                 },
                 shape = MaterialTheme.shapes.extraLarge,
@@ -199,7 +199,7 @@ fun MediaButtons(remoteViewModel: RemoteViewModel, enabled: Boolean, performHapt
         ) {
             OutlinedButton(
                 onClick = {
-                    remoteViewModel.chUP()
+                    remoteControlViewModel.chUP()
                     performHaptic()
                 },
                 contentPadding = PaddingValues(),
@@ -229,7 +229,7 @@ fun MediaButtons(remoteViewModel: RemoteViewModel, enabled: Boolean, performHapt
             )
             OutlinedButton(
                 onClick = {
-                    remoteViewModel.chDown()
+                    remoteControlViewModel.chDown()
                     performHaptic()
                 },
                 contentPadding = PaddingValues(),

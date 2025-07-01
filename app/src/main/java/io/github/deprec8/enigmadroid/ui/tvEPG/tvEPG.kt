@@ -82,7 +82,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TVEPGPage(
-    onNavigateToRemote: () -> Unit,
+    onNavigateToRemoteControl: () -> Unit,
     snackbarHostState: SnackbarHostState,
     drawerState: DrawerState,
     tvEPGViewModel: TVEPGViewModel = hiltViewModel()
@@ -230,7 +230,7 @@ fun TVEPGPage(
                     )
                 },
                 drawerState = drawerState,
-                onNavigateToRemote = { onNavigateToRemote() },
+                onNavigateToRemote = { onNavigateToRemoteControl() },
                 onSearch = {
                     tvEPGViewModel.updateSearchInput()
                 },

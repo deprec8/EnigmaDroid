@@ -126,18 +126,18 @@ fun SettingsPage(
                 })
             )
             ListItem(
-                headlineContent = { Text(stringResource(R.string.remote)) },
+                headlineContent = { Text(stringResource(R.string.remote_control)) },
                 trailingContent = {
                     Icon(Icons.AutoMirrored.Filled.ArrowRight, contentDescription = null)
                 },
                 supportingContent = {
-                    Text(stringResource(R.string.configure_your_remote))
+                    Text(stringResource(R.string.configure_your_remote_control))
                 },
                 leadingContent = {
                     Icon(Icons.Outlined.Dialpad, contentDescription = null)
                 },
                 modifier = Modifier.clickable(onClick = {
-                    onNavigateToSubPage(SettingsPages.Remote)
+                    onNavigateToSubPage(SettingsPages.RemoteControl)
                 })
             )
             ListItem(

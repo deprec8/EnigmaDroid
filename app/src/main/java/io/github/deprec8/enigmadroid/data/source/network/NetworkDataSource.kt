@@ -146,7 +146,7 @@ class NetworkDataSource @Inject constructor(
         true
     } == true
 
-    suspend fun remoteCall(command: Int) = safeApiCall {
+    suspend fun remoteControlCall(command: Int) = safeApiCall {
         client.get(buildRemoteUrl(command = command))
     }
 

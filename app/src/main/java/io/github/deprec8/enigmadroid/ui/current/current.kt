@@ -80,7 +80,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CurrentPage(
-    onNavigateToRemote: () -> Unit,
+    onNavigateToRemoteControl: () -> Unit,
     snackbarHostState: SnackbarHostState,
     drawerState: DrawerState,
     currentViewModel: CurrentViewModel = hiltViewModel()
@@ -146,10 +146,10 @@ fun CurrentPage(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { onNavigateToRemote() }) {
+                    IconButton(onClick = { onNavigateToRemoteControl() }) {
                         Icon(
                             Icons.Default.Dialpad,
-                            contentDescription = stringResource(R.string.open_remote)
+                            contentDescription = stringResource(R.string.open_remote_control)
                         )
                     }
                 }

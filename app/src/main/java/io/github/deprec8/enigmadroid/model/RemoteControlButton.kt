@@ -22,7 +22,7 @@ package io.github.deprec8.enigmadroid.model
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 
-data class RemoteButton(
+data class RemoteControlButton(
     val text: String? = null,
     val icon: ImageVector? = null,
     val iconLabel: String? = null,

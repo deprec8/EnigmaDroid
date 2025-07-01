@@ -163,7 +163,7 @@ fun SearchTopAppBar(
                                 IconButton(onClick = { onNavigateToRemote() }) {
                                     Icon(
                                         Icons.Default.Dialpad,
-                                        contentDescription = stringResource(id = R.string.open_remote)
+                                        contentDescription = stringResource(id = R.string.open_remote_control)
                                     )
                                 }
                             }

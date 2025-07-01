@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.remote
+package io.github.deprec8.enigmadroid.ui.remoteControl
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -27,7 +27,7 @@ import io.github.deprec8.enigmadroid.data.DevicesRepository
 import io.github.deprec8.enigmadroid.data.DownloadRepository
 import io.github.deprec8.enigmadroid.data.LoadingRepository
 import io.github.deprec8.enigmadroid.data.SettingsRepository
-import io.github.deprec8.enigmadroid.data.objects.RemoteButtons
+import io.github.deprec8.enigmadroid.data.objects.RemoteControlButtons
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -37,7 +37,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RemoteViewModel @Inject constructor(
+class RemoteControlViewModel @Inject constructor(
     private val apiRepository: ApiRepository,
     private val devicesRepository: DevicesRepository,
     private val loadingRepository: LoadingRepository,
@@ -51,8 +51,8 @@ class RemoteViewModel @Inject constructor(
     private val _currentDevice = MutableStateFlow<Device?>(null)
     val currentDevice: StateFlow<Device?> = _currentDevice.asStateFlow()
 
-    private val _remoteVibration = MutableStateFlow(false)
-    val remoteVibration: StateFlow<Boolean> = _remoteVibration.asStateFlow()
+    private val _remoteControlVibration = MutableStateFlow(false)
+    val remoteVibration: StateFlow<Boolean> = _remoteControlVibration.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -66,15 +66,15 @@ class RemoteViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            settingsRepository.getRemoteVibration().collectLatest { vibration ->
-                _remoteVibration.value = vibration
+            settingsRepository.getRemoteControlVibration().collectLatest { value ->
+                _remoteControlVibration.value = value
             }
         }
     }
 
     private fun remoteCall(command: Int) {
         viewModelScope.launch {
-            apiRepository.remoteCall(command)
+            apiRepository.remoteControlCall(command)
         }
     }
 
@@ -90,62 +90,62 @@ class RemoteViewModel @Inject constructor(
 
     // Volume
     fun volUP() {
-        remoteCall(RemoteButtons.VOLUME_UP)
+        remoteCall(RemoteControlButtons.VOLUME_UP)
     }
 
     fun volDown() {
-        remoteCall(RemoteButtons.VOLUME_DOWN)
+        remoteCall(RemoteControlButtons.VOLUME_DOWN)
     }
 
     fun volMute() {
-        remoteCall(RemoteButtons.VOLUME_MUTE)
+        remoteCall(RemoteControlButtons.VOLUME_MUTE)
     }
 
     // Channel
     fun chUP() {
-        remoteCall(RemoteButtons.NEXT_CHANNEL)
+        remoteCall(RemoteControlButtons.NEXT_CHANNEL)
     }
 
     fun chDown() {
-        remoteCall(RemoteButtons.PREVIOUS_CHANNEL)
+        remoteCall(RemoteControlButtons.PREVIOUS_CHANNEL)
     }
 
     // Play Control
     fun play() {
-        remoteCall(RemoteButtons.PLAY)
+        remoteCall(RemoteControlButtons.PLAY)
     }
 
     fun pause() {
-        remoteCall(RemoteButtons.PAUSE)
+        remoteCall(RemoteControlButtons.PAUSE)
     }
 
     fun forward() {
-        remoteCall(RemoteButtons.FORWARD)
+        remoteCall(RemoteControlButtons.FORWARD)
     }
 
     fun rewind() {
-        remoteCall(RemoteButtons.REWIND)
+        remoteCall(RemoteControlButtons.REWIND)
     }
 
     // Main Buttons
     fun ok() {
-        remoteCall(RemoteButtons.OK)
+        remoteCall(RemoteControlButtons.OK)
     }
 
     fun menu() {
-        remoteCall(RemoteButtons.MENU)
+        remoteCall(RemoteControlButtons.MENU)
     }
 
     fun audio() {
-        remoteCall(RemoteButtons.AUDIO)
+        remoteCall(RemoteControlButtons.AUDIO)
     }
 
     fun epg() {
-        remoteCall(RemoteButtons.EPG)
+        remoteCall(RemoteControlButtons.EPG)
     }
 
     fun pvr() {
-        remoteCall(RemoteButtons.PVR)
+        remoteCall(RemoteControlButtons.PVR)
     }
 
     fun power(command: Int) {
@@ -156,44 +156,44 @@ class RemoteViewModel @Inject constructor(
     }
 
     fun help() {
-        remoteCall(RemoteButtons.HELP)
+        remoteCall(RemoteControlButtons.HELP)
     }
 
     fun exit() {
-        remoteCall(RemoteButtons.EXIT)
+        remoteCall(RemoteControlButtons.EXIT)
     }
 
     fun tv() {
-        remoteCall(RemoteButtons.TV)
+        remoteCall(RemoteControlButtons.TV)
     }
 
     fun radio() {
-        remoteCall(RemoteButtons.RADIO)
+        remoteCall(RemoteControlButtons.RADIO)
     }
 
     fun record() {
-        remoteCall(RemoteButtons.RECORD)
+        remoteCall(RemoteControlButtons.RECORD)
     }
 
     fun stop() {
-        remoteCall(RemoteButtons.STOP)
+        remoteCall(RemoteControlButtons.STOP)
     }
 
     // Arrows
     fun aUP() {
-        remoteCall(RemoteButtons.ARROW_UP)
+        remoteCall(RemoteControlButtons.ARROW_UP)
     }
 
     fun aDown() {
-        remoteCall(RemoteButtons.ARROW_DOWN)
+        remoteCall(RemoteControlButtons.ARROW_DOWN)
     }
 
     fun aLeft() {
-        remoteCall(RemoteButtons.ARROW_LEFT)
+        remoteCall(RemoteControlButtons.ARROW_LEFT)
     }
 
     fun aRight() {
-        remoteCall(RemoteButtons.ARROW_RIGHT)
+        remoteCall(RemoteControlButtons.ARROW_RIGHT)
     }
 
     // Number pad
@@ -207,35 +207,35 @@ class RemoteViewModel @Inject constructor(
 
     // Colors
     fun red() {
-        remoteCall(RemoteButtons.COLOR_RED)
+        remoteCall(RemoteControlButtons.COLOR_RED)
     }
 
     fun green() {
-        remoteCall(RemoteButtons.COLOR_GREEN)
+        remoteCall(RemoteControlButtons.COLOR_GREEN)
     }
 
     fun yellow() {
-        remoteCall(RemoteButtons.COLOR_YELLOW)
+        remoteCall(RemoteControlButtons.COLOR_YELLOW)
     }
 
     fun blue() {
-        remoteCall(RemoteButtons.COLOR_BLUE)
+        remoteCall(RemoteControlButtons.COLOR_BLUE)
     }
 
     fun info() {
-        remoteCall(RemoteButtons.INFO)
+        remoteCall(RemoteControlButtons.INFO)
     }
 
     fun text() {
-        remoteCall(RemoteButtons.TEXT)
+        remoteCall(RemoteControlButtons.TEXT)
     }
 
     fun bouUP() {
-        remoteCall(RemoteButtons.NEXT_BOUQUET)
+        remoteCall(RemoteControlButtons.NEXT_BOUQUET)
     }
 
     fun bouDOWN() {
-        remoteCall(RemoteButtons.PREVIOUS_BOUQUET)
+        remoteCall(RemoteControlButtons.PREVIOUS_BOUQUET)
     }
 
 

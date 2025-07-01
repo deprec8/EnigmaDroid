@@ -38,11 +38,11 @@ import io.github.deprec8.enigmadroid.ui.deviceInfo.DInfoPage
 import io.github.deprec8.enigmadroid.ui.movies.MoviesPage
 import io.github.deprec8.enigmadroid.ui.radio.RadioPage
 import io.github.deprec8.enigmadroid.ui.radioEPG.RadioEPGPage
-import io.github.deprec8.enigmadroid.ui.remote.RemotePage
+import io.github.deprec8.enigmadroid.ui.remoteControl.RemoteControlPage
 import io.github.deprec8.enigmadroid.ui.settings.SettingsPage
 import io.github.deprec8.enigmadroid.ui.settings.about.AboutPage
 import io.github.deprec8.enigmadroid.ui.settings.devices.DevicesPage
-import io.github.deprec8.enigmadroid.ui.settings.remote.RemoteSettingsPage
+import io.github.deprec8.enigmadroid.ui.settings.remoteControl.RemoteControlSettingsPage
 import io.github.deprec8.enigmadroid.ui.signal.SignalPage
 import io.github.deprec8.enigmadroid.ui.timers.TimersPage
 import io.github.deprec8.enigmadroid.ui.tv.TvPage
@@ -62,49 +62,49 @@ fun NavHost(
 
             composable<MainPages.TV> {
                 TvPage(
-                    onNavigateToRemote = { navController.navigate(MainPages.Remote) },
+                    onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
                     snackbarHostState,
                     modalDrawerState
                 )
             }
             composable<MainPages.Movies> {
                 MoviesPage(
-                    onNavigateToRemote = { navController.navigate(MainPages.Remote) },
+                    onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
                     snackbarHostState,
                     modalDrawerState
                 )
             }
             composable<MainPages.TVEPG> {
                 TVEPGPage(
-                    onNavigateToRemote = { navController.navigate(MainPages.Remote) },
+                    onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
                     snackbarHostState,
                     modalDrawerState
                 )
             }
             composable<MainPages.RadioEPG> {
                 RadioEPGPage(
-                    onNavigateToRemote = { navController.navigate(MainPages.Remote) },
+                    onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
                     snackbarHostState,
                     modalDrawerState
                 )
             }
             composable<MainPages.Current> {
                 CurrentPage(
-                    onNavigateToRemote = { navController.navigate(MainPages.Remote) },
+                    onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
                     snackbarHostState = snackbarHostState,
                     drawerState = modalDrawerState
                 )
             }
             composable<MainPages.Radio> {
                 RadioPage(
-                    onNavigateToRemote = { navController.navigate(MainPages.Remote) },
+                    onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
                     snackbarHostState,
                     modalDrawerState
                 )
             }
             composable<MainPages.Timers> {
                 TimersPage(
-                    onNavigateToRemote = { navController.navigate(MainPages.Remote) },
+                    onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
                     snackbarHostState,
                     modalDrawerState
                 )
@@ -112,14 +112,14 @@ fun NavHost(
 
             composable<MainPages.Signal> {
                 SignalPage(
-                    onNavigateToRemote = { navController.navigate(MainPages.Remote) },
+                    onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
                     snackbarHostState,
                     modalDrawerState
                 )
             }
             composable<MainPages.DeviceInfo> {
                 DInfoPage(
-                    onNavigateToRemote = { navController.navigate(MainPages.Remote) },
+                    onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
                     snackbarHostState,
                     modalDrawerState
                 )
@@ -147,8 +147,8 @@ fun NavHost(
                     }
                 )
             }
-            composable<SettingsPages.Remote> {
-                RemoteSettingsPage(
+            composable<SettingsPages.RemoteControl> {
+                RemoteControlSettingsPage(
                     snackbarHostState,
                     onNavigateBack = {
                         navController.navigateUp()
@@ -156,9 +156,9 @@ fun NavHost(
                 )
             }
 
-            dialog<MainPages.Remote>(
+            dialog<MainPages.RemoteControl>(
                 deepLinks = listOf(navDeepLink {
-                    uriPattern = "enigmadroid://remote"
+                    uriPattern = "enigmadroid://remotecontrol"
                 }),
                 dialogProperties = DialogProperties(
                     dismissOnClickOutside = false,
@@ -166,7 +166,7 @@ fun NavHost(
                     usePlatformDefaultWidth = false
                 )
             ) {
-                RemotePage(onNavigateBack = {
+                RemoteControlPage(onNavigateBack = {
                     navController.navigateUp()
                 }, snackbarHostState)
             }
