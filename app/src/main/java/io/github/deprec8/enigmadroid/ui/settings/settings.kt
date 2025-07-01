@@ -30,6 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.Devices
+import androidx.compose.material.icons.outlined.Dialpad
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -122,6 +123,21 @@ fun SettingsPage(
                 },
                 modifier = Modifier.clickable(onClick = {
                     onNavigateToSubPage(SettingsPages.Devices)
+                })
+            )
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.remote)) },
+                trailingContent = {
+                    Icon(Icons.AutoMirrored.Filled.ArrowRight, contentDescription = null)
+                },
+                supportingContent = {
+                    Text(stringResource(R.string.configure_your_remote))
+                },
+                leadingContent = {
+                    Icon(Icons.Outlined.Dialpad, contentDescription = null)
+                },
+                modifier = Modifier.clickable(onClick = {
+                    onNavigateToSubPage(SettingsPages.Remote)
                 })
             )
             ListItem(
