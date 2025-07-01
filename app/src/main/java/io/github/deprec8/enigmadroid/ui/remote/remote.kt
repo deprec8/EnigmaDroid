@@ -342,11 +342,11 @@ fun RemotePage(
                         .align(Alignment.Center)
                         .fillMaxSize()
                 ) {
-                    ColorButtons(remoteViewModel, loadingState == 0, { performHaptic() })
-                    ArrowButtons(remoteViewModel, loadingState == 0, { performHaptic() })
-                    BouquetButtons(remoteViewModel, loadingState == 0, { performHaptic() })
-                    MediaButtons(remoteViewModel, loadingState == 0, { performHaptic() })
-                    ControlButtons(remoteViewModel, loadingState == 0, { performHaptic() })
+                    ColorButtons(remoteViewModel, loadingState == 0) { performHaptic() }
+                    ArrowButtons(remoteViewModel, loadingState == 0) { performHaptic() }
+                    BouquetButtons(remoteViewModel, loadingState == 0) { performHaptic() }
+                    MediaButtons(remoteViewModel, loadingState == 0) { performHaptic() }
+                    ControlButtons(remoteViewModel, loadingState == 0) { performHaptic() }
                 }
                 if (showNumbers) {
                     ModalBottomSheet(
@@ -361,7 +361,7 @@ fun RemotePage(
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            NumberButtons(remoteViewModel, loadingState == 0, { performHaptic() })
+                            NumberButtons(remoteViewModel, loadingState == 0) { performHaptic() }
                         }
                     }
                 }
@@ -383,9 +383,9 @@ fun RemotePage(
                                 .padding(20.dp)
                                 .weight(1f)
                         ) {
-                            ColorButtons(remoteViewModel, loadingState == 0, { performHaptic() })
-                            ArrowButtons(remoteViewModel, loadingState == 0, { performHaptic() })
-                            MediaButtons(remoteViewModel, loadingState == 0, { performHaptic() })
+                            ColorButtons(remoteViewModel, loadingState == 0) { performHaptic() }
+                            ArrowButtons(remoteViewModel, loadingState == 0) { performHaptic() }
+                            MediaButtons(remoteViewModel, loadingState == 0) { performHaptic() }
                         }
                         Column(
                             verticalArrangement = Arrangement.Center,
@@ -394,9 +394,9 @@ fun RemotePage(
                                 .padding(20.dp)
                                 .weight(1f)
                         ) {
-                            BouquetButtons(remoteViewModel, loadingState == 0, { performHaptic() })
-                            NumberButtons(remoteViewModel, loadingState == 0, { performHaptic() })
-                            ControlButtons(remoteViewModel, loadingState == 0, { performHaptic() })
+                            BouquetButtons(remoteViewModel, loadingState == 0) { performHaptic() }
+                            NumberButtons(remoteViewModel, loadingState == 0) { performHaptic() }
+                            ControlButtons(remoteViewModel, loadingState == 0) { performHaptic() }
                         }
                     }
                 }
