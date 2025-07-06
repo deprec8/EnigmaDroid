@@ -142,17 +142,35 @@ object IntentUtils {
         }
     }
 
+    fun pinDevice(context: Context, device: Device, deviceId: Int) {
+        context.getSystemService(ShortcutManager::class.java).requestPinShortcut(
+            ShortcutInfo
+                .Builder(context, "device_${device.id}")
+                .setIcon(
+                    Icon.createWithResource(
+                        context,
+                        R.mipmap.ic_shortcut_device
+                    )
+                )
+                .setShortLabel(device.name).setIntent(
+                    Intent(
+                        "io.github.deprec8.enigmadroid.OPEN_WITH_DEVICE",
+                    ).putExtra("device_id", deviceId)
+                ).build(), null
+        )
+    }
+
     fun pinOWIFDevice(context: Context, device: Device, url: String) {
         context.getSystemService(ShortcutManager::class.java).requestPinShortcut(
             ShortcutInfo
-                .Builder(context, "openwebif-${device.id}")
+                .Builder(context, "openwebif_${device.id}")
                 .setIcon(
                     Icon.createWithResource(
                         context,
                         R.mipmap.ic_shortcut_website
                     )
                 )
-                .setShortLabel(device.name).setIntent(
+                .setShortLabel(device.name + " (Web)").setIntent(
                     Intent(
                         Intent.ACTION_DEFAULT,
                         url.toUri()

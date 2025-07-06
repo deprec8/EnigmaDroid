@@ -190,4 +190,5 @@
     <string name="configure_your_remote_control">Konfigurieren Sie Ihre Fernbedienung.</string>
     <string name="haptic_feedback">Haptisches Feedback</string>
     <string name="vibrate_when_buttons_are_pressed">Vibrieren beim Drücken von Tasten.</string>
+    <string name="pin_shortcut">Verknüpfung anpinnen</string>
 </resources>

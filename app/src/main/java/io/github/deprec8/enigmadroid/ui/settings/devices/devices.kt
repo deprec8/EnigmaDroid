@@ -41,7 +41,8 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.PushPin
+import androidx.compose.material.icons.outlined.ResetTv
+import androidx.compose.material.icons.outlined.Web
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -211,10 +212,28 @@ fun DevicesPage(
                                 onDismissRequest = { showDropDownMenu = false }) {
                                 if (shortcutManager !!.isRequestPinShortcutSupported) {
                                     DropdownMenuItem(
+                                        text = { Text(stringResource(R.string.pin_shortcut)) },
+                                        leadingIcon = {
+                                            Icon(
+                                                Icons.Outlined.ResetTv,
+                                                contentDescription = null
+                                            )
+                                        },
+                                        onClick =
+                                            {
+                                                showDropDownMenu = false
+                                                IntentUtils.pinDevice(
+                                                    context,
+                                                    device,
+                                                    index
+                                                )
+
+                                            })
+                                    DropdownMenuItem(
                                         text = { Text(stringResource(R.string.pin_webif)) },
                                         leadingIcon = {
                                             Icon(
-                                                Icons.Outlined.PushPin,
+                                                Icons.Outlined.Web,
                                                 contentDescription = null
                                             )
                                         },

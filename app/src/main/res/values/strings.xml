@@ -200,4 +200,5 @@
     <string name="configure_your_remote_control">Configure your remote control.</string>
     <string name="haptic_feedback">Haptic feedback</string>
     <string name="vibrate_when_buttons_are_pressed">Vibrate when buttons are pressed.</string>
+    <string name="pin_shortcut">Pin shortcut</string>
 </resources>
