@@ -24,20 +24,46 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
+import io.github.deprec8.enigmadroid.data.DevicesRepository
 import io.github.deprec8.enigmadroid.ui.main.MainPage
 import io.github.deprec8.enigmadroid.ui.theme.EnigmaDroidTheme
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var devicesRepository: DevicesRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        handleIntent()
         setContent {
             EnigmaDroidTheme {
                 MainPage()
+            }
+        }
+    }
+
+    fun handleIntent() {
+        lifecycleScope.launch {
+            intent?.let {
+                when (it.action) {
+                    "io.github.deprec8.enigmadroid.OPEN_WITH_DEVICE" -> {
+                        val deviceId = it.getIntExtra("device_id", - 1)
+                        if (deviceId != - 1 && deviceId != devicesRepository.getCurrentDeviceId()
+                                .first()
+                        ) {
+                            devicesRepository.setCurrentDeviceId(deviceId)
+                        }
+                    }
+                }
             }
         }
     }
