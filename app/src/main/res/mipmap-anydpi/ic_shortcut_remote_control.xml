@@ -19,6 +19,6 @@
 
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
     <background android:drawable="@mipmap/ic_shortcut_background"/>
-    <foreground android:drawable="@mipmap/ic_shortcut_remote_foreground"/>
-    <monochrome android:drawable="@mipmap/ic_shortcut_remote_monochrome"/>
+    <foreground android:drawable="@mipmap/ic_shortcut_remote_control_foreground"/>
+    <monochrome android:drawable="@mipmap/ic_shortcut_remote_control_monochrome"/>
 </adaptive-icon>
