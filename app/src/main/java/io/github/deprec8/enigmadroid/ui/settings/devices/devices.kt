@@ -19,6 +19,8 @@
 
 package io.github.deprec8.enigmadroid.ui.settings.devices
 
+import android.content.Intent
+import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandIn
@@ -72,6 +74,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
@@ -276,8 +279,8 @@ fun DevicesPage(
                                         {
                                             showDropDownMenu = false
                                             showDeleteDialog = true
-
-                                        })
+                                        }
+                                )
                             }
                         })
 
@@ -301,6 +304,12 @@ fun DevicesPage(
                                     onClick =
                                         {
                                             showDeleteDialog = false
+                                            shortcutManager.disableShortcuts(
+                                                listOf(
+                                                    "device_${device.id}",
+                                                    "openwebif_${device.id}"
+                                                )
+                                            )
                                             devicesViewModel.deleteDevice(index)
 
                                         }) { Text(stringResource(R.string.confirm)) }
@@ -317,6 +326,24 @@ fun DevicesPage(
                             onDismiss = { showEditDialog = false },
                             oldDevice = device,
                             onSave = { newDevice, oldDevice ->
+                                oldDevice?.let {
+                                    shortcutManager.updateShortcuts(
+                                        listOf(
+                                            ShortcutInfo
+                                                .Builder(context, "openwebif_${it.id}")
+                                                .setShortLabel(newDevice.name + " (Web)").setIntent(
+                                                    Intent(
+                                                        Intent.ACTION_DEFAULT,
+                                                        devicesViewModel
+                                                            .makeDeviceOWIFURL(newDevice).toUri()
+                                                    )
+                                                ).build(),
+                                            ShortcutInfo
+                                                .Builder(context, "device_${it.id}")
+                                                .setShortLabel(newDevice.name).build()
+                                        )
+                                    )
+                                }
                                 devicesViewModel.editDevice(oldDevice !!, newDevice)
                                 showEditDialog = false
                             }
