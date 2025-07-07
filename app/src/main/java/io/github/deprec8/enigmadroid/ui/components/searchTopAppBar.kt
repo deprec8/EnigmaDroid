@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -68,9 +69,8 @@ fun SearchTopAppBar(
     onNavigateToRemote: () -> Unit,
     content: @Composable (() -> Unit)? = null,
     tabBar: @Composable (() -> Unit)? = null,
-    onSearch: () -> Unit,
-
-    ) {
+    onSearch: () -> Unit
+) {
 
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     val layoutDirection = LocalLayoutDirection.current
@@ -95,6 +95,15 @@ fun SearchTopAppBar(
         targetValue = if (! expanded) 0.dp else WindowInsets.safeDrawing.asPaddingValues()
             .calculateEndPadding(layoutDirection), label = ""
     )
+
+    val animatedTopPadding by animateDpAsState(
+        targetValue = if (expanded) 0.dp else WindowInsets.safeDrawing.asPaddingValues()
+            .calculateTopPadding(), label = ""
+    )
+    val animatedInputFieldTopPadding by animateDpAsState(
+        targetValue = if (! expanded) 0.dp else WindowInsets.safeDrawing.asPaddingValues()
+            .calculateTopPadding(), label = ""
+    )
     val scope = rememberCoroutineScope()
 
     Surface {
@@ -108,10 +117,12 @@ fun SearchTopAppBar(
                         expanded = expanded,
                         onExpandedChange = { onExpandedChange(it) },
                         modifier = Modifier
+                            .consumeWindowInsets(WindowInsets.safeDrawing)
                             .fillMaxWidth()
                             .padding(
                                 start = animatedInputFieldStartPadding,
-                                end = animatedInputFieldEndPadding
+                                end = animatedInputFieldEndPadding,
+                                top = animatedInputFieldTopPadding
                             ),
                         placeholder = {
                             Text(
@@ -173,8 +184,13 @@ fun SearchTopAppBar(
                 expanded = expanded,
                 onExpandedChange = { onExpandedChange(it) },
                 modifier = Modifier
-                    .padding(start = animatedStartPadding, end = animatedEndPadding)
-                    .fillMaxWidth(),
+                    .consumeWindowInsets(WindowInsets.safeDrawing)
+                    .fillMaxWidth()
+                    .padding(
+                        start = animatedStartPadding,
+                        end = animatedEndPadding,
+                        top = animatedTopPadding
+                    ),
                 content = {
                     if (content != null) {
                         content()
