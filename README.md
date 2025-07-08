@@ -26,6 +26,8 @@ Tested with popular Enigma2 images like **VTi**.
 
 ## Installation
 
+[<img src="https://f-droid.org/badge/get-it-on.png" alt="Get it on F-Droid" height="80">](https://f-droid.org/packages/io.github.deprec8.enigmadroid)
+[<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" alt="Get it on IzzyOnDroid"  height="80">](https://apt.izzysoft.de/fdroid/index/apk/io.github.deprec8.enigmadroid)
 [<img src="badge_github.png" alt="Get it on GitHub" height="80">](https://github.com/deprec8/EnigmaDroid/releases)
 
 ## Screenshots
