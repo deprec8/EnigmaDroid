@@ -1,19 +1,19 @@
 # EnigmaDroid
 
-**EnigmaDroid** is a modern, user-friendly app that lets you control your Enigma2-based satellite or cable set-top box directly from your Android device. Powered by **OpenWebif**, EnigmaDroid turns your phone or tablet into a powerful remote control and streaming companion for your TV.
+**EnigmaDroid** is a modern, user-friendly app that lets you control your Enigma2-based satellite or cable set-top box directly from your Android device.
 
-Everywhere in your home, EnigmaDroid gives you full access to your receiver’s features. You can browse the channel list, zap to your favorite station, manage timers and recordings, or stream live TV and recordings right to your device.
+Everywhere in your home, EnigmaDroid gives you full access to your receiver’s features and content.
 
 ## Features
 
-- **Live TV Streaming**: Watch live broadcasts from your Enigma2 box on your Android device using a compatible video player.
+- **Live TV Streaming**: Watch live broadcasts from your Enigma2 box on your device using a compatible video player.
 - **Playback Recordings**: Browse and play your saved shows and movies with a compatible video player.
 - **Channel & Bouquet List**: Quickly navigate your full channel lineup and favorite bouquets.
 - **Remote Control**: Full on-screen remote with keypad.
 - **Timer Management**: Add, remove or edit timers and scheduled recordings.
 - **EPG Support**: View Electronic Program Guide data with detailed show info.
 - **Search & Filter**: Find channels or programs with built-in search on every page.
-- **Multi-box Support**: Connect to multiple receivers and switch between them.
+- **Multi-box Support**: Connect to multiple receivers and switch between them with ease.
 
 ## Requirements
 
