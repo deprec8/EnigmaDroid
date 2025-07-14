@@ -1,3 +1,4 @@
+import com.android.build.gradle.internal.tasks.CompileArtProfileTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 /*
@@ -147,4 +148,8 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
 
+}
+
+tasks.withType<CompileArtProfileTask> {
+    enabled = false
 }
