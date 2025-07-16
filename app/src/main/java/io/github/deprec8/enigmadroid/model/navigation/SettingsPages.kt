@@ -33,4 +33,7 @@ sealed class SettingsPages : Page {
     @Serializable
     data object RemoteControl : SettingsPages()
 
+    @Serializable
+    data object Search : SettingsPages()
+
 }

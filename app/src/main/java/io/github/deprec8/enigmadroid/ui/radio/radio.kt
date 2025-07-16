@@ -75,6 +75,7 @@ import io.github.deprec8.enigmadroid.model.menu.MenuSection
 import io.github.deprec8.enigmadroid.ui.components.ContentListItem
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
+import io.github.deprec8.enigmadroid.ui.components.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.components.calculateSearchTopAppBarContentPaddingValues
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
@@ -95,6 +96,7 @@ fun RadioPage(
     val active by radioViewModel.active.collectAsStateWithLifecycle()
     val filteredRadioEvents by radioViewModel.filteredEvents.collectAsStateWithLifecycle()
     val allRadioEvents by radioViewModel.allEvents.collectAsStateWithLifecycle()
+    val searchHistory by radioViewModel.searchHistory.collectAsStateWithLifecycle()
     currentWindowAdaptiveInfo().windowSizeClass
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { allRadioEvents.size })
@@ -237,11 +239,22 @@ fun RadioPage(
                 onInputChange = { radioViewModel.updateInput(it) },
                 placeholder = stringResource(R.string.search_events),
                 content = {
-                    Content(
-                        list = filteredRadioEvents,
-                        calculateSearchTopAppBarContentPaddingValues(),
-                        false
-                    )
+                    if (filteredRadioEvents != null) {
+                        Content(
+                            list = filteredRadioEvents !!,
+                            paddingValues = calculateSearchTopAppBarContentPaddingValues(),
+                            showChannelNumbers = false
+                        )
+                    } else {
+                        SearchHistory(
+                            searchHistory = searchHistory,
+                            onTermSearchClick = {
+                                radioViewModel.updateInput(it)
+                                radioViewModel.updateSearchInput(selectedTabIndex.value)
+                            },
+                            onTermInsertClick = { radioViewModel.updateInput(it) }
+                        )
+                    }
                 },
                 drawerState = drawerState,
                 onNavigateToRemote = { onNavigateToRemoteControl() },

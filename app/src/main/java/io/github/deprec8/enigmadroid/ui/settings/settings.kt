@@ -32,6 +32,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.Devices
 import androidx.compose.material.icons.outlined.Dialpad
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -123,6 +124,21 @@ fun SettingsPage(
                 },
                 modifier = Modifier.clickable(onClick = {
                     onNavigateToSubPage(SettingsPages.Devices)
+                })
+            )
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.search)) },
+                trailingContent = {
+                    Icon(Icons.AutoMirrored.Filled.ArrowRight, contentDescription = null)
+                },
+                supportingContent = {
+                    Text(stringResource(R.string.manage_search_settings_and_histories))
+                },
+                leadingContent = {
+                    Icon(Icons.Outlined.Search, contentDescription = null)
+                },
+                modifier = Modifier.clickable(onClick = {
+                    onNavigateToSubPage(SettingsPages.Search)
                 })
             )
             ListItem(

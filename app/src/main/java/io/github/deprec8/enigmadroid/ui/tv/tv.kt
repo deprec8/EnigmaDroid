@@ -74,6 +74,7 @@ import io.github.deprec8.enigmadroid.model.menu.MenuSection
 import io.github.deprec8.enigmadroid.ui.components.ContentListItem
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
+import io.github.deprec8.enigmadroid.ui.components.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.components.calculateSearchTopAppBarContentPaddingValues
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
@@ -95,6 +96,7 @@ fun TvPage(
     val filteredTVEvents by tvViewModel.filteredEvents.collectAsStateWithLifecycle()
     val allTVEvents by tvViewModel.allEvents.collectAsStateWithLifecycle()
     val loadingState by tvViewModel.loadingState.collectAsStateWithLifecycle()
+    val searchHistory by tvViewModel.searchHistory.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { allTVEvents.size })
@@ -233,11 +235,22 @@ fun TvPage(
                 onInputChange = { tvViewModel.updateInput(it) },
                 placeholder = stringResource(R.string.search_events),
                 content = {
-                    Content(
-                        list = filteredTVEvents,
-                        paddingValues = calculateSearchTopAppBarContentPaddingValues(),
-                        showChannelNumbers = false
-                    )
+                    if (filteredTVEvents != null) {
+                        Content(
+                            list = filteredTVEvents !!,
+                            paddingValues = calculateSearchTopAppBarContentPaddingValues(),
+                            showChannelNumbers = false
+                        )
+                    } else {
+                        SearchHistory(
+                            searchHistory = searchHistory,
+                            onTermSearchClick = {
+                                tvViewModel.updateInput(it)
+                                tvViewModel.updateSearchInput(selectedTabIndex.value)
+                            },
+                            onTermInsertClick = { tvViewModel.updateInput(it) }
+                        )
+                    }
                 },
                 drawerState = drawerState,
                 onNavigateToRemote = { onNavigateToRemoteControl() },

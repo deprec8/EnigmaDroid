@@ -71,6 +71,7 @@ import io.github.deprec8.enigmadroid.model.menu.MenuSection
 import io.github.deprec8.enigmadroid.ui.components.ContentListItem
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
+import io.github.deprec8.enigmadroid.ui.components.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.components.calculateSearchTopAppBarContentPaddingValues
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
@@ -93,6 +94,7 @@ fun TVEPGPage(
     val epgs by tvEPGViewModel.epgs.collectAsStateWithLifecycle()
     val active by tvEPGViewModel.active.collectAsStateWithLifecycle()
     val filteredEPGEvents by tvEPGViewModel.filteredEPGEvents.collectAsStateWithLifecycle()
+    val searchHistory by tvEPGViewModel.searchHistory.collectAsStateWithLifecycle()
     val pagerState = rememberPagerState(pageCount = { epgs.size })
     val selectedTabIndex = remember {
         derivedStateOf {
@@ -224,11 +226,22 @@ fun TVEPGPage(
                 onInputChange = { tvEPGViewModel.updateInput(it) },
                 placeholder = stringResource(R.string.search_epg),
                 content = {
-                    Content(
-                        list = filteredEPGEvents,
-                        calculateSearchTopAppBarContentPaddingValues(),
-                        true
-                    )
+                    if (filteredEPGEvents != null) {
+                        Content(
+                            list = filteredEPGEvents !!,
+                            paddingValues = calculateSearchTopAppBarContentPaddingValues(),
+                            showChannelName = true
+                        )
+                    } else {
+                        SearchHistory(
+                            searchHistory = searchHistory,
+                            onTermSearchClick = {
+                                tvEPGViewModel.updateInput(it)
+                                tvEPGViewModel.updateSearchInput()
+                            },
+                            onTermInsertClick = { tvEPGViewModel.updateInput(it) }
+                        )
+                    }
                 },
                 drawerState = drawerState,
                 onNavigateToRemote = { onNavigateToRemoteControl() },

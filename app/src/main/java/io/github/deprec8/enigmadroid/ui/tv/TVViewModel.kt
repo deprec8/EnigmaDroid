@@ -27,6 +27,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.deprec8.enigmadroid.data.ApiRepository
 import io.github.deprec8.enigmadroid.data.LoadingRepository
+import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.data.objects.ApiType
 import io.github.deprec8.enigmadroid.model.Event
 import io.github.deprec8.enigmadroid.model.EventList
@@ -43,7 +44,8 @@ import javax.inject.Inject
 @HiltViewModel
 class TVViewModel @Inject constructor(
     private val apiRepository: ApiRepository,
-    private val loadingRepository: LoadingRepository
+    private val loadingRepository: LoadingRepository,
+    private val searchHistoryRepository: SearchHistoryRepository
 ) : ViewModel() {
 
     var input by mutableStateOf("")
@@ -52,14 +54,17 @@ class TVViewModel @Inject constructor(
     private val _active = MutableStateFlow(false)
     val active: StateFlow<Boolean> = _active.asStateFlow()
 
-    private val _filteredEvents = MutableStateFlow<List<Event>>(emptyList())
-    val filteredEvents: StateFlow<List<Event>> = _filteredEvents.asStateFlow()
+    private val _filteredEvents = MutableStateFlow<List<Event>?>(null)
+    val filteredEvents: StateFlow<List<Event>?> = _filteredEvents.asStateFlow()
 
     private val _allEvents = MutableStateFlow<List<EventList>>(emptyList())
     val allEvents: StateFlow<List<EventList>> = _allEvents.asStateFlow()
 
     private val _loadingState = MutableStateFlow<Int?>(null)
     val loadingState: StateFlow<Int?> = _loadingState.asStateFlow()
+
+    private val _searchHistory = MutableStateFlow<List<String>>(emptyList())
+    val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()
 
     private val searchInput = MutableStateFlow("")
     private val currentBouquetIndex = MutableStateFlow(0)
@@ -79,12 +84,18 @@ class TVViewModel @Inject constructor(
                 currentBouquetIndex
             ) { allEvents, input, currentBouquetIndex ->
                 if (input != "") {
+                    searchHistoryRepository.addToTVSearchHistory(input)
                     FilterUtils.filterEvents(input, allEvents[currentBouquetIndex].events)
                 } else {
-                    emptyList()
+                    null
                 }
             }.collectLatest {
                 _filteredEvents.value = it
+            }
+        }
+        viewModelScope.launch {
+            searchHistoryRepository.getTVSearchHistory().collectLatest {
+                _searchHistory.value = it
             }
         }
     }
