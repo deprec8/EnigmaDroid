@@ -191,4 +191,6 @@
     <string name="haptic_feedback">Haptisches Feedback</string>
     <string name="vibrate_when_buttons_are_pressed">Vibrieren beim Drücken von Tasten.</string>
     <string name="pin_shortcut">Verknüpfung anpinnen</string>
+    <string name="insert_search_term">Suchbegriff einfügen</string>
+    <string name="type_something_to_search">Geben Sie etwas ein, um zu suchen</string>
 </resources>

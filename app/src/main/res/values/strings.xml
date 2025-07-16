@@ -201,4 +201,6 @@
     <string name="haptic_feedback">Haptic feedback</string>
     <string name="vibrate_when_buttons_are_pressed">Vibrate when buttons are pressed.</string>
     <string name="pin_shortcut">Pin shortcut</string>
+    <string name="insert_search_term">Insert search term</string>
+    <string name="type_something_to_search">Type something to search</string>
 </resources>
