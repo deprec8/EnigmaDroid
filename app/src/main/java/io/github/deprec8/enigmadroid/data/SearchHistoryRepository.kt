@@ -34,7 +34,8 @@ class SearchHistoryRepository @Inject constructor(private val dataStore: DataSto
     private val tvSearchHistoryKey = stringSetPreferencesKey(PreferencesKeys.TV_SEARCH_HISTORY)
     private val radioSearchHistoryKey =
         stringSetPreferencesKey(PreferencesKeys.RADIO_SEARCH_HISTORY)
-    private val epgSearchHistoryKey = stringSetPreferencesKey(PreferencesKeys.EPG_SEARCH_HISTORY)
+    private val tvEPGSearchHistoryKey = stringSetPreferencesKey(PreferencesKeys.TV_EPG_SEARCH_HISTORY)
+    private val radioEPGSearchHistoryKey = stringSetPreferencesKey(PreferencesKeys.RADIO_EPG_SEARCH_HISTORY)
     private val moviesSearchHistoryKey =
         stringSetPreferencesKey(PreferencesKeys.MOVIES_SEARCH_HISTORY)
     private val timersSearchHistoryKey =
@@ -101,23 +102,43 @@ class SearchHistoryRepository @Inject constructor(private val dataStore: DataSto
         }
     }
 
-    fun getEPGSearchHistory(): Flow<List<String>> = dataStore.data.map { preferences ->
-        (preferences[epgSearchHistoryKey] ?: emptySet()).reversed()
+    fun getTVEPGSearchHistory(): Flow<List<String>> = dataStore.data.map { preferences ->
+        (preferences[tvEPGSearchHistoryKey] ?: emptySet()).reversed()
     }
 
-    suspend fun addToEPGSearchHistory(string: String) {
+    suspend fun addToTVEPGSearchHistory(string: String) {
         dataStore.edit { preferences ->
-            preferences[epgSearchHistoryKey] = dataStore.data.map { preferences ->
-                val temp = (preferences[epgSearchHistoryKey] ?: emptySet()).toMutableSet()
+            preferences[tvEPGSearchHistoryKey] = dataStore.data.map { preferences ->
+                val temp = (preferences[tvEPGSearchHistoryKey] ?: emptySet()).toMutableSet()
                 temp.add(string)
                 temp.toSet()
             }.first()
         }
     }
 
-    suspend fun clearEPGSearchHistory() {
+    suspend fun clearTVEPGSearchHistory() {
         dataStore.edit { preferences ->
-            preferences[epgSearchHistoryKey] = emptySet()
+            preferences[tvEPGSearchHistoryKey] = emptySet()
+        }
+    }
+
+    fun getRadioEPGSearchHistory(): Flow<List<String>> = dataStore.data.map { preferences ->
+        (preferences[radioEPGSearchHistoryKey] ?: emptySet()).reversed()
+    }
+
+    suspend fun addToRadioEPGSearchHistory(string: String) {
+        dataStore.edit { preferences ->
+            preferences[tvSearchHistoryKey] = dataStore.data.map { preferences ->
+                val temp = (preferences[radioEPGSearchHistoryKey] ?: emptySet()).toMutableSet()
+                temp.add(string)
+                temp.toSet()
+            }.first()
+        }
+    }
+
+    suspend fun clearRadioEPGSearchHistory() {
+        dataStore.edit { preferences ->
+            preferences[radioEPGSearchHistoryKey] = emptySet()
         }
     }
 

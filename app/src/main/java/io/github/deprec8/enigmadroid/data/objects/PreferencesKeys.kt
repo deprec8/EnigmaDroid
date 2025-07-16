@@ -27,7 +27,8 @@ object PreferencesKeys {
     const val REMOTE_CONTROL_VIBRATION = "remote_control_vibration"
     const val TV_SEARCH_HISTORY = "tv_search_history"
     const val RADIO_SEARCH_HISTORY = "radio_search_history"
-    const val EPG_SEARCH_HISTORY = "epg_search_history"
+    const val TV_EPG_SEARCH_HISTORY = "tv_epg_search_history"
+    const val RADIO_EPG_SEARCH_HISTORY = "radio_epg_search_history"
     const val MOVIES_SEARCH_HISTORY = "movies_search_history"
     const val TIMERS_SEARCH_HISTORY = "timers_search_history"
 }
