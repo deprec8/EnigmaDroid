@@ -217,6 +217,7 @@ fun TVEPGPage(
             SnackbarHost(hostState = snackbarHostState)
         }, topBar = {
             SearchTopAppBar(
+                enabled = epgs.isNotEmpty(),
                 expanded = active,
                 onExpandedChange = { tvEPGViewModel.updateActive(it) },
                 input = tvEPGViewModel.input,

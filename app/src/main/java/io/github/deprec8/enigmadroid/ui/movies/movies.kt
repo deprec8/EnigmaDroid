@@ -361,6 +361,7 @@ fun MoviesPage(
             SnackbarHost(hostState = snackbarHostState)
         }, topBar = {
             SearchTopAppBar(
+                enabled = movies.isNotEmpty(),
                 expanded = active,
                 onExpandedChange = { moviesViewModel.updateActive(it) },
                 input = moviesViewModel.input,

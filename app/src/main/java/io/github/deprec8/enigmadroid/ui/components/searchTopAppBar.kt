@@ -43,6 +43,7 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -69,7 +70,8 @@ fun SearchTopAppBar(
     onNavigateToRemote: () -> Unit,
     content: @Composable (() -> Unit)? = null,
     tabBar: @Composable (() -> Unit)? = null,
-    onSearch: () -> Unit
+    onSearch: () -> Unit,
+    enabled: Boolean = true
 ) {
 
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
@@ -111,6 +113,11 @@ fun SearchTopAppBar(
             SearchBar(
                 inputField = {
                     SearchBarDefaults.InputField(
+                        colors = TextFieldDefaults.colors(
+                            disabledLeadingIconColor = TextFieldDefaults.colors().unfocusedLeadingIconColor,
+                            disabledTrailingIconColor = TextFieldDefaults.colors().unfocusedTrailingIconColor
+                        ),
+                        enabled = enabled,
                         query = input,
                         onQueryChange = { onInputChange(it) },
                         onSearch = { onSearch() },
