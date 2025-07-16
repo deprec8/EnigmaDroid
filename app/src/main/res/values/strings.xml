@@ -203,4 +203,9 @@
     <string name="pin_shortcut">Pin shortcut</string>
     <string name="insert_search_term">Insert search term</string>
     <string name="type_something_to_search">Type something to search</string>
+    <string name="clear">Clear</string>
+    <string name="clear_search_histories">Clear search histories</string>
+    <string name="select_which_search_histories_to_clear">Select which search histories to clear.</string>
+    <string name="search">Search</string>
+    <string name="manage_search_settings_and_histories">Manage search settings and histories.</string>
 </resources>

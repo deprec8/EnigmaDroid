@@ -43,6 +43,7 @@ import io.github.deprec8.enigmadroid.ui.settings.SettingsPage
 import io.github.deprec8.enigmadroid.ui.settings.about.AboutPage
 import io.github.deprec8.enigmadroid.ui.settings.devices.DevicesPage
 import io.github.deprec8.enigmadroid.ui.settings.remoteControl.RemoteControlSettingsPage
+import io.github.deprec8.enigmadroid.ui.settings.search.SearchSettingsPage
 import io.github.deprec8.enigmadroid.ui.signal.SignalPage
 import io.github.deprec8.enigmadroid.ui.timers.TimersPage
 import io.github.deprec8.enigmadroid.ui.tv.TvPage
@@ -155,7 +156,14 @@ fun NavHost(
                     }
                 )
             }
-
+            composable<SettingsPages.Search> {
+                SearchSettingsPage(
+                    snackbarHostState,
+                    onNavigateBack = {
+                        navController.navigateUp()
+                    }
+                )
+            }
             dialog<MainPages.RemoteControl>(
                 deepLinks = listOf(navDeepLink {
                     uriPattern = "enigmadroid://remotecontrol"

@@ -193,4 +193,9 @@
     <string name="pin_shortcut">Verknüpfung anpinnen</string>
     <string name="insert_search_term">Suchbegriff einfügen</string>
     <string name="type_something_to_search">Geben Sie etwas ein, um zu suchen</string>
+    <string name="clear">Löschen</string>
+    <string name="clear_search_histories">Suchverläufe löschen</string>
+    <string name="select_which_search_histories_to_clear">Wählen Sie aus, welche Suchverläufe gelöscht werden sollen.</string>
+    <string name="search">Suche</string>
+    <string name="manage_search_settings_and_histories">Sucheinstellungen und -verläufe verwalten.</string>
 </resources>
