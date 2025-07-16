@@ -43,6 +43,7 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -112,6 +113,10 @@ fun SearchTopAppBar(
             SearchBar(
                 inputField = {
                     SearchBarDefaults.InputField(
+                        colors = TextFieldDefaults.colors(
+                            disabledLeadingIconColor = TextFieldDefaults.colors().unfocusedLeadingIconColor,
+                            disabledTrailingIconColor = TextFieldDefaults.colors().unfocusedTrailingIconColor
+                        ),
                         enabled = enabled,
                         query = input,
                         onQueryChange = { onInputChange(it) },
