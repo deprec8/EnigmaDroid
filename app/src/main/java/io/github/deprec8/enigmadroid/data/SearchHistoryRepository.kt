@@ -68,12 +68,14 @@ class SearchHistoryRepository @Inject constructor(private val dataStore: DataSto
     }
 
     suspend fun addToTVSearchHistory(string: String) {
-        dataStore.edit { preferences ->
-            preferences[tvSearchHistoryKey] = dataStore.data.map { preferences ->
-                val temp = (preferences[tvSearchHistoryKey] ?: emptySet()).toMutableSet()
-                temp.add(string)
-                temp.toSet()
-            }.first()
+        if (getUseSearchHistory().first()) {
+            dataStore.edit { preferences ->
+                preferences[tvSearchHistoryKey] = dataStore.data.map { preferences ->
+                    val temp = (preferences[tvSearchHistoryKey] ?: emptySet()).toMutableSet()
+                    temp.add(string)
+                    temp.toSet()
+                }.first()
+            }
         }
     }
 
@@ -88,12 +90,14 @@ class SearchHistoryRepository @Inject constructor(private val dataStore: DataSto
     }
 
     suspend fun addToTimersSearchHistory(string: String) {
-        dataStore.edit { preferences ->
-            preferences[timersSearchHistoryKey] = dataStore.data.map { preferences ->
-                val temp = (preferences[timersSearchHistoryKey] ?: emptySet()).toMutableSet()
-                temp.add(string)
-                temp.toSet()
-            }.first()
+        if (getUseSearchHistory().first()) {
+            dataStore.edit { preferences ->
+                preferences[timersSearchHistoryKey] = dataStore.data.map { preferences ->
+                    val temp = (preferences[timersSearchHistoryKey] ?: emptySet()).toMutableSet()
+                    temp.add(string)
+                    temp.toSet()
+                }.first()
+            }
         }
     }
 
@@ -108,12 +112,14 @@ class SearchHistoryRepository @Inject constructor(private val dataStore: DataSto
     }
 
     suspend fun addToRadioSearchHistory(string: String) {
-        dataStore.edit { preferences ->
-            preferences[radioSearchHistoryKey] = dataStore.data.map { preferences ->
-                val temp = (preferences[radioSearchHistoryKey] ?: emptySet()).toMutableSet()
-                temp.add(string)
-                temp.toSet()
-            }.first()
+        if (getUseSearchHistory().first()) {
+            dataStore.edit { preferences ->
+                preferences[radioSearchHistoryKey] = dataStore.data.map { preferences ->
+                    val temp = (preferences[radioSearchHistoryKey] ?: emptySet()).toMutableSet()
+                    temp.add(string)
+                    temp.toSet()
+                }.first()
+            }
         }
     }
 
@@ -128,12 +134,14 @@ class SearchHistoryRepository @Inject constructor(private val dataStore: DataSto
     }
 
     suspend fun addToTVEPGSearchHistory(string: String) {
-        dataStore.edit { preferences ->
-            preferences[tvEPGSearchHistoryKey] = dataStore.data.map { preferences ->
-                val temp = (preferences[tvEPGSearchHistoryKey] ?: emptySet()).toMutableSet()
-                temp.add(string)
-                temp.toSet()
-            }.first()
+        if (getUseSearchHistory().first()) {
+            dataStore.edit { preferences ->
+                preferences[tvEPGSearchHistoryKey] = dataStore.data.map { preferences ->
+                    val temp = (preferences[tvEPGSearchHistoryKey] ?: emptySet()).toMutableSet()
+                    temp.add(string)
+                    temp.toSet()
+                }.first()
+            }
         }
     }
 
@@ -148,12 +156,15 @@ class SearchHistoryRepository @Inject constructor(private val dataStore: DataSto
     }
 
     suspend fun addToRadioEPGSearchHistory(string: String) {
-        dataStore.edit { preferences ->
-            preferences[tvSearchHistoryKey] = dataStore.data.map { preferences ->
-                val temp = (preferences[radioEPGSearchHistoryKey] ?: emptySet()).toMutableSet()
-                temp.add(string)
-                temp.toSet()
-            }.first()
+        if (getUseSearchHistory().first()) {
+            dataStore.edit { preferences ->
+                preferences[tvSearchHistoryKey] = dataStore.data.map { preferences ->
+                    val temp =
+                        (preferences[radioEPGSearchHistoryKey] ?: emptySet()).toMutableSet()
+                    temp.add(string)
+                    temp.toSet()
+                }.first()
+            }
         }
     }
 
@@ -168,12 +179,14 @@ class SearchHistoryRepository @Inject constructor(private val dataStore: DataSto
     }
 
     suspend fun addToMoviesSearchHistory(string: String) {
-        dataStore.edit { preferences ->
-            preferences[moviesSearchHistoryKey] = dataStore.data.map { preferences ->
-                val temp = (preferences[moviesSearchHistoryKey] ?: emptySet()).toMutableSet()
-                temp.add(string)
-                temp.toSet()
-            }.first()
+        if (getUseSearchHistory().first()) {
+            dataStore.edit { preferences ->
+                preferences[moviesSearchHistoryKey] = dataStore.data.map { preferences ->
+                    val temp = (preferences[moviesSearchHistoryKey] ?: emptySet()).toMutableSet()
+                    temp.add(string)
+                    temp.toSet()
+                }.first()
+            }
         }
     }
 
