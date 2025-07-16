@@ -21,6 +21,7 @@ package io.github.deprec8.enigmadroid.data
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import io.github.deprec8.enigmadroid.data.objects.PreferencesKeys
@@ -34,13 +35,33 @@ class SearchHistoryRepository @Inject constructor(private val dataStore: DataSto
     private val tvSearchHistoryKey = stringSetPreferencesKey(PreferencesKeys.TV_SEARCH_HISTORY)
     private val radioSearchHistoryKey =
         stringSetPreferencesKey(PreferencesKeys.RADIO_SEARCH_HISTORY)
-    private val tvEPGSearchHistoryKey = stringSetPreferencesKey(PreferencesKeys.TV_EPG_SEARCH_HISTORY)
-    private val radioEPGSearchHistoryKey = stringSetPreferencesKey(PreferencesKeys.RADIO_EPG_SEARCH_HISTORY)
+    private val tvEPGSearchHistoryKey =
+        stringSetPreferencesKey(PreferencesKeys.TV_EPG_SEARCH_HISTORY)
+    private val radioEPGSearchHistoryKey =
+        stringSetPreferencesKey(PreferencesKeys.RADIO_EPG_SEARCH_HISTORY)
     private val moviesSearchHistoryKey =
         stringSetPreferencesKey(PreferencesKeys.MOVIES_SEARCH_HISTORY)
     private val timersSearchHistoryKey =
         stringSetPreferencesKey(PreferencesKeys.TIMERS_SEARCH_HISTORY)
+    private val useSearchHistoryKey = booleanPreferencesKey(PreferencesKeys.USE_SEARCH_HISTORY)
 
+    fun getUseSearchHistory(): Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[useSearchHistoryKey] ?: true
+    }
+
+    suspend fun setUseSearchHistory(useSearchHistory: Boolean) {
+        if (! useSearchHistory) {
+            clearTVSearchHistory()
+            clearRadioSearchHistory()
+            clearTVEPGSearchHistory()
+            clearRadioEPGSearchHistory()
+            clearMoviesSearchHistory()
+            clearTimersSearchHistory()
+        }
+        dataStore.edit { preferences ->
+            preferences[useSearchHistoryKey] = useSearchHistory
+        }
+    }
 
     fun getTVSearchHistory(): Flow<List<String>> = dataStore.data.map { preferences ->
         (preferences[tvSearchHistoryKey] ?: emptySet()).reversed()

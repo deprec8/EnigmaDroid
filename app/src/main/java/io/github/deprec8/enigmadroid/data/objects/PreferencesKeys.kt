@@ -31,4 +31,5 @@ object PreferencesKeys {
     const val RADIO_EPG_SEARCH_HISTORY = "radio_epg_search_history"
     const val MOVIES_SEARCH_HISTORY = "movies_search_history"
     const val TIMERS_SEARCH_HISTORY = "timers_search_history"
+    const val USE_SEARCH_HISTORY = "save_search_history"
 }
