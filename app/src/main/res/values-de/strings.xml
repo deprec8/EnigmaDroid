@@ -198,4 +198,6 @@
     <string name="select_which_search_histories_to_clear">Wählen Sie aus, welche Suchverläufe gelöscht werden sollen.</string>
     <string name="search">Suche</string>
     <string name="manage_search_settings_and_histories">Sucheinstellungen und -verläufe verwalten.</string>
+    <string name="use_search_histories">Suchverläufe nutzen</string>
+    <string name="disabling_this_will_clear_all_search_histories">Wenn Sie dies deaktivieren, werden alle Suchverläufe gelöscht.</string>
 </resources>

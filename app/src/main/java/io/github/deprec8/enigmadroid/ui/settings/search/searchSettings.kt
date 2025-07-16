@@ -38,6 +38,7 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -74,6 +75,8 @@ fun SearchSettingsPage(
     val timersSearchHistory by searchSettingsViewModel.timersSearchHistory.collectAsStateWithLifecycle()
     val tvEPGSearchHistory by searchSettingsViewModel.tvEPGSearchHistory.collectAsStateWithLifecycle()
     val radioEPGSearchHistory by searchSettingsViewModel.radioEPGSearchHistory.collectAsStateWithLifecycle()
+
+    val useSearchHistories by searchSettingsViewModel.useSearchHistories.collectAsStateWithLifecycle()
 
     var showSearchHistoriesDialog by rememberSaveable { mutableStateOf(false) }
     val searchHistoriesDialogScrollState = rememberScrollState()
@@ -112,6 +115,24 @@ fun SearchSettingsPage(
                 .verticalScroll(scrollState)
                 .padding(innerPadding)
         ) {
+            useSearchHistories?.let {
+                ListItem(
+                    headlineContent = {
+                        Text(stringResource(R.string.use_search_histories))
+                    },
+                    supportingContent = {
+                        Text(stringResource(R.string.disabling_this_will_clear_all_search_histories))
+                    },
+                    trailingContent = {
+                        Switch(
+                            checked = it,
+                            onCheckedChange = { value ->
+                                searchSettingsViewModel.setUseSearchHistory(value)
+                            }
+                        )
+                    }
+                )
+            }
             ListItem(
                 headlineContent = {
                     Text(stringResource(R.string.clear_search_histories))

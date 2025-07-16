@@ -51,7 +51,15 @@ class SearchSettingsViewModel @Inject constructor(
     private val _radioEPGSearchHistory = MutableStateFlow<List<String>>(emptyList())
     val radioEPGSearchHistory = _radioEPGSearchHistory.asStateFlow()
 
+    private val _useSearchHistory = MutableStateFlow<Boolean?>(null)
+    val useSearchHistories = _useSearchHistory.asStateFlow()
+
     init {
+        viewModelScope.launch {
+            searchHistoryRepository.getUseSearchHistory().collect {
+                _useSearchHistory.value = it
+            }
+        }
         viewModelScope.launch {
             searchHistoryRepository.getTVSearchHistory().collect {
                 _tvSearchHistory.value = it
@@ -81,6 +89,12 @@ class SearchSettingsViewModel @Inject constructor(
             searchHistoryRepository.getRadioEPGSearchHistory().collect {
                 _radioEPGSearchHistory.value = it
             }
+        }
+    }
+
+    fun setUseSearchHistory(value: Boolean) {
+        viewModelScope.launch {
+            searchHistoryRepository.setUseSearchHistory(value)
         }
     }
 
