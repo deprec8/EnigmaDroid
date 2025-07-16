@@ -27,6 +27,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.deprec8.enigmadroid.data.ApiRepository
 import io.github.deprec8.enigmadroid.data.LoadingRepository
+import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.model.ServiceList
 import io.github.deprec8.enigmadroid.model.Timer
 import io.github.deprec8.enigmadroid.model.TimerList
@@ -43,7 +44,8 @@ import javax.inject.Inject
 @HiltViewModel
 class TimersViewModel @Inject constructor(
     private val apiRepository: ApiRepository,
-    private val loadingRepository: LoadingRepository
+    private val loadingRepository: LoadingRepository,
+    private val searchHistoryRepository: SearchHistoryRepository
 ) : ViewModel() {
 
     var input by mutableStateOf("")
@@ -52,8 +54,8 @@ class TimersViewModel @Inject constructor(
     private val _active = MutableStateFlow(false)
     val active: StateFlow<Boolean> = _active.asStateFlow()
 
-    private val _filteredTimers = MutableStateFlow<List<Timer>>(emptyList())
-    val filteredTimers: StateFlow<List<Timer>> = _filteredTimers.asStateFlow()
+    private val _filteredTimers = MutableStateFlow<List<Timer>?>(null)
+    val filteredTimers: StateFlow<List<Timer>?> = _filteredTimers.asStateFlow()
 
     private val _timerList = MutableStateFlow(TimerList())
     val timerList: StateFlow<TimerList> = _timerList.asStateFlow()
@@ -63,6 +65,9 @@ class TimersViewModel @Inject constructor(
 
     private val _services = MutableStateFlow<List<ServiceList>>(emptyList())
     val services: StateFlow<List<ServiceList>> = _services.asStateFlow()
+
+    private val _searchHistory = MutableStateFlow<List<String>>(emptyList())
+    val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()
 
     private val _searchInput = MutableStateFlow("")
 
@@ -77,12 +82,18 @@ class TimersViewModel @Inject constructor(
         viewModelScope.launch {
             combine(_timerList, _searchInput) { timerList, input ->
                 if (input != "") {
+                    searchHistoryRepository.addToTimersSearchHistory(input)
                     FilterUtils.filterTimers(input, timerList.timers)
                 } else {
-                    emptyList()
+                    null
                 }
             }.collectLatest {
                 _filteredTimers.value = it
+            }
+        }
+        viewModelScope.launch {
+            searchHistoryRepository.getTimersSearchHistory().collectLatest {
+                _searchHistory.value = it
             }
         }
     }

@@ -28,6 +28,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.deprec8.enigmadroid.data.ApiRepository
 import io.github.deprec8.enigmadroid.data.DownloadRepository
 import io.github.deprec8.enigmadroid.data.LoadingRepository
+import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.model.Movie
 import io.github.deprec8.enigmadroid.model.MovieList
 import io.github.deprec8.enigmadroid.utils.FilterUtils
@@ -44,7 +45,8 @@ import javax.inject.Inject
 class MoviesViewModel @Inject constructor(
     private val apiRepository: ApiRepository,
     private val loadingRepository: LoadingRepository,
-    private val downloadRepository: DownloadRepository
+    private val downloadRepository: DownloadRepository,
+    private val searchHistoryRepository: SearchHistoryRepository
 ) : ViewModel() {
 
     var input by mutableStateOf("")
@@ -53,14 +55,17 @@ class MoviesViewModel @Inject constructor(
     private val _active = MutableStateFlow(false)
     val active: StateFlow<Boolean> = _active.asStateFlow()
 
-    private val _filteredMovies = MutableStateFlow<List<Movie>>(emptyList())
-    val filteredMovies: StateFlow<List<Movie>> = _filteredMovies.asStateFlow()
+    private val _filteredMovies = MutableStateFlow<List<Movie>?>(null)
+    val filteredMovies: StateFlow<List<Movie>?> = _filteredMovies.asStateFlow()
 
     private val _movies = MutableStateFlow<List<MovieList>>(emptyList())
     val movies: StateFlow<List<MovieList>> = _movies.asStateFlow()
 
     private val _loadingState = MutableStateFlow<Int?>(null)
     val loadingState: StateFlow<Int?> = _loadingState.asStateFlow()
+
+    private val _searchHistory = MutableStateFlow<List<String>>(emptyList())
+    val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()
 
     private val _searchInput = MutableStateFlow("")
 
@@ -75,12 +80,18 @@ class MoviesViewModel @Inject constructor(
         viewModelScope.launch {
             combine(_movies, _searchInput) { movies, input ->
                 if (input != "") {
+                    searchHistoryRepository.addToMoviesSearchHistory(input)
                     FilterUtils.filterMovies(input, movies.flatMap { it.movies })
                 } else {
-                    emptyList()
+                    null
                 }
             }.collectLatest {
                 _filteredMovies.value = it
+            }
+        }
+        viewModelScope.launch {
+            searchHistoryRepository.getMoviesSearchHistory().collectLatest {
+                _searchHistory.value = it
             }
         }
     }

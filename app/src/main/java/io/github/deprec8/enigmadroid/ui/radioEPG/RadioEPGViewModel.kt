@@ -27,6 +27,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.deprec8.enigmadroid.data.ApiRepository
 import io.github.deprec8.enigmadroid.data.LoadingRepository
+import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.data.objects.ApiType
 import io.github.deprec8.enigmadroid.model.EPGEvent
 import io.github.deprec8.enigmadroid.model.EPGEventList
@@ -43,7 +44,8 @@ import javax.inject.Inject
 @HiltViewModel
 class RadioEPGViewModel @Inject constructor(
     private val apiRepository: ApiRepository,
-    private val loadingRepository: LoadingRepository
+    private val loadingRepository: LoadingRepository,
+    private val searchHistoryRepository: SearchHistoryRepository
 ) : ViewModel() {
 
     var input by mutableStateOf("")
@@ -55,11 +57,14 @@ class RadioEPGViewModel @Inject constructor(
     private val _active = MutableStateFlow(false)
     val active: StateFlow<Boolean> = _active.asStateFlow()
 
-    private val _filteredEPGEvents = MutableStateFlow(listOf<EPGEvent>())
-    val filteredEPGEvents: StateFlow<List<EPGEvent>> = _filteredEPGEvents.asStateFlow()
+    private val _filteredEPGEvents = MutableStateFlow<List<EPGEvent>?>(null)
+    val filteredEPGEvents: StateFlow<List<EPGEvent>?> = _filteredEPGEvents.asStateFlow()
 
     private val _loadingState = MutableStateFlow<Int?>(null)
     val loadingState: StateFlow<Int?> = _loadingState.asStateFlow()
+
+    private val _searchHistory = MutableStateFlow<List<String>>(emptyList())
+    val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()
 
     private val _searchInput = MutableStateFlow("")
 
@@ -74,12 +79,18 @@ class RadioEPGViewModel @Inject constructor(
         viewModelScope.launch {
             combine(_epgs, _searchInput) { epgs, input ->
                 if (input != "") {
+                    searchHistoryRepository.addToRadioEPGSearchHistory(input)
                     FilterUtils.filterEPGEvents(input, epgs.flatMap { it.events })
                 } else {
-                    emptyList()
+                    null
                 }
             }.collectLatest {
                 _filteredEPGEvents.value = it
+            }
+        }
+        viewModelScope.launch {
+            searchHistoryRepository.getRadioEPGSearchHistory().collectLatest {
+                _searchHistory.value = it
             }
         }
     }
