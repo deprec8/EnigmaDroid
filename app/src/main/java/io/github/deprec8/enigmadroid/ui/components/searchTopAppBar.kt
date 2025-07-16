@@ -69,7 +69,8 @@ fun SearchTopAppBar(
     onNavigateToRemote: () -> Unit,
     content: @Composable (() -> Unit)? = null,
     tabBar: @Composable (() -> Unit)? = null,
-    onSearch: () -> Unit
+    onSearch: () -> Unit,
+    enabled: Boolean = true
 ) {
 
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
@@ -111,6 +112,7 @@ fun SearchTopAppBar(
             SearchBar(
                 inputField = {
                     SearchBarDefaults.InputField(
+                        enabled = enabled,
                         query = input,
                         onQueryChange = { onInputChange(it) },
                         onSearch = { onSearch() },
