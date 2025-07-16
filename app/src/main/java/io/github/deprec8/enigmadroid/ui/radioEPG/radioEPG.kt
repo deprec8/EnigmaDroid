@@ -72,6 +72,7 @@ import io.github.deprec8.enigmadroid.model.menu.MenuSection
 import io.github.deprec8.enigmadroid.ui.components.ContentListItem
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
+import io.github.deprec8.enigmadroid.ui.components.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.components.calculateSearchTopAppBarContentPaddingValues
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
@@ -93,6 +94,7 @@ fun RadioEPGPage(
     val epgs by radioEPGViewModel.epgs.collectAsStateWithLifecycle()
     val active by radioEPGViewModel.active.collectAsStateWithLifecycle()
     val filteredEPGEvents by radioEPGViewModel.filteredEPGEvents.collectAsStateWithLifecycle()
+    val searchHistory by radioEPGViewModel.searchHistory.collectAsStateWithLifecycle()
     currentWindowAdaptiveInfo().windowSizeClass
     val pagerState = rememberPagerState(pageCount = { epgs.size })
     val selectedTabIndex = remember {
@@ -219,11 +221,22 @@ fun RadioEPGPage(
                 onInputChange = { radioEPGViewModel.updateInput(it) },
                 placeholder = stringResource(R.string.search_epg),
                 content = {
-                    Content(
-                        list = filteredEPGEvents,
-                        calculateSearchTopAppBarContentPaddingValues(),
-                        true
-                    )
+                    if (filteredEPGEvents != null) {
+                        Content(
+                            list = filteredEPGEvents !!,
+                            paddingValues = calculateSearchTopAppBarContentPaddingValues(),
+                            showChannelName = true
+                        )
+                    } else {
+                        SearchHistory(
+                            searchHistory = searchHistory,
+                            onTermSearchClick = {
+                                radioEPGViewModel.updateInput(it)
+                                radioEPGViewModel.updateSearchInput()
+                            },
+                            onTermInsertClick = { radioEPGViewModel.updateInput(it) }
+                        )
+                    }
                 },
                 drawerState = drawerState,
                 onNavigateToRemote = { onNavigateToRemoteControl() },

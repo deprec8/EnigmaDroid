@@ -85,6 +85,7 @@ import io.github.deprec8.enigmadroid.model.menu.MenuSection
 import io.github.deprec8.enigmadroid.ui.components.ContentListItem
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
+import io.github.deprec8.enigmadroid.ui.components.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.components.calculateSearchTopAppBarContentPaddingValues
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
@@ -103,6 +104,7 @@ fun MoviesPage(
     val movies by moviesViewModel.movies.collectAsStateWithLifecycle()
     val filteredMovies by moviesViewModel.filteredMovies.collectAsStateWithLifecycle()
     val active by moviesViewModel.active.collectAsStateWithLifecycle()
+    val searchHistory by moviesViewModel.searchHistory.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { movies.size })
@@ -367,7 +369,21 @@ fun MoviesPage(
                 onInputChange = { moviesViewModel.updateInput(it) },
                 placeholder = stringResource(R.string.search_movies),
                 content = {
-                    Content(list = filteredMovies, calculateSearchTopAppBarContentPaddingValues())
+                    if (filteredMovies != null) {
+                        Content(
+                            list = filteredMovies !!,
+                            paddingValues = calculateSearchTopAppBarContentPaddingValues(),
+                        )
+                    } else {
+                        SearchHistory(
+                            searchHistory = searchHistory,
+                            onTermSearchClick = {
+                                moviesViewModel.updateInput(it)
+                                moviesViewModel.updateSearchInput()
+                            },
+                            onTermInsertClick = { moviesViewModel.updateInput(it) }
+                        )
+                    }
                 },
                 drawerState = drawerState,
                 onNavigateToRemote = { onNavigateToRemoteControl() },

@@ -81,6 +81,7 @@ import io.github.deprec8.enigmadroid.model.menu.MenuSection
 import io.github.deprec8.enigmadroid.ui.components.ContentListItem
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
+import io.github.deprec8.enigmadroid.ui.components.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.components.calculateSearchTopAppBarContentPaddingValues
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
@@ -100,6 +101,7 @@ fun TimersPage(
     val filteredTimers by timersViewModel.filteredTimers.collectAsStateWithLifecycle()
     val timerList by timersViewModel.timerList.collectAsStateWithLifecycle()
     val services by timersViewModel.services.collectAsStateWithLifecycle()
+    val searchHistory by timersViewModel.searchHistory.collectAsStateWithLifecycle()
     var showTimerSetupDialog by rememberSaveable {
         mutableStateOf(false)
     }
@@ -287,7 +289,21 @@ fun TimersPage(
                 onInputChange = { timersViewModel.updateInput(it) },
                 placeholder = stringResource(R.string.search_timers),
                 content = {
-                    Content(list = filteredTimers, calculateSearchTopAppBarContentPaddingValues())
+                    if (filteredTimers != null) {
+                        Content(
+                            list = filteredTimers !!,
+                            paddingValues = calculateSearchTopAppBarContentPaddingValues(),
+                        )
+                    } else {
+                        SearchHistory(
+                            searchHistory = searchHistory,
+                            onTermSearchClick = {
+                                timersViewModel.updateInput(it)
+                                timersViewModel.updateSearchInput()
+                            },
+                            onTermInsertClick = { timersViewModel.updateInput(it) }
+                        )
+                    }
                 },
                 drawerState = drawerState,
                 onSearch = {
