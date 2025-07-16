@@ -281,6 +281,7 @@ fun TimersPage(
             SnackbarHost(hostState = snackbarHostState)
         }, topBar = {
             SearchTopAppBar(
+                enabled = timerList.result,
                 expanded = active,
                 onExpandedChange = { timersViewModel.updateActive(it) },
                 input = timersViewModel.input,

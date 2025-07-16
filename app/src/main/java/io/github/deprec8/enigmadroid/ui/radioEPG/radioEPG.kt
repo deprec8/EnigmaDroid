@@ -213,6 +213,7 @@ fun RadioEPGPage(
             SnackbarHost(hostState = snackbarHostState)
         }, topBar = {
             SearchTopAppBar(
+                enabled = epgs.isNotEmpty() && loadingState == LoadingState.LOADED,
                 expanded = active,
                 onExpandedChange = { radioEPGViewModel.updateActive(it) },
                 input = radioEPGViewModel.input,

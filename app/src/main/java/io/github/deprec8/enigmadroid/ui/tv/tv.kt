@@ -226,6 +226,7 @@ fun TvPage(
             SnackbarHost(hostState = snackbarHostState)
         }, topBar = {
             SearchTopAppBar(
+                enabled = allTVEvents.isNotEmpty(),
                 expanded = active,
                 onExpandedChange = { tvViewModel.updateActive(it) },
                 input = tvViewModel.input,

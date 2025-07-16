@@ -230,6 +230,7 @@ fun RadioPage(
             SnackbarHost(hostState = snackbarHostState)
         }, topBar = {
             SearchTopAppBar(
+                enabled = allRadioEvents.isNotEmpty(),
                 expanded = active,
                 onExpandedChange = { radioViewModel.updateActive(it) },
                 input = radioViewModel.input,
