@@ -171,7 +171,7 @@
     <string name="downloading">Downloading %1$s</string>
     <string name="fetching_screenshot">Fetching screenshot</string>
     <string name="refresh_page">Refresh page</string>
-    <string name="app_issue" translatable="false">github.com/deprec8/enigmadroid/issues</string>
+    <string name="app_issue" translatable="false">github.com/deprec8/EnigmaDroid/issues</string>
     <string name="issue_tracker">Issue tracker</string>
     <string name="app_issue_url" translatable="false">https://github.com/deprec8/EnigmaDroid/issues</string>
     <string name="ok">OK</string>
