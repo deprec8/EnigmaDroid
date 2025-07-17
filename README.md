@@ -4,6 +4,12 @@
 
 Everywhere in your home, EnigmaDroid gives you full access to your receiver’s features and content.
 
+## Installation
+
+[<img src="https://f-droid.org/badge/get-it-on.png" alt="Get it on F-Droid" height="80">](https://f-droid.org/packages/io.github.deprec8.enigmadroid)
+[<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" alt="Get it on IzzyOnDroid"  height="80">](https://apt.izzysoft.de/fdroid/index/apk/io.github.deprec8.enigmadroid)
+[<img src="badge_github.png" alt="Get it on GitHub" height="80">](https://github.com/deprec8/EnigmaDroid/releases)
+
 ## Features
 
 - **Live TV Streaming**: Watch live broadcasts from your Enigma2 box on your device using a compatible video player.
@@ -15,6 +21,12 @@ Everywhere in your home, EnigmaDroid gives you full access to your receiver’s 
 - **Search & Filter**: Find channels or programs with built-in search on every page.
 - **Multi-box Support**: Connect to multiple receivers and switch between them with ease.
 
+## Streaming
+
+EnigmaDroid currently only supports external media players for streaming live content and movies.
+
+[**VLC**](https://www.videolan.org/vlc/download-android.html) is recommended, but other media players can also work.
+
 ## Requirements
 
 - A set-top box running **Enigma2**
@@ -23,12 +35,6 @@ Everywhere in your home, EnigmaDroid gives you full access to your receiver’s 
 ## Compatibility
 
 Tested with popular Enigma2 images like **VTi**.
-
-## Installation
-
-[<img src="https://f-droid.org/badge/get-it-on.png" alt="Get it on F-Droid" height="80">](https://f-droid.org/packages/io.github.deprec8.enigmadroid)
-[<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" alt="Get it on IzzyOnDroid"  height="80">](https://apt.izzysoft.de/fdroid/index/apk/io.github.deprec8.enigmadroid)
-[<img src="badge_github.png" alt="Get it on GitHub" height="80">](https://github.com/deprec8/EnigmaDroid/releases)
 
 ## Screenshots
 
