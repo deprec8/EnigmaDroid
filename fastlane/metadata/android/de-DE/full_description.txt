@@ -2,7 +2,7 @@ EnigmaDroid ist eine moderne, benutzerfreundliche App, mit der Sie Ihre Enigma2-
 
 Mit EnigmaDroid haben Sie überall in Ihrem Haus vollen Zugriff auf die Funktionen und Inhalte Ihres Receivers.
 
-Die Funktionen umfassen:
+Funktionen:
 
 - Live-TV-Streaming: Sehen Sie sich Live-Übertragungen von Ihrer Enigma2-Box auf Ihrem Gerät mit einem kompatiblen Video-Player an.
 - Wiedergabe von Aufnahmen: Durchsuchen Sie Ihre gespeicherten Sendungen und Filme und spielen Sie sie ab.
@@ -12,6 +12,12 @@ Die Funktionen umfassen:
 - EPG-Unterstützung: Anzeige der Daten des elektronischen Programmführers mit detaillierten Informationen zu den Sendungen.
 - Suchen und Filtern: Finden Sie Kanäle oder Programme mit der integrierten Suche auf jeder Seite.
 - Unterstützung mehrerer Boxen: Verbinden Sie sich mit mehreren Receivern und wechseln Sie mühelos zwischen ihnen.
+
+Streaming:
+
+EnigmaDroid unterstützt derzeit nur externe Medienplayer für das Streaming von Live-Inhalten und Filmen.
+
+VLC wird empfohlen, aber auch andere Medienplayer können funktionieren.
 
 Voraussetzungen:
 
