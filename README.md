@@ -2,7 +2,7 @@
 
 **EnigmaDroid** is a modern, user-friendly app that lets you control your Enigma2-based satellite or cable set-top box directly from your Android device.
 
-Everywhere in your home, EnigmaDroid gives you full access to your receiver’s features and content.
+Everywhere in your home, **EnigmaDroid** gives you full access to your receiver’s features and content.
 
 ## Installation
 
