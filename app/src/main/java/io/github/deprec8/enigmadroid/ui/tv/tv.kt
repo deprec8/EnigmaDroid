@@ -97,6 +97,7 @@ fun TvPage(
     val allTVEvents by tvViewModel.allEvents.collectAsStateWithLifecycle()
     val loadingState by tvViewModel.loadingState.collectAsStateWithLifecycle()
     val searchHistory by tvViewModel.searchHistory.collectAsStateWithLifecycle()
+    val searchInput by tvViewModel.searchInput.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { allTVEvents.size })
@@ -126,7 +127,8 @@ fun TvPage(
     fun Content(
         list: List<Event>,
         paddingValues: PaddingValues,
-        showChannelNumbers: Boolean = true
+        showChannelNumbers: Boolean = true,
+        highlightedWords: List<String> = emptyList()
     ) {
         if (list.isNotEmpty()) {
             LazyVerticalGrid(
@@ -139,6 +141,7 @@ fun TvPage(
             ) {
                 items(list) { event ->
                     ContentListItem(
+                        highlightedWords = highlightedWords,
                         headlineText = event.serviceName,
                         leadingContent = if (showChannelNumbers) {
                             {
@@ -239,7 +242,8 @@ fun TvPage(
                         Content(
                             list = filteredTVEvents !!,
                             paddingValues = calculateSearchTopAppBarContentPaddingValues(),
-                            showChannelNumbers = false
+                            showChannelNumbers = false,
+                            highlightedWords = searchInput.split(" ").filter { it.isNotBlank() }
                         )
                     } else {
                         SearchHistory(

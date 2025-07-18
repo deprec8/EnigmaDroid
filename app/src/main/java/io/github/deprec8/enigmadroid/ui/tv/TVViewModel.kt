@@ -66,7 +66,9 @@ class TVViewModel @Inject constructor(
     private val _searchHistory = MutableStateFlow<List<String>>(emptyList())
     val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()
 
-    private val searchInput = MutableStateFlow("")
+    private val _searchInput = MutableStateFlow("")
+    val searchInput: StateFlow<String> = _searchInput.asStateFlow()
+
     private val currentBouquetIndex = MutableStateFlow(0)
 
     private var fetchJob: Job? = null
@@ -80,7 +82,7 @@ class TVViewModel @Inject constructor(
         viewModelScope.launch {
             combine(
                 _allEvents,
-                searchInput,
+                _searchInput,
                 currentBouquetIndex
             ) { allEvents, input, currentBouquetIndex ->
                 if (input != "") {
@@ -140,7 +142,7 @@ class TVViewModel @Inject constructor(
 
     fun updateSearchInput(index: Int) {
         currentBouquetIndex.value = index
-        searchInput.value = input
+        _searchInput.value = input
     }
 
     fun updateActive(isActive: Boolean) {

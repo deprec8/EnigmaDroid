@@ -109,6 +109,7 @@ fun RadioEPGPage(
             )
         }
     }
+    val searchInput by radioEPGViewModel.searchInput.collectAsStateWithLifecycle()
     val loadingState by radioEPGViewModel.loadingState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
@@ -126,7 +127,7 @@ fun RadioEPGPage(
     fun Content(
         list: List<EPGEvent>,
         paddingValues: PaddingValues,
-        showChannelName: Boolean = false
+        showChannelName: Boolean = false, highlightedWords: List<String> = emptyList()
     ) {
         if (list.isNotEmpty()) {
             LazyVerticalGrid(
@@ -139,6 +140,7 @@ fun RadioEPGPage(
             ) {
                 items(list) { event ->
                     ContentListItem(
+                        highlightedWords = highlightedWords,
                         headlineText = event.title,
                         supportingText = event.date,
                         overlineText = if (event.beginTimestamp * 1000 <= System.currentTimeMillis()) {
@@ -226,7 +228,8 @@ fun RadioEPGPage(
                         Content(
                             list = filteredEPGEvents !!,
                             paddingValues = calculateSearchTopAppBarContentPaddingValues(),
-                            showChannelName = true
+                            showChannelName = true,
+                            highlightedWords = searchInput.split(" ").filter { it.isNotBlank() }
                         )
                     } else {
                         SearchHistory(

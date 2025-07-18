@@ -107,6 +107,7 @@ fun TimersPage(
     }
     val loadingState by timersViewModel.loadingState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
+    val searchInput by timersViewModel.searchInput.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         timersViewModel.updateLoadingState(false)
@@ -119,7 +120,11 @@ fun TimersPage(
     }
 
     @Composable
-    fun Content(list: List<Timer>, paddingValues: PaddingValues) {
+    fun Content(
+        list: List<Timer>,
+        paddingValues: PaddingValues,
+        highlightedWords: List<String> = emptyList()
+    ) {
         if (list.isNotEmpty()) {
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(310.dp),
@@ -135,6 +140,7 @@ fun TimersPage(
                     var showEditDialog by rememberSaveable { mutableStateOf(false) }
 
                     ContentListItem(
+                        highlightedWords = highlightedWords,
                         headlineText = timer.title,
                         overlineText = timer.serviceName,
                         leadingContent = {
@@ -294,6 +300,7 @@ fun TimersPage(
                         Content(
                             list = filteredTimers !!,
                             paddingValues = calculateSearchTopAppBarContentPaddingValues(),
+                            highlightedWords = searchInput.split(" ").filter { it.isNotBlank() }
                         )
                     } else {
                         SearchHistory(

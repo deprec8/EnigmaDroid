@@ -121,6 +121,7 @@ fun MoviesPage(
         }
     }
     val loadingState by moviesViewModel.loadingState.collectAsStateWithLifecycle()
+    val searchInput by moviesViewModel.searchInput.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         moviesViewModel.updateLoadingState(false)
@@ -133,7 +134,11 @@ fun MoviesPage(
     }
 
     @Composable
-    fun Content(list: List<Movie>, paddingValues: PaddingValues) {
+    fun Content(
+        list: List<Movie>,
+        paddingValues: PaddingValues,
+        highlightedWords: List<String> = emptyList()
+    ) {
         if (list.isNotEmpty()) {
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(310.dp),
@@ -149,6 +154,7 @@ fun MoviesPage(
                     var showMoveDialog by rememberSaveable { mutableStateOf(false) }
 
                     ContentListItem(
+                        highlightedWords = highlightedWords,
                         headlineText = movie.eventName,
                         overlineText = if (movie.serviceName != "") {
                             movie.serviceName
@@ -374,6 +380,7 @@ fun MoviesPage(
                         Content(
                             list = filteredMovies !!,
                             paddingValues = calculateSearchTopAppBarContentPaddingValues(),
+                            highlightedWords = searchInput.split(" ").filter { it.isNotBlank() }
                         )
                     } else {
                         SearchHistory(

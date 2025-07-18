@@ -66,7 +66,8 @@ fun ContentListItem(
     progress: Float? = null,
     shortDescription: String,
     longDescription: String,
-    editMenuSection: MenuSection? = null
+    editMenuSection: MenuSection? = null,
+    highlightedWords: List<String> = emptyList()
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showBottomSheet by rememberSaveable { mutableStateOf(false) }
@@ -77,19 +78,21 @@ fun ContentListItem(
     Column(Modifier.clickable { showBottomSheet = true }) {
         ListItem(
             headlineContent = {
-                Text(
+                HighlightedText(
                     text = headlineText,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    highlightedWords
                 )
             },
             leadingContent = leadingContent,
             overlineContent = if (! overlineText.isNullOrEmpty()) {
                 {
-                    Text(
+                    HighlightedText(
                         text = overlineText,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        highlightedWords
                     )
                 }
             } else {
@@ -97,16 +100,18 @@ fun ContentListItem(
             },
             supportingContent = {
                 Column {
-                    Text(
+                    HighlightedText(
                         text = supportingText,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        highlightedWords
                     )
                     if (! additionalInfo.isNullOrEmpty()) {
-                        Text(
+                        HighlightedText(
                             text = additionalInfo,
                             maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
+                            overflow = TextOverflow.Ellipsis,
+                            highlightedWords
                         )
                     }
                 }
@@ -210,7 +215,8 @@ fun ContentListItem(
                 shortDescription = shortDescription,
                 longDescription = longDescription,
                 menuSections = menuSections,
-                editMenuSection = editMenuSection
+                editMenuSection = editMenuSection,
+                highlightedWords = highlightedWords
             )
         }
     }

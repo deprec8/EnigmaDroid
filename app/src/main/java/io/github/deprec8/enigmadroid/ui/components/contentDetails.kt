@@ -68,7 +68,8 @@ fun ContentDetails(
     progress: Float? = null,
     shortDescription: String,
     longDescription: String,
-    editMenuSection: MenuSection? = null
+    editMenuSection: MenuSection? = null,
+    highlightedWords: List<String> = emptyList()
 ) {
 
     var showDropDownMenu by rememberSaveable { mutableStateOf(false) }
@@ -80,18 +81,19 @@ fun ContentDetails(
         ) {
             ListItem(
                 headlineContent = {
-                    Text(
+                    HighlightedText(
                         text = headlineText,
+                        highlightedWords = highlightedWords
                     )
                 },
                 leadingContent = leadingContent,
                 overlineContent = if (overlineText != null) {
                     {
-                        Text(
+                        HighlightedText(
                             text = overlineText,
-
                             maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
+                            overflow = TextOverflow.Ellipsis,
+                            highlightedWords
                         )
                     }
                 } else {
@@ -99,12 +101,14 @@ fun ContentDetails(
                 },
                 supportingContent = {
                     Column {
-                        Text(
-                            text = supportingText
+                        HighlightedText(
+                            text = supportingText,
+                            highlightedWords = highlightedWords
                         )
                         if (additionalInfo != null) {
-                            Text(
-                                text = additionalInfo
+                            HighlightedText(
+                                text = additionalInfo,
+                                highlightedWords = highlightedWords
                             )
                         }
                     }
@@ -227,8 +231,9 @@ fun ContentDetails(
             ) {
                 if (shortDescription.isNotEmpty()) {
                     item {
-                        Text(
-                            text = shortDescription
+                        HighlightedText(
+                            text = shortDescription,
+                            highlightedWords = highlightedWords
                         )
                     }
                 }
@@ -239,8 +244,9 @@ fun ContentDetails(
                 }
                 if (longDescription.isNotEmpty()) {
                     item {
-                        Text(
-                            text = longDescription
+                        HighlightedText(
+                            text = longDescription,
+                            highlightedWords = highlightedWords
                         )
                     }
                 }

@@ -113,6 +113,7 @@ fun RadioPage(
         }
     }
     val loadingState by radioViewModel.loadingState.collectAsStateWithLifecycle()
+    val searchInput by radioViewModel.searchInput.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         radioViewModel.updateLoadingState(false)
@@ -129,7 +130,7 @@ fun RadioPage(
     fun Content(
         list: List<Event>,
         paddingValues: PaddingValues,
-        showChannelNumbers: Boolean = true
+        showChannelNumbers: Boolean = true, highlightedWords: List<String> = emptyList()
     ) {
         if (list.isNotEmpty()) {
             LazyVerticalGrid(
@@ -142,6 +143,7 @@ fun RadioPage(
             ) {
                 items(list) { event ->
                     ContentListItem(
+                        highlightedWords = highlightedWords,
                         headlineText = event.serviceName,
                         leadingContent = if (showChannelNumbers) {
                             {
@@ -243,7 +245,8 @@ fun RadioPage(
                         Content(
                             list = filteredRadioEvents !!,
                             paddingValues = calculateSearchTopAppBarContentPaddingValues(),
-                            showChannelNumbers = false
+                            showChannelNumbers = false,
+                            highlightedWords = searchInput.split(" ").filter { it.isNotBlank() }
                         )
                     } else {
                         SearchHistory(

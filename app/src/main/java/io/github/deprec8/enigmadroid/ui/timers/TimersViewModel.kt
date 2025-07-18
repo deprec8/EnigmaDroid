@@ -70,6 +70,7 @@ class TimersViewModel @Inject constructor(
     val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()
 
     private val _searchInput = MutableStateFlow("")
+    val searchInput: StateFlow<String> = _searchInput.asStateFlow()
 
     private var fetchJob: Job? = null
 

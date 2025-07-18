@@ -110,6 +110,7 @@ fun TVEPGPage(
     }
     val context = LocalContext.current
     val loadingState by tvEPGViewModel.loadingState.collectAsStateWithLifecycle()
+    val searchInput by tvEPGViewModel.searchInput.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         tvEPGViewModel.updateLoadingState(false)
@@ -124,7 +125,7 @@ fun TVEPGPage(
     fun Content(
         list: List<EPGEvent>,
         paddingValues: PaddingValues,
-        showChannelName: Boolean = false
+        showChannelName: Boolean = false, highlightedWords: List<String> = emptyList()
     ) {
         if (list.isNotEmpty()) {
             LazyVerticalGrid(
@@ -137,6 +138,7 @@ fun TVEPGPage(
             ) {
                 items(list) { event ->
                     ContentListItem(
+                        highlightedWords = highlightedWords,
                         headlineText = event.title,
                         supportingText = event.date,
                         overlineText = if (event.beginTimestamp * 1000 <= System.currentTimeMillis()) {
@@ -230,7 +232,8 @@ fun TVEPGPage(
                         Content(
                             list = filteredEPGEvents !!,
                             paddingValues = calculateSearchTopAppBarContentPaddingValues(),
-                            showChannelName = true
+                            showChannelName = true,
+                            highlightedWords = searchInput.split(" ").filter { it.isNotBlank() }
                         )
                     } else {
                         SearchHistory(
