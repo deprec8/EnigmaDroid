@@ -163,7 +163,7 @@ data class Event(
     @SerialName("now_timestamp") val nowTimestamp: Long = 0L,
     @SerialName("sref") val serviceReference: String = "",
     @SerialName("id") val id: Int = 0,
-    @SerialName("duration_sec") val durationInSeconds: Int = 0,
+    @SerialName("duration_sec") val durationInSeconds: Long = 0L,
     @SerialName("shortdesc") val shortDescription: String = "N/A",
     @SerialName("genre") val genre: String = "N/A",
     @SerialName("genreid") val genreId: Int = 0,
