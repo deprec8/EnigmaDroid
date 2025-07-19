@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (C) 2025 deprec8
+  ~
+  ~ This file is part of EnigmaDroid.
+  ~
+  ~ EnigmaDroid is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ EnigmaDroid is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="tv">ТВ</string>
+    <string name="movies">Фильмы</string>
+    <string name="timers">Таймеры</string>
+    <string name="device">Устройство</string>
+    <string name="settings">Настройки</string>
+    <string name="content">Контент</string>
+    <string name="deviceinfo">Информация об устройстве</string>
+    <string name="stream">Трансляция</string>
+    <string name="creator">Создатель</string>
+    <string name="version">Версия</string>
+    <string name="edit">Изменить</string>
+    <string name="delete">Удалить</string>
+    <string name="name">Название</string>
+    <string name="dinfo_imageversion">Версия образа</string>
+    <string name="dinfo_guiversion">Версия графического интерфейса</string>
+    <string name="dinfo_frontpversion">Версия FrontP</string>
+    <string name="dinfo_interfaceversion">Версия интерфейса</string>
+    <string name="tuner">Тюнер</string>
+    <string name="network">Сеть</string>
+    <string name="storage">Хранилище</string>
+    <string name="free">бесплатно</string>
+    <string name="about">О программе</string>
+    <string name="ip_address">IP-адрес</string>
+    <string name="port">Порт</string>
+    <string name="https">HTTPS</string>
+    <string name="login">Вход</string>
+    <string name="username">Имя пользователя</string>
+    <string name="password">Пароль</string>
+    <string name="edit_device">Изменить устройство</string>
+    <string name="add_device">Добавить устройство</string>
+    <string name="devices">Устройства</string>
+    <string name="add_timer">Добавить таймер</string>
+    <string name="description">Описание</string>
+    <string name="title">Название</string>
+    <string name="all_services">Все сервисы</string>
+    <string name="connected">Подключено</string>
+    <string name="search_timers">Поиск таймеров</string>
+    <string name="search_movies">Поиск фильмов</string>
+    <string name="radio">Радио</string>
+    <string name="signal">Сигнал</string>
+    <string name="open_number_pad">Открыть цифровую клавиатуру</string>
+    <string name="remote_control">Пульт дистанционного управления</string>
+    <string name="toggle_standby">Перейти в режим ожидания</string>
+    <string name="restart">Перезапустить</string>
+    <string name="restart_gui">Перезапустить графический интерфейс</string>
+    <string name="shutdown">Завершение работы</string>
+    <string name="close">Закрыть</string>
+    <string name="start_by_adding_one_device">Начните с добавления одного устройства, остальные можно будет добавить позже.</string>
+    <string name="finish_setup">Завершить настройку</string>
+    <string name="welcome_to_enigmadroid">Добро пожаловать в EnigmaDroid</string>
+    <string name="live_port">Порт live</string>
+    <string name="current">Текущая</string>
+    <string name="stream_current">Транслировать текущую программу</string>
+    <string name="kernel_version">Версия ядра</string>
+    <string name="uptime">Время работы</string>
+    <string name="model">Модель</string>
+    <string name="brand">Торговая марка</string>
+    <string name="open_menu">Открыть меню</string>
+    <string name="open_remote_control">Открыть пульт дистанционного управления</string>
+    <string name="tunertype">Тип тюнера</string>
+    <string name="tunernumber">Номер тюнера</string>
+    <string name="snr">SNR</string>
+    <string name="channel_down">Переключить на следующий канал</string>
+    <string name="general">Общие</string>
+    <string name="current_device">Текущее устройство</string>
+    <string name="editing_menu">Изменить меню</string>
+    <string name="no_results">Нет результатов</string>
+    <string name="close_search">Закрыть поиск</string>
+    <string name="clear_search">Очистить поиск</string>
+    <string name="delete_movie">Удалить фильм</string>
+    <string name="if_you_delete_this_movie_it_will_not_be_recoverable">Если вы удалите этот фильм, его будет невозможно восстановить.</string>
+    <string name="confirm">Подтвердить</string>
+    <string name="cancel">Отмена</string>
+    <string name="rename_movie">Переименовать фильм</string>
+    <string name="new_name">Новое назване</string>
+    <string name="move_movie">Переместить фильм</string>
+    <string name="new_location">Новое местоположение</string>
+    <string name="rename">Переименовать</string>
+    <string name="move">Переместить</string>
+    <string name="channel">Канал</string>
+    <string name="provider">Источник</string>
+    <string name="now">Сейчас</string>
+    <string name="next">Следующее</string>
+    <string name="save">Сохранить</string>
+    <string name="rewind">Перемотать назад</string>
+    <string name="play">Воспроизведение</string>
+    <string name="pause">Пауза</string>
+    <string name="forward">Перемотать</string>
+    <string name="record">Запись</string>
+    <string name="stop">Стоп</string>
+    <string name="volume_up">Громкость выше</string>
+    <string name="volume_down">Громкость ниже</string>
+    <string name="mute">Отключить звук</string>
+    <string name="arrow_up">Стрелка вверх</string>
+    <string name="arrow_left">Стрелка влево</string>
+    <string name="arrow_right">Стрелка вправо</string>
+    <string name="arrow_down">Стрелка вниз</string>
+    <string name="red">Красный</string>
+    <string name="green">Зелёный</string>
+    <string name="yellow">Жёлтый</string>
+    <string name="blue">Синий</string>
+    <string name="bouquet_down">Букет вниз</string>
+    <string name="bouquet_up">Букет вверх</string>
+    <string name="license">Лицензия</string>
+    <string name="open_action_menu">Открыть меню действий</string>
+    <string name="enabled">Включено</string>
+    <string name="device_not_connected">Устройство не подключено</string>
+    <string name="no_device_available">Устройство недоступно</string>
+    <string name="version_not_found">Версия не найдена</string>
+    <string name="open_openwebif">Открыть OpenWebif</string>
+    <string name="toggle_password_visibility">Включить/выключить видимость пароля</string>
+    <string name="delete_timer">Удалить таймер</string>
+    <string name="if_you_delete_this_timer_it_will_not_be_recoverable">Если вы удалите этот таймер, его будет уже не восстановить.</string>
+    <string name="third_party_libraries">Сторонние библиотеки</string>
+    <string name="source_code">Исходный код</string>
+    <string name="libraries">%1$s Библиотеки кода</string>
+    <string name="searching_for_device">Поиск устройства…</string>
+    <string name="channel_up">На канал выше</string>
+    <string name="retry">Повторить попытку</string>
+    <string name="no_devices_found">Устройства не найдены</string>
+    <string name="skip">Пропустить</string>
+    <string name="delete_device">Удалить устройство</string>
+    <string name="if_you_delete_this_device_it_will_not_be_recoverable">Если вы удалите это устройство, его будет уже не восстановить.</string>
+    <string name="pin_webif">ПИН-код WebIf</string>
+    <string name="standby">Режим ожидания</string>
+    <string name="automatic">Автоматически</string>
+    <string name="afterevent">После события</string>
+    <string name="screenshot">Снимок экрана</string>
+    <string name="add_a_device_to_connect_to">Добавить устройство для подключения</string>
+    <string name="device_is_not_playing_any_channel">Устройство не воспроизводит ни одного канала</string>
+    <string name="edit_timer">Изменить таймер</string>
+    <string name="tv_epg">ТВ-программа передач</string>
+    <string name="radio_epg">Радио-программа передач</string>
+    <string name="add_reminder">Добавить напоминание</string>
+    <string name="search_epg">Поиск в EPG</string>
+    <string name="search_events">Поиск событий</string>
+    <string name="switch_channel">Переключить</string>
+    <string name="service">Сервис</string>
+    <string name="open_search">Открыть поиск</string>
+    <string name="no_browser_found">Обозреватель не найден.</string>
+    <string name="no_calender_found">Календарь не найден.</string>
+    <string name="no_video_player_installed">Видеоплеер не установлен.</string>
+    <string name="download">Скачать</string>
+    <string name="downloading">Скачивание %1$s</string>
+    <string name="fetching_screenshot">Скачивание снимка</string>
+    <string name="refresh_page">Обновить страницу</string>
+    <string name="issue_tracker">Список задач</string>
+    <string name="ok">Хорошо</string>
+    <string name="select_time">Выбрать время</string>
+    <string name="toggle_time_picker_type">Переключить тип выбора времени</string>
+    <string name="begin_date">Дата начала</string>
+    <string name="begin_time">Время начала</string>
+    <string name="end_date">Дата окончания</string>
+    <string name="end_time">Время окончания</string>
+    <string name="monday">Понедельник</string>
+    <string name="tuesday">Вторник</string>
+    <string name="wednesday">Среда</string>
+    <string name="thursday">Четверг</string>
+    <string name="friday">Пятница</string>
+    <string name="saturday">Суббота</string>
+    <string name="sunday">Воскресенье</string>
+    <string name="create">Создать</string>
+    <string name="discard">Отменить</string>
+    <string name="discard_unsaved_changes">Отменить несохраненные изменения?</string>
+    <string name="you_may_have_changes_that_won_t_be_saved_if_you_close">Возможно, у вас есть изменения, которые не будут сохранены, если вы закроете.</string>
+    <string name="repeats_on">Повторять в:</string>
+    <string name="navigate_back">Назад</string>
+    <string name="manage_your_devices_and_connect_to_them">Управление устройствами и подключение к ним.</string>
+    <string name="information_about_the_app">Информация о приложении.</string>
+    <string name="configure_your_remote_control">Настройка пульта дистанционного управления.</string>
+    <string name="haptic_feedback">Виброотклик</string>
+    <string name="vibrate_when_buttons_are_pressed">Вибрация при нажатии кнопок.</string>
+    <string name="pin_shortcut">Закрепить ярлык</string>
+    <string name="insert_search_term">Вставить поисковый запрос</string>
+    <string name="type_something_to_search">Введите текст для поиска</string>
+    <string name="clear">Очистить</string>
+    <string name="clear_search_histories">Очистить историю поиска</string>
+    <string name="select_which_search_histories_to_clear">Выберите истории поиска для очистки.</string>
+    <string name="search">Поиск</string>
+    <string name="manage_search_settings_and_histories">Управление настройками и историей поиска.</string>
+    <string name="use_search_histories">Использовать историю поиска</string>
+    <string name="disabling_this_will_clear_all_search_histories">Отключение этой функции очистит всю историю поиска.</string>
+</resources>
