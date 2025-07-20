@@ -47,15 +47,3 @@
     }
   }
 ]
-
-"pull_request_title": "Sync Crowdin translations"
-
-"pull_request_labels": [
-  "translation",
-  "ui",
-  "metadata"
-]
-
-"pull_request_assignees": [
-  "deprec8"
-]
