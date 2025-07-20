@@ -1,0 +1,5 @@
+- New settings page to configure the app
+- Updated navigation system
+- Option to disable haptic feedback in remote control
+- Renamed remote to remote control
+- Various fixes and updates
