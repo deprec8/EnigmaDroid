@@ -212,4 +212,7 @@
     <string name="disabling_this_will_clear_all_search_histories">Disabling this will clear all search histories.</string>
     <string name="highlight_matches">Highlight matches</string>
     <string name="highlight_matches_in_search_results">Highlight matches in search results.</string>
+    <string name="translation">Translation</string>
+    <string name="app_translation" translatable="false">crowdin.com/project/enigmadroid</string>
+    <string name="app_translation_url" translatable="false">https://crowdin.com/project/enigmadroid</string>
 </resources>

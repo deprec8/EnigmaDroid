@@ -41,6 +41,7 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.ReportProblem
 import androidx.compose.material.icons.outlined.Shield
+import androidx.compose.material.icons.outlined.Translate
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -162,6 +163,16 @@ fun AboutPage(
                     )
                 })
 
+            ListItem(
+                headlineContent = { Text(text = stringResource(R.string.translation)) },
+                supportingContent = { Text(text = stringResource(R.string.crowdin_com_project_enigmadroid)) },
+                leadingContent = { Icon(Icons.Outlined.Translate, contentDescription = null) },
+                modifier = Modifier.clickable {
+                    IntentUtils.openURL(
+                        context,
+                        context.getString(R.string.app_translation_url)
+                    )
+                })
 
             ListItem(
                 headlineContent = { Text(text = stringResource(R.string.license)) },
