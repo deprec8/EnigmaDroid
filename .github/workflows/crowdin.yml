@@ -3,7 +3,7 @@ name: Crowdin
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 */4 * * *"
+    - cron: "40 */4 * * *"
     
 jobs:
   synchronize-with-crowdin:
