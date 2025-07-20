@@ -32,4 +32,5 @@ object PreferencesKeys {
     const val MOVIES_SEARCH_HISTORY = "movies_search_history"
     const val TIMERS_SEARCH_HISTORY = "timers_search_history"
     const val USE_SEARCH_HISTORY = "save_search_history"
+    const val USE_SEARCH_HIGHLIGHTING = "use_search_highlighting"
 }

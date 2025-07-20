@@ -77,6 +77,7 @@ fun SearchSettingsPage(
     val radioEPGSearchHistory by searchSettingsViewModel.radioEPGSearchHistory.collectAsStateWithLifecycle()
 
     val useSearchHistories by searchSettingsViewModel.useSearchHistories.collectAsStateWithLifecycle()
+    val useSearchHighlighting by searchSettingsViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
 
     var showSearchHistoriesDialog by rememberSaveable { mutableStateOf(false) }
     val searchHistoriesDialogScrollState = rememberScrollState()
@@ -142,6 +143,24 @@ fun SearchSettingsPage(
                 },
                 modifier = Modifier.clickable(onClick = { showSearchHistoriesDialog = true })
             )
+            useSearchHighlighting?.let {
+                ListItem(
+                    headlineContent = {
+                        Text("Highlight matches")
+                    },
+                    supportingContent = {
+                        Text("Highlight matches in search results.")
+                    },
+                    trailingContent = {
+                        Switch(
+                            checked = it,
+                            onCheckedChange = { value ->
+                                searchSettingsViewModel.setUseSearchHighlighting(value)
+                            }
+                        )
+                    }
+                )
+            }
         }
     }
 
