@@ -28,6 +28,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.deprec8.enigmadroid.data.ApiRepository
 import io.github.deprec8.enigmadroid.data.LoadingRepository
 import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
+import io.github.deprec8.enigmadroid.data.SettingsRepository
 import io.github.deprec8.enigmadroid.model.ServiceList
 import io.github.deprec8.enigmadroid.model.Timer
 import io.github.deprec8.enigmadroid.model.TimerList
@@ -45,7 +46,8 @@ import javax.inject.Inject
 class TimersViewModel @Inject constructor(
     private val apiRepository: ApiRepository,
     private val loadingRepository: LoadingRepository,
-    private val searchHistoryRepository: SearchHistoryRepository
+    private val searchHistoryRepository: SearchHistoryRepository,
+    private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
     var input by mutableStateOf("")
@@ -72,6 +74,9 @@ class TimersViewModel @Inject constructor(
     private val _searchInput = MutableStateFlow("")
     val searchInput: StateFlow<String> = _searchInput.asStateFlow()
 
+    private val _useSearchHighlighting = MutableStateFlow(true)
+    val useSearchHighlighting: StateFlow<Boolean> = _useSearchHighlighting.asStateFlow()
+
     private var fetchJob: Job? = null
 
     init {
@@ -95,6 +100,11 @@ class TimersViewModel @Inject constructor(
         viewModelScope.launch {
             searchHistoryRepository.getTimersSearchHistory().collectLatest {
                 _searchHistory.value = it
+            }
+        }
+        viewModelScope.launch {
+            settingsRepository.getUseSearchHighlighting().collectLatest {
+                _useSearchHighlighting.value = it
             }
         }
     }
