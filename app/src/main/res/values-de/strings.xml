@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~ Copyright (C) 2025 deprec8
   ~
   ~ This file is part of EnigmaDroid.
@@ -16,7 +17,6 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
   -->
-
 <resources>
     <string name="tv">TV</string>
     <string name="movies">Filme</string>
@@ -24,7 +24,7 @@
     <string name="device">Gerät</string>
     <string name="settings">Einstellungen</string>
     <string name="content">Inhalt</string>
-    <string name="deviceinfo">"Geräteinformationen "</string>
+    <string name="deviceinfo">Geräteinformationen </string>
     <string name="stream">Streamen</string>
     <string name="creator">Ersteller</string>
     <string name="version">Version</string>
@@ -40,6 +40,7 @@
     <string name="storage">Speicher</string>
     <string name="free">frei</string>
     <string name="about">Über</string>
+    <string name="ip_address">IP Adresse</string>
     <string name="port">Port</string>
     <string name="https">HTTPS</string>
     <string name="login">Login</string>
@@ -47,7 +48,6 @@
     <string name="password">Passwort</string>
     <string name="edit_device">Gerät bearbeiten</string>
     <string name="add_device">Gerät hinzufügen</string>
-    <string name="ip_address">IP Adresse</string>
     <string name="devices">Geräte</string>
     <string name="add_timer">Timer hinzufügen</string>
     <string name="description">Beschreibung</string>
@@ -80,8 +80,10 @@
     <string name="tunertype">Tunertyp</string>
     <string name="tunernumber">Tunernummer</string>
     <string name="snr">SNR</string>
+    <string name="channel_down">Kanal runter</string>
     <string name="general">Allgemein</string>
     <string name="current_device">Aktuelles Gerät</string>
+    <string name="editing_menu">Bearbeitungsmenü</string>
     <string name="no_results">Keine Ergebnisse</string>
     <string name="close_search">Suche schließen</string>
     <string name="clear_search">Suche leeren</string>
@@ -100,7 +102,6 @@
     <string name="now">Jetzt</string>
     <string name="next">Nächstes</string>
     <string name="save">Speichern</string>
-    <string name="editing_menu">Bearbeitungsmenü</string>
     <string name="rewind">Zurückspulen</string>
     <string name="play">Abspielen</string>
     <string name="pause">Pausieren</string>
@@ -110,7 +111,6 @@
     <string name="volume_up">Ton hoch</string>
     <string name="volume_down">Ton runter</string>
     <string name="mute">Stumm</string>
-    <string name="channel_down">Kanal runter</string>
     <string name="arrow_up">Pfeil hoch</string>
     <string name="arrow_left">Pfeil links</string>
     <string name="arrow_right">Pfeil rechts</string>
@@ -166,6 +166,12 @@
     <string name="refresh_page">Seite neu laden</string>
     <string name="issue_tracker">Fehlerverfolgung</string>
     <string name="ok">OK</string>
+    <string name="select_time">Zeit auswählen</string>
+    <string name="toggle_time_picker_type">Art der Zeitauswahl umschalten</string>
+    <string name="begin_date">Anfangsdatum</string>
+    <string name="begin_time">Anfangszeit</string>
+    <string name="end_date">Enddatum</string>
+    <string name="end_time">Endzeit</string>
     <string name="monday">Monatg</string>
     <string name="tuesday">Dienstag</string>
     <string name="wednesday">Mittwoch</string>
@@ -177,12 +183,6 @@
     <string name="discard">Verwerfen</string>
     <string name="discard_unsaved_changes">Nicht gespeicherte Änderungen verwerfen?</string>
     <string name="you_may_have_changes_that_won_t_be_saved_if_you_close">Möglicherweise werden Ihre Änderungen nicht gespeichert, wenn Sie die Seite schließen.</string>
-    <string name="end_date">Enddatum</string>
-    <string name="end_time">Endzeit</string>
-    <string name="select_time">Zeit auswählen</string>
-    <string name="toggle_time_picker_type">Art der Zeitauswahl umschalten</string>
-    <string name="begin_date">Anfangsdatum</string>
-    <string name="begin_time">Anfangszeit</string>
     <string name="repeats_on">Wiederholt sich am:</string>
     <string name="navigate_back">Zurück navigieren</string>
     <string name="manage_your_devices_and_connect_to_them">Verwalten Sie Ihre Geräte und stellen Sie eine Verbindung zu ihnen her.</string>
