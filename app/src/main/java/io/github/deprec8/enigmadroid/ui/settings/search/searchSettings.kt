@@ -146,10 +146,10 @@ fun SearchSettingsPage(
             useSearchHighlighting?.let {
                 ListItem(
                     headlineContent = {
-                        Text("Highlight matches")
+                        Text(stringResource(R.string.highlight_matches))
                     },
                     supportingContent = {
-                        Text("Highlight matches in search results.")
+                        Text(stringResource(R.string.highlight_matches_in_search_results))
                     },
                     trailingContent = {
                         Switch(
