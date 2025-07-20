@@ -42,7 +42,6 @@
     <string name="about">О программе</string>
     <string name="ip_address">IP-адрес</string>
     <string name="port">Порт</string>
-    <string name="https">HTTPS</string>
     <string name="login">Вход</string>
     <string name="username">Имя пользователя</string>
     <string name="password">Пароль</string>
@@ -79,7 +78,6 @@
     <string name="open_remote_control">Открыть пульт дистанционного управления</string>
     <string name="tunertype">Тип тюнера</string>
     <string name="tunernumber">Номер тюнера</string>
-    <string name="snr">SNR</string>
     <string name="channel_down">Переключить на следующий канал</string>
     <string name="general">Общие</string>
     <string name="current_device">Текущее устройство</string>

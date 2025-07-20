@@ -42,7 +42,6 @@
     <string name="about">Über</string>
     <string name="ip_address">IP Adresse</string>
     <string name="port">Port</string>
-    <string name="https">HTTPS</string>
     <string name="login">Login</string>
     <string name="username">Benutzername</string>
     <string name="password">Passwort</string>
@@ -79,7 +78,6 @@
     <string name="open_remote_control">Fernbedienung öffnen</string>
     <string name="tunertype">Tunertyp</string>
     <string name="tunernumber">Tunernummer</string>
-    <string name="snr">SNR</string>
     <string name="channel_down">Kanal runter</string>
     <string name="general">Allgemein</string>
     <string name="current_device">Aktuelles Gerät</string>

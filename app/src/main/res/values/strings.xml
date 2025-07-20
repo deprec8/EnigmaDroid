@@ -43,7 +43,7 @@
     <string name="about">About</string>
     <string name="ip_address">IP Address</string>
     <string name="port">Port</string>
-    <string name="https">HTTPS</string>
+    <string name="https" translatable="false">HTTPS</string>
     <string name="login">Login</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
@@ -80,7 +80,7 @@
     <string name="open_remote_control">Open remote control</string>
     <string name="tunertype">Tunertype</string>
     <string name="tunernumber">Tunernumber</string>
-    <string name="snr">SNR</string>
+    <string name="snr" translatable="false">SNR</string>
     <string name="channel_down">Channel down</string>
     <string name="general">General</string>
     <string name="current_device">Current device</string>
