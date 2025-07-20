@@ -108,6 +108,7 @@ fun TVEPGPage(
             )
         }
     }
+    val useSearchHighlighting by tvEPGViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val loadingState by tvEPGViewModel.loadingState.collectAsStateWithLifecycle()
     val searchInput by tvEPGViewModel.searchInput.collectAsStateWithLifecycle()
@@ -233,7 +234,8 @@ fun TVEPGPage(
                             list = filteredEPGEvents !!,
                             paddingValues = calculateSearchTopAppBarContentPaddingValues(),
                             showChannelName = true,
-                            highlightedWords = searchInput.split(" ").filter { it.isNotBlank() }
+                            highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
+                                .filter { it.isNotBlank() } else emptyList()
                         )
                     } else {
                         SearchHistory(

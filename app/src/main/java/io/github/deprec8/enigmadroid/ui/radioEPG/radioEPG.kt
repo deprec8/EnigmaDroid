@@ -95,6 +95,7 @@ fun RadioEPGPage(
     val active by radioEPGViewModel.active.collectAsStateWithLifecycle()
     val filteredEPGEvents by radioEPGViewModel.filteredEPGEvents.collectAsStateWithLifecycle()
     val searchHistory by radioEPGViewModel.searchHistory.collectAsStateWithLifecycle()
+    val useSearchHighlighting by radioEPGViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
     currentWindowAdaptiveInfo().windowSizeClass
     val pagerState = rememberPagerState(pageCount = { epgs.size })
     val selectedTabIndex = remember {
@@ -229,7 +230,8 @@ fun RadioEPGPage(
                             list = filteredEPGEvents !!,
                             paddingValues = calculateSearchTopAppBarContentPaddingValues(),
                             showChannelName = true,
-                            highlightedWords = searchInput.split(" ").filter { it.isNotBlank() }
+                            highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
+                                .filter { it.isNotBlank() } else emptyList()
                         )
                     } else {
                         SearchHistory(

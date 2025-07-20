@@ -122,6 +122,7 @@ fun MoviesPage(
     }
     val loadingState by moviesViewModel.loadingState.collectAsStateWithLifecycle()
     val searchInput by moviesViewModel.searchInput.collectAsStateWithLifecycle()
+    val useSearchHighlighting by moviesViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         moviesViewModel.updateLoadingState(false)
@@ -380,7 +381,8 @@ fun MoviesPage(
                         Content(
                             list = filteredMovies !!,
                             paddingValues = calculateSearchTopAppBarContentPaddingValues(),
-                            highlightedWords = searchInput.split(" ").filter { it.isNotBlank() }
+                            highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
+                                .filter { it.isNotBlank() } else emptyList()
                         )
                     } else {
                         SearchHistory(

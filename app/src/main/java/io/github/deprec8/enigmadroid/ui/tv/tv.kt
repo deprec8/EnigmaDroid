@@ -98,6 +98,7 @@ fun TvPage(
     val loadingState by tvViewModel.loadingState.collectAsStateWithLifecycle()
     val searchHistory by tvViewModel.searchHistory.collectAsStateWithLifecycle()
     val searchInput by tvViewModel.searchInput.collectAsStateWithLifecycle()
+    val useSearchHighlighting by tvViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { allTVEvents.size })
@@ -243,7 +244,8 @@ fun TvPage(
                             list = filteredTVEvents !!,
                             paddingValues = calculateSearchTopAppBarContentPaddingValues(),
                             showChannelNumbers = false,
-                            highlightedWords = searchInput.split(" ").filter { it.isNotBlank() }
+                            highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
+                                .filter { it.isNotBlank() } else emptyList()
                         )
                     } else {
                         SearchHistory(

@@ -97,6 +97,8 @@ fun RadioPage(
     val filteredRadioEvents by radioViewModel.filteredEvents.collectAsStateWithLifecycle()
     val allRadioEvents by radioViewModel.allEvents.collectAsStateWithLifecycle()
     val searchHistory by radioViewModel.searchHistory.collectAsStateWithLifecycle()
+    val useSearchHighlighting by radioViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
+
     currentWindowAdaptiveInfo().windowSizeClass
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { allRadioEvents.size })
@@ -246,7 +248,8 @@ fun RadioPage(
                             list = filteredRadioEvents !!,
                             paddingValues = calculateSearchTopAppBarContentPaddingValues(),
                             showChannelNumbers = false,
-                            highlightedWords = searchInput.split(" ").filter { it.isNotBlank() }
+                            highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
+                                .filter { it.isNotBlank() } else emptyList()
                         )
                     } else {
                         SearchHistory(

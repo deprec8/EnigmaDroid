@@ -108,6 +108,7 @@ fun TimersPage(
     val loadingState by timersViewModel.loadingState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val searchInput by timersViewModel.searchInput.collectAsStateWithLifecycle()
+    val useSearchHighlighting by timersViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         timersViewModel.updateLoadingState(false)
@@ -300,7 +301,8 @@ fun TimersPage(
                         Content(
                             list = filteredTimers !!,
                             paddingValues = calculateSearchTopAppBarContentPaddingValues(),
-                            highlightedWords = searchInput.split(" ").filter { it.isNotBlank() }
+                            highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
+                                .filter { it.isNotBlank() } else emptyList()
                         )
                     } else {
                         SearchHistory(
