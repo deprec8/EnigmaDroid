@@ -27,6 +27,12 @@ EnigmaDroid currently only supports external media players for streaming live co
 
 [**VLC**](https://www.videolan.org/vlc/download-android.html) is recommended, but other media players can also work.
 
+## Translation
+
+[![Crowdin](https://badges.crowdin.net/enigmadroid/localized.svg)](https://crowdin.com/project/enigmadroid)
+
+Translation is done on [**Crowdin**](https://crowdin.com/project/enigmadroid).
+
 ## Requirements
 
 - A set-top box running **Enigma2**
