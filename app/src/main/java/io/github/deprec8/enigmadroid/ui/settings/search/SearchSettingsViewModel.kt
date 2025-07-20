@@ -23,6 +23,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
+import io.github.deprec8.enigmadroid.data.SettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -30,7 +31,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchSettingsViewModel @Inject constructor(
-    private var searchHistoryRepository: SearchHistoryRepository
+    private var searchHistoryRepository: SearchHistoryRepository,
+    private var settingsRepository: SettingsRepository
 ) : ViewModel() {
 
     private val _tvSearchHistory = MutableStateFlow<List<String>>(emptyList())
@@ -53,6 +55,9 @@ class SearchSettingsViewModel @Inject constructor(
 
     private val _useSearchHistory = MutableStateFlow<Boolean?>(null)
     val useSearchHistories = _useSearchHistory.asStateFlow()
+
+    private val _useSearchHighlighting = MutableStateFlow<Boolean?>(null)
+    val useSearchHighlighting = _useSearchHighlighting.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -90,11 +95,22 @@ class SearchSettingsViewModel @Inject constructor(
                 _radioEPGSearchHistory.value = it
             }
         }
+        viewModelScope.launch {
+            settingsRepository.getUseSearchHighlighting().collect {
+                _useSearchHighlighting.value = it
+            }
+        }
     }
 
     fun setUseSearchHistory(value: Boolean) {
         viewModelScope.launch {
             searchHistoryRepository.setUseSearchHistory(value)
+        }
+    }
+
+    fun setUseSearchHighlighting(value: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.setUseSearchHighlighting(value)
         }
     }
 
