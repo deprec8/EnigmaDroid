@@ -10,6 +10,7 @@ on:
 jobs:
   synchronize-with-crowdin:
     runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || !startsWith(github.event.head_commit.message, '[Crowdin]')
 
     steps:
       - name: Checkout
