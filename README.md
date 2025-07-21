@@ -29,7 +29,7 @@ EnigmaDroid currently only supports external media players for streaming live co
 
 ## Translation
 
-[![Crowdin](https://badges.crowdin.net/enigmadroid/localized.svg)](https://crowdin.com/project/enigmadroid) [![Crowdin](https://github.com/deprec8/EnigmaDroid/actions/workflows/crowdin.yml/badge.svg)](https://github.com/deprec8/EnigmaDroid/actions/workflows/crowdin.yml)
+[![Crowdin](https://badges.crowdin.net/enigmadroid/localized.svg)](https://crowdin.com/project/enigmadroid) [![Crowdin Push](https://github.com/deprec8/EnigmaDroid/actions/workflows/crowdin-push.yml/badge.svg)](https://github.com/deprec8/EnigmaDroid/actions/workflows/crowdin-push.yml) [![Crowdin Pull](https://github.com/deprec8/EnigmaDroid/actions/workflows/crowdin-pull.yml/badge.svg)](https://github.com/deprec8/EnigmaDroid/actions/workflows/crowdin-pull.yml)
 
 Translation is done on [**Crowdin**](https://crowdin.com/project/enigmadroid).
 
