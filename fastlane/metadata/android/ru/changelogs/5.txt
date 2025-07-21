@@ -1,0 +1,6 @@
+- Search history
+- Highlight search term matches
+- New search settings page
+- Fixes related to search
+- Russian translation
+- Various fixes and updates

@@ -198,4 +198,7 @@
     <string name="manage_search_settings_and_histories">Sucheinstellungen und -verläufe verwalten.</string>
     <string name="use_search_histories">Suchverläufe nutzen</string>
     <string name="disabling_this_will_clear_all_search_histories">Wenn Sie dies deaktivieren, werden alle Suchverläufe gelöscht.</string>
+    <string name="highlight_matches">Treffer hervorheben</string>
+    <string name="highlight_matches_in_search_results">Treffer in Suchergebnissen hervorheben.</string>
+    <string name="translation">Übersetzung</string>
 </resources>
