@@ -1,4 +1,4 @@
-name: Crowdin
+name: Crowdin Pull
 run-name: Crowdin Pull - ${{ github.event_name == 'workflow_dispatch' && 'Manual' || 'Scheduled' }}
 
 on:
