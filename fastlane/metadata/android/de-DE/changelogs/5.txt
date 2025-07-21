@@ -1,5 +1,5 @@
 - Suchverlauf
-Übereinstimmende Suchbegriffe hervorheben
+- Übereinstimmende Suchbegriffe hervorheben
 - Neue Sucheinstellungsseite
 - Korrekturen im Zusammenhang mit der Suche
 - Russische Übersetzung
