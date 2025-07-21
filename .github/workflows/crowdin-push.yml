@@ -10,7 +10,7 @@ on:
 jobs:
   synchronize-with-crowdin:
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' || !startsWith(github.event.head_commit.message, '[Crowdin]')
+    if: github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, 'deprec8/l10n')
 
     steps:
       - name: Checkout

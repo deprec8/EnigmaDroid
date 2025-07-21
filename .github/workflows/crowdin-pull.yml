@@ -27,7 +27,6 @@ jobs:
           pull_request_base_branch_name: "main"
           pull_request_labels: "translation, ui, metadata"
           pull_request_assignees: deprec8
-          commit_message: "[Crowdin] New translations"
           
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
