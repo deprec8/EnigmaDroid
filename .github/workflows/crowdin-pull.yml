@@ -3,7 +3,7 @@ name: Crowdin
 on:
   workflow_dispatch:
   schedule:
-    - cron: "40 */8 * * *"
+    - cron: '0 0 * * 5'
     
 jobs:
   synchronize-with-crowdin:
@@ -13,10 +13,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: crowdin action
+      - name: Pull translations
         uses: crowdin/github-action@v2
         with:
-          upload_sources: true
+          upload_sources: false
           upload_translations: false
           download_translations: true
           localization_branch_name: l10n
