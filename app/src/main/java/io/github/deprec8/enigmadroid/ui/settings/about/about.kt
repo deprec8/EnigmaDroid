@@ -165,7 +165,7 @@ fun AboutPage(
 
             ListItem(
                 headlineContent = { Text(text = stringResource(R.string.translation)) },
-                supportingContent = { Text(text = stringResource(R.string.crowdin_com_project_enigmadroid)) },
+                supportingContent = { Text(text = stringResource(R.string.app_translation)) },
                 leadingContent = { Icon(Icons.Outlined.Translate, contentDescription = null) },
                 modifier = Modifier.clickable {
                     IntentUtils.openURL(
