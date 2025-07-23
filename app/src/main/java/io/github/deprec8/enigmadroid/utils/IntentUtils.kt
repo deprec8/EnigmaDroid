@@ -124,7 +124,7 @@ object IntentUtils {
         } else {
             Toast.makeText(
                 context,
-                context.getString(R.string.no_video_player_installed), Toast.LENGTH_SHORT
+                context.getString(R.string.no_media_player_found), Toast.LENGTH_SHORT
             ).show()
 
         }

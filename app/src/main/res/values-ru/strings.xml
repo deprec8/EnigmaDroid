@@ -157,7 +157,6 @@
     <string name="open_search">Открыть поиск</string>
     <string name="no_browser_found">Обозреватель не найден.</string>
     <string name="no_calender_found">Календарь не найден.</string>
-    <string name="no_video_player_installed">Видеоплеер не установлен.</string>
     <string name="download">Скачать</string>
     <string name="downloading">Скачивание %1$s</string>
     <string name="fetching_screenshot">Скачивание снимка</string>
