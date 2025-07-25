@@ -1,6 +1,6 @@
-- Search history
-- Highlight search term matches
-- New search settings page
-- Fixes related to search
-- Russian translation
-- Various fixes and updates
+- История поиска
+- Выделение совпадений по запросу
+- Новая страница настройки поиска
+- Исправления, связанные с поиском
+- Русский перевод
+- Различные исправления и обновления

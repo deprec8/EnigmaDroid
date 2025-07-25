@@ -157,6 +157,7 @@
     <string name="open_search">Suche öffnen</string>
     <string name="no_browser_found">Keinen Browser gefunden..</string>
     <string name="no_calender_found">Keinen Kalender gefunden.</string>
+    <string name="no_media_player_found">Kein Medienplayer gefunden.</string>
     <string name="download">Herunterladen</string>
     <string name="downloading">Herunterladen von %1$s</string>
     <string name="fetching_screenshot">Screenshot abrufen</string>
