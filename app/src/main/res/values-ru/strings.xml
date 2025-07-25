@@ -157,6 +157,7 @@
     <string name="open_search">Открыть поиск</string>
     <string name="no_browser_found">Обозреватель не найден.</string>
     <string name="no_calender_found">Календарь не найден.</string>
+    <string name="no_media_player_found">No media player found.</string>
     <string name="download">Скачать</string>
     <string name="downloading">Скачивание %1$s</string>
     <string name="fetching_screenshot">Скачивание снимка</string>
@@ -197,7 +198,7 @@
     <string name="manage_search_settings_and_histories">Управление настройками и историей поиска.</string>
     <string name="use_search_histories">Использовать историю поиска</string>
     <string name="disabling_this_will_clear_all_search_histories">Отключение этой функции очистит всю историю поиска.</string>
-    <string name="highlight_matches">Highlight matches</string>
-    <string name="highlight_matches_in_search_results">Highlight matches in search results.</string>
-    <string name="translation">Translation</string>
+    <string name="highlight_matches">Выделять совпадения</string>
+    <string name="highlight_matches_in_search_results">Выделять совпадения в результатах поиска.</string>
+    <string name="translation">Перевод</string>
 </resources>

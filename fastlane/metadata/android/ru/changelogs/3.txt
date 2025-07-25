@@ -1,2 +1,2 @@
-- Shortcuts for quick device changing
-- Various fixes and updates
+- Ярлыки для быстрого смены устройства
+- Различные исправления и обновления

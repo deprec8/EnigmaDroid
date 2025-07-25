@@ -1,5 +1,5 @@
-- New settings page to configure the app
-- Updated navigation system
-- Option to disable haptic feedback in remote control
-- Renamed remote to remote control
-- Various fixes and updates
+- Новая страница настроек приложения
+- Обновлена система навигации
+- Опция отключения виброотклика в дистанционном управлении
+- Дистанционный переименован в дистанционное управление
+- Различные исправления и обновления
