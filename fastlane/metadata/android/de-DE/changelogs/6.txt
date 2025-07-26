@@ -1,0 +1,2 @@
+- Crowdin-Übersetzungen synchronisieren
+- Verschiedene Korrekturen und Aktualisierungen
