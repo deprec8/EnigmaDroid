@@ -27,7 +27,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Link
+import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -103,7 +103,7 @@ fun LibrariesPage(
                         }
                     },
                     trailingContent = {
-                        Icon(Icons.Default.Link, contentDescription = null)
+                        Icon(Icons.Outlined.Link, contentDescription = null)
                     },
                     overlineContent = {
                         Text(

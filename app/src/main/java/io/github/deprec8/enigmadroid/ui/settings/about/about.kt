@@ -30,10 +30,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
-import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.outlined.Book
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.ReportProblem
 import androidx.compose.material.icons.outlined.Shield
@@ -113,7 +113,7 @@ fun AboutPage(
             ListItem(
                 headlineContent = { Text(text = stringResource(R.string.creator)) },
                 trailingContent = {
-                    Icon(Icons.Default.Link, contentDescription = null)
+                    Icon(Icons.Outlined.Link, contentDescription = null)
                 },
                 supportingContent = { Text(text = stringResource(R.string.app_developer)) },
                 leadingContent = { Icon(Icons.Outlined.Person, contentDescription = null) },
@@ -134,7 +134,7 @@ fun AboutPage(
             ListItem(
                 headlineContent = { Text(text = stringResource(R.string.source_code)) },
                 trailingContent = {
-                    Icon(Icons.Default.Link, contentDescription = null)
+                    Icon(Icons.Outlined.Link, contentDescription = null)
                 },
                 supportingContent = { Text(text = stringResource(R.string.app_source)) },
                 leadingContent = { Icon(Icons.Outlined.Code, contentDescription = null) },
@@ -145,7 +145,7 @@ fun AboutPage(
             ListItem(
                 headlineContent = { Text(text = stringResource(R.string.issue_tracker)) },
                 trailingContent = {
-                    Icon(Icons.Default.Link, contentDescription = null)
+                    Icon(Icons.Outlined.Link, contentDescription = null)
                 },
                 supportingContent = { Text(text = stringResource(R.string.app_issue)) },
                 leadingContent = { Icon(Icons.Outlined.ReportProblem, contentDescription = null) },
@@ -159,7 +159,7 @@ fun AboutPage(
             ListItem(
                 headlineContent = { Text(text = stringResource(R.string.translation)) },
                 trailingContent = {
-                    Icon(Icons.Default.Link, contentDescription = null)
+                    Icon(Icons.Outlined.Link, contentDescription = null)
                 },
                 supportingContent = { Text(text = stringResource(R.string.app_translation)) },
                 leadingContent = { Icon(Icons.Outlined.Translate, contentDescription = null) },
@@ -173,7 +173,7 @@ fun AboutPage(
             ListItem(
                 headlineContent = { Text(text = stringResource(R.string.license)) },
                 trailingContent = {
-                    Icon(Icons.Default.Link, contentDescription = null)
+                    Icon(Icons.Outlined.Link, contentDescription = null)
                 },
                 supportingContent = {
                     Text(text = stringResource(R.string.app_license))
