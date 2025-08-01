@@ -138,9 +138,9 @@ fun NavHost(
             composable<SettingsPages.About> {
                 AboutPage(
                     snackbarHostState,
-                    onNavigateBack = { navController.navigate(MainPages.Settings) },
+                    onNavigateBack = { navController.navigateUp() },
                     onNavigateToLibraries = {
-                        navController.navigateUp()
+                        navController.navigate(SettingsPages.Libraries)
                     }
                 )
             }
