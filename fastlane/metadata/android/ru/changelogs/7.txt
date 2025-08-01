@@ -1,0 +1,4 @@
+- Dedicated third party libraries page
+- Navigation indicators on list items
+- Sync Crowdin translations
+- Various fixes and updates
