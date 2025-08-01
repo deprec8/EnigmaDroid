@@ -41,6 +41,7 @@ import io.github.deprec8.enigmadroid.ui.radioEPG.RadioEPGPage
 import io.github.deprec8.enigmadroid.ui.remoteControl.RemoteControlPage
 import io.github.deprec8.enigmadroid.ui.settings.SettingsPage
 import io.github.deprec8.enigmadroid.ui.settings.about.AboutPage
+import io.github.deprec8.enigmadroid.ui.settings.about.LibrariesPage
 import io.github.deprec8.enigmadroid.ui.settings.devices.DevicesPage
 import io.github.deprec8.enigmadroid.ui.settings.remoteControl.RemoteControlSettingsPage
 import io.github.deprec8.enigmadroid.ui.settings.search.SearchSettingsPage
@@ -136,6 +137,15 @@ fun NavHost(
             }
             composable<SettingsPages.About> {
                 AboutPage(
+                    snackbarHostState,
+                    onNavigateBack = { navController.navigate(MainPages.Settings) },
+                    onNavigateToLibraries = {
+                        navController.navigateUp()
+                    }
+                )
+            }
+            composable<SettingsPages.Libraries> {
+                LibrariesPage(
                     snackbarHostState,
                     onNavigateBack = { navController.navigateUp() }
                 )

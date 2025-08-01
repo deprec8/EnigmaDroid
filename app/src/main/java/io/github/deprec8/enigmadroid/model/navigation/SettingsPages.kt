@@ -28,6 +28,9 @@ sealed class SettingsPages : Page {
     data object About : SettingsPages()
 
     @Serializable
+    data object Libraries : SettingsPages()
+
+    @Serializable
     data object Devices : SettingsPages()
 
     @Serializable

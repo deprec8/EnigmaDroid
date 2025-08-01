@@ -22,15 +22,9 @@ package io.github.deprec8.enigmadroid.ui.settings.about
 import android.content.pm.PackageManager
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -42,33 +36,22 @@ import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.ReportProblem
 import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material.icons.outlined.Translate
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import com.mikepenz.aboutlibraries.ui.compose.android.rememberLibraries
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
@@ -79,9 +62,9 @@ import io.github.deprec8.enigmadroid.utils.IntentUtils
 @Composable
 fun AboutPage(
     snackbarHostState: SnackbarHostState,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onNavigateToLibraries: () -> Unit
 ) {
-    var showLibsDialog by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
     val info = context.packageManager.getPackageInfo(
         context.packageName,
@@ -89,7 +72,6 @@ fun AboutPage(
     )
     val libraries = rememberLibraries(R.raw.aboutlibraries)
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scrollState = rememberScrollState()
 
     Scaffold(
@@ -196,55 +178,7 @@ fun AboutPage(
                     )
                 },
                 leadingContent = { Icon(Icons.Outlined.Book, contentDescription = null) },
-                modifier = Modifier.clickable { showLibsDialog = true })
-
-        }
-    }
-
-
-    if (showLibsDialog) {
-        ModalBottomSheet(
-            onDismissRequest = { showLibsDialog = false },
-            sheetState = sheetState,
-            modifier = Modifier.padding(WindowInsets.statusBars.asPaddingValues())
-        ) {
-            Text(
-                text = stringResource(R.string.third_party_libraries),
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(16.dp)
-            )
-            HorizontalDivider()
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(230.dp),
-            ) {
-                items(libraries.value?.libraries ?: emptyList()) { library ->
-                    ListItem(
-                        modifier = Modifier.clickable {
-                            if (library.website != null) {
-                                IntentUtils.openURL(context, library.website !!)
-                            }
-                        },
-                        colors = ListItemDefaults.colors(containerColor = BottomSheetDefaults.ContainerColor),
-                        trailingContent = {
-                            Text(
-                                text = if ((library.artifactVersion?.length ?: 0) > 15) {
-                                    (library.artifactVersion?.substring(0, 10) ?: "") + "…"
-                                } else {
-                                    library.artifactVersion ?: ""
-                                }
-                            )
-                        },
-                        overlineContent = { Text(text = library.licenses.first().name) },
-                        headlineContent = { Text(text = library.name) },
-                        supportingContent = {
-                            Text(
-                                text = library.developers.firstOrNull()?.name
-                                    ?: ""
-                            )
-                        }
-                    )
-                }
-            }
+                modifier = Modifier.clickable { onNavigateToLibraries() })
         }
     }
 }
