@@ -140,21 +140,21 @@ fun NavHost(
                     snackbarHostState,
                     onNavigateBack = { navController.navigate(MainPages.Settings) },
                     onNavigateToLibraries = {
-                        navController.navigate(SettingsPages.Libraries)
+                        navController.navigateUp()
                     }
                 )
             }
             composable<SettingsPages.Libraries> {
                 LibrariesPage(
                     snackbarHostState,
-                    onNavigateBack = { navController.navigate(SettingsPages.About) }
+                    onNavigateBack = { navController.navigateUp() }
                 )
             }
             composable<SettingsPages.Devices> {
                 DevicesPage(
                     snackbarHostState,
                     onNavigateBack = {
-                        navController.navigate(MainPages.Settings)
+                        navController.navigateUp()
                     }
                 )
             }
@@ -162,7 +162,7 @@ fun NavHost(
                 RemoteControlSettingsPage(
                     snackbarHostState,
                     onNavigateBack = {
-                        navController.navigate(MainPages.Settings)
+                        navController.navigateUp()
                     }
                 )
             }
@@ -170,7 +170,7 @@ fun NavHost(
                 SearchSettingsPage(
                     snackbarHostState,
                     onNavigateBack = {
-                        navController.navigate(MainPages.Settings)
+                        navController.navigateUp()
                     }
                 )
             }
