@@ -27,6 +27,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -102,15 +103,19 @@ fun LibrariesPage(
                         }
                     },
                     trailingContent = {
+                        Icon(Icons.Outlined.Link, contentDescription = null)
+                    },
+                    overlineContent = {
                         Text(
-                            text = if ((library.artifactVersion?.length ?: 0) > 15) {
+                            text = library.licenses.first().name + " - " + if ((library.artifactVersion?.length
+                                    ?: 0) > 15
+                            ) {
                                 (library.artifactVersion?.substring(0, 10) ?: "") + "…"
                             } else {
                                 library.artifactVersion ?: ""
                             }
                         )
                     },
-                    overlineContent = { Text(text = library.licenses.first().name) },
                     headlineContent = { Text(text = library.name) },
                     supportingContent = {
                         Text(
