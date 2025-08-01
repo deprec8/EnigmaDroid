@@ -41,6 +41,7 @@ import io.github.deprec8.enigmadroid.ui.radioEPG.RadioEPGPage
 import io.github.deprec8.enigmadroid.ui.remoteControl.RemoteControlPage
 import io.github.deprec8.enigmadroid.ui.settings.SettingsPage
 import io.github.deprec8.enigmadroid.ui.settings.about.AboutPage
+import io.github.deprec8.enigmadroid.ui.settings.about.LibrariesPage
 import io.github.deprec8.enigmadroid.ui.settings.devices.DevicesPage
 import io.github.deprec8.enigmadroid.ui.settings.remoteControl.RemoteControlSettingsPage
 import io.github.deprec8.enigmadroid.ui.settings.search.SearchSettingsPage
@@ -137,14 +138,23 @@ fun NavHost(
             composable<SettingsPages.About> {
                 AboutPage(
                     snackbarHostState,
-                    onNavigateBack = { navController.navigateUp() }
+                    onNavigateBack = { navController.navigate(MainPages.Settings) },
+                    onNavigateToLibraries = {
+                        navController.navigate(SettingsPages.Libraries)
+                    }
+                )
+            }
+            composable<SettingsPages.Libraries> {
+                LibrariesPage(
+                    snackbarHostState,
+                    onNavigateBack = { navController.navigate(SettingsPages.About) }
                 )
             }
             composable<SettingsPages.Devices> {
                 DevicesPage(
                     snackbarHostState,
                     onNavigateBack = {
-                        navController.navigateUp()
+                        navController.navigate(MainPages.Settings)
                     }
                 )
             }
@@ -152,7 +162,7 @@ fun NavHost(
                 RemoteControlSettingsPage(
                     snackbarHostState,
                     onNavigateBack = {
-                        navController.navigateUp()
+                        navController.navigate(MainPages.Settings)
                     }
                 )
             }
@@ -160,7 +170,7 @@ fun NavHost(
                 SearchSettingsPage(
                     snackbarHostState,
                     onNavigateBack = {
-                        navController.navigateUp()
+                        navController.navigate(MainPages.Settings)
                     }
                 )
             }
