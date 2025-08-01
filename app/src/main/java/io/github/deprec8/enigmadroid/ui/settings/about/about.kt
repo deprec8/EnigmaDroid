@@ -29,6 +29,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowRight
+import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.outlined.Book
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Info
@@ -110,6 +112,9 @@ fun AboutPage(
         ) {
             ListItem(
                 headlineContent = { Text(text = stringResource(R.string.creator)) },
+                trailingContent = {
+                    Icon(Icons.Default.Link, contentDescription = null)
+                },
                 supportingContent = { Text(text = stringResource(R.string.app_developer)) },
                 leadingContent = { Icon(Icons.Outlined.Person, contentDescription = null) },
                 modifier = Modifier.clickable {
@@ -128,6 +133,9 @@ fun AboutPage(
 
             ListItem(
                 headlineContent = { Text(text = stringResource(R.string.source_code)) },
+                trailingContent = {
+                    Icon(Icons.Default.Link, contentDescription = null)
+                },
                 supportingContent = { Text(text = stringResource(R.string.app_source)) },
                 leadingContent = { Icon(Icons.Outlined.Code, contentDescription = null) },
                 modifier = Modifier.clickable {
@@ -136,6 +144,9 @@ fun AboutPage(
 
             ListItem(
                 headlineContent = { Text(text = stringResource(R.string.issue_tracker)) },
+                trailingContent = {
+                    Icon(Icons.Default.Link, contentDescription = null)
+                },
                 supportingContent = { Text(text = stringResource(R.string.app_issue)) },
                 leadingContent = { Icon(Icons.Outlined.ReportProblem, contentDescription = null) },
                 modifier = Modifier.clickable {
@@ -147,6 +158,9 @@ fun AboutPage(
 
             ListItem(
                 headlineContent = { Text(text = stringResource(R.string.translation)) },
+                trailingContent = {
+                    Icon(Icons.Default.Link, contentDescription = null)
+                },
                 supportingContent = { Text(text = stringResource(R.string.app_translation)) },
                 leadingContent = { Icon(Icons.Outlined.Translate, contentDescription = null) },
                 modifier = Modifier.clickable {
@@ -158,6 +172,9 @@ fun AboutPage(
 
             ListItem(
                 headlineContent = { Text(text = stringResource(R.string.license)) },
+                trailingContent = {
+                    Icon(Icons.Default.Link, contentDescription = null)
+                },
                 supportingContent = {
                     Text(text = stringResource(R.string.app_license))
                 },
@@ -166,9 +183,11 @@ fun AboutPage(
                     IntentUtils.openURL(context, context.getString(R.string.app_license_url))
                 })
 
-
             ListItem(
                 headlineContent = { Text(text = stringResource(R.string.third_party_libraries)) },
+                trailingContent = {
+                    Icon(Icons.AutoMirrored.Filled.ArrowRight, contentDescription = null)
+                },
                 supportingContent = {
                     Text(
                         text = stringResource(
