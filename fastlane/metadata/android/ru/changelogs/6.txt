@@ -1,2 +1,2 @@
-- Sync Crowdin translations
-- Various fixes and updates
+- Синхронизация переводов Crowdin
+- Различные исправления и обновления
