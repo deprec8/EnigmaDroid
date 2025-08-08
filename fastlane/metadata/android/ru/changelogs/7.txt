@@ -1,4 +1,4 @@
-- Dedicated third party libraries page
-- Navigation indicators on list items
-- Sync Crowdin translations
-- Various fixes and updates
+- Специальная страница сторонних библиотек
+- Навигационные индикаторы по элементам списка
+- Синхронизация переводов Crowdin
+- Различные исправления и обновления
