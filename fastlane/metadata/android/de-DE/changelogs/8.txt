@@ -1,0 +1,2 @@
+- Beheben von F-Droid Build-Problemen
+- Crowdin-Übersetzungen synchronisieren
