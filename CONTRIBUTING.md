@@ -30,7 +30,7 @@ If you're ready to contribute code, please follow this workflow:
 
 6. **Commit your changes** with a clear and concise message.
 
-7. [**Open a Pull Request**](https://github.com/deprec8/EnigmaDroid/pulls) to the `main` branch of the `deprec8/EnigmaDroid` repository. Please provide a clear description of your changes in the PR.
+7. **Open a Pull Request** to the `main` branch of the `deprec8/EnigmaDroid` repository. Please provide a clear description of your changes in the PR.
 
 ## Translation
 
