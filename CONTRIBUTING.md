@@ -1,4 +1,4 @@
-# Contributing
+# Contributing to EnigmaDroid
 
 We are thrilled that you're interested in contributing to EnigmaDroid! This document outlines our guidelines for contributing, so please take a moment to review them. Your contributions are what make this project better for everyone.
 
