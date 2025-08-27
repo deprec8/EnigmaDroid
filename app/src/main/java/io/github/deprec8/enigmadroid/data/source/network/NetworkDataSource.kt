@@ -36,6 +36,7 @@ import io.ktor.client.request.header
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpHeaders
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -65,22 +66,22 @@ class NetworkDataSource @Inject constructor(
 
     private suspend fun updateLoadingState() {
         val currentLoadingState = dataStore.data.map { preferences ->
-            preferences[loadingStateKey]
-        }.firstOrNull()
+            LoadingState.entries[preferences[loadingStateKey] ?: 3]
+        }.first()
 
         if (currentLoadingState != LoadingState.LOADING) {
             dataStore.edit { preferences ->
-                preferences[loadingStateKey] = LoadingState.LOADING
+                preferences[loadingStateKey] = LoadingState.LOADING.ordinal
             }
         }
 
         if (devicesDatabase.deviceDao().getAll().firstOrNull().isNullOrEmpty().not()) {
             dataStore.edit { preferences ->
-                preferences[loadingStateKey] = LoadingState.DEVICE_NOT_ONLINE
+                preferences[loadingStateKey] = LoadingState.DEVICE_NOT_ONLINE.ordinal
             }
         } else {
             dataStore.edit { preferences ->
-                preferences[loadingStateKey] = LoadingState.NO_DEVICE_AVAILABLE
+                preferences[loadingStateKey] = LoadingState.NO_DEVICE_AVAILABLE.ordinal
             }
         }
     }

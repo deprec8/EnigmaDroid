@@ -19,10 +19,6 @@
 
 package io.github.deprec8.enigmadroid.data.objects
 
-data object LoadingState {
-
-    const val LOADING = 3
-    const val NO_DEVICE_AVAILABLE = 2
-    const val DEVICE_NOT_ONLINE = 1
-    const val LOADED = 0
+enum class LoadingState {
+    LOADING, NO_DEVICE_AVAILABLE, DEVICE_NOT_ONLINE, LOADED,
 }

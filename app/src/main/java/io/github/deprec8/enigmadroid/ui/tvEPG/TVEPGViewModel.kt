@@ -30,6 +30,7 @@ import io.github.deprec8.enigmadroid.data.LoadingRepository
 import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.data.SettingsRepository
 import io.github.deprec8.enigmadroid.data.objects.ApiType
+import io.github.deprec8.enigmadroid.data.objects.LoadingState
 import io.github.deprec8.enigmadroid.model.EPGEvent
 import io.github.deprec8.enigmadroid.model.EPGEventList
 import io.github.deprec8.enigmadroid.utils.FilterUtils
@@ -62,8 +63,8 @@ class TVEPGViewModel @Inject constructor(
     private val _filteredEPGEvents = MutableStateFlow<List<EPGEvent>?>(null)
     val filteredEPGEvents: StateFlow<List<EPGEvent>?> = _filteredEPGEvents.asStateFlow()
 
-    private val _loadingState = MutableStateFlow<Int?>(null)
-    val loadingState: StateFlow<Int?> = _loadingState.asStateFlow()
+    private val _loadingState = MutableStateFlow(LoadingState.LOADING)
+    val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
 
     private val _searchHistory = MutableStateFlow<List<String>>(emptyList())
     val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()

@@ -52,15 +52,15 @@ class DevicesRepository @Inject constructor(
     suspend fun setCurrentDeviceId(listId: Int) {
         dataStore.edit { preferences ->
             preferences[currentDeviceKey] = listId
-            preferences[loadingStateKey] = LoadingState.LOADING
+            preferences[loadingStateKey] = LoadingState.LOADING.ordinal
         }
         if (networkDataSource.isDeviceOnline()) {
             dataStore.edit { preferences ->
-                preferences[loadingStateKey] = LoadingState.LOADED
+                preferences[loadingStateKey] = LoadingState.LOADED.ordinal
             }
         } else {
             dataStore.edit { preferences ->
-                preferences[loadingStateKey] = LoadingState.DEVICE_NOT_ONLINE
+                preferences[loadingStateKey] = LoadingState.DEVICE_NOT_ONLINE.ordinal
             }
         }
     }
@@ -83,7 +83,7 @@ class DevicesRepository @Inject constructor(
         devicesDatabase.deviceDao().delete(deviceId)
         if (devicesDatabase.deviceDao().getAll().firstOrNull().isNullOrEmpty()) {
             dataStore.edit { preferences ->
-                preferences[loadingStateKey] = LoadingState.NO_DEVICE_AVAILABLE
+                preferences[loadingStateKey] = LoadingState.NO_DEVICE_AVAILABLE.ordinal
             }
         }
     }
@@ -92,11 +92,11 @@ class DevicesRepository @Inject constructor(
         devicesDatabase.deviceDao().update(newDevice.copy(id = oldDevice.id))
         if (networkDataSource.isDeviceOnline()) {
             dataStore.edit { preferences ->
-                preferences[loadingStateKey] = LoadingState.LOADED
+                preferences[loadingStateKey] = LoadingState.LOADED.ordinal
             }
         } else {
             dataStore.edit { preferences ->
-                preferences[loadingStateKey] = LoadingState.DEVICE_NOT_ONLINE
+                preferences[loadingStateKey] = LoadingState.DEVICE_NOT_ONLINE.ordinal
             }
         }
     }
@@ -106,11 +106,11 @@ class DevicesRepository @Inject constructor(
         if (devicesDatabase.deviceDao().getAll().firstOrNull() !!.size == 1) {
             if (networkDataSource.isDeviceOnline()) {
                 dataStore.edit { preferences ->
-                    preferences[loadingStateKey] = LoadingState.LOADED
+                    preferences[loadingStateKey] = LoadingState.LOADED.ordinal
                 }
             } else {
                 dataStore.edit { preferences ->
-                    preferences[loadingStateKey] = LoadingState.DEVICE_NOT_ONLINE
+                    preferences[loadingStateKey] = LoadingState.DEVICE_NOT_ONLINE.ordinal
                 }
             }
         }
