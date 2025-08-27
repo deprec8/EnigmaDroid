@@ -19,38 +19,47 @@
 
 package io.github.deprec8.enigmadroid.data.objects
 
-data object RemoteControlButtons {
-
-    const val PREVIOUS_CHANNEL = 403
-    const val NEXT_CHANNEL = 402
-    const val VOLUME_UP = 115
-    const val VOLUME_DOWN = 114
-    const val VOLUME_MUTE = 113
-    const val NEXT_BOUQUET = 407
-    const val PREVIOUS_BOUQUET = 412
-    const val EXIT = 174
-    const val INFO = 358
-    const val MENU = 139
-    const val HELP = 138
-    const val PVR = 393
-    const val AUDIO = 392
-    const val ARROW_UP = 103
-    const val ARROW_DOWN = 108
-    const val ARROW_LEFT = 105
-    const val ARROW_RIGHT = 106
-    const val OK = 352
-    const val COLOR_RED = 398
-    const val COLOR_GREEN = 399
-    const val COLOR_YELLOW = 400
-    const val COLOR_BLUE = 401
-    const val REWIND = 165
-    const val PLAY = 207
-    const val PAUSE = 119
-    const val STOP = 128
-    const val FORWARD = 163
-    const val TV = 377
-    const val RADIO = 385
-    const val TEXT = 388
-    const val RECORD = 167
-    const val EPG = 358
+enum class RemoteControlButtons(val value: Int) {
+    PREVIOUS_CHANNEL(403),
+    NEXT_CHANNEL(402),
+    VOLUME_UP(115),
+    VOLUME_DOWN(114),
+    VOLUME_MUTE(113),
+    NEXT_BOUQUET(407),
+    PREVIOUS_BOUQUET(412),
+    EXIT(174),
+    INFO(358),
+    MENU(139),
+    HELP(138),
+    PVR(393),
+    AUDIO(392),
+    ARROW_UP(103),
+    ARROW_DOWN(108),
+    ARROW_LEFT(105),
+    ARROW_RIGHT(106),
+    OK(352),
+    COLOR_RED(398),
+    COLOR_GREEN(399),
+    COLOR_YELLOW(400),
+    COLOR_BLUE(401),
+    REWIND(165),
+    PLAY(207),
+    PAUSE(119),
+    STOP(128),
+    FORWARD(163),
+    TV(377),
+    RADIO(385),
+    TEXT(388),
+    RECORD(167),
+    EPG(358),
+    ONE(2),
+    TWO(3),
+    THREE(4),
+    FOUR(5),
+    FIVE(6),
+    SIX(7),
+    SEVEN(8),
+    EIGHT(9),
+    NINE(10),
+    ZERO(11)
 }

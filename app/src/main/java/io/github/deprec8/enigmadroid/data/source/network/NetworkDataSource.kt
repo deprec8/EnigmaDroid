@@ -25,6 +25,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import io.github.deprec8.enigmadroid.data.objects.LoadingState
 import io.github.deprec8.enigmadroid.data.objects.PreferencesKeys
+import io.github.deprec8.enigmadroid.data.objects.RemoteControlButtons
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.data.source.local.devices.DevicesDatabase
 import io.ktor.client.HttpClient
@@ -129,26 +130,27 @@ class NetworkDataSource @Inject constructor(
         }
     } ?: ""
 
-    private suspend fun buildRemoteUrl(command: Int): String = withContext(Dispatchers.Default) {
-        getCurrentDevice()?.let { device ->
-            buildString {
-                append(if (device.isHttps) "https://" else "http://")
+    private suspend fun buildRemoteUrl(button: RemoteControlButtons): String =
+        withContext(Dispatchers.Default) {
+            getCurrentDevice()?.let { device ->
+                buildString {
+                    append(if (device.isHttps) "https://" else "http://")
 
-                if (device.isLogin) {
-                    append("${device.user}:${device.password}@")
+                    if (device.isLogin) {
+                        append("${device.user}:${device.password}@")
+                    }
+                    append("${device.ip}:${device.port}/web/remotecontrol?command=${button.value}")
                 }
-                append("${device.ip}:${device.port}/web/remotecontrol?command=$command")
-            }
-        } ?: ""
-    }
+            } ?: ""
+        }
 
     suspend fun isDeviceOnline(): Boolean = safeApiCall {
         checkClient.get(buildUrl("currenttime"))
         true
     } == true
 
-    suspend fun remoteControlCall(command: Int) = safeApiCall {
-        client.get(buildRemoteUrl(command = command))
+    suspend fun remoteControlCall(button: RemoteControlButtons) = safeApiCall {
+        client.get(buildRemoteUrl(button))
     }
 
     suspend fun call(urlEnd: String) = safeApiCall {

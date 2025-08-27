@@ -27,6 +27,7 @@ import io.github.deprec8.enigmadroid.data.DevicesRepository
 import io.github.deprec8.enigmadroid.data.DownloadRepository
 import io.github.deprec8.enigmadroid.data.LoadingRepository
 import io.github.deprec8.enigmadroid.data.SettingsRepository
+import io.github.deprec8.enigmadroid.data.objects.LoadingState
 import io.github.deprec8.enigmadroid.data.objects.RemoteControlButtons
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,8 +46,8 @@ class RemoteControlViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
-    private val _loadingState = MutableStateFlow<Int?>(null)
-    val loadingState: StateFlow<Int?> = _loadingState.asStateFlow()
+    private val _loadingState = MutableStateFlow(LoadingState.LOADING)
+    val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
 
     private val _currentDevice = MutableStateFlow<Device?>(null)
     val currentDevice: StateFlow<Device?> = _currentDevice.asStateFlow()
@@ -62,7 +63,7 @@ class RemoteControlViewModel @Inject constructor(
         }
         viewModelScope.launch {
             loadingRepository.getLoadingState().collectLatest { state ->
-                _loadingState.value = state ?: 3
+                _loadingState.value = state
             }
         }
         viewModelScope.launch {
@@ -72,9 +73,9 @@ class RemoteControlViewModel @Inject constructor(
         }
     }
 
-    private fun remoteCall(command: Int) {
+    private fun remoteCall(button: RemoteControlButtons) {
         viewModelScope.launch {
-            apiRepository.remoteControlCall(command)
+            apiRepository.remoteControlCall(button)
         }
     }
 
@@ -197,12 +198,8 @@ class RemoteControlViewModel @Inject constructor(
     }
 
     // Number pad
-    fun number(number: Int) {
-        if (number == 0) {
-            remoteCall(11)
-        } else {
-            remoteCall(number + 1)
-        }
+    fun number(button: RemoteControlButtons) {
+        remoteCall(button)
     }
 
     // Colors

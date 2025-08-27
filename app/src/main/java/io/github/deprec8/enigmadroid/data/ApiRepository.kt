@@ -27,6 +27,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.objects.ApiType
 import io.github.deprec8.enigmadroid.data.objects.PreferencesKeys
+import io.github.deprec8.enigmadroid.data.objects.RemoteControlButtons
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.data.source.local.devices.DevicesDatabase
 import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
@@ -327,8 +328,8 @@ class ApiRepository @Inject constructor(
         }
     }
 
-    suspend fun remoteControlCall(command: Int) {
-        networkDataSource.remoteControlCall(command)
+    suspend fun remoteControlCall(button: RemoteControlButtons) {
+        networkDataSource.remoteControlCall(button)
     }
 
     suspend fun setPowerState(command: Int) {
