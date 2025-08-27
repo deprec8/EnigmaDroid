@@ -19,8 +19,6 @@
 
 package io.github.deprec8.enigmadroid.data.objects
 
-object ApiType {
-
-    const val RADIO = "radio"
-    const val TV = "tv"
+enum class ApiType {
+    RADIO, TV
 }

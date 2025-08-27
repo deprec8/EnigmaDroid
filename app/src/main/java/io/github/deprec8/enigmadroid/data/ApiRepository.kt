@@ -132,11 +132,11 @@ class ApiRepository @Inject constructor(
         }
     }
 
-    fun fetchEPG(type: String): Flow<EPGEventList> = flow {
+    fun fetchEPG(type: ApiType): Flow<EPGEventList> = flow {
         try {
             json.decodeFromString(
                 ServiceList.serializer(),
-                networkDataSource.fetchJson("getallservices${if (type == "tv") "" else "?type=radio"}")
+                networkDataSource.fetchJson("getallservices${if (type == ApiType.TV) "" else "?type=radio"}")
             ).services[0].subservices.forEach { service ->
                 val epgEventList = json.decodeFromString(
                     EPGEventList.serializer(),
@@ -221,7 +221,7 @@ class ApiRepository @Inject constructor(
         }
     }
 
-    fun fetchEvents(type: String): Flow<EventList> =
+    fun fetchEvents(type: ApiType): Flow<EventList> =
         flow {
             try {
                 val bouquets = mutableListOf<List<String>>()
