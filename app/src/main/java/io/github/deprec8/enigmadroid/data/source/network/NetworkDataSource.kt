@@ -23,9 +23,9 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
-import io.github.deprec8.enigmadroid.data.objects.LoadingState
+import io.github.deprec8.enigmadroid.data.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtons
 import io.github.deprec8.enigmadroid.data.objects.PreferencesKeys
-import io.github.deprec8.enigmadroid.data.objects.RemoteControlButtons
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.data.source.local.devices.DevicesDatabase
 import io.ktor.client.HttpClient
@@ -72,17 +72,17 @@ class NetworkDataSource @Inject constructor(
 
         if (currentLoadingState != LoadingState.LOADING) {
             dataStore.edit { preferences ->
-                preferences[loadingStateKey] = LoadingState.LOADING.ordinal
+                preferences[loadingStateKey] = LoadingState.LOADING.id
             }
         }
 
         if (devicesDatabase.deviceDao().getAll().firstOrNull().isNullOrEmpty().not()) {
             dataStore.edit { preferences ->
-                preferences[loadingStateKey] = LoadingState.DEVICE_NOT_ONLINE.ordinal
+                preferences[loadingStateKey] = LoadingState.DEVICE_NOT_ONLINE.id
             }
         } else {
             dataStore.edit { preferences ->
-                preferences[loadingStateKey] = LoadingState.NO_DEVICE_AVAILABLE.ordinal
+                preferences[loadingStateKey] = LoadingState.NO_DEVICE_AVAILABLE.id
             }
         }
     }

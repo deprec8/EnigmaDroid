@@ -32,7 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import io.github.deprec8.enigmadroid.data.objects.RemoteControlButtons
+import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtons
 import io.github.deprec8.enigmadroid.model.RemoteControlButton
 import io.github.deprec8.enigmadroid.ui.remoteControl.RemoteControlViewModel
 

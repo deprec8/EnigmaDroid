@@ -27,8 +27,8 @@ import io.github.deprec8.enigmadroid.data.DevicesRepository
 import io.github.deprec8.enigmadroid.data.DownloadRepository
 import io.github.deprec8.enigmadroid.data.LoadingRepository
 import io.github.deprec8.enigmadroid.data.SettingsRepository
-import io.github.deprec8.enigmadroid.data.objects.LoadingState
-import io.github.deprec8.enigmadroid.data.objects.RemoteControlButtons
+import io.github.deprec8.enigmadroid.data.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtons
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -30,7 +30,7 @@ import io.github.deprec8.enigmadroid.data.DownloadRepository
 import io.github.deprec8.enigmadroid.data.LoadingRepository
 import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.data.SettingsRepository
-import io.github.deprec8.enigmadroid.data.objects.LoadingState
+import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.model.Movie
 import io.github.deprec8.enigmadroid.model.MovieList
 import io.github.deprec8.enigmadroid.utils.FilterUtils
