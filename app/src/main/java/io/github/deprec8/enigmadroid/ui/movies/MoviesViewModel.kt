@@ -30,6 +30,7 @@ import io.github.deprec8.enigmadroid.data.DownloadRepository
 import io.github.deprec8.enigmadroid.data.LoadingRepository
 import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.data.SettingsRepository
+import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.model.Movie
 import io.github.deprec8.enigmadroid.model.MovieList
 import io.github.deprec8.enigmadroid.utils.FilterUtils
@@ -63,8 +64,8 @@ class MoviesViewModel @Inject constructor(
     private val _movies = MutableStateFlow<List<MovieList>>(emptyList())
     val movies: StateFlow<List<MovieList>> = _movies.asStateFlow()
 
-    private val _loadingState = MutableStateFlow<Int?>(null)
-    val loadingState: StateFlow<Int?> = _loadingState.asStateFlow()
+    private val _loadingState = MutableStateFlow(LoadingState.LOADING)
+    val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
 
     private val _searchHistory = MutableStateFlow<List<String>>(emptyList())
     val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()

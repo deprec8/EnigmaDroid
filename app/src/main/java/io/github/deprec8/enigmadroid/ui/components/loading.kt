@@ -44,12 +44,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
+import io.github.deprec8.enigmadroid.data.enums.LoadingState
 
 @Composable
 fun LoadingScreen(
     modifier: Modifier,
     updateLoadingState: (forceUpdate: Boolean) -> Unit,
-    loadingState: Int?,
+    loadingState: LoadingState,
 ) {
     val scrollState = rememberScrollState()
 
@@ -74,7 +75,7 @@ fun LoadingScreen(
                 }, label = ""
         ) {
             when (it) {
-                0       -> {
+                LoadingState.LOADED              -> {
                     Column {
                         CircularProgressIndicator(
                             modifier = Modifier
@@ -84,7 +85,7 @@ fun LoadingScreen(
                         )
                     }
                 }
-                1       -> {
+                LoadingState.DEVICE_NOT_ONLINE   -> {
                     Column {
                         Text(
                             text = stringResource(R.string.device_not_connected),
@@ -103,7 +104,7 @@ fun LoadingScreen(
                         }
                     }
                 }
-                2       -> {
+                LoadingState.NO_DEVICE_AVAILABLE -> {
                     Column {
                         Text(
                             text = stringResource(R.string.no_device_available),
@@ -122,7 +123,7 @@ fun LoadingScreen(
                         }
                     }
                 }
-                null, 3 -> {
+                LoadingState.LOADING             -> {
                     Column {
                         CircularProgressIndicator(
                             modifier = Modifier

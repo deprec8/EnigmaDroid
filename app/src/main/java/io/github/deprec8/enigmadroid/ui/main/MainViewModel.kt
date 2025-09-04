@@ -26,6 +26,7 @@ import io.github.deprec8.enigmadroid.data.ApiRepository
 import io.github.deprec8.enigmadroid.data.DevicesRepository
 import io.github.deprec8.enigmadroid.data.LoadingRepository
 import io.github.deprec8.enigmadroid.data.OnboardingRepository
+import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -48,8 +49,8 @@ class MainViewModel @Inject constructor(
     private val _currentDevice = MutableStateFlow<Device?>(null)
     val currentDevice: StateFlow<Device?> = _currentDevice.asStateFlow()
 
-    private val _loadingState = MutableStateFlow<Int?>(null)
-    val loadingState: StateFlow<Int?> = _loadingState.asStateFlow()
+    private val _loadingState = MutableStateFlow(LoadingState.LOADING)
+    val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -64,7 +65,7 @@ class MainViewModel @Inject constructor(
         }
         viewModelScope.launch {
             loadingRepository.getLoadingState().collectLatest { state ->
-                _loadingState.value = state ?: 3
+                _loadingState.value = state
             }
         }
     }

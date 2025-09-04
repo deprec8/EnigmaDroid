@@ -32,55 +32,60 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtons
 import io.github.deprec8.enigmadroid.model.RemoteControlButton
 import io.github.deprec8.enigmadroid.ui.remoteControl.RemoteControlViewModel
 
 @Composable
-fun NumberButtons(remoteControlViewModel: RemoteControlViewModel, enabled: Boolean, performHaptic: () -> Unit) {
+fun NumberButtons(
+    remoteControlViewModel: RemoteControlViewModel,
+    enabled: Boolean,
+    performHaptic: () -> Unit
+) {
 
     val numberButtons = listOf(
         listOf(
             RemoteControlButton(
                 text = "1",
-                onClick = { remoteControlViewModel.number(1) }
+                onClick = { remoteControlViewModel.number(RemoteControlButtons.ONE) }
             ),
             RemoteControlButton(
                 text = "4 ghi",
-                onClick = { remoteControlViewModel.number(4) }
+                onClick = { remoteControlViewModel.number(RemoteControlButtons.FOUR) }
             ),
             RemoteControlButton(
                 text = "7 pqrs",
-                onClick = { remoteControlViewModel.number(7) }
+                onClick = { remoteControlViewModel.number(RemoteControlButtons.SEVEN) }
             ),
         ), listOf(
             RemoteControlButton(
                 text = "2 abc",
-                onClick = { remoteControlViewModel.number(2) }
+                onClick = { remoteControlViewModel.number(RemoteControlButtons.TWO) }
             ),
             RemoteControlButton(
                 text = "5 jkl",
-                onClick = { remoteControlViewModel.number(5) }
+                onClick = { remoteControlViewModel.number(RemoteControlButtons.FIVE) }
             ),
             RemoteControlButton(
                 text = "8 tuv",
-                onClick = { remoteControlViewModel.number(8) }
+                onClick = { remoteControlViewModel.number(RemoteControlButtons.EIGHT) }
             ),
             RemoteControlButton(
                 text = "0",
-                onClick = { remoteControlViewModel.number(0) }
+                onClick = { remoteControlViewModel.number(RemoteControlButtons.ZERO) }
             ),
         ), listOf(
             RemoteControlButton(
                 text = "3 def",
-                onClick = { remoteControlViewModel.number(3) }
+                onClick = { remoteControlViewModel.number(RemoteControlButtons.THREE) }
             ),
             RemoteControlButton(
                 text = "6 mno",
-                onClick = { remoteControlViewModel.number(6) }
+                onClick = { remoteControlViewModel.number(RemoteControlButtons.SIX) }
             ),
             RemoteControlButton(
                 text = "9 wxyz",
-                onClick = { remoteControlViewModel.number(9) }
+                onClick = { remoteControlViewModel.number(RemoteControlButtons.NINE) }
             ),
         )
     )

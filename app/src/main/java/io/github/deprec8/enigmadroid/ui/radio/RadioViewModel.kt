@@ -29,7 +29,8 @@ import io.github.deprec8.enigmadroid.data.ApiRepository
 import io.github.deprec8.enigmadroid.data.LoadingRepository
 import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.data.SettingsRepository
-import io.github.deprec8.enigmadroid.data.objects.ApiType
+import io.github.deprec8.enigmadroid.data.enums.ApiType
+import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.model.Event
 import io.github.deprec8.enigmadroid.model.EventList
 import io.github.deprec8.enigmadroid.utils.FilterUtils
@@ -62,8 +63,8 @@ class RadioViewModel @Inject constructor(
     private val _allEvents = MutableStateFlow<List<EventList>>(emptyList())
     val allEvents: StateFlow<List<EventList>> = _allEvents.asStateFlow()
 
-    private val _loadingState = MutableStateFlow<Int?>(null)
-    val loadingState: StateFlow<Int?> = _loadingState.asStateFlow()
+    private val _loadingState = MutableStateFlow(LoadingState.LOADING)
+    val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
 
     private val _searchHistory = MutableStateFlow<List<String>>(emptyList())
     val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()

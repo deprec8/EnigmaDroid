@@ -23,7 +23,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
-import io.github.deprec8.enigmadroid.data.objects.LoadingState
+import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.data.objects.PreferencesKeys
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.data.source.local.devices.DevicesDatabase
@@ -52,15 +52,15 @@ class DevicesRepository @Inject constructor(
     suspend fun setCurrentDeviceId(listId: Int) {
         dataStore.edit { preferences ->
             preferences[currentDeviceKey] = listId
-            preferences[loadingStateKey] = LoadingState.LOADING
+            preferences[loadingStateKey] = LoadingState.LOADING.id
         }
         if (networkDataSource.isDeviceOnline()) {
             dataStore.edit { preferences ->
-                preferences[loadingStateKey] = LoadingState.LOADED
+                preferences[loadingStateKey] = LoadingState.LOADED.id
             }
         } else {
             dataStore.edit { preferences ->
-                preferences[loadingStateKey] = LoadingState.DEVICE_NOT_ONLINE
+                preferences[loadingStateKey] = LoadingState.DEVICE_NOT_ONLINE.id
             }
         }
     }
@@ -83,7 +83,7 @@ class DevicesRepository @Inject constructor(
         devicesDatabase.deviceDao().delete(deviceId)
         if (devicesDatabase.deviceDao().getAll().firstOrNull().isNullOrEmpty()) {
             dataStore.edit { preferences ->
-                preferences[loadingStateKey] = LoadingState.NO_DEVICE_AVAILABLE
+                preferences[loadingStateKey] = LoadingState.NO_DEVICE_AVAILABLE.id
             }
         }
     }
@@ -92,11 +92,11 @@ class DevicesRepository @Inject constructor(
         devicesDatabase.deviceDao().update(newDevice.copy(id = oldDevice.id))
         if (networkDataSource.isDeviceOnline()) {
             dataStore.edit { preferences ->
-                preferences[loadingStateKey] = LoadingState.LOADED
+                preferences[loadingStateKey] = LoadingState.LOADED.id
             }
         } else {
             dataStore.edit { preferences ->
-                preferences[loadingStateKey] = LoadingState.DEVICE_NOT_ONLINE
+                preferences[loadingStateKey] = LoadingState.DEVICE_NOT_ONLINE.id
             }
         }
     }
@@ -106,11 +106,11 @@ class DevicesRepository @Inject constructor(
         if (devicesDatabase.deviceDao().getAll().firstOrNull() !!.size == 1) {
             if (networkDataSource.isDeviceOnline()) {
                 dataStore.edit { preferences ->
-                    preferences[loadingStateKey] = LoadingState.LOADED
+                    preferences[loadingStateKey] = LoadingState.LOADED.id
                 }
             } else {
                 dataStore.edit { preferences ->
-                    preferences[loadingStateKey] = LoadingState.DEVICE_NOT_ONLINE
+                    preferences[loadingStateKey] = LoadingState.DEVICE_NOT_ONLINE.id
                 }
             }
         }

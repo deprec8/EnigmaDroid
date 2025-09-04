@@ -29,6 +29,7 @@ import io.github.deprec8.enigmadroid.data.ApiRepository
 import io.github.deprec8.enigmadroid.data.LoadingRepository
 import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.data.SettingsRepository
+import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.model.ServiceList
 import io.github.deprec8.enigmadroid.model.Timer
 import io.github.deprec8.enigmadroid.model.TimerList
@@ -62,8 +63,8 @@ class TimersViewModel @Inject constructor(
     private val _timerList = MutableStateFlow(TimerList())
     val timerList: StateFlow<TimerList> = _timerList.asStateFlow()
 
-    private val _loadingState = MutableStateFlow<Int?>(null)
-    val loadingState: StateFlow<Int?> = _loadingState.asStateFlow()
+    private val _loadingState = MutableStateFlow(LoadingState.LOADING)
+    val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
 
     private val _services = MutableStateFlow<List<ServiceList>>(emptyList())
     val services: StateFlow<List<ServiceList>> = _services.asStateFlow()

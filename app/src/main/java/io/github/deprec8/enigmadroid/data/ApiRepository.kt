@@ -25,7 +25,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.data.objects.ApiType
+import io.github.deprec8.enigmadroid.data.enums.ApiType
+import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtons
 import io.github.deprec8.enigmadroid.data.objects.PreferencesKeys
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.data.source.local.devices.DevicesDatabase
@@ -132,11 +133,11 @@ class ApiRepository @Inject constructor(
         }
     }
 
-    fun fetchEPG(type: String): Flow<EPGEventList> = flow {
+    fun fetchEPG(type: ApiType): Flow<EPGEventList> = flow {
         try {
             json.decodeFromString(
                 ServiceList.serializer(),
-                networkDataSource.fetchJson("getallservices${if (type == "tv") "" else "?type=radio"}")
+                networkDataSource.fetchJson("getallservices${if (type == ApiType.TV) "" else "?type=radio"}")
             ).services[0].subservices.forEach { service ->
                 val epgEventList = json.decodeFromString(
                     EPGEventList.serializer(),
@@ -221,7 +222,7 @@ class ApiRepository @Inject constructor(
         }
     }
 
-    fun fetchEvents(type: String): Flow<EventList> =
+    fun fetchEvents(type: ApiType): Flow<EventList> =
         flow {
             try {
                 val bouquets = mutableListOf<List<String>>()
@@ -327,8 +328,8 @@ class ApiRepository @Inject constructor(
         }
     }
 
-    suspend fun remoteControlCall(command: Int) {
-        networkDataSource.remoteControlCall(command)
+    suspend fun remoteControlCall(button: RemoteControlButtons) {
+        networkDataSource.remoteControlCall(button)
     }
 
     suspend fun setPowerState(command: Int) {
