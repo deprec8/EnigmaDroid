@@ -53,7 +53,7 @@ fun MainPage(
 ) {
 
     val currentDevice by mainViewModel.currentDevice.collectAsStateWithLifecycle()
-    val deviceStatus by mainViewModel.loadingState.collectAsStateWithLifecycle()
+    val loadingState by mainViewModel.loadingState.collectAsStateWithLifecycle()
     val isOnboardingNeeded by mainViewModel.isOnboardingNeeded.collectAsStateWithLifecycle()
 
     val navController = rememberNavController()
@@ -108,7 +108,7 @@ fun MainPage(
                                 }
                             },
                             makeOWIFURL = mainViewModel::makeOWIFURL,
-                            deviceStatus = deviceStatus
+                            loadingState = loadingState
                         )
                     }
                 },
@@ -148,7 +148,7 @@ fun MainPage(
                                 }
                             },
                             makeOWIFURL = mainViewModel::makeOWIFURL,
-                            deviceStatus = deviceStatus
+                            loadingState = loadingState
                         )
                     }
                 }

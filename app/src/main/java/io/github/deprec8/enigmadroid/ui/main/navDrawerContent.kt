@@ -85,6 +85,7 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import io.github.deprec8.enigmadroid.R
+import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.model.drawer.DrawerGroup
 import io.github.deprec8.enigmadroid.model.drawer.DrawerPage
@@ -96,7 +97,7 @@ import kotlin.reflect.KSuspendFunction0
 @Composable
 fun NavDrawerContent(
     currentDevice: Device?,
-    deviceStatus: Int?,
+    loadingState: LoadingState,
     makeOWIFURL: KSuspendFunction0<String>,
     updateDeviceStatus: () -> Unit,
     navController: NavHostController,
@@ -209,7 +210,7 @@ fun NavDrawerContent(
                 )
             },
             trailingContent = {
-                AnimatedContent(deviceStatus, label = "", transitionSpec = {
+                AnimatedContent(loadingState, label = "", transitionSpec = {
                     scaleIn(
                         initialScale = 0f,
                         animationSpec = spring(
@@ -221,7 +222,7 @@ fun NavDrawerContent(
                 })
                 {
                     when (it) {
-                        0       -> {
+                        LoadingState.LOADED                                              -> {
                             IconButton(onClick = {
                                 scope.launch {
                                     IntentUtils.openOWIF(context, makeOWIFURL())
@@ -233,7 +234,7 @@ fun NavDrawerContent(
                                 )
                             }
                         }
-                        1, 2    -> {
+                        LoadingState.NO_DEVICE_AVAILABLE, LoadingState.DEVICE_NOT_ONLINE -> {
                             IconButton(onClick = updateDeviceStatus) {
                                 Icon(
                                     Icons.Default.RestartAlt,
@@ -241,7 +242,7 @@ fun NavDrawerContent(
                                 )
                             }
                         }
-                        null, 3 -> {
+                        LoadingState.LOADING                                             -> {
                             IconButton(onClick = {}, enabled = false) {
                                 CircularProgressIndicator(Modifier.size(24.dp))
                             }
@@ -252,29 +253,29 @@ fun NavDrawerContent(
             },
             supportingContent = {
                 AnimatedContent(
-                    deviceStatus,
+                    loadingState,
                     label = "",
                     transitionSpec = { fadeIn() togetherWith fadeOut() }) {
                     when (it) {
-                        0       -> {
+                        LoadingState.LOADED              -> {
                             Text(
                                 stringResource(R.string.connected),
                                 maxLines = 1, overflow = TextOverflow.Ellipsis
                             )
                         }
-                        1       -> {
+                        LoadingState.DEVICE_NOT_ONLINE   -> {
                             Text(
                                 stringResource(id = R.string.device_not_connected),
                                 maxLines = 1, overflow = TextOverflow.Ellipsis
                             )
                         }
-                        2       -> {
+                        LoadingState.NO_DEVICE_AVAILABLE -> {
                             Text(
                                 stringResource(R.string.add_a_device_to_connect_to),
                                 maxLines = 1, overflow = TextOverflow.Ellipsis
                             )
                         }
-                        null, 3 -> {
+                        LoadingState.LOADING             -> {
                             Text(
                                 stringResource(R.string.searching_for_device),
                                 maxLines = 1, overflow = TextOverflow.Ellipsis
