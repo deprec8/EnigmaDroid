@@ -12,7 +12,10 @@
     "languages_mapping": {
       "android_code": {
       "de": "de",
-      "ru": "ru"
+      "ru": "ru",
+      "fr": "fr",
+      "es": "es",
+      "it": "it"
       }
     }
   },
@@ -22,7 +25,10 @@
     "languages_mapping": {
       "locale": {
       "de": "de-DE",
-      "ru": "ru"
+      "ru": "ru",
+      "fr": "fr-FR",
+      "es": "es-ES",
+      "it": "it"
       }
     }
   },
@@ -32,7 +38,10 @@
     "languages_mapping": {
       "locale": {
       "de": "de-DE",
-      "ru": "ru"
+      "ru": "ru",
+      "fr": "fr-FR",
+      "es": "es-ES",
+      "it": "it"
       }
     }
   },
@@ -42,7 +51,10 @@
     "languages_mapping": {
       "locale": {
       "de": "de-DE",
-      "ru": "ru"
+      "ru": "ru",
+      "fr": "fr-FR",
+      "es": "es-ES",
+      "it": "it"
       }
     }
   }
