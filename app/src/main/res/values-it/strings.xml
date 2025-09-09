@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C) 2025 deprec8
+  ~
+  ~ This file is part of EnigmaDroid.
+  ~
+  ~ EnigmaDroid is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ EnigmaDroid is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+<resources>
+    <string name="tv">TV</string>
+    <string name="movies">Film</string>
+    <string name="timers">Timer</string>
+    <string name="device">Dispositivo</string>
+    <string name="settings">Impostazioni</string>
+    <string name="content">Contenuto</string>
+    <string name="deviceinfo">Info dispositivo</string>
+    <string name="stream">Streaming</string>
+    <string name="creator">Creatore</string>
+    <string name="version">Versione</string>
+    <string name="edit">Modifica</string>
+    <string name="delete">Elimina</string>
+    <string name="name">Nome</string>
+    <string name="dinfo_imageversion">Versione immagine</string>
+    <string name="dinfo_guiversion">Versione interfaccia</string>
+    <string name="dinfo_frontpversion">Versione FrontP</string>
+    <string name="dinfo_interfaceversion">Versione interfaccia</string>
+    <string name="tuner">Sintonizzatore</string>
+    <string name="network">Rete</string>
+    <string name="storage">Memoria</string>
+    <string name="free">libero</string>
+    <string name="about">Informazioni</string>
+    <string name="ip_address">Indirizzo IP</string>
+    <string name="port">Porta</string>
+    <string name="login">Accedi</string>
+    <string name="username">Nome utente</string>
+    <string name="password">Password</string>
+    <string name="edit_device">Modifica dispositivo</string>
+    <string name="add_device">Aggiungi dispositivo</string>
+    <string name="devices">Dispositivi</string>
+    <string name="add_timer">Aggiungi timer</string>
+    <string name="description">Descrizione</string>
+    <string name="title">Titolo</string>
+    <string name="all_services">Tutti i servizi</string>
+    <string name="connected">Connesso</string>
+    <string name="search_timers">Cerca timer</string>
+    <string name="search_movies">Cerca film</string>
+    <string name="radio">Radio</string>
+    <string name="signal">Segnale</string>
+    <string name="open_number_pad">Apri tastierino</string>
+    <string name="remote_control">Telecomando</string>
+    <string name="toggle_standby">Attiva/disattiva standby</string>
+    <string name="restart">Riavvia</string>
+    <string name="restart_gui">Riavvia interfaccia</string>
+    <string name="shutdown">Spegni</string>
+    <string name="close">Chiudi</string>
+    <string name="start_by_adding_one_device">Inizia aggiungendo un dispositivo, potrai aggiungerne altri in seguito.</string>
+    <string name="finish_setup">Completa configurazione</string>
+    <string name="welcome_to_enigmadroid">Benvenuto in EnigmaDroid</string>
+    <string name="live_port">Porta Live</string>
+    <string name="current">Corrente</string>
+    <string name="stream_current">Trasmetti programma corrente</string>
+    <string name="kernel_version">Versione kernel</string>
+    <string name="uptime">Tempo di attività</string>
+    <string name="model">Modello</string>
+    <string name="brand">Marca</string>
+    <string name="open_menu">Apri menu</string>
+    <string name="open_remote_control">Apri telecomando</string>
+    <string name="tunertype">Tipo di sintonizzatore</string>
+    <string name="tunernumber">Numero sintonizzatore</string>
+    <string name="channel_down">Canale precedente</string>
+    <string name="general">Generale</string>
+    <string name="current_device">Dispositivo corrente</string>
+    <string name="editing_menu">Menu modifica</string>
+    <string name="no_results">Nessun risultato</string>
+    <string name="close_search">Chiudi ricerca</string>
+    <string name="clear_search">Cancella ricerca</string>
+    <string name="delete_movie">Elimina film</string>
+    <string name="if_you_delete_this_movie_it_will_not_be_recoverable">Se elimini questo film non sarà recuperabile.</string>
+    <string name="confirm">Conferma</string>
+    <string name="cancel">Annulla</string>
+    <string name="rename_movie">Rinomina film</string>
+    <string name="new_name">Nuovo nome</string>
+    <string name="move_movie">Sposta film</string>
+    <string name="new_location">Nuova posizione</string>
+    <string name="rename">Rinomina</string>
+    <string name="move">Sposta</string>
+    <string name="channel">Canale</string>
+    <string name="provider">Fornitore</string>
+    <string name="now">Ora</string>
+    <string name="next">Prossimo</string>
+    <string name="save">Salva</string>
+    <string name="rewind">Riavvolgi</string>
+    <string name="play">Riproduci</string>
+    <string name="pause">Pausa</string>
+    <string name="forward">Avanti</string>
+    <string name="record">Registra</string>
+    <string name="stop">Ferma</string>
+    <string name="volume_up">Alza volume</string>
+    <string name="volume_down">Abbassa volume</string>
+    <string name="mute">Muto</string>
+    <string name="arrow_up">Freccia su</string>
+    <string name="arrow_left">Freccia sinistra</string>
+    <string name="arrow_right">Freccia destra</string>
+    <string name="arrow_down">Freccia giù</string>
+    <string name="red">Rosso</string>
+    <string name="green">Verde</string>
+    <string name="yellow">Giallo</string>
+    <string name="blue">Blu</string>
+    <string name="bouquet_down">Bouquet precedente</string>
+    <string name="bouquet_up">Bouquet successivo</string>
+    <string name="license">Licenza</string>
+    <string name="open_action_menu">Apri menu azioni</string>
+    <string name="enabled">Abilitato</string>
+    <string name="device_not_connected">Dispositivo non connesso</string>
+    <string name="no_device_available">Nessun dispositivo disponibile</string>
+    <string name="version_not_found">Versione non trovata</string>
+    <string name="open_openwebif">Apri OpenWebif</string>
+    <string name="toggle_password_visibility">Mostra/Nascondi password</string>
+    <string name="delete_timer">Elimina timer</string>
+    <string name="if_you_delete_this_timer_it_will_not_be_recoverable">Se elimini questo timer non sarà recuperabile.</string>
+    <string name="third_party_libraries">Librerie di terze parti</string>
+    <string name="source_code">Codice sorgente</string>
+    <string name="libraries">%1$s Librerie</string>
+    <string name="searching_for_device">Ricerca dispositivo…</string>
+    <string name="channel_up">Canale successivo</string>
+    <string name="retry">Riprova</string>
+    <string name="no_devices_found">Nessun dispositivo trovato</string>
+    <string name="skip">Salta</string>
+    <string name="delete_device">Elimina dispositivo</string>
+    <string name="if_you_delete_this_device_it_will_not_be_recoverable">Se elimini questo dispositivo non sarà recuperabile.</string>
+    <string name="pin_webif">Fissa WebIf</string>
+    <string name="standby">Standby</string>
+    <string name="automatic">Automatico</string>
+    <string name="afterevent">Dopo evento</string>
+    <string name="screenshot">Screenshot</string>
+    <string name="add_a_device_to_connect_to">Aggiungi un dispositivo a cui connetterti</string>
+    <string name="device_is_not_playing_any_channel">Il dispositivo non sta trasmettendo alcun canale</string>
+    <string name="edit_timer">Modifica timer</string>
+    <string name="tv_epg">EPG TV</string>
+    <string name="radio_epg">EPG Radio</string>
+    <string name="add_reminder">Aggiungi promemoria</string>
+    <string name="search_epg">Cerca nell’EPG</string>
+    <string name="search_events">Cerca eventi</string>
+    <string name="switch_channel">Cambia</string>
+    <string name="service">Servizio</string>
+    <string name="open_search">Apri ricerca</string>
+    <string name="no_browser_found">Nessun browser trovato.</string>
+    <string name="no_calender_found">Nessun calendario trovato.</string>
+    <string name="no_media_player_found">Nessun lettore multimediale trovato.</string>
+    <string name="download">Scarica</string>
+    <string name="downloading">Scaricamento %1$s</string>
+    <string name="fetching_screenshot">Recupero screenshot</string>
+    <string name="refresh_page">Aggiorna pagina</string>
+    <string name="issue_tracker">Tracciamento problemi</string>
+    <string name="ok">OK</string>
+    <string name="select_time">Seleziona ora</string>
+    <string name="toggle_time_picker_type">Cambia tipo selettore ora</string>
+    <string name="begin_date">Data inizio</string>
+    <string name="begin_time">Ora inizio</string>
+    <string name="end_date">Data fine</string>
+    <string name="end_time">Ora fine</string>
+    <string name="monday">Lunedì</string>
+    <string name="tuesday">Martedì</string>
+    <string name="wednesday">Mercoledì</string>
+    <string name="thursday">Giovedì</string>
+    <string name="friday">Venerdì</string>
+    <string name="saturday">Sabato</string>
+    <string name="sunday">Domenica</string>
+    <string name="create">Crea</string>
+    <string name="discard">Annulla</string>
+    <string name="discard_unsaved_changes">Annullare le modifiche non salvate?</string>
+    <string name="you_may_have_changes_that_won_t_be_saved_if_you_close">Potresti avere modifiche non salvate se chiudi.</string>
+    <string name="repeats_on">Ripeti il:</string>
+    <string name="navigate_back">Torna indietro</string>
+    <string name="manage_your_devices_and_connect_to_them">Gestisci i tuoi dispositivi e connettiti a essi.</string>
+    <string name="information_about_the_app">Informazioni sull’app.</string>
+    <string name="configure_your_remote_control">Configura il telecomando.</string>
+    <string name="haptic_feedback">Feedback tattile</string>
+    <string name="vibrate_when_buttons_are_pressed">Vibra quando i pulsanti vengono premuti.</string>
+    <string name="pin_shortcut">Fissa scorciatoia</string>
+    <string name="insert_search_term">Inserisci termine di ricerca</string>
+    <string name="type_something_to_search">Digita qualcosa da cercare</string>
+    <string name="clear">Cancella</string>
+    <string name="clear_search_histories">Cancella cronologia ricerche</string>
+    <string name="select_which_search_histories_to_clear">Seleziona quale cronologia cancellare.</string>
+    <string name="search">Cerca</string>
+    <string name="manage_search_settings_and_histories">Gestisci impostazioni e cronologia ricerche.</string>
+    <string name="use_search_histories">Usa cronologia ricerche</string>
+    <string name="disabling_this_will_clear_all_search_histories">Disabilitando verrà cancellata tutta la cronologia ricerche.</string>
+    <string name="highlight_matches">Evidenzia corrispondenze</string>
+    <string name="highlight_matches_in_search_results">Evidenzia corrispondenze nei risultati della ricerca.</string>
+    <string name="translation">Traduzione</string>
+</resources>
