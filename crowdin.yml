@@ -44,18 +44,5 @@
       "it": "it"
       }
     }
-  },
-  {
-    "source": "/fastlane/metadata/android/en-US/changelogs/*.txt",
-    "translation": "/fastlane/metadata/android/%locale%/changelogs/%original_file_name%",
-    "languages_mapping": {
-      "locale": {
-      "de": "de-DE",
-      "ru": "ru",
-      "fr": "fr-FR",
-      "es-ES": "es-ES",
-      "it": "it"
-      }
-    }
   }
 ]
