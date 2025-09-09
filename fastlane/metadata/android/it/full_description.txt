@@ -1,0 +1,33 @@
+EnigmaDroid è un'app moderna e user-friendly che ti permette di controllare il tuo satellite o set-top box basato su Enigma2 direttamente dal tuo dispositivo Android.
+
+Ovunque nella tua casa, EnigmaDroid ti dà pieno accesso alle funzionalità e ai contenuti del tuo ricevitore.
+
+Funzionalità:
+
+- Live TV Streaming: Guarda le trasmissioni in diretta dalla tua casella Enigma2 sul tuo dispositivo utilizzando un lettore video compatibile.
+- Registrazioni di riproduzione: Sfoglia e riproduci i tuoi spettacoli e film salvati.
+- Elenco Canali & Bouquet: Naviga rapidamente la tua linea di canali completi e bouquet preferiti.
+- Telecomunicazione: Telecomando a schermo intero con tastiera.
+- Timer Management: aggiungere, rimuovere o modificare i timer e le registrazioni pianificate.
+- Supporto EPG: Visualizza i dati della guida elettronica del programma con informazioni dettagliate sullo spettacolo.
+- Ricerca & Filtro: Trova canali o programmi con ricerca integrata su ogni pagina.
+- Supporto multi-box: Connettiti a più ricevitori e passare tra loro con facilità.
+
+Streaming:
+
+EnigmaDroid attualmente supporta solo lettori multimediali esterni per lo streaming di contenuti e film dal vivo.
+
+VLC è raccomandato, ma altri lettori multimediali possono anche funzionare.
+
+Requisiti:
+
+- Un set-top box che esegue Enigma2.
+- Plugin OpenWebif abilitato e configurato.
+
+Compatibilità:
+
+Testato con le immagini Enigma2 popolari come VTi.
+
+Gratuito e open source:
+
+EnigmaDroid è completamente open-source, rispetta la tua privacy e non contiene pubblicità o tracker. Contributi e richieste di funzionalità sono benvenuti sul repository GitHub del progetto.

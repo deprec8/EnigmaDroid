@@ -1,0 +1,33 @@
+EnigmaDroid est une application moderne et conviviale qui vous permet de contrôler votre boîte satellite ou câble basée sur Enigma2 directement depuis votre appareil Android.
+
+Partout dans votre maison, EnigmaDroid vous donne un accès complet aux fonctionnalités et au contenu de votre récepteur.
+
+Fonctionnalités :
+
+- Streaming TV en direct : Regardez les diffusions en direct depuis votre boîte Enigma2 sur votre appareil en utilisant un lecteur vidéo compatible.
+- Lecture des enregistrements : Parcourez et écoutez vos séries et films enregistrés.
+- Liste Chanel & Bouquet : Naviguez rapidement dans votre gamme complète de chaînes et bouquets préférés.
+- Télécommande : Télécommande plein écran avec clavier.
+- Gestion du minuteur : Ajouter, supprimer ou modifier les minuteurs et les enregistrements programmés.
+- Support de l'EPG : Visualisez les données du Guide électronique des programmes avec des informations détaillées sur la présentation.
+- Recherche et Filtre : Trouver des chaînes ou des programmes avec une recherche intégrée sur chaque page.
+- Prise en charge multibox : connectez-vous à plusieurs récepteurs et basculez facilement entre eux.
+
+Streaming :
+
+EnigmaDroid ne prend actuellement en charge que les lecteurs de médias externes pour diffuser du contenu et des films en direct.
+
+VLC est recommandé, mais d'autres lecteurs de médias peuvent aussi fonctionner.
+
+Exigences :
+
+- Une set-top box fonctionnant avec Enigma2.
+- Complément OpenWebif activé et configuré.
+
+Compatibilité :
+
+Testé avec des images populaires Enigma2 comme VTi.
+
+Gratuit et Open Source :
+
+EnigmaDroid est entièrement open-source, respecte votre vie privée et ne contient aucune publicité ni aucun tracer. Les contributions et les demandes de fonctionnalités sont les bienvenues sur le dépôt GitHub du projet.

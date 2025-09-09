@@ -1,4 +1,0 @@
-- Dedizierte Seite für Drittarbeiterbibliotheken
-- Navigationsindikatoren für Listenelemente
-- Crowdin-Übersetzungen synchronisieren
-- Verschiedene Korrekturen und Aktualisierungen
