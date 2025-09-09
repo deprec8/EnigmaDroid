@@ -1,5 +1,0 @@
-- Neue Einstellungsseite zur Konfiguration der App
-- Aktualisiertes Navigationssystem
-- Option zur Deaktivierung der haptischen Rückmeldung in der Fernbedienung
-- Umbenennung der Fernbedienung in Remote Control
-- Verschiedene Korrekturen und Aktualisierungen

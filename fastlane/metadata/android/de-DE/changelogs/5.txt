@@ -1,6 +1,0 @@
-- Suchverlauf
-- Übereinstimmende Suchbegriffe hervorheben
-- Neue Sucheinstellungsseite
-- Korrekturen im Zusammenhang mit der Suche
-- Russische Übersetzung
-- Verschiedene Korrekturen und Aktualisierungen
