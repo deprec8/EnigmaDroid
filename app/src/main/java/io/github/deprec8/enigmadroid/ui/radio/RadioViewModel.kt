@@ -31,8 +31,8 @@ import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.data.SettingsRepository
 import io.github.deprec8.enigmadroid.data.enums.ApiType
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.model.Event
-import io.github.deprec8.enigmadroid.model.EventList
+import io.github.deprec8.enigmadroid.model.api.Event
+import io.github.deprec8.enigmadroid.model.api.EventList
 import io.github.deprec8.enigmadroid.utils.FilterUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow

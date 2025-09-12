@@ -30,9 +30,9 @@ import io.github.deprec8.enigmadroid.data.LoadingRepository
 import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.data.SettingsRepository
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.model.ServiceList
-import io.github.deprec8.enigmadroid.model.Timer
-import io.github.deprec8.enigmadroid.model.TimerList
+import io.github.deprec8.enigmadroid.model.api.ServiceList
+import io.github.deprec8.enigmadroid.model.api.Timer
+import io.github.deprec8.enigmadroid.model.api.TimerList
 import io.github.deprec8.enigmadroid.utils.FilterUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow

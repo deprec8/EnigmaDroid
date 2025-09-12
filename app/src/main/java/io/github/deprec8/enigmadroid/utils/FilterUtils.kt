@@ -19,10 +19,10 @@
 
 package io.github.deprec8.enigmadroid.utils
 
-import io.github.deprec8.enigmadroid.model.EPGEvent
-import io.github.deprec8.enigmadroid.model.Event
-import io.github.deprec8.enigmadroid.model.Movie
-import io.github.deprec8.enigmadroid.model.Timer
+import io.github.deprec8.enigmadroid.model.api.EPGEvent
+import io.github.deprec8.enigmadroid.model.api.Event
+import io.github.deprec8.enigmadroid.model.api.Movie
+import io.github.deprec8.enigmadroid.model.api.Timer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
