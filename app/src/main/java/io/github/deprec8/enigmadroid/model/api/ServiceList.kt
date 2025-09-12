@@ -17,9 +17,12 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.model
+package io.github.deprec8.enigmadroid.model.api
 
-data class Bookmark(
-    val directory: String = "",
-    val displayName: String = "N/A"
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class ServiceList(
+    @SerialName("services") val services: List<SubserviceList> = emptyList(),
 )

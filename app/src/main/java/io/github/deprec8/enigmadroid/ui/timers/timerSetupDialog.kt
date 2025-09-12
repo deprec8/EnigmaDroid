@@ -68,8 +68,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.model.ServiceList
-import io.github.deprec8.enigmadroid.model.Timer
+import io.github.deprec8.enigmadroid.model.api.ServiceList
+import io.github.deprec8.enigmadroid.model.api.Timer
 import io.github.deprec8.enigmadroid.ui.components.AdaptiveDialog
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
 

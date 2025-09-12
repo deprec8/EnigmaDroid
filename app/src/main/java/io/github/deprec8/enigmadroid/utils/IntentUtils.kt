@@ -33,7 +33,7 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
-import io.github.deprec8.enigmadroid.model.EPGEvent
+import io.github.deprec8.enigmadroid.model.api.EPGEvent
 
 object IntentUtils {
 
