@@ -1,0 +1,4 @@
+- Add machine translations for French, Spanish and Italian
+- Refractor backend code
+- Sync Crowdin translations
+- Various fixes and updates
