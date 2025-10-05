@@ -332,8 +332,9 @@ fun RemoteControlPage(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { innerPadding ->
         Box(
-            Modifier
+            modifier = Modifier
                 .consumeWindowInsets(innerPadding)
+                .fillMaxSize()
                 .verticalScroll(scrollState)
                 .padding(innerPadding)
         ) {

@@ -65,7 +65,7 @@ fun BouquetButtons(remoteControlViewModel: RemoteControlViewModel, enabled: Bool
     )
     Row(
         Modifier
-            .widthIn(0.dp, 450.dp)
+            .widthIn(0.dp, 500.dp)
     ) {
         bouquetButtons.forEach { button ->
             FilledTonalButton(
