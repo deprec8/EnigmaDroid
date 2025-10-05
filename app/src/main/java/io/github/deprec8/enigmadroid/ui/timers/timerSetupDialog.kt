@@ -273,7 +273,7 @@ fun TimerSetupDialog(
                             LinearProgressIndicator(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 16.dp)
+                                    .padding(vertical = 16.dp, horizontal = 8.dp)
                             )
                         }
                     }
