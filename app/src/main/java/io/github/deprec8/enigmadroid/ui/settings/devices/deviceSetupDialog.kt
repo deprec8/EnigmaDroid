@@ -19,11 +19,9 @@
 
 package io.github.deprec8.enigmadroid.ui.settings.devices
 
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -53,9 +51,6 @@ fun DeviceSetupDialog(
     var user by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
-    rememberScrollState()
-
-    TopAppBarDefaults.pinnedScrollBehavior()
 
     fun setDeviceData() {
         name = oldDevice?.name ?: ""
