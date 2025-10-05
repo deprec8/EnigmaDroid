@@ -34,6 +34,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.outlined.AccessTime
+import androidx.compose.material.icons.outlined.Keyboard
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenuItem
@@ -45,12 +47,17 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimeInput
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerDialog
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
@@ -555,35 +562,125 @@ fun TimerSetupDialog(
                 }
 
                 if (showBeginTimePicker) {
+                    var showDial by rememberSaveable { mutableStateOf(true) }
+                    val pickerScrollState = rememberScrollState()
+                    val inputScrollState = rememberScrollState()
                     TimePickerDialog(
-                        beginTimeState,
                         onDismissRequest = { showBeginTimePicker = false },
-                        onConfirmRequest = {
-                            beginTimestamp = TimestampUtils.combineTimeDate(
-                                beginTimestamp,
-                                TimestampUtils.getMillisFromTimeString(
-                                    beginTimeState.hour.toString() + ":" + beginTimeState.minute.toString()
-                                )
+                        title = {
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 20.dp),
+                                text = stringResource(R.string.select_time),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                style = MaterialTheme.typography.labelMedium
                             )
-                            showBeginTimePicker = false
+                        },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                beginTimestamp = TimestampUtils.combineTimeDate(
+                                    beginTimestamp,
+                                    TimestampUtils.getMillisFromTimeString(
+                                        beginTimeState.hour.toString() + ":" + beginTimeState.minute.toString()
+                                    )
+                                )
+                                showBeginTimePicker = false
+                            }) {
+                                Text(stringResource(R.string.ok))
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { showBeginTimePicker = false }) {
+                                Text(stringResource(R.string.cancel))
+                            }
+                        },
+                        modeToggleButton = {
+                            IconButton(onClick = { showDial = ! showDial }) {
+                                Icon(
+                                    imageVector = if (showDial) {
+                                        Icons.Outlined.Keyboard
+                                    } else {
+                                        Icons.Outlined.AccessTime
+                                    },
+                                    contentDescription = stringResource(R.string.toggle_time_picker_type),
+                                )
+                            }
                         }
-                    )
+                    ) {
+                        if (showDial) {
+                            TimePicker(
+                                modifier = Modifier.verticalScroll(pickerScrollState),
+                                state = beginTimeState
+                            )
+                        } else {
+                            TimeInput(
+                                modifier = Modifier.verticalScroll(inputScrollState),
+                                state = beginTimeState
+                            )
+                        }
+                    }
                 }
 
                 if (showEndTimePicker) {
+                    var showDial by rememberSaveable { mutableStateOf(true) }
+                    val pickerScrollState = rememberScrollState()
+                    val inputScrollState = rememberScrollState()
                     TimePickerDialog(
-                        endTimeState,
                         onDismissRequest = { showEndTimePicker = false },
-                        onConfirmRequest = {
-                            endTimestamp = TimestampUtils.combineTimeDate(
-                                endTimestamp,
-                                TimestampUtils.getMillisFromTimeString(
-                                    endTimeState.hour.toString() + ":" + endTimeState.minute.toString()
-                                )
+                        title = {
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 20.dp),
+                                text = stringResource(R.string.select_time),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                style = MaterialTheme.typography.labelMedium
                             )
-                            showEndTimePicker = false
+                        },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                endTimestamp = TimestampUtils.combineTimeDate(
+                                    endTimestamp,
+                                    TimestampUtils.getMillisFromTimeString(
+                                        endTimeState.hour.toString() + ":" + endTimeState.minute.toString()
+                                    )
+                                )
+                                showEndTimePicker = false
+                            }) {
+                                Text(stringResource(R.string.ok))
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { showEndTimePicker = false }) {
+                                Text(stringResource(R.string.cancel))
+                            }
+                        },
+                        modeToggleButton = {
+                            IconButton(onClick = { showDial = ! showDial }) {
+                                Icon(
+                                    imageVector = if (showDial) {
+                                        Icons.Outlined.Keyboard
+                                    } else {
+                                        Icons.Outlined.AccessTime
+                                    },
+                                    contentDescription = stringResource(R.string.toggle_time_picker_type),
+                                )
+                            }
                         }
-                    )
+                    ) {
+                        if (showDial) {
+                            TimePicker(
+                                modifier = Modifier.verticalScroll(pickerScrollState),
+                                state = endTimeState
+                            )
+                        } else {
+                            TimeInput(
+                                modifier = Modifier.verticalScroll(inputScrollState),
+                                state = endTimeState
+                            )
+                        }
+                    }
                 }
             }
         }
