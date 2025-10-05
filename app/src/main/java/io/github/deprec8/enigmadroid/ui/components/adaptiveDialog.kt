@@ -143,7 +143,7 @@ fun AdaptiveDialog(
                         .consumeWindowInsets(innerPadding)
                         .verticalScroll(fullScrollState)
                         .padding(innerPadding)
-                        .padding(top = 24.dp, start = 24.dp, end = 24.dp)
+                        .padding(top = 24.dp, start = 24.dp, end = 24.dp, bottom = 24.dp)
                 ) {
                     content()
                 }
