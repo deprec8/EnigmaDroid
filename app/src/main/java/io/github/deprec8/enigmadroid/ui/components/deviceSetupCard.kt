@@ -19,15 +19,7 @@
 
 package io.github.deprec8.enigmadroid.ui.components
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -255,32 +247,19 @@ fun DeviceSetupCard(
                     value = password,
                     trailingIcon = {
                         IconButton(onClick = onPasswordVisibilityChange) {
-                            AnimatedContent(passwordVisible, label = "", transitionSpec = {
-                                scaleIn(
-                                    initialScale = 0f,
-                                    animationSpec = spring(
-                                        dampingRatio = Spring.DampingRatioMediumBouncy,
-                                        stiffness = Spring.StiffnessLow
+                            when (passwordVisible) {
+                                true  -> {
+                                    Icon(
+                                        Icons.Default.VisibilityOff,
+                                        contentDescription = stringResource(R.string.toggle_password_visibility)
                                     )
-                                ) + fadeIn() togetherWith
-                                        scaleOut(targetScale = 0f) + fadeOut()
-                            })
-                            {
-                                when (it) {
-                                    true  -> {
-                                        Icon(
-                                            Icons.Default.VisibilityOff,
-                                            contentDescription = stringResource(R.string.toggle_password_visibility)
-                                        )
-                                    }
-                                    false -> {
-                                        Icon(
-                                            Icons.Default.Visibility,
-                                            contentDescription = stringResource(R.string.toggle_password_visibility)
-                                        )
-                                    }
                                 }
-
+                                false -> {
+                                    Icon(
+                                        Icons.Default.Visibility,
+                                        contentDescription = stringResource(R.string.toggle_password_visibility)
+                                    )
+                                }
                             }
                         }
                     },
@@ -472,32 +451,19 @@ fun DeviceSetupCard(
                 value = password,
                 trailingIcon = {
                     IconButton(onClick = onPasswordVisibilityChange) {
-                        AnimatedContent(passwordVisible, label = "", transitionSpec = {
-                            scaleIn(
-                                initialScale = 0f,
-                                animationSpec = spring(
-                                    dampingRatio = Spring.DampingRatioMediumBouncy,
-                                    stiffness = Spring.StiffnessLow
+                        when (passwordVisible) {
+                            true  -> {
+                                Icon(
+                                    Icons.Default.VisibilityOff,
+                                    contentDescription = stringResource(R.string.toggle_password_visibility)
                                 )
-                            ) + fadeIn() togetherWith
-                                    scaleOut(targetScale = 0f) + fadeOut()
-                        })
-                        {
-                            when (it) {
-                                true  -> {
-                                    Icon(
-                                        Icons.Default.VisibilityOff,
-                                        contentDescription = stringResource(R.string.toggle_password_visibility)
-                                    )
-                                }
-                                false -> {
-                                    Icon(
-                                        Icons.Default.Visibility,
-                                        contentDescription = stringResource(R.string.toggle_password_visibility)
-                                    )
-                                }
                             }
-
+                            false -> {
+                                Icon(
+                                    Icons.Default.Visibility,
+                                    contentDescription = stringResource(R.string.toggle_password_visibility)
+                                )
+                            }
                         }
                     }
                 },
@@ -527,8 +493,6 @@ fun DeviceSetupCard(
                         contentType = ContentType.Password
                     }
             )
-
-
         }
     }
 }
