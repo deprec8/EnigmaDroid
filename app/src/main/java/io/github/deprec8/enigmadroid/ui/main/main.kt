@@ -19,7 +19,6 @@
 
 package io.github.deprec8.enigmadroid.ui.main
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -76,11 +75,6 @@ fun MainPage(
         if (windowSizeClass.windowWidthSizeClass != WindowWidthSizeClass.EXPANDED ||
             windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT
         ) {
-            BackHandler(enabled = modalDrawerState.isOpen) {
-                scope.launch {
-                    modalDrawerState.close()
-                }
-            }
             ModalNavigationDrawer(
                 drawerContent = {
                     ModalDrawerSheet(
