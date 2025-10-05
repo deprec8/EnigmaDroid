@@ -52,6 +52,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -247,6 +248,11 @@ fun TimerSetupDialog(
                         expanded = showServicesMenu,
                         scrollState = rememberScrollState(),
                         onDismissRequest = { showServicesMenu = false },
+                        containerColor = if (it) {
+                            MaterialTheme.colorScheme.surfaceContainerHigh
+                        } else {
+                            MenuDefaults.containerColor
+                        }
                     ) {
                         if (services.isNotEmpty()) {
                             services.forEach { subservice ->
@@ -464,6 +470,11 @@ fun TimerSetupDialog(
                         expanded = showAftereventMenu,
                         scrollState = rememberScrollState(),
                         onDismissRequest = { showAftereventMenu = false },
+                        containerColor = if (it) {
+                            MaterialTheme.colorScheme.surfaceContainerHigh
+                        } else {
+                            MenuDefaults.containerColor
+                        }
                     ) {
                         DropdownMenuItem(
                             text = { Text(text = stringResource(R.string.automatic)) },

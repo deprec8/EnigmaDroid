@@ -58,9 +58,10 @@ import io.github.deprec8.enigmadroid.R
 @Composable
 fun AdaptiveDialog(
     onDismissRequest: () -> Unit,
-    content: @Composable () -> Unit,
+    content: @Composable (isScrollable: Boolean) -> Unit,
     action: @Composable () -> Unit,
     title: String,
+
 ) {
 
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
@@ -145,7 +146,7 @@ fun AdaptiveDialog(
                         .padding(innerPadding)
                         .padding(top = 24.dp, start = 24.dp, end = 24.dp, bottom = 24.dp)
                 ) {
-                    content()
+                    content(fullScrollState.maxValue != 0)
                 }
             }
         }
@@ -166,7 +167,7 @@ fun AdaptiveDialog(
                     Modifier
                         .verticalScroll(dialogScrollState)
                 ) {
-                    content()
+                    content(false)
                 }
             }
         )
