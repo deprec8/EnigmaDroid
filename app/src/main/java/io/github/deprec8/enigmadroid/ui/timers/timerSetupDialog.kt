@@ -38,6 +38,7 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilterChip
@@ -47,7 +48,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -233,7 +233,7 @@ fun TimerSetupDialog(
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = showServicesMenu) },
                         colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
                         modifier = Modifier
-                            .menuAnchor(MenuAnchorType.PrimaryEditable, true)
+                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable, true)
                             .fillMaxWidth()
                     )
                     ExposedDropdownMenu(
@@ -450,7 +450,7 @@ fun TimerSetupDialog(
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = showAftereventMenu) },
                         colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
                         modifier = Modifier
-                            .menuAnchor(MenuAnchorType.PrimaryEditable, true)
+                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable, true)
                             .fillMaxWidth()
                     )
                     ExposedDropdownMenu(

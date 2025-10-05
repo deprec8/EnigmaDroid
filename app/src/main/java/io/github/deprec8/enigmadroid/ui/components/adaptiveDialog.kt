@@ -113,7 +113,8 @@ fun AdaptiveDialog(
                             scrolledContainerColor = MaterialTheme.colorScheme.surface,
                             navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
                             titleContentColor = MaterialTheme.colorScheme.onSurface,
-                            actionIconContentColor = MaterialTheme.colorScheme.primary
+                            actionIconContentColor = MaterialTheme.colorScheme.primary,
+                            subtitleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                         ),
                         title = {
                             Text(
