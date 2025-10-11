@@ -33,6 +33,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddAlert
 import androidx.compose.material.icons.filled.Refresh
@@ -92,7 +93,6 @@ fun RadioEPGPage(
 
     val scope = rememberCoroutineScope()
     val epgs by radioEPGViewModel.epgs.collectAsStateWithLifecycle()
-    val active by radioEPGViewModel.active.collectAsStateWithLifecycle()
     val filteredEPGEvents by radioEPGViewModel.filteredEPGEvents.collectAsStateWithLifecycle()
     val searchHistory by radioEPGViewModel.searchHistory.collectAsStateWithLifecycle()
     val useSearchHighlighting by radioEPGViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
@@ -199,7 +199,7 @@ fun RadioEPGPage(
     Scaffold(
         floatingActionButton = {
             AnimatedVisibility(
-                loadingState == LoadingState.LOADED && ! active,
+                loadingState == LoadingState.LOADED,
                 enter = scaleIn(),
                 exit = scaleOut()
             ) {
@@ -219,10 +219,7 @@ fun RadioEPGPage(
         }, topBar = {
             SearchTopAppBar(
                 enabled = epgs.isNotEmpty() && loadingState == LoadingState.LOADED,
-                expanded = active,
-                onExpandedChange = { radioEPGViewModel.updateActive(it) },
-                input = radioEPGViewModel.input,
-                onInputChange = { radioEPGViewModel.updateInput(it) },
+                textFieldState = radioEPGViewModel.searchFieldState,
                 placeholder = stringResource(R.string.search_epg),
                 content = {
                     if (filteredEPGEvents != null) {
@@ -237,10 +234,14 @@ fun RadioEPGPage(
                         SearchHistory(
                             searchHistory = searchHistory,
                             onTermSearchClick = {
-                                radioEPGViewModel.updateInput(it)
+                                radioEPGViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
                                 radioEPGViewModel.updateSearchInput()
                             },
-                            onTermInsertClick = { radioEPGViewModel.updateInput(it) }
+                            onTermInsertClick = {
+                                radioEPGViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
+                                    it
+                                )
+                            }
                         )
                     }
                 },

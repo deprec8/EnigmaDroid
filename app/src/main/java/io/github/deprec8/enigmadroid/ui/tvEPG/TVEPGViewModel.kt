@@ -19,9 +19,7 @@
 
 package io.github.deprec8.enigmadroid.ui.tvEPG
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -54,11 +52,7 @@ class TVEPGViewModel @Inject constructor(
     private val _epgs = MutableStateFlow(listOf<EPGEventList>())
     val epgs: StateFlow<List<EPGEventList>> = _epgs.asStateFlow()
 
-    var input by mutableStateOf("")
-        private set
-
-    private val _active = MutableStateFlow(false)
-    val active: StateFlow<Boolean> = _active.asStateFlow()
+    val searchFieldState = TextFieldState()
 
     private val _filteredEPGEvents = MutableStateFlow<List<EPGEvent>?>(null)
     val filteredEPGEvents: StateFlow<List<EPGEvent>?> = _filteredEPGEvents.asStateFlow()
@@ -129,16 +123,10 @@ class TVEPGViewModel @Inject constructor(
         }
     }
 
-    fun updateInput(newInput: String) {
-        input = newInput
-    }
 
     fun updateSearchInput() {
-        _searchInput.value = input
+        _searchInput.value = searchFieldState.text.toString()
     }
 
-    fun updateActive(isActive: Boolean) {
-        _active.value = isActive
-    }
 
 }

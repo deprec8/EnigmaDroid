@@ -33,6 +33,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cast
 import androidx.compose.material.icons.filled.PlayArrow
@@ -92,7 +93,6 @@ fun TvPage(
 ) {
 
     val context = LocalContext.current
-    val active by tvViewModel.active.collectAsStateWithLifecycle()
     val filteredTVEvents by tvViewModel.filteredEvents.collectAsStateWithLifecycle()
     val allTVEvents by tvViewModel.allEvents.collectAsStateWithLifecycle()
     val loadingState by tvViewModel.loadingState.collectAsStateWithLifecycle()
@@ -213,7 +213,7 @@ fun TvPage(
     Scaffold(
         floatingActionButton = {
             AnimatedVisibility(
-                loadingState == LoadingState.LOADED && ! active,
+                loadingState == LoadingState.LOADED,
                 enter = scaleIn(),
                 exit = scaleOut()
             ) {
@@ -232,11 +232,8 @@ fun TvPage(
             SnackbarHost(hostState = snackbarHostState)
         }, topBar = {
             SearchTopAppBar(
+                textFieldState = tvViewModel.searchFieldState,
                 enabled = allTVEvents.isNotEmpty(),
-                expanded = active,
-                onExpandedChange = { tvViewModel.updateActive(it) },
-                input = tvViewModel.input,
-                onInputChange = { tvViewModel.updateInput(it) },
                 placeholder = stringResource(R.string.search_events),
                 content = {
                     if (filteredTVEvents != null) {
@@ -251,10 +248,14 @@ fun TvPage(
                         SearchHistory(
                             searchHistory = searchHistory,
                             onTermSearchClick = {
-                                tvViewModel.updateInput(it)
+                                tvViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
                                 tvViewModel.updateSearchInput(selectedTabIndex.value)
                             },
-                            onTermInsertClick = { tvViewModel.updateInput(it) }
+                            onTermInsertClick = {
+                                tvViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
+                                    it
+                                )
+                            }
                         )
                     }
                 },

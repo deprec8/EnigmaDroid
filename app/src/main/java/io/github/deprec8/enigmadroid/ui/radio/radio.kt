@@ -33,6 +33,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cast
 import androidx.compose.material.icons.filled.PlayArrow
@@ -93,7 +94,6 @@ fun RadioPage(
 ) {
 
     val context = LocalContext.current
-    val active by radioViewModel.active.collectAsStateWithLifecycle()
     val filteredRadioEvents by radioViewModel.filteredEvents.collectAsStateWithLifecycle()
     val allRadioEvents by radioViewModel.allEvents.collectAsStateWithLifecycle()
     val searchHistory by radioViewModel.searchHistory.collectAsStateWithLifecycle()
@@ -217,7 +217,7 @@ fun RadioPage(
     Scaffold(
         floatingActionButton = {
             AnimatedVisibility(
-                loadingState == LoadingState.LOADED && ! active,
+                loadingState == LoadingState.LOADED,
                 enter = scaleIn(),
                 exit = scaleOut()
             ) {
@@ -237,10 +237,7 @@ fun RadioPage(
         }, topBar = {
             SearchTopAppBar(
                 enabled = allRadioEvents.isNotEmpty(),
-                expanded = active,
-                onExpandedChange = { radioViewModel.updateActive(it) },
-                input = radioViewModel.input,
-                onInputChange = { radioViewModel.updateInput(it) },
+                textFieldState = radioViewModel.searchFieldState,
                 placeholder = stringResource(R.string.search_events),
                 content = {
                     if (filteredRadioEvents != null) {
@@ -255,10 +252,14 @@ fun RadioPage(
                         SearchHistory(
                             searchHistory = searchHistory,
                             onTermSearchClick = {
-                                radioViewModel.updateInput(it)
+                                radioViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
                                 radioViewModel.updateSearchInput(selectedTabIndex.value)
                             },
-                            onTermInsertClick = { radioViewModel.updateInput(it) }
+                            onTermInsertClick = {
+                                radioViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
+                                    it
+                                )
+                            }
                         )
                     }
                 },
