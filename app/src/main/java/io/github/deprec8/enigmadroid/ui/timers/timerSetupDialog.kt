@@ -31,6 +31,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -73,6 +78,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
@@ -89,9 +95,9 @@ fun TimerSetupDialog(
     onSave: (newTimer: Timer, oldTimer: Timer?) -> Unit,
     services: List<ServiceList>,
 ) {
+    val titleState = rememberTextFieldState("")
+    val shortDescriptionState = rememberTextFieldState("")
 
-    var title by rememberSaveable { mutableStateOf("") }
-    var shortDescription by rememberSaveable { mutableStateOf("") }
     var disabled by rememberSaveable { mutableIntStateOf(0) }
     var justPlay by rememberSaveable { mutableIntStateOf(0) }
     var beginTimestamp by rememberSaveable { mutableLongStateOf(0L) }
@@ -128,9 +134,9 @@ fun TimerSetupDialog(
 
     LaunchedEffect(Unit) {
         if (oldTimer != null) {
-            title = oldTimer.title
+            titleState.setTextAndPlaceCursorAtEnd(oldTimer.title)
             serviceReference = oldTimer.serviceReference
-            shortDescription = oldTimer.shortDescription
+            shortDescriptionState.setTextAndPlaceCursorAtEnd(oldTimer.shortDescription)
             disabled = oldTimer.disabled
             justPlay = oldTimer.justPlay
             beginTimestamp = oldTimer.beginTimestamp * 1000
@@ -152,9 +158,9 @@ fun TimerSetupDialog(
     }
 
     fun reset() {
-        title = ""
+        titleState.clearText()
         serviceReference = ""
-        shortDescription = ""
+        shortDescriptionState.clearText()
         disabled = 0
         justPlay = 0
         beginTimestamp = 0L
@@ -166,9 +172,9 @@ fun TimerSetupDialog(
 
     fun isEverythingValid(): Boolean {
         return if (oldTimer == null) {
-            title != "" && serviceReference != "" && beginTimestamp / 1000 < endTimestamp / 1000
+            titleState.text.toString() != "" && serviceReference != "" && beginTimestamp / 1000 < endTimestamp / 1000
         } else {
-            title != "" && serviceReference != "" && beginTimestamp < endTimestamp && (oldTimer.serviceReference != serviceReference || oldTimer.title != title || oldTimer.shortDescription != shortDescription || oldTimer.disabled != disabled || oldTimer.justPlay != justPlay || oldTimer.beginTimestamp != beginTimestamp / 1000 || oldTimer.endTimestamp != endTimestamp / 1000 || oldTimer.afterEvent != afterevent || oldTimer.repeated != repeated || oldTimer.alwaysZap != alwaysZap)
+            titleState.text.toString() != "" && serviceReference != "" && beginTimestamp < endTimestamp && (oldTimer.serviceReference != serviceReference || oldTimer.title != titleState.text.toString() || oldTimer.shortDescription != shortDescriptionState.text.toString() || oldTimer.disabled != disabled || oldTimer.justPlay != justPlay || oldTimer.beginTimestamp != beginTimestamp / 1000 || oldTimer.endTimestamp != endTimestamp / 1000 || oldTimer.afterEvent != afterevent || oldTimer.repeated != repeated || oldTimer.alwaysZap != alwaysZap)
         }
 
     }
@@ -199,8 +205,8 @@ fun TimerSetupDialog(
                             justPlay = justPlay,
                             afterEvent = afterevent,
                             disabled = disabled,
-                            shortDescription = shortDescription,
-                            title = title,
+                            shortDescription = shortDescriptionState.text.toString(),
+                            title = titleState.text.toString(),
                             repeated = repeated,
                             alwaysZap = alwaysZap,
                         ), oldTimer
@@ -287,21 +293,25 @@ fun TimerSetupDialog(
                 }
                 Spacer(Modifier.size(8.dp))
                 OutlinedTextField(
-                    value = title,
-                    singleLine = true,
-                    onValueChange = { title = it },
+                    state = titleState,
+                    lineLimits = TextFieldLineLimits.SingleLine,
                     label = { Text(text = stringResource(R.string.title)) },
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Next
+                    )
                 )
                 Spacer(Modifier.size(8.dp))
                 OutlinedTextField(
-                    value = shortDescription,
-                    singleLine = true,
-                    onValueChange = { shortDescription = it },
+                    state = shortDescriptionState,
+                    lineLimits = TextFieldLineLimits.SingleLine,
                     label = { Text(text = stringResource(R.string.description)) },
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Done
+                    )
                 )
                 Spacer(Modifier.size(8.dp))
                 Row {
