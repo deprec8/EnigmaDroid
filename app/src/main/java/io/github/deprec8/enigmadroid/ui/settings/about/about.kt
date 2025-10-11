@@ -51,12 +51,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import com.mikepenz.aboutlibraries.ui.compose.android.rememberLibraries
+import com.mikepenz.aboutlibraries.ui.compose.android.produceLibraries
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.horizontalSafeContentPadding
@@ -74,7 +75,7 @@ fun AboutPage(
         context.packageName,
         PackageManager.GET_ACTIVITIES
     )
-    val libraries = rememberLibraries(R.raw.aboutlibraries)
+    val libraries by produceLibraries()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val scrollState = rememberScrollState()
 
@@ -198,7 +199,7 @@ fun AboutPage(
                     Text(
                         text = stringResource(
                             R.string.libraries,
-                            libraries.value?.libraries?.size ?: ""
+                            libraries?.libraries?.size ?: ""
                         )
                     )
                 },
