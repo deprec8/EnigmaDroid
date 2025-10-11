@@ -25,9 +25,11 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -126,6 +128,10 @@ fun SignalPage(
         topBar = {
             TopAppBar(
                 modifier = Modifier.horizontalSafeContentPadding(true),
+                windowInsets = TopAppBarDefaults.windowInsets
+                    .only(
+                        WindowInsetsSides.Vertical
+                    ),
                 title = { Text(text = stringResource(R.string.signal)) },
                 scrollBehavior = scrollBehavior,
                 navigationIcon = {
