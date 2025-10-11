@@ -177,7 +177,7 @@ fun SearchTopAppBar(
                 windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT
             ) {
                 ExpandedFullScreenSearchBar(state = searchBarState, inputField) {
-                    if (content != null) {
+                    if (content != null && enabled) {
                         content()
                     } else {
                         NoResults()
@@ -185,7 +185,7 @@ fun SearchTopAppBar(
                 }
             } else {
                 ExpandedDockedSearchBar(state = searchBarState, inputField) {
-                    if (content != null) {
+                    if (content != null && enabled) {
                         content()
                     } else {
                         NoResults()
