@@ -130,11 +130,9 @@ fun DevicesPage(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(
-                modifier = Modifier.horizontalSafeContentPadding(true),
                 onClick =
                     {
                         showAddDialog = true
-
                     }
             ) {
                 Icon(

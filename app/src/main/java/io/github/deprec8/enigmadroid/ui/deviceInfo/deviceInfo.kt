@@ -105,8 +105,7 @@ fun DInfoPage(
                 FloatingActionButton(
                     onClick = {
                         deviceInfoViewModel.fetchData()
-                    },
-                    modifier = Modifier.horizontalSafeContentPadding(true)
+                    }
                 ) {
                     Icon(
                         Icons.Default.Refresh,

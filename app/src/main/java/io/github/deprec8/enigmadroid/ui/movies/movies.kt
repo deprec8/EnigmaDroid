@@ -90,7 +90,6 @@ import io.github.deprec8.enigmadroid.ui.components.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.components.calculateSearchTopAppBarContentPaddingValues
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.horizontalSafeContentPadding
 import io.github.deprec8.enigmadroid.utils.IntentUtils
 import kotlinx.coroutines.launch
 
@@ -357,7 +356,7 @@ fun MoviesPage(
             ) {
                 FloatingActionButton(onClick = {
                     moviesViewModel.fetchData()
-                }, modifier = Modifier.horizontalSafeContentPadding(true)) {
+                }) {
                     Icon(
                         Icons.Default.Refresh,
                         contentDescription = stringResource(R.string.refresh_page)

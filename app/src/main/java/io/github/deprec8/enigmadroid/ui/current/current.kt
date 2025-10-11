@@ -115,7 +115,7 @@ fun CurrentPage(
             ) {
                 FloatingActionButton(onClick = {
                     currentViewModel.fetchData()
-                }, modifier = Modifier.horizontalSafeContentPadding(true)) {
+                }) {
                     Icon(
                         Icons.Default.Refresh,
                         contentDescription = stringResource(R.string.refresh_page)
