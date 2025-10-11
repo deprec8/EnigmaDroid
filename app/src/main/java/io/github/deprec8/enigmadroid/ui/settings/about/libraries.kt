@@ -20,8 +20,10 @@
 package io.github.deprec8.enigmadroid.ui.settings.about
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -66,6 +68,10 @@ fun LibrariesPage(
         topBar = {
             TopAppBar(
                 modifier = Modifier.horizontalSafeContentPadding(true),
+                windowInsets = TopAppBarDefaults.windowInsets
+                    .only(
+                        WindowInsetsSides.Vertical
+                    ),
                 title = {
                     Text(
                         text = stringResource(id = R.string.third_party_libraries),
