@@ -344,12 +344,12 @@ fun RemoteControlPage(
                 .verticalScroll(scrollState)
                 .padding(innerPadding)
         ) {
-            if (windowSizeClass.windowWidthSizeClass != WindowWidthSizeClass.EXPANDED) {
+            if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
-                        .padding(16.dp)
+                        .padding(8.dp)
                         .align(Alignment.Center)
                         .fillMaxSize()
                 ) {
@@ -398,7 +398,7 @@ fun RemoteControlPage(
             } else {
                 Column(
                     Modifier
-                        .padding(16.dp)
+                        .padding(8.dp)
                         .align(Alignment.Center)
                         .fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -409,7 +409,7 @@ fun RemoteControlPage(
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.End,
                             modifier = Modifier
-                                .padding(20.dp)
+                                .padding(end = 12.dp)
                                 .weight(1f)
                         ) {
                             ColorButtons(
@@ -429,7 +429,7 @@ fun RemoteControlPage(
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.Start,
                             modifier = Modifier
-                                .padding(20.dp)
+                                .padding(start = 12.dp)
                                 .weight(1f)
                         ) {
                             BouquetButtons(
