@@ -221,7 +221,7 @@ fun TimerSetupDialog(
                 )
             }
         },
-        content = {
+        content = { isScrollable ->
             Column {
                 ExposedDropdownMenuBox(
                     expanded = showServicesMenu,
@@ -254,7 +254,7 @@ fun TimerSetupDialog(
                         expanded = showServicesMenu,
                         scrollState = rememberScrollState(),
                         onDismissRequest = { showServicesMenu = false },
-                        containerColor = if (it) {
+                        containerColor = if (isScrollable) {
                             MaterialTheme.colorScheme.surfaceContainerHigh
                         } else {
                             MenuDefaults.containerColor
@@ -480,7 +480,7 @@ fun TimerSetupDialog(
                         expanded = showAftereventMenu,
                         scrollState = rememberScrollState(),
                         onDismissRequest = { showAftereventMenu = false },
-                        containerColor = if (it) {
+                        containerColor = if (isScrollable) {
                             MaterialTheme.colorScheme.surfaceContainerHigh
                         } else {
                             MenuDefaults.containerColor
