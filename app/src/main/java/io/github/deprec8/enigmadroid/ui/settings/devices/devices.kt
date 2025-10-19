@@ -166,7 +166,7 @@ fun DevicesPage(
                     .fillMaxSize()
                     .consumeWindowInsets(innerPadding),
                 contentPadding = innerPadding,
-                columns = GridCells.Adaptive(300.dp),
+                columns = GridCells.Adaptive(350.dp),
             ) {
                 itemsIndexed(devices, key = { index, device -> device.id }) { index, device ->
                     var showDropDownMenu by rememberSaveable {

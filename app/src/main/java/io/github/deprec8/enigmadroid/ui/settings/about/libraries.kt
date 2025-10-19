@@ -99,7 +99,7 @@ fun LibrariesPage(
             modifier = Modifier
                 .fillMaxSize()
                 .consumeWindowInsets(innerPadding),
-            columns = GridCells.Adaptive(310.dp),
+            columns = GridCells.Adaptive(350.dp),
             contentPadding = innerPadding
         ) {
             items(libraries?.libraries ?: emptyList()) { library ->
