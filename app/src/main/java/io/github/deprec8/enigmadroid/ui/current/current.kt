@@ -25,9 +25,11 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -113,7 +115,7 @@ fun CurrentPage(
             ) {
                 FloatingActionButton(onClick = {
                     currentViewModel.fetchData()
-                }, modifier = Modifier.horizontalSafeContentPadding(true)) {
+                }) {
                     Icon(
                         Icons.Default.Refresh,
                         contentDescription = stringResource(R.string.refresh_page)
@@ -125,6 +127,10 @@ fun CurrentPage(
         topBar = {
             TopAppBar(
                 modifier = Modifier.horizontalSafeContentPadding(true),
+                windowInsets = TopAppBarDefaults.windowInsets
+                    .only(
+                        WindowInsetsSides.Vertical
+                    ),
                 title = {
                     Text(
                         text = stringResource(id = R.string.current),
@@ -160,7 +166,7 @@ fun CurrentPage(
             .nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { innerPadding ->
         when (currentEventInfo.info.result) {
-            true  -> {
+            true -> {
                 Column(
                     Modifier
                         .fillMaxSize()
@@ -196,7 +202,9 @@ fun CurrentPage(
                                 Text(
                                     text = TimestampUtils.formatApiTimestampToTime(
                                         currentEventInfo.now.beginTimestamp
-                                    ) + " - " + TimestampUtils.formatApiTimestampToTime(currentEventInfo.now.beginTimestamp + currentEventInfo.now.durationInSeconds),
+                                    ) + " - " + TimestampUtils.formatApiTimestampToTime(
+                                        currentEventInfo.now.beginTimestamp + currentEventInfo.now.durationInSeconds
+                                    ),
                                     maxLines = 1
                                 )
                             }
@@ -235,7 +243,9 @@ fun CurrentPage(
                                 Text(
                                     text = TimestampUtils.formatApiTimestampToTime(
                                         currentEventInfo.next.beginTimestamp
-                                    ) + " - " + TimestampUtils.formatApiTimestampToTime(currentEventInfo.next.beginTimestamp + currentEventInfo.next.durationInSeconds),
+                                    ) + " - " + TimestampUtils.formatApiTimestampToTime(
+                                        currentEventInfo.next.beginTimestamp + currentEventInfo.next.durationInSeconds
+                                    ),
                                     maxLines = 1
                                 )
                             }
@@ -272,7 +282,7 @@ fun CurrentPage(
                     )
                 }
             }
-            else  -> {
+            else -> {
                 LoadingScreen(
                     Modifier
                         .consumeWindowInsets(innerPadding)

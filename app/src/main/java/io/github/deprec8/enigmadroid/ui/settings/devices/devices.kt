@@ -30,8 +30,10 @@ import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -104,6 +106,10 @@ fun DevicesPage(
         topBar = {
             TopAppBar(
                 modifier = Modifier.horizontalSafeContentPadding(true),
+                windowInsets = TopAppBarDefaults.windowInsets
+                    .only(
+                        WindowInsetsSides.Vertical
+                    ),
                 title = {
                     Text(
                         text = stringResource(id = R.string.devices),
@@ -124,11 +130,9 @@ fun DevicesPage(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(
-                modifier = Modifier.horizontalSafeContentPadding(true),
                 onClick =
                     {
                         showAddDialog = true
-
                     }
             ) {
                 Icon(
@@ -162,7 +166,7 @@ fun DevicesPage(
                     .fillMaxSize()
                     .consumeWindowInsets(innerPadding),
                 contentPadding = innerPadding,
-                columns = GridCells.Adaptive(300.dp),
+                columns = GridCells.Adaptive(350.dp),
             ) {
                 itemsIndexed(devices, key = { index, device -> device.id }) { index, device ->
                     var showDropDownMenu by rememberSaveable {

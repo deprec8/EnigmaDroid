@@ -19,15 +19,7 @@
 
 package io.github.deprec8.enigmadroid.ui.components
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -35,6 +27,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.TextObfuscationMode
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Visibility
@@ -43,10 +38,15 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedSecureTextField
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.res.stringResource
@@ -54,8 +54,6 @@ import androidx.compose.ui.semantics.contentType
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowHeightSizeClass
@@ -66,28 +64,21 @@ import io.github.deprec8.enigmadroid.R
 @Composable
 fun DeviceSetupCard(
     modifier: Modifier,
-    name: String,
-    ip: String,
-    port: String,
-    livePort: String,
+    nameState: TextFieldState,
+    ipState: TextFieldState,
+    portState: TextFieldState,
+    livePortState: TextFieldState,
     isHttps: Boolean,
     isLogin: Boolean,
-    user: String,
-    password: String,
-    passwordVisible: Boolean,
-    onNameChange: (name: String) -> Unit,
-    onIpChange: (ip: String) -> Unit,
-    onPortChange: (port: String) -> Unit,
-    onLivePortChange: (livePort: String) -> Unit,
+    userState: TextFieldState,
+    passwordState: TextFieldState,
     onHttpsChange: () -> Unit,
     onLoginChange: () -> Unit,
-    onUserChange: (user: String) -> Unit,
-    onPasswordChange: (password: String) -> Unit,
-    onPasswordVisibilityChange: () -> Unit
-
 ) {
 
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+    var passwordVisible by rememberSaveable { mutableStateOf(false) }
+
 
     Column(
         modifier = modifier
@@ -97,13 +88,12 @@ fun DeviceSetupCard(
         ) {
             Row {
                 OutlinedTextField(
-                    value = name,
-                    singleLine = true,
+                    state = nameState,
+                    lineLimits = TextFieldLineLimits.SingleLine,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Next
                     ),
-                    onValueChange = onNameChange,
                     label = {
                         Text(
                             text = stringResource(R.string.name),
@@ -116,13 +106,12 @@ fun DeviceSetupCard(
                         .fillMaxWidth(0.5f)
                 )
                 OutlinedTextField(
-                    value = port,
-                    singleLine = true,
+                    state = portState,
+                    lineLimits = TextFieldLineLimits.SingleLine,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Next
                     ),
-                    onValueChange = onPortChange,
                     label = {
                         Text(
                             text = stringResource(R.string.port),
@@ -138,13 +127,12 @@ fun DeviceSetupCard(
             Spacer(modifier = Modifier.size(8.dp))
             Row {
                 OutlinedTextField(
-                    value = ip,
-                    singleLine = true,
+                    state = ipState,
+                    lineLimits = TextFieldLineLimits.SingleLine,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Next
                     ),
-                    onValueChange = onIpChange,
                     label = {
                         Text(
                             text = stringResource(R.string.ip_address),
@@ -157,8 +145,8 @@ fun DeviceSetupCard(
                         .fillMaxWidth(0.5f)
                 )
                 OutlinedTextField(
-                    value = livePort,
-                    singleLine = true,
+                    state = livePortState,
+                    lineLimits = TextFieldLineLimits.SingleLine,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
                         imeAction = if (! isLogin) {
@@ -167,7 +155,6 @@ fun DeviceSetupCard(
                             ImeAction.Next
                         }
                     ),
-                    onValueChange = onLivePortChange,
                     label = {
                         Text(
                             text = stringResource(R.string.live_port),
@@ -203,7 +190,10 @@ fun DeviceSetupCard(
                     })
                 FilterChip(
                     selected = isLogin,
-                    onClick = onLoginChange,
+                    onClick = {
+                        passwordVisible = false
+                        onLoginChange()
+                    },
                     label = {
                         Text(
                             text = stringResource(R.string.login),
@@ -229,13 +219,12 @@ fun DeviceSetupCard(
             Row {
                 OutlinedTextField(
                     enabled = isLogin,
-                    value = user,
-                    singleLine = true,
+                    state = userState,
+                    lineLimits = TextFieldLineLimits.SingleLine,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Next
                     ),
-                    onValueChange = onUserChange,
                     label = {
                         Text(
                             text = stringResource(R.string.username),
@@ -250,52 +239,38 @@ fun DeviceSetupCard(
                             contentType = ContentType.Username
                         }
                 )
-                OutlinedTextField(
+                OutlinedSecureTextField(
+                    state = passwordState,
                     enabled = isLogin,
-                    value = password,
                     trailingIcon = {
-                        IconButton(onClick = onPasswordVisibilityChange) {
-                            AnimatedContent(passwordVisible, label = "", transitionSpec = {
-                                scaleIn(
-                                    initialScale = 0f,
-                                    animationSpec = spring(
-                                        dampingRatio = Spring.DampingRatioMediumBouncy,
-                                        stiffness = Spring.StiffnessLow
+                        IconButton(
+                            onClick = { passwordVisible = ! passwordVisible },
+                            enabled = isLogin
+                        ) {
+                            when (passwordVisible) {
+                                true  -> {
+                                    Icon(
+                                        Icons.Default.VisibilityOff,
+                                        contentDescription = stringResource(R.string.toggle_password_visibility)
                                     )
-                                ) + fadeIn() togetherWith
-                                        scaleOut(targetScale = 0f) + fadeOut()
-                            })
-                            {
-                                when (it) {
-                                    true  -> {
-                                        Icon(
-                                            Icons.Default.VisibilityOff,
-                                            contentDescription = stringResource(R.string.toggle_password_visibility)
-                                        )
-                                    }
-                                    false -> {
-                                        Icon(
-                                            Icons.Default.Visibility,
-                                            contentDescription = stringResource(R.string.toggle_password_visibility)
-                                        )
-                                    }
                                 }
-
+                                false -> {
+                                    Icon(
+                                        Icons.Default.Visibility,
+                                        contentDescription = stringResource(R.string.toggle_password_visibility)
+                                    )
+                                }
                             }
                         }
                     },
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Password,
                         imeAction = ImeAction.Done
                     ),
-                    visualTransformation = if (! passwordVisible) {
-                        PasswordVisualTransformation()
+                    textObfuscationMode = if (! passwordVisible) {
+                        TextObfuscationMode.Hidden
                     } else {
-                        VisualTransformation.None
+                        TextObfuscationMode.Visible
                     },
-
-                    singleLine = true,
-                    onValueChange = onPasswordChange,
                     label = {
                         Text(
                             text = stringResource(R.string.password),
@@ -314,13 +289,12 @@ fun DeviceSetupCard(
             }
         } else {
             OutlinedTextField(
-                value = name,
-                singleLine = true,
+                state = nameState,
+                lineLimits = TextFieldLineLimits.SingleLine,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Next
                 ),
-                onValueChange = onNameChange,
                 label = {
                     Text(
                         text = stringResource(R.string.name),
@@ -333,13 +307,12 @@ fun DeviceSetupCard(
             )
             Spacer(modifier = Modifier.size(8.dp))
             OutlinedTextField(
-                value = ip,
-                singleLine = true,
+                state = ipState,
+                lineLimits = TextFieldLineLimits.SingleLine,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Next
                 ),
-                onValueChange = onIpChange,
                 label = {
                     Text(
                         text = stringResource(R.string.ip_address),
@@ -353,13 +326,12 @@ fun DeviceSetupCard(
             Spacer(modifier = Modifier.size(8.dp))
             Row {
                 OutlinedTextField(
-                    value = port,
-                    singleLine = true,
+                    state = portState,
+                    lineLimits = TextFieldLineLimits.SingleLine,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Next
                     ),
-                    onValueChange = onPortChange,
                     label = {
                         Text(
                             text = stringResource(R.string.port),
@@ -372,8 +344,8 @@ fun DeviceSetupCard(
                         .fillMaxWidth(0.5f)
                 )
                 OutlinedTextField(
-                    value = livePort,
-                    singleLine = true,
+                    state = livePortState,
+                    lineLimits = TextFieldLineLimits.SingleLine,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
                         imeAction = if (! isLogin) {
@@ -382,7 +354,6 @@ fun DeviceSetupCard(
                             ImeAction.Next
                         }
                     ),
-                    onValueChange = onLivePortChange,
                     label = {
                         Text(
                             text = stringResource(R.string.live_port),
@@ -418,7 +389,10 @@ fun DeviceSetupCard(
                     })
                 FilterChip(
                     selected = isLogin,
-                    onClick = onLoginChange,
+                    onClick = {
+                        passwordVisible = false
+                        onLoginChange()
+                    },
                     label = {
                         Text(
                             text = stringResource(R.string.login),
@@ -444,14 +418,13 @@ fun DeviceSetupCard(
 
             Spacer(modifier = Modifier.size(8.dp))
             OutlinedTextField(
-                value = user,
                 enabled = isLogin,
-                singleLine = true,
+                state = userState,
+                lineLimits = TextFieldLineLimits.SingleLine,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Next
                 ),
-                onValueChange = onUserChange,
                 label = {
                     Text(
                         text = stringResource(R.string.username),
@@ -467,53 +440,38 @@ fun DeviceSetupCard(
             )
             Spacer(modifier = Modifier.size(8.dp))
 
-            OutlinedTextField(
+            OutlinedSecureTextField(
+                state = passwordState,
                 enabled = isLogin,
-                value = password,
                 trailingIcon = {
-                    IconButton(onClick = onPasswordVisibilityChange) {
-                        AnimatedContent(passwordVisible, label = "", transitionSpec = {
-                            scaleIn(
-                                initialScale = 0f,
-                                animationSpec = spring(
-                                    dampingRatio = Spring.DampingRatioMediumBouncy,
-                                    stiffness = Spring.StiffnessLow
+                    IconButton(
+                        onClick = { passwordVisible = ! passwordVisible },
+                        enabled = isLogin
+                    ) {
+                        when (passwordVisible) {
+                            true  -> {
+                                Icon(
+                                    Icons.Default.VisibilityOff,
+                                    contentDescription = stringResource(R.string.toggle_password_visibility)
                                 )
-                            ) + fadeIn() togetherWith
-                                    scaleOut(targetScale = 0f) + fadeOut()
-                        })
-                        {
-                            when (it) {
-                                true  -> {
-                                    Icon(
-                                        Icons.Default.VisibilityOff,
-                                        contentDescription = stringResource(R.string.toggle_password_visibility)
-                                    )
-                                }
-                                false -> {
-                                    Icon(
-                                        Icons.Default.Visibility,
-                                        contentDescription = stringResource(R.string.toggle_password_visibility)
-                                    )
-                                }
                             }
-
+                            false -> {
+                                Icon(
+                                    Icons.Default.Visibility,
+                                    contentDescription = stringResource(R.string.toggle_password_visibility)
+                                )
+                            }
                         }
                     }
                 },
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done
                 ),
-                visualTransformation =
-                    if (! passwordVisible) {
-                        PasswordVisualTransformation()
-                    } else {
-                        VisualTransformation.None
-                    },
-
-                singleLine = true,
-                onValueChange = onPasswordChange,
+                textObfuscationMode = if (! passwordVisible) {
+                    TextObfuscationMode.Hidden
+                } else {
+                    TextObfuscationMode.Visible
+                },
                 label = {
                     Text(
                         text = stringResource(R.string.password),
@@ -527,8 +485,6 @@ fun DeviceSetupCard(
                         contentType = ContentType.Password
                     }
             )
-
-
         }
     }
 }

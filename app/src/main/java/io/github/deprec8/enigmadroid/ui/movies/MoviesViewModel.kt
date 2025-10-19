@@ -19,9 +19,7 @@
 
 package io.github.deprec8.enigmadroid.ui.movies
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -52,11 +50,7 @@ class MoviesViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
-    var input by mutableStateOf("")
-        private set
-
-    private val _active = MutableStateFlow(false)
-    val active: StateFlow<Boolean> = _active.asStateFlow()
+    val searchFieldState = TextFieldState()
 
     private val _filteredMovies = MutableStateFlow<List<Movie>?>(null)
     val filteredMovies: StateFlow<List<Movie>?> = _filteredMovies.asStateFlow()
@@ -150,20 +144,14 @@ class MoviesViewModel @Inject constructor(
     }
 
     fun updateSearchInput() {
-        _searchInput.value = input
+        _searchInput.value = searchFieldState.text.toString()
     }
 
     suspend fun buildStreamUrl(sRef: String): String {
         return apiRepository.buildMovieStreamURL(sRef)
     }
 
-    fun updateInput(newInput: String) {
-        input = newInput
-    }
 
-    fun updateActive(isActive: Boolean) {
-        _active.value = isActive
-    }
 
     fun play(sRef: String) {
         viewModelScope.launch {

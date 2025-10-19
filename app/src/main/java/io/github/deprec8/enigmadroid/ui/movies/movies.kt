@@ -33,6 +33,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.DriveFileMove
 import androidx.compose.material.icons.automirrored.outlined.DriveFileMove
@@ -89,7 +90,6 @@ import io.github.deprec8.enigmadroid.ui.components.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.components.calculateSearchTopAppBarContentPaddingValues
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.horizontalSafeContentPadding
 import io.github.deprec8.enigmadroid.utils.IntentUtils
 import kotlinx.coroutines.launch
 
@@ -103,7 +103,6 @@ fun MoviesPage(
 
     val movies by moviesViewModel.movies.collectAsStateWithLifecycle()
     val filteredMovies by moviesViewModel.filteredMovies.collectAsStateWithLifecycle()
-    val active by moviesViewModel.active.collectAsStateWithLifecycle()
     val searchHistory by moviesViewModel.searchHistory.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -351,13 +350,13 @@ fun MoviesPage(
     Scaffold(
         floatingActionButton = {
             AnimatedVisibility(
-                loadingState == LoadingState.LOADED && ! active,
+                loadingState == LoadingState.LOADED,
                 enter = scaleIn(),
                 exit = scaleOut()
             ) {
                 FloatingActionButton(onClick = {
                     moviesViewModel.fetchData()
-                }, modifier = Modifier.horizontalSafeContentPadding(true)) {
+                }) {
                     Icon(
                         Icons.Default.Refresh,
                         contentDescription = stringResource(R.string.refresh_page)
@@ -371,10 +370,7 @@ fun MoviesPage(
         }, topBar = {
             SearchTopAppBar(
                 enabled = movies.isNotEmpty(),
-                expanded = active,
-                onExpandedChange = { moviesViewModel.updateActive(it) },
-                input = moviesViewModel.input,
-                onInputChange = { moviesViewModel.updateInput(it) },
+                textFieldState = moviesViewModel.searchFieldState,
                 placeholder = stringResource(R.string.search_movies),
                 content = {
                     if (filteredMovies != null) {
@@ -388,10 +384,14 @@ fun MoviesPage(
                         SearchHistory(
                             searchHistory = searchHistory,
                             onTermSearchClick = {
-                                moviesViewModel.updateInput(it)
+                                moviesViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
                                 moviesViewModel.updateSearchInput()
                             },
-                            onTermInsertClick = { moviesViewModel.updateInput(it) }
+                            onTermInsertClick = {
+                                moviesViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
+                                    it
+                                )
+                            }
                         )
                     }
                 },

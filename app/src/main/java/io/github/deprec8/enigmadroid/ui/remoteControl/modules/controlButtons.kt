@@ -92,7 +92,7 @@ fun ControlButtons(remoteControlViewModel: RemoteControlViewModel, enabled: Bool
     )
 
     controlButtons.forEach { row ->
-        Row(Modifier.widthIn(0.dp, 450.dp)) {
+        Row(Modifier.widthIn(0.dp, 500.dp)) {
             row.forEach { button ->
                 FilledTonalButton(
                     onClick = {

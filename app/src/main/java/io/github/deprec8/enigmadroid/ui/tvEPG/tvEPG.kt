@@ -33,6 +33,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddAlert
 import androidx.compose.material.icons.filled.Refresh
@@ -75,7 +76,6 @@ import io.github.deprec8.enigmadroid.ui.components.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.components.calculateSearchTopAppBarContentPaddingValues
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.horizontalSafeContentPadding
 import io.github.deprec8.enigmadroid.utils.IntentUtils
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
 import kotlinx.coroutines.launch
@@ -92,7 +92,6 @@ fun TVEPGPage(
     val scope = rememberCoroutineScope()
 
     val epgs by tvEPGViewModel.epgs.collectAsStateWithLifecycle()
-    val active by tvEPGViewModel.active.collectAsStateWithLifecycle()
     val filteredEPGEvents by tvEPGViewModel.filteredEPGEvents.collectAsStateWithLifecycle()
     val searchHistory by tvEPGViewModel.searchHistory.collectAsStateWithLifecycle()
     val pagerState = rememberPagerState(pageCount = { epgs.size })
@@ -203,13 +202,13 @@ fun TVEPGPage(
     Scaffold(
         floatingActionButton = {
             AnimatedVisibility(
-                loadingState == LoadingState.LOADED && ! active,
+                loadingState == LoadingState.LOADED,
                 enter = scaleIn(),
                 exit = scaleOut()
             ) {
                 FloatingActionButton(onClick = {
                     tvEPGViewModel.fetchData()
-                }, modifier = Modifier.horizontalSafeContentPadding(true)) {
+                }) {
                     Icon(
                         Icons.Default.Refresh,
                         contentDescription = stringResource(R.string.refresh_page)
@@ -223,10 +222,7 @@ fun TVEPGPage(
         }, topBar = {
             SearchTopAppBar(
                 enabled = epgs.isNotEmpty(),
-                expanded = active,
-                onExpandedChange = { tvEPGViewModel.updateActive(it) },
-                input = tvEPGViewModel.input,
-                onInputChange = { tvEPGViewModel.updateInput(it) },
+                textFieldState = tvEPGViewModel.searchFieldState,
                 placeholder = stringResource(R.string.search_epg),
                 content = {
                     if (filteredEPGEvents != null) {
@@ -241,10 +237,14 @@ fun TVEPGPage(
                         SearchHistory(
                             searchHistory = searchHistory,
                             onTermSearchClick = {
-                                tvEPGViewModel.updateInput(it)
+                                tvEPGViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
                                 tvEPGViewModel.updateSearchInput()
                             },
-                            onTermInsertClick = { tvEPGViewModel.updateInput(it) }
+                            onTermInsertClick = {
+                                tvEPGViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
+                                    it
+                                )
+                            }
                         )
                     }
                 },

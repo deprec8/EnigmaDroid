@@ -20,8 +20,10 @@
 package io.github.deprec8.enigmadroid.ui.settings.remoteControl
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -66,6 +68,10 @@ fun RemoteControlSettingsPage(
         topBar = {
             TopAppBar(
                 modifier = Modifier.horizontalSafeContentPadding(true),
+                windowInsets = TopAppBarDefaults.windowInsets
+                    .only(
+                        WindowInsetsSides.Vertical
+                    ),
                 title = {
                     Text(
                         text = stringResource(id = R.string.remote_control),

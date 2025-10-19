@@ -19,9 +19,7 @@
 
 package io.github.deprec8.enigmadroid.ui.radio
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -51,11 +49,7 @@ class RadioViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
-    var input by mutableStateOf("")
-        private set
-
-    private val _active = MutableStateFlow(false)
-    val active: StateFlow<Boolean> = _active.asStateFlow()
+    val searchFieldState = TextFieldState()
 
     private val _filteredEvents = MutableStateFlow<List<Event>?>(null)
     val filteredEvents: StateFlow<List<Event>?> = _filteredEvents.asStateFlow()
@@ -144,17 +138,10 @@ class RadioViewModel @Inject constructor(
         )
     }
 
-    fun updateInput(newInput: String) {
-        input = newInput
-    }
-
     fun updateSearchInput(index: Int) {
         currentBouquetIndex.value = index
-        _searchInput.value = input
+        _searchInput.value = searchFieldState.text.toString()
     }
 
-    fun updateActive(isActive: Boolean) {
-        _active.value = isActive
-    }
 
 }

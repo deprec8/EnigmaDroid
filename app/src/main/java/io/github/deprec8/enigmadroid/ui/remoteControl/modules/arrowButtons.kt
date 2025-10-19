@@ -43,7 +43,11 @@ import io.github.deprec8.enigmadroid.model.RemoteControlButton
 import io.github.deprec8.enigmadroid.ui.remoteControl.RemoteControlViewModel
 
 @Composable
-fun ArrowButtons(remoteControlViewModel: RemoteControlViewModel, enabled: Boolean, performHaptic: () -> Unit) {
+fun ArrowButtons(
+    remoteControlViewModel: RemoteControlViewModel,
+    enabled: Boolean,
+    performHaptic: () -> Unit
+) {
 
     val arrowButtons = listOf(
         listOf(
@@ -94,7 +98,7 @@ fun ArrowButtons(remoteControlViewModel: RemoteControlViewModel, enabled: Boolea
     arrowButtons.forEach { row ->
         Row(
             Modifier
-                .widthIn(0.dp, 450.dp)
+                .widthIn(0.dp, 500.dp)
         ) {
             row.forEach { button ->
                 FilledTonalButton(

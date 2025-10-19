@@ -35,6 +35,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -85,7 +86,6 @@ import io.github.deprec8.enigmadroid.ui.components.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.components.calculateSearchTopAppBarContentPaddingValues
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.horizontalSafeContentPadding
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
 import kotlinx.coroutines.launch
 
@@ -97,7 +97,6 @@ fun TimersPage(
     timersViewModel: TimersViewModel = hiltViewModel()
 ) {
 
-    val active by timersViewModel.active.collectAsStateWithLifecycle()
     val filteredTimers by timersViewModel.filteredTimers.collectAsStateWithLifecycle()
     val timerList by timersViewModel.timerList.collectAsStateWithLifecycle()
     val services by timersViewModel.services.collectAsStateWithLifecycle()
@@ -291,10 +290,7 @@ fun TimersPage(
         }, topBar = {
             SearchTopAppBar(
                 enabled = timerList.result,
-                expanded = active,
-                onExpandedChange = { timersViewModel.updateActive(it) },
-                input = timersViewModel.input,
-                onInputChange = { timersViewModel.updateInput(it) },
+                textFieldState = timersViewModel.searchFieldState,
                 placeholder = stringResource(R.string.search_timers),
                 content = {
                     if (filteredTimers != null) {
@@ -308,10 +304,14 @@ fun TimersPage(
                         SearchHistory(
                             searchHistory = searchHistory,
                             onTermSearchClick = {
-                                timersViewModel.updateInput(it)
+                                timersViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
                                 timersViewModel.updateSearchInput()
                             },
-                            onTermInsertClick = { timersViewModel.updateInput(it) }
+                            onTermInsertClick = {
+                                timersViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
+                                    it
+                                )
+                            }
                         )
                     }
                 },
@@ -324,11 +324,11 @@ fun TimersPage(
 
         }, floatingActionButton = {
             AnimatedVisibility(
-                loadingState == LoadingState.LOADED && ! active,
+                loadingState == LoadingState.LOADED,
                 enter = scaleIn(),
                 exit = scaleOut()
             ) {
-                Column(modifier = Modifier.horizontalSafeContentPadding(true)) {
+                Column {
                     SmallFloatingActionButton(onClick = {
                         timersViewModel.fetchData()
                     }, Modifier.align(Alignment.End)) {

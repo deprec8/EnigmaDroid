@@ -31,9 +31,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.outlined.AccessTime
+import androidx.compose.material.icons.outlined.Keyboard
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenuItem
@@ -45,12 +52,18 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimeInput
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerDialog
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
@@ -65,6 +78,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
@@ -81,9 +95,9 @@ fun TimerSetupDialog(
     onSave: (newTimer: Timer, oldTimer: Timer?) -> Unit,
     services: List<ServiceList>,
 ) {
+    val titleState = rememberTextFieldState("")
+    val shortDescriptionState = rememberTextFieldState("")
 
-    var title by rememberSaveable { mutableStateOf("") }
-    var shortDescription by rememberSaveable { mutableStateOf("") }
     var disabled by rememberSaveable { mutableIntStateOf(0) }
     var justPlay by rememberSaveable { mutableIntStateOf(0) }
     var beginTimestamp by rememberSaveable { mutableLongStateOf(0L) }
@@ -120,9 +134,9 @@ fun TimerSetupDialog(
 
     LaunchedEffect(Unit) {
         if (oldTimer != null) {
-            title = oldTimer.title
+            titleState.setTextAndPlaceCursorAtEnd(oldTimer.title)
             serviceReference = oldTimer.serviceReference
-            shortDescription = oldTimer.shortDescription
+            shortDescriptionState.setTextAndPlaceCursorAtEnd(oldTimer.shortDescription)
             disabled = oldTimer.disabled
             justPlay = oldTimer.justPlay
             beginTimestamp = oldTimer.beginTimestamp * 1000
@@ -144,9 +158,9 @@ fun TimerSetupDialog(
     }
 
     fun reset() {
-        title = ""
+        titleState.clearText()
         serviceReference = ""
-        shortDescription = ""
+        shortDescriptionState.clearText()
         disabled = 0
         justPlay = 0
         beginTimestamp = 0L
@@ -158,9 +172,9 @@ fun TimerSetupDialog(
 
     fun isEverythingValid(): Boolean {
         return if (oldTimer == null) {
-            title != "" && serviceReference != "" && beginTimestamp / 1000 < endTimestamp / 1000
+            titleState.text.toString() != "" && serviceReference != "" && beginTimestamp / 1000 < endTimestamp / 1000
         } else {
-            title != "" && serviceReference != "" && beginTimestamp < endTimestamp && (oldTimer.serviceReference != serviceReference || oldTimer.title != title || oldTimer.shortDescription != shortDescription || oldTimer.disabled != disabled || oldTimer.justPlay != justPlay || oldTimer.beginTimestamp != beginTimestamp / 1000 || oldTimer.endTimestamp != endTimestamp / 1000 || oldTimer.afterEvent != afterevent || oldTimer.repeated != repeated || oldTimer.alwaysZap != alwaysZap)
+            titleState.text.toString() != "" && serviceReference != "" && beginTimestamp < endTimestamp && (oldTimer.serviceReference != serviceReference || oldTimer.title != titleState.text.toString() || oldTimer.shortDescription != shortDescriptionState.text.toString() || oldTimer.disabled != disabled || oldTimer.justPlay != justPlay || oldTimer.beginTimestamp != beginTimestamp / 1000 || oldTimer.endTimestamp != endTimestamp / 1000 || oldTimer.afterEvent != afterevent || oldTimer.repeated != repeated || oldTimer.alwaysZap != alwaysZap)
         }
 
     }
@@ -191,8 +205,8 @@ fun TimerSetupDialog(
                             justPlay = justPlay,
                             afterEvent = afterevent,
                             disabled = disabled,
-                            shortDescription = shortDescription,
-                            title = title,
+                            shortDescription = shortDescriptionState.text.toString(),
+                            title = titleState.text.toString(),
                             repeated = repeated,
                             alwaysZap = alwaysZap,
                         ), oldTimer
@@ -240,6 +254,11 @@ fun TimerSetupDialog(
                         expanded = showServicesMenu,
                         scrollState = rememberScrollState(),
                         onDismissRequest = { showServicesMenu = false },
+                        containerColor = if (it) {
+                            MaterialTheme.colorScheme.surfaceContainerHigh
+                        } else {
+                            MenuDefaults.containerColor
+                        }
                     ) {
                         if (services.isNotEmpty()) {
                             services.forEach { subservice ->
@@ -266,7 +285,7 @@ fun TimerSetupDialog(
                             LinearProgressIndicator(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(vertical = 16.dp)
+                                    .padding(vertical = 16.dp, horizontal = 8.dp)
                             )
                         }
                     }
@@ -274,21 +293,25 @@ fun TimerSetupDialog(
                 }
                 Spacer(Modifier.size(8.dp))
                 OutlinedTextField(
-                    value = title,
-                    singleLine = true,
-                    onValueChange = { title = it },
+                    state = titleState,
+                    lineLimits = TextFieldLineLimits.SingleLine,
                     label = { Text(text = stringResource(R.string.title)) },
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Next
+                    )
                 )
                 Spacer(Modifier.size(8.dp))
                 OutlinedTextField(
-                    value = shortDescription,
-                    singleLine = true,
-                    onValueChange = { shortDescription = it },
+                    state = shortDescriptionState,
+                    lineLimits = TextFieldLineLimits.SingleLine,
                     label = { Text(text = stringResource(R.string.description)) },
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Done
+                    )
                 )
                 Spacer(Modifier.size(8.dp))
                 Row {
@@ -457,6 +480,11 @@ fun TimerSetupDialog(
                         expanded = showAftereventMenu,
                         scrollState = rememberScrollState(),
                         onDismissRequest = { showAftereventMenu = false },
+                        containerColor = if (it) {
+                            MaterialTheme.colorScheme.surfaceContainerHigh
+                        } else {
+                            MenuDefaults.containerColor
+                        }
                     ) {
                         DropdownMenuItem(
                             text = { Text(text = stringResource(R.string.automatic)) },
@@ -555,35 +583,125 @@ fun TimerSetupDialog(
                 }
 
                 if (showBeginTimePicker) {
+                    var showDial by rememberSaveable { mutableStateOf(true) }
+                    val pickerScrollState = rememberScrollState()
+                    val inputScrollState = rememberScrollState()
                     TimePickerDialog(
-                        beginTimeState,
                         onDismissRequest = { showBeginTimePicker = false },
-                        onConfirmRequest = {
-                            beginTimestamp = TimestampUtils.combineTimeDate(
-                                beginTimestamp,
-                                TimestampUtils.getMillisFromTimeString(
-                                    beginTimeState.hour.toString() + ":" + beginTimeState.minute.toString()
-                                )
+                        title = {
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 20.dp),
+                                text = stringResource(R.string.select_time),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                style = MaterialTheme.typography.labelMedium
                             )
-                            showBeginTimePicker = false
+                        },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                beginTimestamp = TimestampUtils.combineTimeDate(
+                                    beginTimestamp,
+                                    TimestampUtils.getMillisFromTimeString(
+                                        beginTimeState.hour.toString() + ":" + beginTimeState.minute.toString()
+                                    )
+                                )
+                                showBeginTimePicker = false
+                            }) {
+                                Text(stringResource(R.string.ok))
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { showBeginTimePicker = false }) {
+                                Text(stringResource(R.string.cancel))
+                            }
+                        },
+                        modeToggleButton = {
+                            IconButton(onClick = { showDial = ! showDial }) {
+                                Icon(
+                                    imageVector = if (showDial) {
+                                        Icons.Outlined.Keyboard
+                                    } else {
+                                        Icons.Outlined.AccessTime
+                                    },
+                                    contentDescription = stringResource(R.string.toggle_time_picker_type),
+                                )
+                            }
                         }
-                    )
+                    ) {
+                        if (showDial) {
+                            TimePicker(
+                                modifier = Modifier.verticalScroll(pickerScrollState),
+                                state = beginTimeState
+                            )
+                        } else {
+                            TimeInput(
+                                modifier = Modifier.verticalScroll(inputScrollState),
+                                state = beginTimeState
+                            )
+                        }
+                    }
                 }
 
                 if (showEndTimePicker) {
+                    var showDial by rememberSaveable { mutableStateOf(true) }
+                    val pickerScrollState = rememberScrollState()
+                    val inputScrollState = rememberScrollState()
                     TimePickerDialog(
-                        endTimeState,
                         onDismissRequest = { showEndTimePicker = false },
-                        onConfirmRequest = {
-                            endTimestamp = TimestampUtils.combineTimeDate(
-                                endTimestamp,
-                                TimestampUtils.getMillisFromTimeString(
-                                    endTimeState.hour.toString() + ":" + endTimeState.minute.toString()
-                                )
+                        title = {
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 20.dp),
+                                text = stringResource(R.string.select_time),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                style = MaterialTheme.typography.labelMedium
                             )
-                            showEndTimePicker = false
+                        },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                endTimestamp = TimestampUtils.combineTimeDate(
+                                    endTimestamp,
+                                    TimestampUtils.getMillisFromTimeString(
+                                        endTimeState.hour.toString() + ":" + endTimeState.minute.toString()
+                                    )
+                                )
+                                showEndTimePicker = false
+                            }) {
+                                Text(stringResource(R.string.ok))
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { showEndTimePicker = false }) {
+                                Text(stringResource(R.string.cancel))
+                            }
+                        },
+                        modeToggleButton = {
+                            IconButton(onClick = { showDial = ! showDial }) {
+                                Icon(
+                                    imageVector = if (showDial) {
+                                        Icons.Outlined.Keyboard
+                                    } else {
+                                        Icons.Outlined.AccessTime
+                                    },
+                                    contentDescription = stringResource(R.string.toggle_time_picker_type),
+                                )
+                            }
                         }
-                    )
+                    ) {
+                        if (showDial) {
+                            TimePicker(
+                                modifier = Modifier.verticalScroll(pickerScrollState),
+                                state = endTimeState
+                            )
+                        } else {
+                            TimeInput(
+                                modifier = Modifier.verticalScroll(inputScrollState),
+                                state = endTimeState
+                            )
+                        }
+                    }
                 }
             }
         }

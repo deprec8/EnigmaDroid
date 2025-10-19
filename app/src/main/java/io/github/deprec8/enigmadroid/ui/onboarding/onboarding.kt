@@ -38,12 +38,10 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.ui.components.DeviceSetupCard
 import io.github.deprec8.enigmadroid.ui.components.horizontalSafeContentPadding
@@ -52,7 +50,6 @@ import io.github.deprec8.enigmadroid.ui.components.horizontalSafeContentPadding
 fun OnboardingPage(
     onboardingViewModel: OnboardingViewModel = hiltViewModel()
 ) {
-    val passwordVisible by onboardingViewModel.passwordVisible.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
 
     Scaffold(
@@ -107,25 +104,17 @@ fun OnboardingPage(
                 Modifier.padding(horizontal = 16.dp)
             )
             DeviceSetupCard(
-                Modifier.padding(16.dp),
-                onboardingViewModel.name,
-                onboardingViewModel.ip,
-                onboardingViewModel.port,
-                onboardingViewModel.livePort,
-                onboardingViewModel.isHttps,
-                onboardingViewModel.isLogin,
-                onboardingViewModel.user,
-                onboardingViewModel.password,
-                passwordVisible,
-                { name -> onboardingViewModel.updateName(name) },
-                { ip -> onboardingViewModel.updateIp(ip) },
-                { port -> onboardingViewModel.updatePort(port) },
-                { livePort -> onboardingViewModel.updateLivePort(livePort) },
-                { onboardingViewModel.toggleHttps() },
-                { onboardingViewModel.toggleLogin() },
-                { user -> onboardingViewModel.updateUser(user) },
-                { password -> onboardingViewModel.updatePassword(password) },
-                { onboardingViewModel.togglePasswordVisibility() }
+                modifier = Modifier.padding(16.dp),
+                nameState = onboardingViewModel.nameState,
+                ipState = onboardingViewModel.ipState,
+                portState = onboardingViewModel.portState,
+                livePortState = onboardingViewModel.livePortState,
+                isHttps = onboardingViewModel.isHttps,
+                isLogin = onboardingViewModel.isLogin,
+                userState = onboardingViewModel.userState,
+                passwordState = onboardingViewModel.passwordState,
+                onHttpsChange = { onboardingViewModel.toggleHttps() },
+                onLoginChange = { onboardingViewModel.toggleLogin() },
             )
         }
 

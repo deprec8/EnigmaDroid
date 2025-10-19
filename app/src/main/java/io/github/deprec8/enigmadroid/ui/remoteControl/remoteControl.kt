@@ -33,10 +33,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
@@ -187,6 +189,10 @@ fun RemoteControlPage(
         topBar = {
             TopAppBar(
                 modifier = Modifier.horizontalSafeContentPadding(),
+                windowInsets = TopAppBarDefaults.windowInsets
+                    .only(
+                        WindowInsetsSides.Vertical
+                    ),
                 title = {
                     Text(
                         text = stringResource(R.string.remote_control),
@@ -332,17 +338,18 @@ fun RemoteControlPage(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { innerPadding ->
         Box(
-            Modifier
+            modifier = Modifier
                 .consumeWindowInsets(innerPadding)
+                .fillMaxSize()
                 .verticalScroll(scrollState)
                 .padding(innerPadding)
         ) {
-            if (windowSizeClass.windowWidthSizeClass != WindowWidthSizeClass.EXPANDED) {
+            if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
-                        .padding(16.dp)
+                        .padding(8.dp)
                         .align(Alignment.Center)
                         .fillMaxSize()
                 ) {
@@ -391,7 +398,7 @@ fun RemoteControlPage(
             } else {
                 Column(
                     Modifier
-                        .padding(16.dp)
+                        .padding(8.dp)
                         .align(Alignment.Center)
                         .fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -402,7 +409,7 @@ fun RemoteControlPage(
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.End,
                             modifier = Modifier
-                                .padding(20.dp)
+                                .padding(end = 12.dp)
                                 .weight(1f)
                         ) {
                             ColorButtons(
@@ -422,7 +429,7 @@ fun RemoteControlPage(
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.Start,
                             modifier = Modifier
-                                .padding(20.dp)
+                                .padding(start = 12.dp)
                                 .weight(1f)
                         ) {
                             BouquetButtons(

@@ -19,11 +19,11 @@
 
 package io.github.deprec8.enigmadroid.ui.settings.devices
 
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -44,28 +44,26 @@ fun DeviceSetupDialog(
     onDismiss: () -> Unit,
     onSave: (newDevice: Device, oldDevice: Device?) -> Unit
 ) {
-    var name by rememberSaveable { mutableStateOf("") }
-    var ip by rememberSaveable { mutableStateOf("") }
-    var port by rememberSaveable { mutableStateOf("80") }
-    var livePort by rememberSaveable { mutableStateOf("8001") }
     var isHttps by rememberSaveable { mutableStateOf(false) }
     var isLogin by rememberSaveable { mutableStateOf(false) }
-    var user by rememberSaveable { mutableStateOf("") }
-    var password by rememberSaveable { mutableStateOf("") }
-    var passwordVisible by rememberSaveable { mutableStateOf(false) }
-    rememberScrollState()
 
-    TopAppBarDefaults.pinnedScrollBehavior()
+    val nameState = rememberTextFieldState("")
+    val ipState = rememberTextFieldState("")
+    val portState = rememberTextFieldState("80")
+    val livePortState = rememberTextFieldState("8001")
+    val userState = rememberTextFieldState("")
+    val passwordState = rememberTextFieldState("")
+
 
     fun setDeviceData() {
-        name = oldDevice?.name ?: ""
-        ip = oldDevice?.ip ?: ""
-        port = oldDevice?.port ?: "80"
-        livePort = oldDevice?.livePort ?: "8001"
+        nameState.setTextAndPlaceCursorAtEnd(oldDevice?.name ?: "")
+        ipState.setTextAndPlaceCursorAtEnd(oldDevice?.ip ?: "")
+        portState.setTextAndPlaceCursorAtEnd(oldDevice?.port ?: "80")
+        livePortState.setTextAndPlaceCursorAtEnd(oldDevice?.livePort ?: "8001")
         isHttps = oldDevice?.isHttps == true
         isLogin = oldDevice?.isLogin == true
-        user = oldDevice?.user ?: ""
-        password = oldDevice?.password ?: ""
+        userState.setTextAndPlaceCursorAtEnd(oldDevice?.user ?: "")
+        passwordState.setTextAndPlaceCursorAtEnd(oldDevice?.password ?: "")
     }
 
     LaunchedEffect(Unit) {
@@ -75,18 +73,18 @@ fun DeviceSetupDialog(
     fun isSaveReady(): Boolean {
         return if (Device(
                 oldDevice?.id ?: 0,
-                name,
-                ip,
+                nameState.text.toString(),
+                ipState.text.toString(),
                 isHttps,
                 isLogin,
-                user,
-                password,
-                port,
-                livePort
-            ) != oldDevice && name.isNotBlank() && ip.isNotBlank() && port.isNotBlank() && livePort.isNotBlank()
+                userState.text.toString(),
+                passwordState.text.toString(),
+                portState.text.toString(),
+                livePortState.text.toString()
+            ) != oldDevice && nameState.text.isNotBlank() && ipState.text.isNotBlank() && portState.text.isNotBlank() && livePortState.text.isNotBlank()
         ) {
             if (isLogin) {
-                user.isNotBlank() && password.isNotBlank()
+                userState.text.isNotBlank() && passwordState.text.isNotBlank()
             } else {
                 true
             }
@@ -111,14 +109,14 @@ fun DeviceSetupDialog(
                         onSave(
                             Device(
                                 0,
-                                name,
-                                ip,
+                                nameState.text.toString(),
+                                ipState.text.toString(),
                                 isHttps,
                                 isLogin,
-                                user,
-                                password,
-                                port,
-                                livePort,
+                                userState.text.toString(),
+                                passwordState.text.toString(),
+                                portState.text.toString(),
+                                livePortState.text.toString()
                             ), oldDevice
                         )
                     }
@@ -136,36 +134,25 @@ fun DeviceSetupDialog(
         content = {
             DeviceSetupCard(
                 modifier = Modifier,
-                name = name,
-                ip = ip,
-                port = port,
-                livePort = livePort,
+                nameState = nameState,
+                ipState = ipState,
+                portState = portState,
+                livePortState = livePortState,
                 isHttps = isHttps,
                 isLogin = isLogin,
-                user = user,
-                password = password,
-                passwordVisible = passwordVisible,
-                onNameChange = { name = it },
-                onIpChange = { ip = it },
-                onPortChange = { port = it },
-                onLivePortChange = { livePort = it },
+                userState = userState,
+                passwordState = passwordState,
                 onHttpsChange = {
                     isHttps = ! isHttps
-                    if (port == "80" && isHttps) {
-                        port = "443"
-                    } else if (port == "443" && ! isHttps) {
-                        port = "80"
+                    if (portState.text == "80" && isHttps) {
+                        portState.setTextAndPlaceCursorAtEnd("443")
+                    } else if (portState.text == "443" && ! isHttps) {
+                        portState.setTextAndPlaceCursorAtEnd("80")
 
                     }
                 },
                 onLoginChange = {
                     isLogin = ! isLogin
-                },
-                onUserChange = { user = it },
-                onPasswordChange = { password = it },
-                onPasswordVisibilityChange = {
-                    passwordVisible =
-                        ! passwordVisible
                 }
             )
         }

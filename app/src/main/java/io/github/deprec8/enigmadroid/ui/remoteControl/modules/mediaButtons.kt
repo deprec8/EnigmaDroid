@@ -57,7 +57,7 @@ fun MediaButtons(remoteControlViewModel: RemoteControlViewModel, enabled: Boolea
 
     Row(
         Modifier
-            .widthIn(0.dp, 450.dp)
+            .widthIn(0.dp, 500.dp)
             .height(IntrinsicSize.Max)
     ) {
         Card(

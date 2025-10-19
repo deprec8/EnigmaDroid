@@ -90,7 +90,7 @@ fun NumberButtons(
         )
     )
 
-    Row(Modifier.widthIn(0.dp, 450.dp)) {
+    Row(Modifier.widthIn(0.dp, 500.dp)) {
         numberButtons.forEach { column ->
             Column(Modifier.weight(1f)) {
                 column.forEach { button ->
