@@ -1,0 +1,3 @@
+- Various UI improvements and fixes
+- Improved layouts on bigger screens
+- Various other fixes and updates
