@@ -378,7 +378,7 @@ fun RemoteControlPage(
                         loadingState == LoadingState.LOADED
                     ) { performHaptic() }
                 }
-                if (showNumbers) {
+                if (true) {
                     ModalBottomSheet(
                         onDismissRequest = { showNumbers = false },
                         sheetState = sheetState,
