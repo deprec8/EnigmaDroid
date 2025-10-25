@@ -50,8 +50,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.window.core.layout.WindowHeightSizeClass
-import androidx.window.core.layout.WindowWidthSizeClass
+import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,7 +61,7 @@ fun AdaptiveDialog(
     action: @Composable () -> Unit,
     title: String,
 
-) {
+    ) {
 
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     var showCancelDialog by rememberSaveable { mutableStateOf(false) }
@@ -88,8 +87,8 @@ fun AdaptiveDialog(
         })
     }
 
-    if (windowSizeClass.windowWidthSizeClass != WindowWidthSizeClass.EXPANDED ||
-        windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT
+    if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) ||
+        ! windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
     ) {
         Dialog(
             properties = DialogProperties(
