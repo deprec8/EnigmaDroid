@@ -87,6 +87,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.window.core.layout.WindowHeightSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
@@ -344,7 +345,10 @@ fun RemoteControlPage(
                 .verticalScroll(scrollState)
                 .padding(innerPadding)
         ) {
-            if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT) {
+            if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT ||
+                (windowSizeClass.windowHeightSizeClass != WindowHeightSizeClass.COMPACT &&
+                        windowSizeClass.windowWidthSizeClass != WindowWidthSizeClass.EXPANDED)
+            ) {
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -382,7 +386,7 @@ fun RemoteControlPage(
                     ) {
                         Column(
                             Modifier
-                                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                                .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
                                 .fillMaxWidth(),
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally
