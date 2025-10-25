@@ -19,6 +19,7 @@
 
 package io.github.deprec8.enigmadroid.ui.remoteControl.modules
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
@@ -53,7 +54,11 @@ import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.ui.remoteControl.RemoteControlViewModel
 
 @Composable
-fun MediaButtons(remoteControlViewModel: RemoteControlViewModel, enabled: Boolean, performHaptic: () -> Unit) {
+fun MediaButtons(
+    remoteControlViewModel: RemoteControlViewModel,
+    enabled: Boolean,
+    performHaptic: () -> Unit
+) {
 
     Row(
         Modifier
@@ -75,6 +80,15 @@ fun MediaButtons(remoteControlViewModel: RemoteControlViewModel, enabled: Boolea
             )
         ) {
             OutlinedButton(
+                border = BorderStroke(
+                    width = ButtonDefaults.outlinedButtonBorder().width,
+                    color =
+                        if (enabled) {
+                            MaterialTheme.colorScheme.onSecondaryContainer
+                        } else {
+                            ButtonDefaults.buttonColors().disabledContentColor
+                        },
+                ),
                 onClick = {
                     remoteControlViewModel.volUP()
                     performHaptic()
@@ -105,6 +119,15 @@ fun MediaButtons(remoteControlViewModel: RemoteControlViewModel, enabled: Boolea
                     .padding(10.dp)
             )
             OutlinedButton(
+                border = BorderStroke(
+                    width = ButtonDefaults.outlinedButtonBorder().width,
+                    color =
+                        if (enabled) {
+                            MaterialTheme.colorScheme.onSecondaryContainer
+                        } else {
+                            ButtonDefaults.buttonColors().disabledContentColor
+                        },
+                ),
                 onClick = {
                     remoteControlViewModel.volDown()
                     performHaptic()
@@ -198,6 +221,15 @@ fun MediaButtons(remoteControlViewModel: RemoteControlViewModel, enabled: Boolea
             )
         ) {
             OutlinedButton(
+                border = BorderStroke(
+                    width = ButtonDefaults.outlinedButtonBorder().width,
+                    color =
+                        if (enabled) {
+                            MaterialTheme.colorScheme.onSecondaryContainer
+                        } else {
+                            ButtonDefaults.buttonColors().disabledContentColor
+                        },
+                ),
                 onClick = {
                     remoteControlViewModel.chUP()
                     performHaptic()
@@ -228,6 +260,15 @@ fun MediaButtons(remoteControlViewModel: RemoteControlViewModel, enabled: Boolea
                     .padding(10.dp)
             )
             OutlinedButton(
+                border = BorderStroke(
+                    width = ButtonDefaults.outlinedButtonBorder().width,
+                    color =
+                        if (enabled) {
+                            MaterialTheme.colorScheme.onSecondaryContainer
+                        } else {
+                            ButtonDefaults.buttonColors().disabledContentColor
+                        },
+                ),
                 onClick = {
                     remoteControlViewModel.chDown()
                     performHaptic()
