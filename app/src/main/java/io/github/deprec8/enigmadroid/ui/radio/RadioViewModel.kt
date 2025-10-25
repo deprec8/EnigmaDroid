@@ -85,7 +85,7 @@ class RadioViewModel @Inject constructor(
                 _searchInput,
                 currentBouquetIndex
             ) { allEvents, input, currentBouquetIndex ->
-                if (input != "") {
+                if (input != "" && allEvents.isNotEmpty()) {
                     searchHistoryRepository.addToRadioSearchHistory(input)
                     FilterUtils.filterEvents(input, allEvents[currentBouquetIndex].events)
                 } else {

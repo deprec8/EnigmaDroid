@@ -79,7 +79,7 @@ class TVEPGViewModel @Inject constructor(
         }
         viewModelScope.launch {
             combine(_epgs, _searchInput) { epgs, input ->
-                if (input != "") {
+                if (input != "" && epgs.isNotEmpty()) {
                     searchHistoryRepository.addToTVEPGSearchHistory(input)
                     FilterUtils.filterEPGEvents(input, epgs.flatMap { it.events })
                 } else {

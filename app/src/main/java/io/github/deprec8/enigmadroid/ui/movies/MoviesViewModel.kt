@@ -80,7 +80,7 @@ class MoviesViewModel @Inject constructor(
         }
         viewModelScope.launch {
             combine(_movies, _searchInput) { movies, input ->
-                if (input != "") {
+                if (input != "" && movies.isNotEmpty()) {
                     searchHistoryRepository.addToMoviesSearchHistory(input)
                     FilterUtils.filterMovies(input, movies.flatMap { it.movies })
                 } else {
@@ -150,7 +150,6 @@ class MoviesViewModel @Inject constructor(
     suspend fun buildStreamUrl(sRef: String): String {
         return apiRepository.buildMovieStreamURL(sRef)
     }
-
 
 
     fun play(sRef: String) {

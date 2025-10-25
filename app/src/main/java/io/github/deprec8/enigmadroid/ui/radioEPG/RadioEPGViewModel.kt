@@ -79,7 +79,7 @@ class RadioEPGViewModel @Inject constructor(
         }
         viewModelScope.launch {
             combine(_epgs, _searchInput) { epgs, input ->
-                if (input != "") {
+                if (input != "" && epgs.isNotEmpty()) {
                     searchHistoryRepository.addToRadioEPGSearchHistory(input)
                     FilterUtils.filterEPGEvents(input, epgs.flatMap { it.events })
                 } else {

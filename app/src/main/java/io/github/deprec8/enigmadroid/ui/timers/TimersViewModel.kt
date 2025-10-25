@@ -82,7 +82,7 @@ class TimersViewModel @Inject constructor(
         }
         viewModelScope.launch {
             combine(_timerList, _searchInput) { timerList, input ->
-                if (input != "") {
+                if (input != "" && timerList.timers.isNotEmpty()) {
                     searchHistoryRepository.addToTimersSearchHistory(input)
                     FilterUtils.filterTimers(input, timerList.timers)
                 } else {
