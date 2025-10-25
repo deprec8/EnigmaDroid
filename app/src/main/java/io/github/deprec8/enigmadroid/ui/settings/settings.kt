@@ -53,8 +53,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.window.core.layout.WindowHeightSizeClass
-import androidx.window.core.layout.WindowWidthSizeClass
+import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.model.navigation.Page
 import io.github.deprec8.enigmadroid.model.navigation.SettingsPages
@@ -93,8 +92,8 @@ fun SettingsPage(
                 },
                 scrollBehavior = scrollBehavior,
                 navigationIcon = {
-                    if (windowSizeClass.windowWidthSizeClass != WindowWidthSizeClass.EXPANDED ||
-                        windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT
+                    if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) ||
+                        ! windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
                     ) {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(

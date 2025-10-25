@@ -67,8 +67,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.window.core.layout.WindowHeightSizeClass
-import androidx.window.core.layout.WindowWidthSizeClass
+import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
@@ -135,8 +134,8 @@ fun SignalPage(
                 title = { Text(text = stringResource(R.string.signal)) },
                 scrollBehavior = scrollBehavior,
                 navigationIcon = {
-                    if (windowSizeClass.windowWidthSizeClass != WindowWidthSizeClass.EXPANDED ||
-                        windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT
+                    if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) ||
+                        ! windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
                     ) {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(

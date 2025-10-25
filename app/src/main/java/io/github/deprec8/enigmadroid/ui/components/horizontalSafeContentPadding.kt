@@ -29,16 +29,15 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.window.core.layout.WindowHeightSizeClass
-import androidx.window.core.layout.WindowWidthSizeClass
+import androidx.window.core.layout.WindowSizeClass
 
 @Composable
 fun Modifier.horizontalSafeContentPadding(useNavDrawer: Boolean = false): Modifier {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     return this
         .consumeWindowInsets(
-            if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.EXPANDED &&
-                windowSizeClass.windowHeightSizeClass != WindowHeightSizeClass.COMPACT && useNavDrawer
+            if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) &&
+                windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND) && useNavDrawer
             ) {
                 WindowInsets.safeDrawing
                     .only(
@@ -52,8 +51,8 @@ fun Modifier.horizontalSafeContentPadding(useNavDrawer: Boolean = false): Modifi
             }
         )
         .padding(
-            if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.EXPANDED &&
-                windowSizeClass.windowHeightSizeClass != WindowHeightSizeClass.COMPACT && useNavDrawer
+            if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) &&
+                windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND) && useNavDrawer
             ) {
                 WindowInsets.safeDrawing
                     .only(

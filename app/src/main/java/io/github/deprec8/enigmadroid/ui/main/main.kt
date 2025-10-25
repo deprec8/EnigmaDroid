@@ -41,8 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
-import androidx.window.core.layout.WindowHeightSizeClass
-import androidx.window.core.layout.WindowWidthSizeClass
+import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.ui.onboarding.OnboardingPage
 import kotlinx.coroutines.launch
 
@@ -63,8 +62,8 @@ fun MainPage(
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(
-        windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.EXPANDED &&
-                windowSizeClass.windowHeightSizeClass != WindowHeightSizeClass.COMPACT
+        windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) &&
+                windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
     ) {
         modalDrawerState.close()
     }
@@ -72,8 +71,8 @@ fun MainPage(
     if (isOnboardingNeeded) {
         OnboardingPage()
     } else {
-        if (windowSizeClass.windowWidthSizeClass != WindowWidthSizeClass.EXPANDED ||
-            windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT
+        if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) ||
+            ! windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
         ) {
             ModalNavigationDrawer(
                 drawerContent = {

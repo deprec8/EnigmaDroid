@@ -14,7 +14,7 @@ room = "2.8.3"
 lifecycleRuntimeCompose = "2.9.4"
 coreKtx = "1.17.0"
 activity = "1.11.0"
-composeBom = "2025.10.00"
+composeBom = "2025.10.01"
 ksp = "2.2.20-2.0.3"
 
 [libraries]

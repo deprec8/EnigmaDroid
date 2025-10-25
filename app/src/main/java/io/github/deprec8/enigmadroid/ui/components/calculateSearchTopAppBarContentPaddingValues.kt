@@ -29,8 +29,7 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.window.core.layout.WindowHeightSizeClass
-import androidx.window.core.layout.WindowWidthSizeClass
+import androidx.window.core.layout.WindowSizeClass
 
 @Composable
 fun calculateSearchTopAppBarContentPaddingValues(): PaddingValues {
@@ -38,8 +37,8 @@ fun calculateSearchTopAppBarContentPaddingValues(): PaddingValues {
     val layoutDirection = LocalLayoutDirection.current
     return PaddingValues(
         top = 0.dp,
-        start = if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.EXPANDED &&
-            windowSizeClass.windowHeightSizeClass != WindowHeightSizeClass.COMPACT
+        start = if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) &&
+            windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
         ) 0.dp else WindowInsets.safeDrawing.asPaddingValues()
             .calculateStartPadding(layoutDirection),
         end = WindowInsets.safeDrawing.asPaddingValues().calculateEndPadding(layoutDirection),

@@ -87,8 +87,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.window.core.layout.WindowHeightSizeClass
-import androidx.window.core.layout.WindowWidthSizeClass
+import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.ui.components.horizontalSafeContentPadding
@@ -212,7 +211,7 @@ fun RemoteControlPage(
                 }, scrollBehavior = scrollBehavior, actions = {
                     Row {
                         DeviceText()
-                        if (windowSizeClass.windowWidthSizeClass != WindowWidthSizeClass.EXPANDED) {
+                        if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)) {
                             IconButton(
                                 onClick = { showNumbers = true },
                                 enabled = loadingState == LoadingState.LOADED
@@ -345,9 +344,9 @@ fun RemoteControlPage(
                 .verticalScroll(scrollState)
                 .padding(innerPadding)
         ) {
-            if (windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT ||
-                (windowSizeClass.windowHeightSizeClass != WindowHeightSizeClass.COMPACT &&
-                        windowSizeClass.windowWidthSizeClass != WindowWidthSizeClass.EXPANDED)
+            if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) ||
+                (windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND) &&
+                        ! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND))
             ) {
                 Column(
                     verticalArrangement = Arrangement.Center,

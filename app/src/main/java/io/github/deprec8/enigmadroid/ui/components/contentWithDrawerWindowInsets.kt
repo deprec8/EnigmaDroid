@@ -26,14 +26,13 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
-import androidx.window.core.layout.WindowHeightSizeClass
-import androidx.window.core.layout.WindowWidthSizeClass
+import androidx.window.core.layout.WindowSizeClass
 
 @Composable
 fun contentWithDrawerWindowInsets(): WindowInsets {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-    return if (windowSizeClass.windowWidthSizeClass != WindowWidthSizeClass.EXPANDED ||
-        windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT
+    return if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) ||
+        ! windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
     ) {
         WindowInsets.safeDrawing
     } else {

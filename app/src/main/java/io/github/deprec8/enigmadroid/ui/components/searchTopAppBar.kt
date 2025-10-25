@@ -56,8 +56,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.window.core.layout.WindowHeightSizeClass
-import androidx.window.core.layout.WindowWidthSizeClass
+import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
 import kotlinx.coroutines.launch
 
@@ -112,8 +111,8 @@ fun SearchTopAppBar(
                         )
                     }
                 } else if (
-                    windowSizeClass.windowWidthSizeClass != WindowWidthSizeClass.EXPANDED ||
-                    windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT
+                    ! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) ||
+                    ! windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
                 ) {
                     IconButton(onClick = { scope.launch { drawerState.open() } }) {
                         Icon(
@@ -165,8 +164,8 @@ fun SearchTopAppBar(
         ) {
             SearchBar(
                 searchBarState,
-                modifier = if (windowSizeClass.windowWidthSizeClass != WindowWidthSizeClass.EXPANDED ||
-                    windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT
+                modifier = if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) ||
+                    ! windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
                 ) Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp, start = 16.dp, end = 16.dp)
@@ -177,8 +176,8 @@ fun SearchTopAppBar(
                     ),
                 inputField = inputField
             )
-            if (windowSizeClass.windowWidthSizeClass != WindowWidthSizeClass.EXPANDED ||
-                windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT
+            if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) ||
+                ! windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
             ) {
                 ExpandedFullScreenSearchBar(state = searchBarState, inputField) {
                     if (content != null && enabled) {
