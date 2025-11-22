@@ -155,32 +155,36 @@ fun RadioEPGPage(
                         },
                         shortDescription = event.shortDescription,
                         longDescription = event.longDescription,
-                        menuSections = listOf(
-                            MenuSection(
-                                listOf(
-                                    MenuItem(
-                                        text = stringResource(R.string.add_timer),
-                                        outlinedIcon = Icons.Outlined.Timer,
-                                        filledIcon = Icons.Filled.Timer,
-                                        action = {
-                                            radioEPGViewModel.addTimer(
-                                                event
-                                            )
-                                        }
-                                    ),
-                                    MenuItem(
-                                        text = stringResource(R.string.add_reminder),
-                                        outlinedIcon = Icons.Outlined.AddAlert,
-                                        filledIcon = Icons.Filled.AddAlert,
-                                        action = {
-                                            scope.launch {
-                                                IntentUtils.addReminder(context, event)
+                        menuSections = if (event.beginTimestamp * 1000 > System.currentTimeMillis()) {
+                            listOf(
+                                MenuSection(
+                                    listOf(
+                                        MenuItem(
+                                            text = stringResource(R.string.add_timer),
+                                            outlinedIcon = Icons.Outlined.Timer,
+                                            filledIcon = Icons.Filled.Timer,
+                                            action = {
+                                                radioEPGViewModel.addTimer(
+                                                    event
+                                                )
                                             }
-                                        }
+                                        ),
+                                        MenuItem(
+                                            text = stringResource(R.string.add_reminder),
+                                            outlinedIcon = Icons.Outlined.AddAlert,
+                                            filledIcon = Icons.Filled.AddAlert,
+                                            action = {
+                                                scope.launch {
+                                                    IntentUtils.addReminder(context, event)
+                                                }
+                                            }
+                                        )
                                     )
                                 )
                             )
-                        )
+                        } else {
+                            null
+                        }
                     )
                 }
             }
