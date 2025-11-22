@@ -221,10 +221,10 @@ fun ContentDetails(
                     }
                 }
             }
-            Spacer(modifier = Modifier.size(16.dp))
         }
 
         if (shortDescription.isNotEmpty() || longDescription.isNotEmpty()) {
+            Spacer(modifier = Modifier.size(16.dp))
             LazyColumn(
                 contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
