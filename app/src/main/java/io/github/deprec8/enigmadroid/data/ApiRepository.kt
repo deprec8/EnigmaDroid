@@ -19,7 +19,6 @@
 
 package io.github.deprec8.enigmadroid.data
 
-import android.R.attr.type
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -206,7 +205,7 @@ class ApiRepository @Inject constructor(
             val temp = mutableListOf<ServiceList>()
             json.decodeFromString(
                 BouquetList.serializer(),
-                networkDataSource.fetchJson("bouquets?stype=$type")
+                networkDataSource.fetchJson("bouquets?stype=tv")
             ).bouquets.forEach { bouquet ->
                 val nbRef = bouquet[0].replace("\\\"", "\"")
                 temp.add(
@@ -228,7 +227,7 @@ class ApiRepository @Inject constructor(
                 val bouquets = mutableListOf<List<String>>()
                 val response = json.decodeFromString(
                     BouquetList.serializer(),
-                    networkDataSource.fetchJson("bouquets?stype=$type")
+                    networkDataSource.fetchJson("bouquets?stype=${if (type == ApiType.TV) "tv" else "radio"}")
                 ).bouquets
                 for (bouquet in response) {
                     bouquets.add(bouquet)
@@ -323,7 +322,6 @@ class ApiRepository @Inject constructor(
                 networkDataSource.fetchJson("timerlist")
             )
         } catch (_: Exception) {
-
             TimerList()
         }
     }
