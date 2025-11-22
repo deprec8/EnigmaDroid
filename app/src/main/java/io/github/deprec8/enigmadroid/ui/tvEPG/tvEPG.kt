@@ -74,7 +74,6 @@ import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.SearchTopAppBar
-import io.github.deprec8.enigmadroid.ui.components.calculateSearchTopAppBarContentPaddingValues
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.utils.IntentUtils
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
@@ -228,7 +227,7 @@ fun TVEPGPage(
                     if (filteredEPGEvents != null) {
                         Content(
                             list = filteredEPGEvents !!,
-                            paddingValues = calculateSearchTopAppBarContentPaddingValues(),
+                            paddingValues = PaddingValues(0.dp),
                             showChannelName = true,
                             highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
                                 .filter { it.isNotBlank() } else emptyList()

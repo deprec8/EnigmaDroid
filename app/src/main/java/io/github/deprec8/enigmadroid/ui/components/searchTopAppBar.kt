@@ -179,7 +179,10 @@ fun SearchTopAppBar(
             if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) ||
                 ! windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
             ) {
-                ExpandedFullScreenSearchBar(state = searchBarState, inputField) {
+                ExpandedFullScreenSearchBar(
+                    state = searchBarState,
+                    inputField = inputField
+                ) {
                     if (content != null && enabled) {
                         content()
                     } else {

@@ -84,7 +84,6 @@ import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.SearchTopAppBar
-import io.github.deprec8.enigmadroid.ui.components.calculateSearchTopAppBarContentPaddingValues
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
 import kotlinx.coroutines.launch
@@ -296,7 +295,7 @@ fun TimersPage(
                     if (filteredTimers != null) {
                         Content(
                             list = filteredTimers !!,
-                            paddingValues = calculateSearchTopAppBarContentPaddingValues(),
+                            paddingValues = PaddingValues(0.dp),
                             highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
                                 .filter { it.isNotBlank() } else emptyList()
                         )

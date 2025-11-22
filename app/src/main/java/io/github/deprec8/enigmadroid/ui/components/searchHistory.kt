@@ -21,11 +21,8 @@ package io.github.deprec8.enigmadroid.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -47,7 +44,6 @@ import io.github.deprec8.enigmadroid.R
 @Composable
 fun SearchHistory(
     searchHistory: List<String>,
-    paddingValues: PaddingValues = calculateSearchTopAppBarContentPaddingValues(),
     onTermSearchClick: (String) -> Unit,
     onTermInsertClick: (String) -> Unit
 ) {
@@ -55,9 +51,7 @@ fun SearchHistory(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .consumeWindowInsets(paddingValues)
-                .imePadding(),
-            contentPadding = paddingValues
+                .imePadding()
         ) {
             items(searchHistory) { searchTerm ->
                 ListItem(
@@ -81,9 +75,7 @@ fun SearchHistory(
     } else {
         Box(
             modifier = Modifier
-                .consumeWindowInsets(paddingValues)
                 .fillMaxSize()
-                .padding(paddingValues)
                 .imePadding(), contentAlignment = Alignment.Center
         ) {
             Text(
