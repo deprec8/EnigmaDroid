@@ -180,6 +180,7 @@ fun SignalPage(
                             color = MaterialTheme.colorScheme.surfaceContainer
                         )
                         CircularProgressIndicator(
+                            strokeWidth = 10.dp,
                             progress = {
                                 if (signalInfo.agc.isNotBlank()) {
                                     signalInfo.agc.toFloat() / 100
