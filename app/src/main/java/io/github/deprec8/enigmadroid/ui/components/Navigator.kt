@@ -17,44 +17,28 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.model.navigation
+package io.github.deprec8.enigmadroid.ui.components
 
 import androidx.navigation3.runtime.NavKey
-import kotlinx.serialization.Serializable
 
-@Serializable
-sealed class MainPages : NavKey {
+class Navigator(val state: NavigationState) {
 
-    @Serializable
-    data object TV : NavKey
+    fun navigate(route: NavKey) {
+        if (route in state.backStacks.keys) {
+            state.topLevelRoute = route
+        } else {
+            state.backStacks[state.topLevelRoute]?.add(route)
+        }
+    }
 
-    @Serializable
-    data object TVEPG : NavKey
-
-    @Serializable
-    data object RadioEPG : NavKey
-
-    @Serializable
-    data object DeviceInfo : NavKey
-
-    @Serializable
-    data object Movies : NavKey
-
-    @Serializable
-    data object Timers : NavKey
-
-    @Serializable
-    data object Radio : NavKey
-
-    @Serializable
-    data object Signal : NavKey
-
-    @Serializable
-    data object Current : NavKey
-
-    @Serializable
-    data object Settings : NavKey
-
-    @Serializable
-    data object RemoteControl : NavKey
+    fun goBack() {
+        val currentStack = state.backStacks[state.topLevelRoute]
+            ?: error("Stack for ${state.topLevelRoute} not found")
+        val currentRoute = currentStack.last()
+        if (currentRoute == state.topLevelRoute) {
+            state.topLevelRoute = state.startRoute
+        } else {
+            currentStack.removeLastOrNull()
+        }
+    }
 }

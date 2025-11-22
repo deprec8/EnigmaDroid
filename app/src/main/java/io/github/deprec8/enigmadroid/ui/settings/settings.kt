@@ -53,9 +53,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.navigation3.runtime.NavKey
 import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.model.navigation.Page
 import io.github.deprec8.enigmadroid.model.navigation.SettingsPages
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.horizontalSafeContentPadding
@@ -67,7 +67,7 @@ import kotlinx.coroutines.launch
 fun SettingsPage(
     drawerState: DrawerState,
     snackbarHostState: SnackbarHostState,
-    onNavigateToSubPage: (Page) -> Unit,
+    onNavigateToSubPage: (NavKey) -> Unit,
 ) {
 
     val scope = rememberCoroutineScope()

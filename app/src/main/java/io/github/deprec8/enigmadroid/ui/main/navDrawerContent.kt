@@ -72,7 +72,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -80,16 +79,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavDestination.Companion.hasRoute
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.model.drawer.DrawerGroup
 import io.github.deprec8.enigmadroid.model.drawer.DrawerPage
 import io.github.deprec8.enigmadroid.model.navigation.MainPages
+import io.github.deprec8.enigmadroid.ui.components.Navigator
 import io.github.deprec8.enigmadroid.utils.IntentUtils
 import kotlinx.coroutines.launch
 import kotlin.reflect.KSuspendFunction0
@@ -100,14 +96,12 @@ fun NavDrawerContent(
     loadingState: LoadingState,
     makeOWIFURL: KSuspendFunction0<String>,
     updateDeviceStatus: () -> Unit,
-    navController: NavHostController,
+    navigator: Navigator,
     modalDrawerState: DrawerState
 ) {
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
     val scrollState = rememberScrollState()
 
     val drawerGroups = listOf(
@@ -305,22 +299,20 @@ fun NavDrawerContent(
                 style = MaterialTheme.typography.titleSmall
             )
             group.pages.forEach { drawerPage ->
+                val isSelected = navigator.state.topLevelRoute == drawerPage.navKey
                 NavigationDrawerItem(
                     label = { Text(text = drawerPage.name) },
                     icon = {
-                        when (currentDestination?.hierarchy?.any {
-                            it.hasRoute(
-                                drawerPage.route::class
-                            )
-                        }) {
-                            true -> Icon(drawerPage.selectedIcon, contentDescription = null)
-                            else -> Icon(drawerPage.icon, contentDescription = null)
+                        if (isSelected) {
+                            Icon(drawerPage.selectedIcon, contentDescription = null)
+                        } else {
+                            Icon(drawerPage.icon, contentDescription = null)
                         }
                     },
-                    selected = currentDestination?.hierarchy?.any { it.hasRoute(drawerPage.route::class) } == true,
+                    selected = isSelected,
                     onClick = {
-                        if (currentDestination?.hierarchy?.any { it.hasRoute(drawerPage.route::class) } == false) {
-                            navController.navigate(drawerPage.route)
+                        if (! isSelected) {
+                            navigator.navigate(drawerPage.navKey)
                         }
                         closeNavDrawer()
                     },

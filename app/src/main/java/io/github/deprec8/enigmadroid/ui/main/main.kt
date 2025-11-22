@@ -40,8 +40,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.compose.rememberNavController
 import androidx.window.core.layout.WindowSizeClass
+import io.github.deprec8.enigmadroid.model.navigation.MainPages
+import io.github.deprec8.enigmadroid.ui.components.Navigator
+import io.github.deprec8.enigmadroid.ui.components.rememberNavigationState
 import io.github.deprec8.enigmadroid.ui.onboarding.OnboardingPage
 import kotlinx.coroutines.launch
 
@@ -49,12 +51,15 @@ import kotlinx.coroutines.launch
 fun MainPage(
     mainViewModel: MainViewModel = hiltViewModel(),
 ) {
-
     val currentDevice by mainViewModel.currentDevice.collectAsStateWithLifecycle()
     val loadingState by mainViewModel.loadingState.collectAsStateWithLifecycle()
     val isOnboardingNeeded by mainViewModel.isOnboardingNeeded.collectAsStateWithLifecycle()
+    val navigationState = rememberNavigationState(
+        startRoute = MainPages.TV,
+        topLevelRoutes = setOf(MainPages.TV)
+    )
 
-    val navController = rememberNavController()
+    val navigator = remember { Navigator(navigationState) }
     val modalDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     val snackbarHostState = remember { SnackbarHostState() }
@@ -91,7 +96,7 @@ fun MainPage(
                     ) {
                         NavDrawerContent(
                             currentDevice = currentDevice,
-                            navController = navController,
+                            navigator = navigator,
                             modalDrawerState = modalDrawerState,
                             updateDeviceStatus = {
                                 scope.launch {
@@ -108,7 +113,7 @@ fun MainPage(
                 drawerState = modalDrawerState
             ) {
                 NavHost(
-                    navController,
+                    navigator,
                     modalDrawerState,
                     snackbarHostState,
                 )
@@ -131,7 +136,7 @@ fun MainPage(
                     ) {
                         NavDrawerContent(
                             currentDevice = currentDevice,
-                            navController = navController,
+                            navigator = navigator,
                             modalDrawerState = modalDrawerState,
                             updateDeviceStatus = {
                                 scope.launch {
@@ -147,7 +152,7 @@ fun MainPage(
                 }
             ) {
                 NavHost(
-                    navController, modalDrawerState, snackbarHostState,
+                    navigator, modalDrawerState, snackbarHostState,
                 )
             }
         }

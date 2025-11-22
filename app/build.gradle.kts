@@ -137,7 +137,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
 
     // Navigation
-    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
 
     //Libraries
     implementation(libs.mikepenz.aboutlibraries.core)

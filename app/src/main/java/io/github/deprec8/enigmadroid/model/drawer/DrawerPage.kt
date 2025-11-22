@@ -20,11 +20,11 @@
 package io.github.deprec8.enigmadroid.model.drawer
 
 import androidx.compose.ui.graphics.vector.ImageVector
-import io.github.deprec8.enigmadroid.model.navigation.Page
+import androidx.navigation3.runtime.NavKey
 
 data class DrawerPage(
     val name: String,
-    val route: Page,
+    val navKey: NavKey,
     val icon: ImageVector,
     val selectedIcon: ImageVector
 )
