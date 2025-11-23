@@ -67,6 +67,13 @@ fun NavHost(
             composable<MainPages.TV> {
                 TvPage(
                     onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
+                    onNavigateToServiceEPG = { sRef, sName ->
+                        navController.navigate(
+                            MainPages.ServiceEPG(
+                                sRef, sName
+                            )
+                        )
+                    },
                     snackbarHostState,
                     modalDrawerState
                 )
@@ -104,6 +111,13 @@ fun NavHost(
             composable<MainPages.Current> {
                 CurrentPage(
                     onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
+                    onNavigateToServiceEPG = { sRef, sName ->
+                        navController.navigate(
+                            MainPages.ServiceEPG(
+                                sRef, sName
+                            )
+                        )
+                    },
                     snackbarHostState = snackbarHostState,
                     drawerState = modalDrawerState
                 )
@@ -111,6 +125,13 @@ fun NavHost(
             composable<MainPages.Radio> {
                 RadioPage(
                     onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
+                    onNavigateToServiceEPG = { sRef, sName ->
+                        navController.navigate(
+                            MainPages.ServiceEPG(
+                                sRef, sName
+                            )
+                        )
+                    },
                     snackbarHostState,
                     modalDrawerState
                 )
