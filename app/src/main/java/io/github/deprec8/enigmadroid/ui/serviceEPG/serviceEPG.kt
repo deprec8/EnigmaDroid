@@ -62,7 +62,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.model.api.EPGEventList
 import io.github.deprec8.enigmadroid.model.menu.MenuItem
 import io.github.deprec8.enigmadroid.model.menu.MenuSection
 import io.github.deprec8.enigmadroid.ui.components.ContentListItem
@@ -152,7 +151,7 @@ fun ServiceEPGPage(
             .nestedScroll(scrollBehavior.nestedScrollConnection),
 
         ) { innerPadding ->
-        if (epg != EPGEventList()) {
+        if (epg.events.isNotEmpty()) {
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(310.dp),
                 Modifier
