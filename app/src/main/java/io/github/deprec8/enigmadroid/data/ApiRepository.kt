@@ -150,6 +150,17 @@ class ApiRepository @Inject constructor(
         }
     }
 
+    suspend fun fetchServiceEPG(sRef: String): EPGEventList {
+        return try {
+            json.decodeFromString(
+                EPGEventList.serializer(),
+                networkDataSource.fetchJson("epgservice?sRef=${sRef}")
+            )
+        } catch (_: Exception) {
+            EPGEventList()
+        }
+    }
+
     fun fetchMovies(): Flow<MovieList> = flow {
         try {
             val bookmarks = mutableListOf<Bookmark>()
