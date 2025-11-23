@@ -215,4 +215,5 @@
     <string name="translation">Translation</string>
     <string name="app_translation" translatable="false">crowdin.com/project/enigmadroid</string>
     <string name="app_translation_url" translatable="false">https://crowdin.com/project/enigmadroid</string>
+    <string name="epg_for">EPG for %1$s</string>
 </resources>
