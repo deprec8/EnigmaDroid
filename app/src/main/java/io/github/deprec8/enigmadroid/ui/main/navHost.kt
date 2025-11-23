@@ -31,6 +31,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.navDeepLink
+import androidx.navigation.toRoute
 import io.github.deprec8.enigmadroid.model.navigation.MainPages
 import io.github.deprec8.enigmadroid.model.navigation.SettingsPages
 import io.github.deprec8.enigmadroid.ui.current.CurrentPage
@@ -39,6 +40,7 @@ import io.github.deprec8.enigmadroid.ui.movies.MoviesPage
 import io.github.deprec8.enigmadroid.ui.radio.RadioPage
 import io.github.deprec8.enigmadroid.ui.radioEPG.RadioEPGPage
 import io.github.deprec8.enigmadroid.ui.remoteControl.RemoteControlPage
+import io.github.deprec8.enigmadroid.ui.serviceEPG.ServiceEPGPage
 import io.github.deprec8.enigmadroid.ui.settings.SettingsPage
 import io.github.deprec8.enigmadroid.ui.settings.about.AboutPage
 import io.github.deprec8.enigmadroid.ui.settings.about.LibrariesPage
@@ -67,6 +69,15 @@ fun NavHost(
                     onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
                     snackbarHostState,
                     modalDrawerState
+                )
+            }
+            composable<MainPages.ServiceEPG> { backStackEntry ->
+                val serviceEPG: MainPages.ServiceEPG = backStackEntry.toRoute()
+                ServiceEPGPage(
+                    sRef = serviceEPG.sRef,
+                    sName = serviceEPG.sName,
+                    onNavigateBack = { navController.navigateUp() },
+                    snackbarHostState
                 )
             }
             composable<MainPages.Movies> {

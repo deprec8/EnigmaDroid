@@ -31,6 +31,9 @@ sealed class MainPages : Page {
     data object TVEPG : MainPages()
 
     @Serializable
+    data class ServiceEPG(val sRef: String, val sName: String) : MainPages()
+
+    @Serializable
     data object RadioEPG : MainPages()
 
     @Serializable
