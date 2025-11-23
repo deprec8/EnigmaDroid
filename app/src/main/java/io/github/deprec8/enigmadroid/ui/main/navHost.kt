@@ -31,6 +31,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.navDeepLink
+import androidx.navigation.toRoute
 import io.github.deprec8.enigmadroid.model.navigation.MainPages
 import io.github.deprec8.enigmadroid.model.navigation.SettingsPages
 import io.github.deprec8.enigmadroid.ui.current.CurrentPage
@@ -39,6 +40,7 @@ import io.github.deprec8.enigmadroid.ui.movies.MoviesPage
 import io.github.deprec8.enigmadroid.ui.radio.RadioPage
 import io.github.deprec8.enigmadroid.ui.radioEPG.RadioEPGPage
 import io.github.deprec8.enigmadroid.ui.remoteControl.RemoteControlPage
+import io.github.deprec8.enigmadroid.ui.serviceEPG.ServiceEPGPage
 import io.github.deprec8.enigmadroid.ui.settings.SettingsPage
 import io.github.deprec8.enigmadroid.ui.settings.about.AboutPage
 import io.github.deprec8.enigmadroid.ui.settings.about.LibrariesPage
@@ -65,8 +67,24 @@ fun NavHost(
             composable<MainPages.TV> {
                 TvPage(
                     onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
+                    onNavigateToServiceEPG = { sRef, sName ->
+                        navController.navigate(
+                            MainPages.ServiceEPG(
+                                sRef, sName
+                            )
+                        )
+                    },
                     snackbarHostState,
                     modalDrawerState
+                )
+            }
+            composable<MainPages.ServiceEPG> { backStackEntry ->
+                val serviceEPG: MainPages.ServiceEPG = backStackEntry.toRoute()
+                ServiceEPGPage(
+                    sRef = serviceEPG.sRef,
+                    sName = serviceEPG.sName,
+                    onNavigateBack = { navController.navigateUp() },
+                    snackbarHostState
                 )
             }
             composable<MainPages.Movies> {
@@ -93,6 +111,13 @@ fun NavHost(
             composable<MainPages.Current> {
                 CurrentPage(
                     onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
+                    onNavigateToServiceEPG = { sRef, sName ->
+                        navController.navigate(
+                            MainPages.ServiceEPG(
+                                sRef, sName
+                            )
+                        )
+                    },
                     snackbarHostState = snackbarHostState,
                     drawerState = modalDrawerState
                 )
@@ -100,6 +125,13 @@ fun NavHost(
             composable<MainPages.Radio> {
                 RadioPage(
                     onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
+                    onNavigateToServiceEPG = { sRef, sName ->
+                        navController.navigate(
+                            MainPages.ServiceEPG(
+                                sRef, sName
+                            )
+                        )
+                    },
                     snackbarHostState,
                     modalDrawerState
                 )

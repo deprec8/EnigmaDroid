@@ -35,6 +35,8 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Dvr
+import androidx.compose.material.icons.automirrored.outlined.Dvr
 import androidx.compose.material.icons.filled.Cast
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
@@ -87,6 +89,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun RadioPage(
     onNavigateToRemoteControl: () -> Unit,
+    onNavigateToServiceEPG: (sRef: String, sName: String) -> Unit,
     snackbarHostState: SnackbarHostState,
     drawerState: DrawerState, radioViewModel: RadioViewModel = hiltViewModel()
 ) {
@@ -192,6 +195,17 @@ fun RadioPage(
                                             scope.launch {
                                                 radioViewModel.addTimer(event)
                                             }
+                                        }
+                                    ),
+                                    MenuItem(
+                                        text = context.getString(R.string.view_epg),
+                                        outlinedIcon = Icons.AutoMirrored.Outlined.Dvr,
+                                        filledIcon = Icons.AutoMirrored.Filled.Dvr,
+                                        action = {
+                                            onNavigateToServiceEPG(
+                                                event.serviceReference,
+                                                event.serviceName
+                                            )
                                         }
                                     )
                                 )

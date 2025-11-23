@@ -82,6 +82,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun CurrentPage(
     onNavigateToRemoteControl: () -> Unit,
+    onNavigateToServiceEPG: (sRef: String, sName: String) -> Unit,
     snackbarHostState: SnackbarHostState,
     drawerState: DrawerState,
     currentViewModel: CurrentViewModel = hiltViewModel()
@@ -250,6 +251,7 @@ fun CurrentPage(
                             }
                         }
                     )
+                    Spacer(Modifier.size(16.dp))
                     OutlinedButton(
                         onClick = {
                             scope.launch {
@@ -262,10 +264,25 @@ fun CurrentPage(
                         },
                         Modifier
                             .fillMaxWidth()
-                            .padding(16.dp)
+                            .padding(horizontal = 16.dp)
                     ) {
                         Text(text = stringResource(R.string.stream_current))
                     }
+                    Spacer(Modifier.size(16.dp))
+                    OutlinedButton(
+                        onClick = {
+                            onNavigateToServiceEPG(
+                                currentEventInfo.now.serviceReference,
+                                currentEventInfo.now.serviceName
+                            )
+                        },
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                    ) {
+                        Text(text = stringResource(R.string.view_epg_for_current_channel))
+                    }
+                    Spacer(Modifier.size(16.dp))
                 }
             }
             false -> {
