@@ -25,6 +25,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.deprec8.enigmadroid.data.ApiRepository
 import io.github.deprec8.enigmadroid.data.LoadingRepository
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
+import io.github.deprec8.enigmadroid.model.api.EPGEvent
 import io.github.deprec8.enigmadroid.model.api.EPGEventList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -65,6 +66,14 @@ class ServiceEPGViewModel @Inject constructor(
         _epg.value = EPGEventList()
         fetchJob = viewModelScope.launch {
             _epg.value = apiRepository.fetchServiceEPG(sRef)
+        }
+    }
+
+    fun addTimer(event: EPGEvent) {
+        viewModelScope.launch {
+            apiRepository.addTimerForEvent(
+                event.serviceReference, event.id
+            )
         }
     }
 }
