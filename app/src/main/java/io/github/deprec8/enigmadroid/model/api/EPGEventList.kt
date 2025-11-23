@@ -26,4 +26,5 @@ import kotlinx.serialization.Serializable
 data class EPGEventList(
     @SerialName("sname") val serviceName: String = "N/A",
     @SerialName("events") val events: List<EPGEvent> = emptyList(),
+    @SerialName("result") val result: Boolean = false,
 )
