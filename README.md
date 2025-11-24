@@ -33,6 +33,8 @@ EnigmaDroid currently only supports external media players for streaming live co
 
 Translation is done on [**Crowdin**](https://crowdin.com/project/enigmadroid).
 
+If you notice any error in the translations feel free to correct it there.
+
 ## Requirements
 
 - A set-top box running **Enigma2**
