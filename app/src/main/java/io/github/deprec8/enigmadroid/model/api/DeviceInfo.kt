@@ -19,6 +19,7 @@
 
 package io.github.deprec8.enigmadroid.model.api
 
+import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -27,13 +28,13 @@ data class DeviceInfo(
     @SerialName("tuners") val tuners: List<Tuner> = emptyList(),
     @SerialName("ifaces") val interfaces: List<Interface> = emptyList(),
     @SerialName("fp_version") val fpVersion: Int = 0,
-    @SerialName("kernelver") val kernelVersion: String = "N/A",
-    @SerialName("uptime") val uptime: String = "N/A",
-    @SerialName("enigmaver") val enigmaVersion: String = "N/A",
-    @SerialName("imagever") val imageVersion: String = "N/A",
-    @SerialName("brand") val brand: String = "N/A",
-    @SerialName("webifver") val webifVersion: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("kernelver") val kernelVersion: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("uptime") val uptime: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("enigmaver") val enigmaVersion: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("imagever") val imageVersion: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("brand") val brand: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("webifver") val webifVersion: String = "N/A",
     @SerialName("hdd") val hdds: List<HDD> = emptyList(),
-    @SerialName("model") val model: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("model") val model: String = "N/A",
     @SerialName("result") val result: Boolean = false
 )

@@ -19,24 +19,25 @@
 
 package io.github.deprec8.enigmadroid.model.api
 
+import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class EPGEvent(
-    @SerialName("begin") val begin: String = "N/A",
-    @SerialName("sname") val serviceName: String = "N/A",
-    @SerialName("end") val end: String = "N/A",
-    @SerialName("title") val title: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("begin") val begin: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("sname") val serviceName: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("end") val end: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("title") val title: String = "N/A",
     @SerialName("genreid") val genreId: Int = 0,
     @SerialName("now_timestamp") val nowTimestamp: Long,
-    @SerialName("shortdesc") val shortDescription: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("shortdesc") val shortDescription: String = "N/A",
     @SerialName("begin_timestamp") val beginTimestamp: Long = 0L,
     @SerialName("duration_sec") val durationInSeconds: Int,
     @SerialName("sref") val serviceReference: String = "",
-    @SerialName("longdesc") val longDescription: String = "N/A",
-    @SerialName("date") val date: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("longdesc") val longDescription: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("date") val date: String = "N/A",
     @SerialName("progress") val progress: Int = 0,
-    @SerialName("genre") val genre: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("genre") val genre: String = "N/A",
     @SerialName("id") val id: Int = 0
 )

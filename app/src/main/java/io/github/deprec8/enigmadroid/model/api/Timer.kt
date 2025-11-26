@@ -19,26 +19,27 @@
 
 package io.github.deprec8.enigmadroid.model.api
 
+import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class Timer(
     @SerialName("begin") val beginTimestamp: Long = 0L,
-    @SerialName("description") val shortDescription: String = "",
-    @SerialName("tags") val tags: String = "",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("description") val shortDescription: String = "",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("tags") val tags: String = "",
     @SerialName("always_zap") val alwaysZap: Int = 0,
     @SerialName("toggledisabled") val toggleDisabled: Int = 0,
     @SerialName("disabled") val disabled: Int = 0,
     @SerialName("repeated") val repeated: Int = 0,
-    @SerialName("servicename") val serviceName: String = "",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("servicename") val serviceName: String = "",
     @SerialName("duration") val durationInSeconds: Int = 0,
-    @SerialName("dirname") val directoryName: String = "",
-    @SerialName("realend") val end: String = "",
-    @SerialName("descriptionextended") val descriptionextended: String = "",
-    @SerialName("name") val title: String = "",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("dirname") val directoryName: String = "",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("realend") val end: String = "",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("descriptionextended") val descriptionextended: String = "",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("name") val title: String = "",
     @SerialName("startprepare") val startprepare: Long = 0L,
-    @SerialName("realbegin") val begin: String = "",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("realbegin") val begin: String = "",
     @SerialName("end") val endTimestamp: Long = 0L,
     @SerialName("afterevent") val afterEvent: Int = 3,
     @SerialName("justplay") val justPlay: Int = 0,
