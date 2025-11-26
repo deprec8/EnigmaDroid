@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
@@ -225,29 +226,31 @@ fun ContentDetails(
 
         if (shortDescription.isNotEmpty() || longDescription.isNotEmpty()) {
             Spacer(modifier = Modifier.size(16.dp))
-            LazyColumn(
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                if (shortDescription.isNotEmpty()) {
-                    item {
-                        HighlightedText(
-                            text = shortDescription,
-                            highlightedWords = highlightedWords
-                        )
+            SelectionContainer {
+                LazyColumn(
+                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    if (shortDescription.isNotEmpty()) {
+                        item {
+                            HighlightedText(
+                                text = shortDescription,
+                                highlightedWords = highlightedWords
+                            )
+                        }
                     }
-                }
-                if (shortDescription.isNotEmpty() && longDescription.isNotEmpty()) {
-                    item {
-                        HorizontalDivider()
+                    if (shortDescription.isNotEmpty() && longDescription.isNotEmpty()) {
+                        item {
+                            HorizontalDivider()
+                        }
                     }
-                }
-                if (longDescription.isNotEmpty()) {
-                    item {
-                        HighlightedText(
-                            text = longDescription,
-                            highlightedWords = highlightedWords
-                        )
+                    if (longDescription.isNotEmpty()) {
+                        item {
+                            HighlightedText(
+                                text = longDescription,
+                                highlightedWords = highlightedWords
+                            )
+                        }
                     }
                 }
             }
