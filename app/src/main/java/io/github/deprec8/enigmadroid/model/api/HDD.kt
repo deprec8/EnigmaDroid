@@ -19,13 +19,14 @@
 
 package io.github.deprec8.enigmadroid.model.api
 
+import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class HDD(
-    @SerialName("capacity") val capacity: String = "N/A",
-    @SerialName("mount") val mount: String = "N/A",
-    @SerialName("free") val free: String = "N/A",
-    @SerialName("model") val model: String = "N/A"
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("capacity") val capacity: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("mount") val mount: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("free") val free: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("model") val model: String = "N/A"
 )

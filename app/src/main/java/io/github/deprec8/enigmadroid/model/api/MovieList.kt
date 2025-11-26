@@ -19,13 +19,14 @@
 
 package io.github.deprec8.enigmadroid.model.api
 
+import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class MovieList(
-    @SerialName("directory") val directory: String = "",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("directory") val directory: String = "",
     @Contextual @SerialName("bookmark") val bookmark: Bookmark = Bookmark(),
     @SerialName("movies") val movies: List<Movie> = emptyList(),
     @SerialName("bookmarks") val bookmarks: List<String> = emptyList(),

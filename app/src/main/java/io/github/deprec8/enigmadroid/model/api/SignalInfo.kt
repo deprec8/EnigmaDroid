@@ -19,14 +19,15 @@
 
 package io.github.deprec8.enigmadroid.model.api
 
+import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class SignalInfo(
-    @SerialName("agc") val agc: String = "",
-    @SerialName("tunernumber") val tunerNumber: String = "",
-    @SerialName("snr") val snr: String = "",
-    @SerialName("tunertype") val tunerType: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("agc") val agc: String = "",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("tunernumber") val tunerNumber: String = "",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("snr") val snr: String = "",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("tunertype") val tunerType: String = "N/A",
     @SerialName("inStandby") val inStandby: String = "true"
 )

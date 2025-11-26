@@ -19,11 +19,12 @@
 
 package io.github.deprec8.enigmadroid.model.api
 
+import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class Tuner(
-    @SerialName("type") val type: String = "N/A",
-    @SerialName("name") val name: String = "N/A"
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("type") val type: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("name") val name: String = "N/A"
 )

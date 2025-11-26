@@ -19,20 +19,21 @@
 
 package io.github.deprec8.enigmadroid.model.api
 
+import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class Event(
-    @SerialName("sname") val serviceName: String = "N/A",
-    @SerialName("title") val title: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("sname") val serviceName: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("title") val title: String = "N/A",
     @SerialName("begin_timestamp") val beginTimestamp: Long = 0L,
     @SerialName("now_timestamp") val nowTimestamp: Long = 0L,
     @SerialName("sref") val serviceReference: String = "",
     @SerialName("id") val id: Int = 0,
     @SerialName("duration_sec") val durationInSeconds: Long = 0L,
-    @SerialName("shortdesc") val shortDescription: String = "N/A",
-    @SerialName("genre") val genre: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("shortdesc") val shortDescription: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("genre") val genre: String = "N/A",
     @SerialName("genreid") val genreId: Int = 0,
-    @SerialName("longdesc") val longDescription: String = "N/A"
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("longdesc") val longDescription: String = "N/A"
 )

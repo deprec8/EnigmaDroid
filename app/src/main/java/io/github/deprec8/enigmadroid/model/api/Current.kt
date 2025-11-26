@@ -19,17 +19,18 @@
 
 package io.github.deprec8.enigmadroid.model.api
 
+import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class Current(
-    @SerialName("sname") val serviceName: String = "N/A",
-    @SerialName("title") val title: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("sname") val serviceName: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("title") val title: String = "N/A",
     @SerialName("begin_timestamp") val beginTimestamp: Long = 0L,
     @SerialName("now_timestamp") val nowTimestamp: Long = 0L,
     @SerialName("sref") val serviceReference: String = "",
     @SerialName("duration_sec") val durationInSeconds: Int = 0,
-    @SerialName("provider") val provider: String = "N/A",
-    @SerialName("shortdesc") val shortDescription: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("provider") val provider: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("shortdesc") val shortDescription: String = "N/A",
 )

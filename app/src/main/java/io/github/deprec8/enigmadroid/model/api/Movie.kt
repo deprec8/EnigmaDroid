@@ -19,19 +19,20 @@
 
 package io.github.deprec8.enigmadroid.model.api
 
+import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class Movie(
-    @SerialName("description") val shortDescription: String = "N/A",
-    @SerialName("tags") val tags: String = "N/A",
-    @SerialName("filename") val fileName: String = "",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("description") val shortDescription: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("tags") val tags: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("filename") val fileName: String = "",
     @SerialName("serviceref") val serviceReference: String = "",
-    @SerialName("eventname") val eventName: String = "N/A",
-    @SerialName("length") val length: String = "N/A",
-    @SerialName("servicename") val serviceName: String = "N/A",
-    @SerialName("begintime") val begin: String = "N/A",
-    @SerialName("descriptionExtended") val longDescription: String = "N/A",
-    @SerialName("filesize_readable") val filesizeReadable: String = "N/A"
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("eventname") val eventName: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("length") val length: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("servicename") val serviceName: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("begintime") val begin: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("descriptionExtended") val longDescription: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("filesize_readable") val filesizeReadable: String = "N/A"
 )
