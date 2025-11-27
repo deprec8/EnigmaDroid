@@ -228,7 +228,7 @@ fun ContentDetails(
             Spacer(modifier = Modifier.size(16.dp))
             SelectionContainer {
                 LazyColumn(
-                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
+                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     if (shortDescription.isNotEmpty()) {
@@ -254,6 +254,8 @@ fun ContentDetails(
                     }
                 }
             }
+        } else {
+            Spacer(modifier = Modifier.size(8.dp))
         }
     }
 }
