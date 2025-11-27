@@ -21,11 +21,8 @@ package io.github.deprec8.enigmadroid.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
@@ -202,8 +199,7 @@ fun ContentListItem(
     if (showBottomSheet) {
         ModalBottomSheet(
             onDismissRequest = { showBottomSheet = false },
-            sheetState = sheetState,
-            modifier = Modifier.padding(WindowInsets.statusBars.asPaddingValues())
+            sheetState = sheetState
         ) {
             ContentDetails(
                 headlineText = headlineText,
