@@ -6,7 +6,7 @@ Funciones:
 
 - Streaming de TV en vivo: Vea las transmisiones en directo desde su caja de Enigma2 en su dispositivo usando un reproductor de vídeo compatible.
 - Grabaciones de reproducción: Navega y reproduce tus series y películas guardadas.
-- Canal & Bouquet List: Navega rápidamente por tu canal completo y favoritos quets.
+- Canal & Bouquet Lista: Navega rápidamente por tu canal completo y favoritos fuets.
 - Control remoto: Remoto a pantalla completa con teclado.
 - Administración de temporizadores: Agregar, eliminar o editar temporizadores y grabaciones programadas.
 - Soporte de EPG: Ver los datos de la Guía Electrónica del Programa con información detallada de los espectáculos.

@@ -170,7 +170,7 @@
     <string name="begin_time">Anfangszeit</string>
     <string name="end_date">Enddatum</string>
     <string name="end_time">Endzeit</string>
-    <string name="monday">Monatg</string>
+    <string name="monday">Montag</string>
     <string name="tuesday">Dienstag</string>
     <string name="wednesday">Mittwoch</string>
     <string name="thursday">Donnerstag</string>
@@ -201,4 +201,7 @@
     <string name="highlight_matches">Treffer hervorheben</string>
     <string name="highlight_matches_in_search_results">Treffer in Suchergebnissen hervorheben.</string>
     <string name="translation">Übersetzung</string>
+    <string name="epg_for">EPG für %1$s</string>
+    <string name="view_epg">EPG anzeigen</string>
+    <string name="view_epg_for_current_channel">EPG für aktuellen Kanal anzeigen</string>
 </resources>
