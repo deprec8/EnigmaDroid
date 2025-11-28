@@ -201,4 +201,7 @@
     <string name="highlight_matches">Resaltar coincidencias</string>
     <string name="highlight_matches_in_search_results">Resaltar coincidencias en resultados de búsqueda.</string>
     <string name="translation">Traducción</string>
+    <string name="epg_for">EPG para %1$s</string>
+    <string name="view_epg">Ver EPG</string>
+    <string name="view_epg_for_current_channel">Ver EPG del canal actual</string>
 </resources>

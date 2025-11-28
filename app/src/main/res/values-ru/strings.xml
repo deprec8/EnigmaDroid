@@ -90,7 +90,7 @@
     <string name="confirm">Подтвердить</string>
     <string name="cancel">Отмена</string>
     <string name="rename_movie">Переименовать фильм</string>
-    <string name="new_name">Новое назване</string>
+    <string name="new_name">Новое имя</string>
     <string name="move_movie">Переместить фильм</string>
     <string name="new_location">Новое местоположение</string>
     <string name="rename">Переименовать</string>
@@ -139,7 +139,7 @@
     <string name="skip">Пропустить</string>
     <string name="delete_device">Удалить устройство</string>
     <string name="if_you_delete_this_device_it_will_not_be_recoverable">Если вы удалите это устройство, его будет уже не восстановить.</string>
-    <string name="pin_webif">ПИН-код WebIf</string>
+    <string name="pin_webif">Закрепить WebIf</string>
     <string name="standby">Режим ожидания</string>
     <string name="automatic">Автоматически</string>
     <string name="afterevent">После события</string>
@@ -157,7 +157,7 @@
     <string name="open_search">Открыть поиск</string>
     <string name="no_browser_found">Обозреватель не найден.</string>
     <string name="no_calender_found">Календарь не найден.</string>
-    <string name="no_media_player_found">Медиаплеер не найден.</string>
+    <string name="no_media_player_found">Видеоплейер не найден.</string>
     <string name="download">Скачать</string>
     <string name="downloading">Скачивание %1$s</string>
     <string name="fetching_screenshot">Скачивание снимка</string>
@@ -201,4 +201,7 @@
     <string name="highlight_matches">Выделять совпадения</string>
     <string name="highlight_matches_in_search_results">Выделять совпадения в результатах поиска.</string>
     <string name="translation">Перевод</string>
+    <string name="epg_for">ЕПГ для %1$s</string>
+    <string name="view_epg">Просмотр EPG</string>
+    <string name="view_epg_for_current_channel">Просмотр EPG для текущего канала</string>
 </resources>

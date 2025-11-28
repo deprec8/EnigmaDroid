@@ -201,4 +201,7 @@
     <string name="highlight_matches">Evidenzia corrispondenze</string>
     <string name="highlight_matches_in_search_results">Evidenzia corrispondenze nei risultati della ricerca.</string>
     <string name="translation">Traduzione</string>
+    <string name="epg_for">EPG per %1$s</string>
+    <string name="view_epg">Visualizza EPG</string>
+    <string name="view_epg_for_current_channel">Visualizza EPG per il canale corrente</string>
 </resources>

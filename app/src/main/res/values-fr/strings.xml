@@ -64,8 +64,7 @@
     <string name="restart_gui">Redémarrer l’interface</string>
     <string name="shutdown">Éteindre</string>
     <string name="close">Fermer</string>
-    <string name="start_by_adding_one_device">Commencez par ajouter un appareil, vous pourrez en
-        ajouter d’autres plus tard.</string>
+    <string name="start_by_adding_one_device">Commencez par ajouter un appareil, vous pourrez en ajouter d’autres plus tard.</string>
     <string name="finish_setup">Terminer la configuration</string>
     <string name="welcome_to_enigmadroid">Bienvenue dans EnigmaDroid</string>
     <string name="live_port">Port Live</string>
@@ -202,4 +201,7 @@
     <string name="highlight_matches">Surligner les correspondances</string>
     <string name="highlight_matches_in_search_results">Surligner les correspondances dans les résultats de recherche.</string>
     <string name="translation">Traduction</string>
+    <string name="epg_for">EPG pour %1$s</string>
+    <string name="view_epg">Voir EPG</string>
+    <string name="view_epg_for_current_channel">Voir EPG pour le canal actuel</string>
 </resources>
