@@ -23,21 +23,21 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.only
-import androidx.compose.material3.ScaffoldDefaults
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.window.core.layout.WindowSizeClass
 
 @Composable
-fun contentWithDrawerWindowInsets(): WindowInsets {
+fun topAppBarWithDrawerWindowInsets(): WindowInsets {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     return if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) ||
         ! windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
     ) {
-        ScaffoldDefaults.contentWindowInsets
+        TopAppBarDefaults.windowInsets
     } else {
-        ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Vertical).add(
-            ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.End)
+        TopAppBarDefaults.windowInsets.only(WindowInsetsSides.Vertical).add(
+            TopAppBarDefaults.windowInsets.only(WindowInsetsSides.End)
         )
     }
 }

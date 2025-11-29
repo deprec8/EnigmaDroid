@@ -20,13 +20,9 @@
 package io.github.deprec8.enigmadroid.ui.components
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
@@ -159,8 +155,7 @@ fun SearchTopAppBar(
         Column(
             Modifier
                 .fillMaxWidth()
-                .padding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top).asPaddingValues())
-                .horizontalSafeContentPadding(true)
+                .windowInsetsPadding(topAppBarWithDrawerWindowInsets())
         ) {
             SearchBar(
                 searchBarState,

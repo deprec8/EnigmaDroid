@@ -22,10 +22,8 @@ package io.github.deprec8.enigmadroid.ui.deviceInfo
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -67,7 +65,7 @@ import io.github.deprec8.enigmadroid.model.api.DeviceInfo
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.horizontalSafeContentPadding
+import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -116,11 +114,7 @@ fun DInfoPage(
         contentWindowInsets = contentWithDrawerWindowInsets(),
         topBar = {
             TopAppBar(
-                modifier = Modifier.horizontalSafeContentPadding(true),
-                windowInsets = TopAppBarDefaults.windowInsets
-                    .only(
-                        WindowInsetsSides.Vertical
-                    ),
+                windowInsets = topAppBarWithDrawerWindowInsets(),
                 title = {
                     Text(
                         text = stringResource(id = R.string.deviceinfo),

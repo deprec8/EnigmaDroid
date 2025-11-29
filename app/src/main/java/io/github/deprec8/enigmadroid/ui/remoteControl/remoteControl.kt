@@ -32,14 +32,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -88,7 +84,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.ui.components.horizontalSafeContentPadding
 import io.github.deprec8.enigmadroid.ui.remoteControl.modules.ArrowButtons
 import io.github.deprec8.enigmadroid.ui.remoteControl.modules.BouquetButtons
 import io.github.deprec8.enigmadroid.ui.remoteControl.modules.ColorButtons
@@ -183,14 +178,8 @@ fun RemoteControlPage(
     }
 
     Scaffold(
-        contentWindowInsets = WindowInsets.safeDrawing,
         topBar = {
             TopAppBar(
-                modifier = Modifier.horizontalSafeContentPadding(),
-                windowInsets = TopAppBarDefaults.windowInsets
-                    .only(
-                        WindowInsetsSides.Vertical
-                    ),
                 title = {
                     Text(
                         text = stringResource(R.string.remote_control),

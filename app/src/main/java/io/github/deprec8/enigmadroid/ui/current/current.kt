@@ -25,11 +25,9 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -73,7 +71,7 @@ import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.horizontalSafeContentPadding
+import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.utils.IntentUtils
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
 import kotlinx.coroutines.launch
@@ -126,11 +124,6 @@ fun CurrentPage(
         contentWindowInsets = contentWithDrawerWindowInsets(),
         topBar = {
             TopAppBar(
-                modifier = Modifier.horizontalSafeContentPadding(true),
-                windowInsets = TopAppBarDefaults.windowInsets
-                    .only(
-                        WindowInsetsSides.Vertical
-                    ),
                 title = {
                     Text(
                         text = stringResource(id = R.string.current),
@@ -138,6 +131,7 @@ fun CurrentPage(
                         overflow = TextOverflow.Ellipsis
                     )
                 },
+                windowInsets = topAppBarWithDrawerWindowInsets(),
                 scrollBehavior = scrollBehavior,
                 navigationIcon = {
                     if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) ||

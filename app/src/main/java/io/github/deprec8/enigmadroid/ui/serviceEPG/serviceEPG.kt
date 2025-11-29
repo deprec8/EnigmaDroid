@@ -22,11 +22,8 @@ package io.github.deprec8.enigmadroid.ui.serviceEPG
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -68,7 +65,7 @@ import io.github.deprec8.enigmadroid.ui.components.ContentListItem
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.horizontalSafeContentPadding
+import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.utils.IntentUtils
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
 import kotlinx.coroutines.launch
@@ -121,11 +118,7 @@ fun ServiceEPGPage(
         contentWindowInsets = contentWithDrawerWindowInsets(),
         topBar = {
             TopAppBar(
-                modifier = Modifier.horizontalSafeContentPadding(true),
-                windowInsets = TopAppBarDefaults.windowInsets
-                    .only(
-                        WindowInsetsSides.Vertical
-                    ),
+                windowInsets = topAppBarWithDrawerWindowInsets(),
                 title = {
                     Text(
                         text = stringResource(R.string.epg_for, sName),
@@ -156,8 +149,7 @@ fun ServiceEPGPage(
                 columns = GridCells.Adaptive(310.dp),
                 Modifier
                     .fillMaxSize()
-                    .consumeWindowInsets(innerPadding)
-                    .imePadding(),
+                    .consumeWindowInsets(innerPadding),
                 contentPadding = innerPadding
             ) {
                 items(epg.events) { event ->

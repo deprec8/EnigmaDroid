@@ -20,10 +20,8 @@
 package io.github.deprec8.enigmadroid.ui.settings.about
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -51,7 +49,7 @@ import androidx.compose.ui.unit.dp
 import com.mikepenz.aboutlibraries.ui.compose.android.produceLibraries
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.horizontalSafeContentPadding
+import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.utils.IntentUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,11 +66,7 @@ fun LibrariesPage(
         contentWindowInsets = contentWithDrawerWindowInsets(),
         topBar = {
             TopAppBar(
-                modifier = Modifier.horizontalSafeContentPadding(true),
-                windowInsets = TopAppBarDefaults.windowInsets
-                    .only(
-                        WindowInsetsSides.Vertical
-                    ),
+                windowInsets = topAppBarWithDrawerWindowInsets(),
                 title = {
                     Text(
                         text = stringResource(id = R.string.third_party_libraries),

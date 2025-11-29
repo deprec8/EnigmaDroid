@@ -20,10 +20,8 @@
 package io.github.deprec8.enigmadroid.ui.settings.remoteControl
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -50,7 +48,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.horizontalSafeContentPadding
+import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,11 +65,7 @@ fun RemoteControlSettingsPage(
         contentWindowInsets = contentWithDrawerWindowInsets(),
         topBar = {
             TopAppBar(
-                modifier = Modifier.horizontalSafeContentPadding(true),
-                windowInsets = TopAppBarDefaults.windowInsets
-                    .only(
-                        WindowInsetsSides.Vertical
-                    ),
+                windowInsets = topAppBarWithDrawerWindowInsets(),
                 title = {
                     Text(
                         text = stringResource(id = R.string.remote_control),

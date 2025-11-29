@@ -22,13 +22,11 @@ package io.github.deprec8.enigmadroid.ui.onboarding
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomAppBar
@@ -44,7 +42,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.ui.components.DeviceSetupCard
-import io.github.deprec8.enigmadroid.ui.components.horizontalSafeContentPadding
 
 @Composable
 fun OnboardingPage(
@@ -53,13 +50,11 @@ fun OnboardingPage(
     val scrollState = rememberScrollState()
 
     Scaffold(
-        contentWindowInsets = WindowInsets.safeDrawing,
         bottomBar = {
             BottomAppBar {
                 Row(
                     Modifier
-                        .fillMaxWidth()
-                        .horizontalSafeContentPadding(),
+                        .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     OutlinedButton(

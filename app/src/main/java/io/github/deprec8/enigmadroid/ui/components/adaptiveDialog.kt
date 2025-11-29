@@ -20,10 +20,8 @@
 package io.github.deprec8.enigmadroid.ui.components
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -59,9 +57,8 @@ fun AdaptiveDialog(
     onDismissRequest: () -> Unit,
     content: @Composable (isScrollable: Boolean) -> Unit,
     action: @Composable () -> Unit,
-    title: String,
-
-    ) {
+    title: String
+) {
 
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     var showCancelDialog by rememberSaveable { mutableStateOf(false) }
@@ -105,7 +102,6 @@ fun AdaptiveDialog(
                 } else {
                     MaterialTheme.colorScheme.surfaceContainer
                 },
-                contentWindowInsets = WindowInsets.safeDrawing,
                 topBar = {
                     TopAppBar(
                         colors = TopAppBarColors(
@@ -122,7 +118,6 @@ fun AdaptiveDialog(
                                 overflow = TextOverflow.Ellipsis
                             )
                         },
-                        modifier = Modifier.horizontalSafeContentPadding(),
                         actions = {
                             action()
                         },
