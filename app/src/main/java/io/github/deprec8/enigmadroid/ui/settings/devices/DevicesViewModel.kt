@@ -21,9 +21,9 @@ package io.github.deprec8.enigmadroid.ui.settings.devices
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.deprec8.enigmadroid.data.DevicesRepository
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -73,10 +73,14 @@ class DevicesViewModel @Inject constructor(private val devicesRepository: Device
 
     fun deleteDevice(listId: Int) {
         viewModelScope.launch {
+            devicesRepository.deleteDevice(_allDevices.value[listId].id)
             if (_currentDeviceId.value == listId) {
                 devicesRepository.setCurrentDeviceId(0)
+            } else _currentDeviceId.value?.let {
+                if (it > listId) {
+                    devicesRepository.setCurrentDeviceId(it - 1)
+                }
             }
-            devicesRepository.deleteDevice(_allDevices.value[listId].id)
         }
     }
 
