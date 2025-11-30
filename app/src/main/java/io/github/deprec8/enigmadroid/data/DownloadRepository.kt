@@ -79,7 +79,7 @@ class DownloadRepository(
                     append("${device.user}:${device.password}@")
                 }
                 append("${device.ip}:${device.port}")
-                append("/grab")
+                append("/grab?format=png")
             }
         }
     } ?: ""
@@ -87,8 +87,7 @@ class DownloadRepository(
     suspend fun downloadMovie(movie: Movie) {
         val request = DownloadManager.Request(buildMovieDownloadURL(movie.fileName).toUri()).apply {
             setTitle(context.getString(R.string.downloading, movie.eventName))
-            setAllowedOverMetered(false)
-            setAllowedOverRoaming(false)
+            setMimeType("video/mp4")
             setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
             setDestinationInExternalPublicDir(
                 Environment.DIRECTORY_MOVIES,
@@ -103,8 +102,7 @@ class DownloadRepository(
     suspend fun fetchScreenshot() {
         val request = DownloadManager.Request(buildScreenshotURl().toUri()).apply {
             setTitle(context.getString(R.string.fetching_screenshot))
-            setAllowedOverMetered(false)
-            setAllowedOverRoaming(false)
+            setMimeType("image/png")
             setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
             setDestinationInExternalPublicDir(
                 Environment.DIRECTORY_PICTURES,
