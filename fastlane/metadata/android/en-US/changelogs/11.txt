@@ -1,0 +1,7 @@
+- Add service EPG page for easy EPG access
+- Add parsing of special characters
+- Make descriptions selectable
+- Fix radio page showing tv services
+- Multiple UI improvements and fixes
+- Sync Crowdin translations
+- Various other fixes and updates
