@@ -31,6 +31,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -51,6 +52,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
@@ -168,6 +170,48 @@ fun SearchSettingsPage(
         var tvEPG by rememberSaveable { mutableStateOf(false) }
         var radioEPG by rememberSaveable { mutableStateOf(false) }
 
+        fun isAnyEnabled(): Boolean {
+            return tvSearchHistory.isNotEmpty() || radioSearchHistory.isNotEmpty() ||
+                    moviesSearchHistory.isNotEmpty() || timersSearchHistory.isNotEmpty() ||
+                    tvEPGSearchHistory.isNotEmpty() || radioEPGSearchHistory.isNotEmpty()
+        }
+
+
+        fun setAllEnabled(state: Boolean) {
+            if (tvSearchHistory.isNotEmpty()) {
+                tv = state
+            }
+            if (radioSearchHistory.isNotEmpty()) {
+                radio = state
+            }
+            if (moviesSearchHistory.isNotEmpty()) {
+                movies = state
+            }
+            if (timersSearchHistory.isNotEmpty()) {
+                timers = state
+            }
+            if (tvEPGSearchHistory.isNotEmpty()) {
+                tvEPG = state
+            }
+            if (radioEPGSearchHistory.isNotEmpty()) {
+                radioEPG = state
+            }
+        }
+
+        fun getAllEnabled(): Boolean {
+            if (! isAnyEnabled()) {
+                return false
+            }
+            var allEnabled = true
+            if (tvSearchHistory.isNotEmpty()) allEnabled = allEnabled && tv
+            if (radioSearchHistory.isNotEmpty()) allEnabled = allEnabled && radio
+            if (moviesSearchHistory.isNotEmpty()) allEnabled = allEnabled && movies
+            if (timersSearchHistory.isNotEmpty()) allEnabled = allEnabled && timers
+            if (tvEPGSearchHistory.isNotEmpty()) allEnabled = allEnabled && tvEPG
+            if (radioEPGSearchHistory.isNotEmpty()) allEnabled = allEnabled && radioEPG
+            return allEnabled
+        }
+
         AlertDialog(
             onDismissRequest = { showSearchHistoriesDialog = false },
             title = { Text(stringResource(R.string.clear_search_histories)) },
@@ -194,6 +238,19 @@ fun SearchSettingsPage(
             },
             text = {
                 Column(Modifier.verticalScroll(searchHistoriesDialogScrollState)) {
+                    ListItem(
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                        headlineContent = { Text("All") },
+                        trailingContent = {
+                            Checkbox(
+                                enabled = isAnyEnabled(),
+                                checked = getAllEnabled(),
+                                onCheckedChange = {
+                                    setAllEnabled(it)
+                                }
+                            )
+                        })
+                    HorizontalDivider(Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
                     ListItem(
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                         headlineContent = { Text(stringResource(R.string.tv)) },
