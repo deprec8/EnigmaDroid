@@ -34,7 +34,7 @@ import androidx.navigation.toRoute
 import io.github.deprec8.enigmadroid.model.navigation.MainPages
 import io.github.deprec8.enigmadroid.model.navigation.SettingsPages
 import io.github.deprec8.enigmadroid.ui.current.CurrentPage
-import io.github.deprec8.enigmadroid.ui.deviceInfo.DInfoPage
+import io.github.deprec8.enigmadroid.ui.deviceInfo.DeviceInfoPage
 import io.github.deprec8.enigmadroid.ui.movies.MoviesPage
 import io.github.deprec8.enigmadroid.ui.radio.RadioPage
 import io.github.deprec8.enigmadroid.ui.radioEPG.RadioEPGPage
@@ -141,7 +141,7 @@ fun NavHost(
                 )
             }
             composable<MainPages.DeviceInfo> {
-                DInfoPage(
+                DeviceInfoPage(
                     onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
                     modalDrawerState
                 )

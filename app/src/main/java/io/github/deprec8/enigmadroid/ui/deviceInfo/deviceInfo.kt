@@ -41,8 +41,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -70,7 +68,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DInfoPage(
+fun DeviceInfoPage(
     onNavigateToRemoteControl: () -> Unit,
     drawerState: DrawerState, deviceInfoViewModel: DeviceInfoViewModel = hiltViewModel()
 ) {
