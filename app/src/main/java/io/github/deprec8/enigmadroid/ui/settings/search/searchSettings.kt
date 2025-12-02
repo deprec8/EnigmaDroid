@@ -240,7 +240,7 @@ fun SearchSettingsPage(
                 Column(Modifier.verticalScroll(searchHistoriesDialogScrollState)) {
                     ListItem(
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        headlineContent = { Text("All") },
+                        headlineContent = { Text(stringResource(R.string.all)) },
                         trailingContent = {
                             Checkbox(
                                 enabled = isAnyEnabled(),
