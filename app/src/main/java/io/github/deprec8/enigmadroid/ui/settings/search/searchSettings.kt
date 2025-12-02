@@ -36,8 +36,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -62,7 +60,6 @@ import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInse
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchSettingsPage(
-    snackbarHostState: SnackbarHostState,
     onNavigateBack: () -> Unit,
     searchSettingsViewModel: SearchSettingsViewModel = hiltViewModel()
 ) {
@@ -105,7 +102,6 @@ fun SearchSettingsPage(
                 }
             )
         },
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         modifier = Modifier
             .nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { innerPadding ->

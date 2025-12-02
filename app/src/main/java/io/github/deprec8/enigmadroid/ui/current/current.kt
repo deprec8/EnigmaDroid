@@ -45,8 +45,6 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -81,7 +79,6 @@ import kotlinx.coroutines.launch
 fun CurrentPage(
     onNavigateToRemoteControl: () -> Unit,
     onNavigateToServiceEPG: (sRef: String, sName: String) -> Unit,
-    snackbarHostState: SnackbarHostState,
     drawerState: DrawerState,
     currentViewModel: CurrentViewModel = hiltViewModel()
 ) {
@@ -155,7 +152,6 @@ fun CurrentPage(
                 }
             )
         },
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         modifier = Modifier
             .nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { innerPadding ->

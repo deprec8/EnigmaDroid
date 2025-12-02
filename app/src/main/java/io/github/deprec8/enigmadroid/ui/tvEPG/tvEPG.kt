@@ -47,8 +47,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -83,7 +81,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun TVEPGPage(
     onNavigateToRemoteControl: () -> Unit,
-    snackbarHostState: SnackbarHostState,
     drawerState: DrawerState,
     tvEPGViewModel: TVEPGViewModel = hiltViewModel()
 ) {
@@ -216,9 +213,7 @@ fun TVEPGPage(
             }
         },
         contentWindowInsets = contentWithDrawerWindowInsets(),
-        snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
-        }, topBar = {
+        topBar = {
             SearchTopAppBar(
                 enabled = epgs.isNotEmpty(),
                 textFieldState = tvEPGViewModel.searchFieldState,

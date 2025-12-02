@@ -29,13 +29,11 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.PermanentDrawerSheet
 import androidx.compose.material3.PermanentNavigationDrawer
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -57,7 +55,6 @@ fun MainPage(
     val navController = rememberNavController()
     val modalDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-    val snackbarHostState = remember { SnackbarHostState() }
 
     val scope = rememberCoroutineScope()
 
@@ -109,8 +106,7 @@ fun MainPage(
             ) {
                 NavHost(
                     navController,
-                    modalDrawerState,
-                    snackbarHostState,
+                    modalDrawerState
                 )
             }
         } else {
@@ -147,7 +143,7 @@ fun MainPage(
                 }
             ) {
                 NavHost(
-                    navController, modalDrawerState, snackbarHostState,
+                    navController, modalDrawerState
                 )
             }
         }

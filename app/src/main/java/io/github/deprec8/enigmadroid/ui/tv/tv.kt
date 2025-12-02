@@ -51,8 +51,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -89,7 +87,6 @@ import kotlinx.coroutines.launch
 fun TvPage(
     onNavigateToRemoteControl: () -> Unit,
     onNavigateToServiceEPG: (sRef: String, sName: String) -> Unit,
-    snackbarHostState: SnackbarHostState,
     drawerState: DrawerState, tvViewModel: TVViewModel = hiltViewModel()
 ) {
 
@@ -240,9 +237,7 @@ fun TvPage(
             }
         },
         contentWindowInsets = contentWithDrawerWindowInsets(),
-        snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
-        }, topBar = {
+        topBar = {
             SearchTopAppBar(
                 textFieldState = tvViewModel.searchFieldState,
                 enabled = allTVEvents.isNotEmpty(),

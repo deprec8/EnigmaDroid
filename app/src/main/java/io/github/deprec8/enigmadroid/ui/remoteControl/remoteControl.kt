@@ -57,8 +57,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -96,7 +94,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun RemoteControlPage(
     onNavigateBack: () -> Unit,
-    snackbarHostState: SnackbarHostState,
     remoteControlViewModel: RemoteControlViewModel = hiltViewModel()
 ) {
 
@@ -321,7 +318,6 @@ fun RemoteControlPage(
                     }
                 })
         },
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { innerPadding ->
         Box(

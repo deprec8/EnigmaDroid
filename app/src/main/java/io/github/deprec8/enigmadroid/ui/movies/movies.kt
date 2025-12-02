@@ -57,8 +57,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -96,7 +94,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun MoviesPage(
     onNavigateToRemoteControl: () -> Unit,
-    snackbarHostState: SnackbarHostState,
     drawerState: DrawerState, moviesViewModel: MoviesViewModel = hiltViewModel()
 ) {
 
@@ -364,9 +361,7 @@ fun MoviesPage(
             }
         },
         contentWindowInsets = contentWithDrawerWindowInsets(),
-        snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
-        }, topBar = {
+        topBar = {
             SearchTopAppBar(
                 enabled = movies.isNotEmpty(),
                 textFieldState = moviesViewModel.searchFieldState,

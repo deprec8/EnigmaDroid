@@ -22,7 +22,6 @@ package io.github.deprec8.enigmadroid.ui.main
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.material3.DrawerState
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.window.DialogProperties
@@ -55,8 +54,7 @@ import io.github.deprec8.enigmadroid.ui.tvEPG.TVEPGPage
 @Composable
 fun NavHost(
     navController: NavHostController,
-    modalDrawerState: DrawerState,
-    snackbarHostState: SnackbarHostState,
+    modalDrawerState: DrawerState
 ) {
     Surface {
         NavHost(
@@ -74,7 +72,6 @@ fun NavHost(
                             )
                         )
                     },
-                    snackbarHostState,
                     modalDrawerState
                 )
             }
@@ -83,28 +80,24 @@ fun NavHost(
                 ServiceEPGPage(
                     sRef = serviceEPG.sRef,
                     sName = serviceEPG.sName,
-                    onNavigateBack = { navController.navigateUp() },
-                    snackbarHostState
+                    onNavigateBack = { navController.navigateUp() }
                 )
             }
             composable<MainPages.Movies> {
                 MoviesPage(
                     onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
-                    snackbarHostState,
                     modalDrawerState
                 )
             }
             composable<MainPages.TVEPG> {
                 TVEPGPage(
                     onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
-                    snackbarHostState,
                     modalDrawerState
                 )
             }
             composable<MainPages.RadioEPG> {
                 RadioEPGPage(
                     onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
-                    snackbarHostState,
                     modalDrawerState
                 )
             }
@@ -118,7 +111,6 @@ fun NavHost(
                             )
                         )
                     },
-                    snackbarHostState = snackbarHostState,
                     drawerState = modalDrawerState
                 )
             }
@@ -132,14 +124,12 @@ fun NavHost(
                             )
                         )
                     },
-                    snackbarHostState,
                     modalDrawerState
                 )
             }
             composable<MainPages.Timers> {
                 TimersPage(
                     onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
-                    snackbarHostState,
                     modalDrawerState
                 )
             }
@@ -147,21 +137,18 @@ fun NavHost(
             composable<MainPages.Signal> {
                 SignalPage(
                     onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
-                    snackbarHostState,
                     modalDrawerState
                 )
             }
             composable<MainPages.DeviceInfo> {
                 DInfoPage(
                     onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
-                    snackbarHostState,
                     modalDrawerState
                 )
             }
             composable<MainPages.Settings> {
                 SettingsPage(
                     modalDrawerState,
-                    snackbarHostState,
                     onNavigateToSubPage = {
                         navController.navigate(it)
                     }
@@ -169,7 +156,6 @@ fun NavHost(
             }
             composable<SettingsPages.About> {
                 AboutPage(
-                    snackbarHostState,
                     onNavigateBack = { navController.navigate(MainPages.Settings) },
                     onNavigateToLibraries = {
                         navController.navigate(SettingsPages.Libraries)
@@ -178,13 +164,11 @@ fun NavHost(
             }
             composable<SettingsPages.Libraries> {
                 LibrariesPage(
-                    snackbarHostState,
                     onNavigateBack = { navController.navigate(SettingsPages.About) }
                 )
             }
             composable<SettingsPages.Devices> {
                 DevicesPage(
-                    snackbarHostState,
                     onNavigateBack = {
                         navController.navigate(MainPages.Settings)
                     }
@@ -192,7 +176,6 @@ fun NavHost(
             }
             composable<SettingsPages.RemoteControl> {
                 RemoteControlSettingsPage(
-                    snackbarHostState,
                     onNavigateBack = {
                         navController.navigate(MainPages.Settings)
                     }
@@ -200,7 +183,6 @@ fun NavHost(
             }
             composable<SettingsPages.Search> {
                 SearchSettingsPage(
-                    snackbarHostState,
                     onNavigateBack = {
                         navController.navigate(MainPages.Settings)
                     }
@@ -218,7 +200,7 @@ fun NavHost(
             ) {
                 RemoteControlPage(onNavigateBack = {
                     navController.navigateUp()
-                }, snackbarHostState)
+                })
             }
         }
     }

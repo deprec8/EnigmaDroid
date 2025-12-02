@@ -72,7 +72,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun DInfoPage(
     onNavigateToRemoteControl: () -> Unit,
-    snackbarHostState: SnackbarHostState,
     drawerState: DrawerState, deviceInfoViewModel: DeviceInfoViewModel = hiltViewModel()
 ) {
 
@@ -145,7 +144,6 @@ fun DInfoPage(
                 }
             )
         },
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         modifier = Modifier
             .nestedScroll(scrollBehavior.nestedScrollConnection),
 

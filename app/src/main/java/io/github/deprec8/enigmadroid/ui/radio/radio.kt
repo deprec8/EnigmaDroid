@@ -51,8 +51,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
@@ -90,7 +88,6 @@ import kotlinx.coroutines.launch
 fun RadioPage(
     onNavigateToRemoteControl: () -> Unit,
     onNavigateToServiceEPG: (sRef: String, sName: String) -> Unit,
-    snackbarHostState: SnackbarHostState,
     drawerState: DrawerState, radioViewModel: RadioViewModel = hiltViewModel()
 ) {
 
@@ -244,9 +241,7 @@ fun RadioPage(
             }
         },
         contentWindowInsets = contentWithDrawerWindowInsets(),
-        snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
-        }, topBar = {
+        topBar = {
             SearchTopAppBar(
                 enabled = allRadioEvents.isNotEmpty(),
                 textFieldState = radioViewModel.searchFieldState,

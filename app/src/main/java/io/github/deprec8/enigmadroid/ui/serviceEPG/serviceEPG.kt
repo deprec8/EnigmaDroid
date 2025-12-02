@@ -40,8 +40,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -76,7 +74,6 @@ fun ServiceEPGPage(
     sRef: String,
     sName: String,
     onNavigateBack: () -> Unit,
-    snackbarHostState: SnackbarHostState,
     serviceEPGViewModel: ServiceEPGViewModel = hiltViewModel()
 ) {
 
@@ -139,7 +136,6 @@ fun ServiceEPGPage(
                 }
             )
         },
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         modifier = Modifier
             .nestedScroll(scrollBehavior.nestedScrollConnection),
 

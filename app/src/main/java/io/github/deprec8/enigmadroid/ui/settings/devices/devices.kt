@@ -55,8 +55,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -85,7 +83,6 @@ import io.github.deprec8.enigmadroid.utils.IntentUtils
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DevicesPage(
-    snackbarHostState: SnackbarHostState,
     onNavigateBack: () -> Unit,
     devicesViewModel: DevicesViewModel = hiltViewModel(),
 ) {
@@ -121,7 +118,6 @@ fun DevicesPage(
                     }
                 })
         },
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(
                 onClick =
