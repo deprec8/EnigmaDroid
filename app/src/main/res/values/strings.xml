@@ -218,4 +218,5 @@
     <string name="epg_for">EPG for %1$s</string>
     <string name="view_epg">View EPG</string>
     <string name="view_epg_for_current_channel">View EPG for current channel</string>
+    <string name="all">All</string>
 </resources>
