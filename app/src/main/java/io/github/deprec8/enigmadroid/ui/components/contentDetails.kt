@@ -181,7 +181,7 @@ fun ContentDetails(
                 ) {
                     menuSection.menuItems.forEach { menuItem ->
                         when (menuItem.text) {
-                            stringResource(R.string.stream) -> Button(
+                            stringResource(R.string.stream), stringResource(R.string.view_log) -> Button(
                                 modifier = Modifier.weight(1f),
                                 content = {
                                     Icon(
