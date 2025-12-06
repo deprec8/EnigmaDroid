@@ -31,11 +31,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -49,9 +53,12 @@ import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material.icons.outlined.TimerOff
 import androidx.compose.material.icons.outlined.Videocam
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
@@ -148,6 +155,7 @@ fun TimersPage(
                 items(list) { timer ->
                     var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
                     var showEditDialog by rememberSaveable { mutableStateOf(false) }
+                    var showLogDialog by rememberSaveable { mutableStateOf(false) }
 
                     ContentListItem(
                         highlightedWords = highlightedWords,
@@ -244,7 +252,21 @@ fun TimersPage(
                         ),
                         shortDescription = timer.shortDescription,
                         longDescription = timer.descriptionextended,
-                        menuSections = listOf(
+                        menuSections = if (timer.logEntries.isNotEmpty()) {
+                            listOf(
+                                MenuSection(
+                                    listOf(
+                                        MenuItem(
+                                            text = stringResource(R.string.view_log),
+                                            outlinedIcon = Icons.AutoMirrored.Outlined.List,
+                                            filledIcon = Icons.AutoMirrored.Filled.List,
+                                            action = { showLogDialog = true }),
+                                    )
+                                )
+                            )
+                        } else {
+                            emptyList()
+                        } + listOf(
                             MenuSection(
                                 listOf(
                                     MenuItem(
@@ -262,6 +284,50 @@ fun TimersPage(
                         )
                     )
 
+                    if (showLogDialog) {
+                        AlertDialog(
+                            onDismissRequest = {
+                                showLogDialog = false
+                            },
+                            title = { Text(text = stringResource(R.string.log_entries)) },
+                            text = {
+                                LazyColumn {
+                                    items(timer.logEntries) {
+                                        ListItem(
+                                            overlineContent = {
+                                                Text(stringResource(R.string.code, it.code))
+                                            },
+                                            headlineContent = {
+                                                Text(
+                                                    text = TimestampUtils.formatApiTimestampToDate(
+                                                        it.timestamp
+                                                    ) + " " + TimestampUtils.formatApiTimestampToTime(
+                                                        it.timestamp
+                                                    )
+                                                )
+                                            },
+                                            supportingContent = {
+                                                Text(text = it.message)
+                                            },
+                                            colors = ListItemDefaults.colors(containerColor = AlertDialogDefaults.containerColor)
+                                        )
+                                    }
+                                }
+                            },
+                            icon = {
+                                Icon(
+                                    Icons.AutoMirrored.Outlined.List,
+                                    contentDescription = null
+                                )
+                            },
+                            confirmButton = {},
+                            dismissButton = {
+                                TextButton(onClick = {
+                                    showLogDialog = false
+                                }) { Text(stringResource(R.string.close)) }
+                            }
+                        )
+                    }
                     if (showDeleteDialog) {
                         AlertDialog(
                             onDismissRequest = {

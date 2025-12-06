@@ -226,4 +226,7 @@
     <string name="disabled">Disabled</string>
     <string name="error">Error</string>
     <string name="unknown">Unknown</string>
+    <string name="log_entries">Log entries</string>
+    <string name="view_log">View log</string>
+    <string name="code">Code: %1$d</string>
 </resources>

@@ -19,6 +19,7 @@
 
 package io.github.deprec8.enigmadroid.model.api
 
+import LogEntrySerializer
 import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -49,4 +50,5 @@ data class Timer(
     @SerialName("nextactivation") val nextActivation: String? = null,
     @SerialName("cancelled") val cancelled: Boolean = false,
     @SerialName("eit") val eit: Int = 0,
+    @Serializable(with = LogEntrySerializer::class) @SerialName("logentries") val logEntries: List<LogEntry> = emptyList()
 )
