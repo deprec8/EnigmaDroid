@@ -74,6 +74,7 @@ fun MainPage(
             ModalNavigationDrawer(
                 drawerContent = {
                     ModalDrawerSheet(
+                        drawerState = modalDrawerState,
                         modifier = Modifier
                             .consumeWindowInsets(
                                 WindowInsets.safeDrawing.only(
