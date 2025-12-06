@@ -74,6 +74,12 @@ fun AboutPage(
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val scrollState = rememberScrollState()
 
+    val appDeveloperURL = stringResource(R.string.app_developer_url)
+    val appSourceURL = stringResource(R.string.app_source_url)
+    val appIssueURL = stringResource(R.string.app_issue_url)
+    val appTranslationURL = stringResource(R.string.app_translation_url)
+    val appLicenseURL = stringResource(R.string.app_license_url)
+
     Scaffold(
         contentWindowInsets = contentWithDrawerWindowInsets(),
         topBar = {
@@ -115,7 +121,7 @@ fun AboutPage(
                 supportingContent = { Text(text = stringResource(R.string.app_developer)) },
                 leadingContent = { Icon(Icons.Outlined.Person, contentDescription = null) },
                 modifier = Modifier.clickable {
-                    IntentUtils.openURL(context, context.getString(R.string.app_developer_url))
+                    IntentUtils.openURL(context, appDeveloperURL)
                 })
 
             ListItem(
@@ -136,7 +142,7 @@ fun AboutPage(
                 supportingContent = { Text(text = stringResource(R.string.app_source)) },
                 leadingContent = { Icon(Icons.Outlined.Code, contentDescription = null) },
                 modifier = Modifier.clickable {
-                    IntentUtils.openURL(context, context.getString(R.string.app_source_url))
+                    IntentUtils.openURL(context, appSourceURL)
                 })
 
             ListItem(
@@ -149,7 +155,7 @@ fun AboutPage(
                 modifier = Modifier.clickable {
                     IntentUtils.openURL(
                         context,
-                        context.getString(R.string.app_issue_url)
+                        appIssueURL
                     )
                 })
 
@@ -163,7 +169,7 @@ fun AboutPage(
                 modifier = Modifier.clickable {
                     IntentUtils.openURL(
                         context,
-                        context.getString(R.string.app_translation_url)
+                        appTranslationURL
                     )
                 })
 
@@ -177,7 +183,7 @@ fun AboutPage(
                 },
                 leadingContent = { Icon(Icons.Outlined.Shield, contentDescription = null) },
                 modifier = Modifier.clickable {
-                    IntentUtils.openURL(context, context.getString(R.string.app_license_url))
+                    IntentUtils.openURL(context, appLicenseURL)
                 })
 
             ListItem(

@@ -191,7 +191,7 @@ fun TvPage(
                                         }
                                     ),
                                     MenuItem(
-                                        text = context.getString(R.string.view_epg),
+                                        text = stringResource(R.string.view_epg),
                                         outlinedIcon = Icons.AutoMirrored.Outlined.Dvr,
                                         filledIcon = Icons.AutoMirrored.Filled.Dvr,
                                         action = {

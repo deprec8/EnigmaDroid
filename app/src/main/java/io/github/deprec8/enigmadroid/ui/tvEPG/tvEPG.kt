@@ -167,7 +167,7 @@ fun TVEPGPage(
                                             }
                                         ),
                                         MenuItem(
-                                            text = context.getString(R.string.add_reminder),
+                                            text = stringResource(R.string.add_reminder),
                                             outlinedIcon = Icons.Outlined.AddAlert,
                                             filledIcon = Icons.Filled.AddAlert,
                                             action = {
