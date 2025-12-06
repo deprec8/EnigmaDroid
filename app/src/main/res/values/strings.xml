@@ -224,7 +224,6 @@
     <string name="running">Running</string>
     <string name="ended">Ended</string>
     <string name="disabled">Disabled</string>
-    <string name="error">Error</string>
     <string name="unknown">Unknown</string>
     <string name="log_entries">Log entries</string>
     <string name="view_log">View log</string>
