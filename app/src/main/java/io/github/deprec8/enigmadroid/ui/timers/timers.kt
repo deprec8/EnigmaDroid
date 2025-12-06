@@ -34,7 +34,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -45,6 +44,7 @@ import androidx.compose.material.icons.outlined.Checklist
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.QuestionMark
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material.icons.outlined.TimerOff
 import androidx.compose.material.icons.outlined.Videocam
@@ -52,6 +52,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
@@ -66,7 +67,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -116,6 +116,20 @@ fun TimersPage(
     }
 
     @Composable
+    fun getTimerState(timer: Timer): String {
+        return when (timer.state + timer.disabled) {
+            TimerState.WAITING  -> stringResource(R.string.waiting)
+            TimerState.PREPARED -> stringResource(R.string.prepared)
+            TimerState.RUNNING  -> stringResource(R.string.running)
+            TimerState.ENDED    -> stringResource(R.string.ended)
+            TimerState.DISABLED -> stringResource(R.string.disabled)
+            else                -> {
+                stringResource(R.string.unknown)
+            }
+        }
+    }
+
+    @Composable
     fun Content(
         list: List<Timer>,
         paddingValues: PaddingValues,
@@ -138,73 +152,88 @@ fun TimersPage(
                     ContentListItem(
                         highlightedWords = highlightedWords,
                         headlineText = timer.title,
-                        overlineText = timer.serviceName,
+                        overlineText = timer.serviceName + " - " + getTimerState(timer),
                         leadingContent = {
                             when (timer.state + timer.disabled) {
-                                TimerState.WAITING -> Box(
+                                TimerState.WAITING  -> Box(
                                     modifier = Modifier
                                         .size(40.dp)
-                                        .clip(CircleShape)
-                                        .background(Color.Yellow),
+                                        .clip(MaterialTheme.shapes.medium)
+                                        .background(MaterialTheme.colorScheme.secondary),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
                                         imageVector = Icons.Outlined.Timer,
-                                        contentDescription = "Waiting",
-                                        tint = Color.Black
+                                        contentDescription = stringResource(R.string.waiting),
+                                        tint = MaterialTheme.colorScheme.onSecondary
                                     )
                                 }
                                 TimerState.PREPARED -> Box(
                                     modifier = Modifier
                                         .size(40.dp)
-                                        .clip(CircleShape)
-                                        .background(Color(255, 165, 0)),
+                                        .clip(MaterialTheme.shapes.medium)
+                                        .background(MaterialTheme.colorScheme.secondary),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
                                         imageVector = Icons.Outlined.Checklist,
-                                        contentDescription = "Prepared",
-                                        tint = Color.Black
+                                        contentDescription = stringResource(R.string.prepared),
+                                        tint = MaterialTheme.colorScheme.onSecondary
                                     )
                                 }
-                                TimerState.RUNNING -> Box(
+                                TimerState.RUNNING  -> Box(
                                     modifier = Modifier
                                         .size(40.dp)
-                                        .clip(CircleShape)
-                                        .background(Color.Green),
+                                        .clip(MaterialTheme.shapes.medium)
+                                        .background(MaterialTheme.colorScheme.primary),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
                                         imageVector = Icons.Outlined.Videocam,
-                                        contentDescription = "Running",
-                                        tint = Color.Black
+                                        contentDescription = stringResource(R.string.running),
+                                        tint = MaterialTheme.colorScheme.onPrimary
                                     )
                                 }
-                                TimerState.ENDED -> Box(
+                                TimerState.ENDED    -> Box(
                                     modifier = Modifier
                                         .size(40.dp)
-                                        .clip(CircleShape)
-                                        .background(Color.Blue),
+                                        .clip(MaterialTheme.shapes.medium)
+                                        .background(MaterialTheme.colorScheme.tertiary),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
                                         imageVector = Icons.Outlined.Done,
-                                        contentDescription = "Prepared",
-                                        tint = Color.Black
+                                        contentDescription = stringResource(R.string.ended),
+                                        tint = MaterialTheme.colorScheme.onTertiary
                                     )
                                 }
                                 TimerState.DISABLED -> Box(
                                     modifier = Modifier
                                         .size(40.dp)
-                                        .clip(CircleShape)
-                                        .background(Color.Gray),
+                                        .clip(MaterialTheme.shapes.medium)
+                                        .background(MaterialTheme.colorScheme.tertiary),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
                                         imageVector = Icons.Outlined.TimerOff,
-                                        contentDescription = "Prepared",
-                                        tint = Color.Black
+                                        contentDescription = stringResource(R.string.disabled),
+                                        tint = MaterialTheme.colorScheme.onTertiary
                                     )
+                                }
+                                else                -> {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(40.dp)
+                                            .clip(MaterialTheme.shapes.medium)
+                                            .background(MaterialTheme.colorScheme.error),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Outlined.QuestionMark,
+                                            contentDescription = stringResource(R.string.unknown),
+                                            tint = MaterialTheme.colorScheme.onError
+                                        )
+                                    }
                                 }
                             }
                         },

@@ -219,4 +219,11 @@
     <string name="view_epg">View EPG</string>
     <string name="view_epg_for_current_channel">View EPG for current channel</string>
     <string name="all">All</string>
+    <string name="waiting">Waiting</string>
+    <string name="prepared">Prepared</string>
+    <string name="running">Running</string>
+    <string name="ended">Ended</string>
+    <string name="disabled">Disabled</string>
+    <string name="error">Error</string>
+    <string name="unknown">Unknown</string>
 </resources>
