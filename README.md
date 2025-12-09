@@ -29,11 +29,15 @@ EnigmaDroid currently only supports external media players for streaming live co
 
 ## Translation
 
-[![Crowdin](https://badges.crowdin.net/enigmadroid/localized.svg)](https://crowdin.com/project/enigmadroid) [![Crowdin Push](https://github.com/deprec8/EnigmaDroid/actions/workflows/crowdin-push.yml/badge.svg)](https://github.com/deprec8/EnigmaDroid/actions/workflows/crowdin-push.yml) [![Crowdin Pull](https://github.com/deprec8/EnigmaDroid/actions/workflows/crowdin-pull.yml/badge.svg)](https://github.com/deprec8/EnigmaDroid/actions/workflows/crowdin-pull.yml)
+[![Crowdin](https://badges.crowdin.net/enigmadroid/localized.svg)](https://crowdin.com/project/enigmadroid)
+[![Crowdin Push](https://github.com/deprec8/EnigmaDroid/actions/workflows/crowdin-push.yml/badge.svg)](https://github.com/deprec8/EnigmaDroid/actions/workflows/crowdin-push.yml)
+[![Crowdin Pull](https://github.com/deprec8/EnigmaDroid/actions/workflows/crowdin-pull.yml/badge.svg)](https://github.com/deprec8/EnigmaDroid/actions/workflows/crowdin-pull.yml)
 
-Translation is done on [**Crowdin**](https://crowdin.com/project/enigmadroid).
+Translation is managed on [**Crowdin**](https://crowdin.com/project/enigmadroid).
 
-If you notice any error in the translations feel free to correct it there.
+Most translations in this project are generated using machine translation and may require further refinement for full accuracy.
+
+If you notice any errors, feel free to correct them directly on Crowdin.
 
 ## Requirements
 
