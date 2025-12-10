@@ -61,15 +61,15 @@
     <string name="remote_control">Fernbedienung</string>
     <string name="toggle_standby">Standby umschalten</string>
     <string name="restart">Neustarten</string>
-    <string name="restart_gui">GUI neustarten</string>
+    <string name="restart_gui">GUI neu starten</string>
     <string name="shutdown">Herunterfahren</string>
     <string name="close">Schließen</string>
-    <string name="start_by_adding_one_device">Fügen sie zuerst ein Gerät hinzu, sie können später weitere hinzufügen.</string>
+    <string name="start_by_adding_one_device">Fügen Sie zuerst ein Gerät hinzu, Sie können später weitere hinzufügen.</string>
     <string name="finish_setup">Setup beenden</string>
     <string name="welcome_to_enigmadroid">Willkommen zu EnigmaDroid</string>
     <string name="live_port">Live-Port</string>
     <string name="current">Aktuell</string>
-    <string name="stream_current">Aktuelles Program streamen</string>
+    <string name="stream_current">Aktuelles Programm streamen</string>
     <string name="kernel_version">Kernel-Version</string>
     <string name="uptime">Betriebszeit</string>
     <string name="model">Modell</string>
@@ -144,7 +144,7 @@
     <string name="automatic">Automatisch</string>
     <string name="afterevent">Nach Event</string>
     <string name="screenshot">Bildschirmaufnahme</string>
-    <string name="add_a_device_to_connect_to">Füge Gerät zum verbinden hinzu</string>
+    <string name="add_a_device_to_connect_to">Füge Gerät zum Verbinden hinzu</string>
     <string name="device_is_not_playing_any_channel">Das Gerät spielt keinen Kanal ab</string>
     <string name="edit_timer">Timer bearbeiten</string>
     <string name="tv_epg">TV EPG</string>
@@ -155,8 +155,8 @@
     <string name="switch_channel">Umschalten</string>
     <string name="service">Service</string>
     <string name="open_search">Suche öffnen</string>
-    <string name="no_browser_found">Keinen Browser gefunden..</string>
-    <string name="no_calender_found">Keinen Kalender gefunden.</string>
+    <string name="no_browser_found">Keinen Browser gefunden.</string>
+    <string name="no_calender_found">Kein Kalender gefunden.</string>
     <string name="no_media_player_found">Kein Medienplayer gefunden.</string>
     <string name="download">Herunterladen</string>
     <string name="downloading">Herunterladen von %1$s</string>
@@ -205,4 +205,13 @@
     <string name="view_epg">EPG anzeigen</string>
     <string name="view_epg_for_current_channel">EPG für aktuellen Kanal anzeigen</string>
     <string name="all">Alle</string>
+    <string name="waiting">Wartet</string>
+    <string name="prepared">Vorbereitet</string>
+    <string name="running">Läuft</string>
+    <string name="ended">Beendet</string>
+    <string name="disabled">Deaktiviert</string>
+    <string name="unknown">Unbekannt</string>
+    <string name="log_entries">Logeinträge</string>
+    <string name="view_log">Log anzeigen</string>
+    <string name="code">Code: %1$d</string>
 </resources>

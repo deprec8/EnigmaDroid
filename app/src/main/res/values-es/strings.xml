@@ -205,4 +205,13 @@
     <string name="view_epg">Ver EPG</string>
     <string name="view_epg_for_current_channel">Ver EPG del canal actual</string>
     <string name="all">Todas</string>
+    <string name="waiting">Esperando</string>
+    <string name="prepared">Preparado</string>
+    <string name="running">Huida</string>
+    <string name="ended">Terminado</string>
+    <string name="disabled">Desactivado</string>
+    <string name="unknown">Desconocido</string>
+    <string name="log_entries">Entradas de registro</string>
+    <string name="view_log">Ver registro</string>
+    <string name="code">Código: %1$d</string>
 </resources>
