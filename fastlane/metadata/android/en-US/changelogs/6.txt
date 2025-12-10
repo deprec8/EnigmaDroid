@@ -1,2 +1,2 @@
-- Sync Crowdin translations
+- Synced Crowdin translations
 - Various fixes and updates

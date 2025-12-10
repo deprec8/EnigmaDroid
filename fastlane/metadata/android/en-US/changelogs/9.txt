@@ -1,4 +1,4 @@
-- Add machine translations for French, Spanish and Italian
-- Refactor backend code
-- Sync Crowdin translations
+- Added machine translations for French, Spanish and Italian
+- Refactored backend code
+- Synced Crowdin translations
 - Various fixes and updates

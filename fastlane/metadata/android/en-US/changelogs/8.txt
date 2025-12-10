@@ -1,2 +1,2 @@
-- Fix F-Droid build issues
-- Sync Crowdin translations
+- Fixed F-Droid build issues
+- Synced Crowdin translations

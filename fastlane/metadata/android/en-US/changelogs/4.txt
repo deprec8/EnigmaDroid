@@ -1,3 +1,3 @@
-- Reproducible builds fixed
+- Fixed reproducible builds
 
 If you notice a performance change, please report it on GitHub.
