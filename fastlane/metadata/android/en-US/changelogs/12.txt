@@ -1,0 +1,6 @@
+- Added option to clear all search histories
+- Added dialog to view timer log entries
+- Fixed back gesture in navigation drawer
+- Changed the appearance of timers
+- Synced Crowdin translations
+- Various other fixes and updates
