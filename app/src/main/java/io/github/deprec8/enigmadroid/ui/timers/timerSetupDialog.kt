@@ -39,8 +39,6 @@ import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.outlined.AccessTime
-import androidx.compose.material.icons.outlined.Keyboard
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenuItem
@@ -52,7 +50,6 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -64,6 +61,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimeInput
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerDialog
+import androidx.compose.material3.TimePickerDialogDefaults
+import androidx.compose.material3.TimePickerDialogDefaults.MinHeightForTimePicker
+import androidx.compose.material3.TimePickerDisplayMode
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
@@ -73,10 +73,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
@@ -583,21 +585,10 @@ fun TimerSetupDialog(
                 }
 
                 if (showBeginTimePicker) {
-                    var showDial by rememberSaveable { mutableStateOf(true) }
-                    val pickerScrollState = rememberScrollState()
-                    val inputScrollState = rememberScrollState()
+                    var displayMode by remember { mutableStateOf(TimePickerDisplayMode.Picker) }
                     TimePickerDialog(
                         onDismissRequest = { showBeginTimePicker = false },
-                        title = {
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 20.dp),
-                                text = stringResource(R.string.select_time),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                style = MaterialTheme.typography.labelMedium
-                            )
-                        },
+                        title = { TimePickerDialogDefaults.Title(displayMode = displayMode) },
                         confirmButton = {
                             TextButton(onClick = {
                                 beginTimestamp = TimestampUtils.combineTimeDate(
@@ -617,48 +608,37 @@ fun TimerSetupDialog(
                             }
                         },
                         modeToggleButton = {
-                            IconButton(onClick = { showDial = ! showDial }) {
-                                Icon(
-                                    imageVector = if (showDial) {
-                                        Icons.Outlined.Keyboard
-                                    } else {
-                                        Icons.Outlined.AccessTime
+                            if (LocalWindowInfo.current.containerSize.height.dp > MinHeightForTimePicker) {
+                                TimePickerDialogDefaults.DisplayModeToggle(
+                                    onDisplayModeChange = {
+                                        displayMode =
+                                            if (displayMode == TimePickerDisplayMode.Picker) {
+                                                TimePickerDisplayMode.Input
+                                            } else {
+                                                TimePickerDisplayMode.Picker
+                                            }
                                     },
-                                    contentDescription = stringResource(R.string.toggle_time_picker_type),
+                                    displayMode = displayMode,
                                 )
                             }
                         }
                     ) {
-                        if (showDial) {
-                            TimePicker(
-                                modifier = Modifier.verticalScroll(pickerScrollState),
-                                state = beginTimeState
-                            )
+                        if (
+                            displayMode == TimePickerDisplayMode.Picker &&
+                            LocalWindowInfo.current.containerSize.height.dp > MinHeightForTimePicker
+                        ) {
+                            TimePicker(state = beginTimeState)
                         } else {
-                            TimeInput(
-                                modifier = Modifier.verticalScroll(inputScrollState),
-                                state = beginTimeState
-                            )
+                            TimeInput(state = beginTimeState)
                         }
                     }
                 }
 
                 if (showEndTimePicker) {
-                    var showDial by rememberSaveable { mutableStateOf(true) }
-                    val pickerScrollState = rememberScrollState()
-                    val inputScrollState = rememberScrollState()
+                    var displayMode by remember { mutableStateOf(TimePickerDisplayMode.Picker) }
                     TimePickerDialog(
                         onDismissRequest = { showEndTimePicker = false },
-                        title = {
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = 20.dp),
-                                text = stringResource(R.string.select_time),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                style = MaterialTheme.typography.labelMedium
-                            )
-                        },
+                        title = { TimePickerDialogDefaults.Title(displayMode = displayMode) },
                         confirmButton = {
                             TextButton(onClick = {
                                 endTimestamp = TimestampUtils.combineTimeDate(
@@ -678,28 +658,28 @@ fun TimerSetupDialog(
                             }
                         },
                         modeToggleButton = {
-                            IconButton(onClick = { showDial = ! showDial }) {
-                                Icon(
-                                    imageVector = if (showDial) {
-                                        Icons.Outlined.Keyboard
-                                    } else {
-                                        Icons.Outlined.AccessTime
+                            if (LocalWindowInfo.current.containerSize.height.dp > MinHeightForTimePicker) {
+                                TimePickerDialogDefaults.DisplayModeToggle(
+                                    onDisplayModeChange = {
+                                        displayMode =
+                                            if (displayMode == TimePickerDisplayMode.Picker) {
+                                                TimePickerDisplayMode.Input
+                                            } else {
+                                                TimePickerDisplayMode.Picker
+                                            }
                                     },
-                                    contentDescription = stringResource(R.string.toggle_time_picker_type),
+                                    displayMode = displayMode,
                                 )
                             }
                         }
                     ) {
-                        if (showDial) {
-                            TimePicker(
-                                modifier = Modifier.verticalScroll(pickerScrollState),
-                                state = endTimeState
-                            )
+                        if (
+                            displayMode == TimePickerDisplayMode.Picker &&
+                            LocalWindowInfo.current.containerSize.height.dp > MinHeightForTimePicker
+                        ) {
+                            TimePicker(state = endTimeState)
                         } else {
-                            TimeInput(
-                                modifier = Modifier.verticalScroll(inputScrollState),
-                                state = endTimeState
-                            )
+                            TimeInput(state = endTimeState)
                         }
                     }
                 }
