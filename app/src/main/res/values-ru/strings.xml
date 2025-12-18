@@ -164,7 +164,6 @@
     <string name="refresh_page">Обновить страницу</string>
     <string name="issue_tracker">Список задач</string>
     <string name="ok">Хорошо</string>
-    <string name="select_time">Выбрать время</string>
     <string name="toggle_time_picker_type">Переключить тип выбора времени</string>
     <string name="begin_date">Дата начала</string>
     <string name="begin_time">Время начала</string>
