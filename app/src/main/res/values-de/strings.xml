@@ -164,7 +164,6 @@
     <string name="refresh_page">Seite neu laden</string>
     <string name="issue_tracker">Fehlerverfolgung</string>
     <string name="ok">OK</string>
-    <string name="select_time">Zeit auswählen</string>
     <string name="toggle_time_picker_type">Art der Zeitauswahl umschalten</string>
     <string name="begin_date">Anfangsdatum</string>
     <string name="begin_time">Anfangszeit</string>

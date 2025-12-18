@@ -164,7 +164,6 @@
     <string name="refresh_page">Actualiser la page</string>
     <string name="issue_tracker">Suivi des problèmes</string>
     <string name="ok">OK</string>
-    <string name="select_time">Sélectionner l’heure</string>
     <string name="toggle_time_picker_type">Changer le type de sélecteur d’heure</string>
     <string name="begin_date">Date de début</string>
     <string name="begin_time">Heure de début</string>
