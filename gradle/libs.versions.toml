@@ -15,8 +15,8 @@ lifecycleRuntimeCompose = "2.10.0"
 coreKtx = "1.17.0"
 activity = "1.12.2"
 composeBom = "2025.12.01"
-ksp = "2.3.3"
-jsoup = "1.21.2"
+ksp = "2.3.4"
+jsoup = "1.22.1"
 
 [libraries]
 mikepenz-aboutlibraries-core = { module = "com.mikepenz:aboutlibraries-core", version.ref = "aboutlibraries" }
