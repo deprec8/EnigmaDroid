@@ -17,13 +17,8 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.data.objects
+package io.github.deprec8.enigmadroid.data.enums
 
-data object TimerState {
-
-    const val WAITING = 0
-    const val PREPARED = 1
-    const val RUNNING = 2
-    const val ENDED = 3
-    const val DISABLED = 4
+enum class TimerState(val id: Int) {
+    WAITING(0), PREPARED(1), RUNNING(2), ENDED(3), DISABLED(4)
 }

@@ -80,7 +80,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.data.objects.TimerState
+import io.github.deprec8.enigmadroid.data.enums.TimerState
 import io.github.deprec8.enigmadroid.model.api.Timer
 import io.github.deprec8.enigmadroid.model.menu.MenuItem
 import io.github.deprec8.enigmadroid.model.menu.MenuSection
@@ -125,12 +125,12 @@ fun TimersPage(
     @Composable
     fun getTimerState(timer: Timer): String {
         return when (timer.state + timer.disabled) {
-            TimerState.WAITING  -> stringResource(R.string.waiting)
-            TimerState.PREPARED -> stringResource(R.string.prepared)
-            TimerState.RUNNING  -> stringResource(R.string.running)
-            TimerState.ENDED    -> stringResource(R.string.ended)
-            TimerState.DISABLED -> stringResource(R.string.disabled)
-            else                -> {
+            TimerState.WAITING.id  -> stringResource(R.string.waiting)
+            TimerState.PREPARED.id -> stringResource(R.string.prepared)
+            TimerState.RUNNING.id  -> stringResource(R.string.running)
+            TimerState.ENDED.id    -> stringResource(R.string.ended)
+            TimerState.DISABLED.id -> stringResource(R.string.disabled)
+            else                   -> {
                 stringResource(R.string.unknown)
             }
         }
@@ -163,7 +163,7 @@ fun TimersPage(
                         overlineText = timer.serviceName + " - " + getTimerState(timer),
                         leadingContent = {
                             when (timer.state + timer.disabled) {
-                                TimerState.WAITING  -> Box(
+                                TimerState.WAITING.id  -> Box(
                                     modifier = Modifier
                                         .size(40.dp)
                                         .clip(MaterialTheme.shapes.medium)
@@ -176,7 +176,7 @@ fun TimersPage(
                                         tint = MaterialTheme.colorScheme.onSecondary
                                     )
                                 }
-                                TimerState.PREPARED -> Box(
+                                TimerState.PREPARED.id -> Box(
                                     modifier = Modifier
                                         .size(40.dp)
                                         .clip(MaterialTheme.shapes.medium)
@@ -189,7 +189,7 @@ fun TimersPage(
                                         tint = MaterialTheme.colorScheme.onSecondary
                                     )
                                 }
-                                TimerState.RUNNING  -> Box(
+                                TimerState.RUNNING.id  -> Box(
                                     modifier = Modifier
                                         .size(40.dp)
                                         .clip(MaterialTheme.shapes.medium)
@@ -202,7 +202,7 @@ fun TimersPage(
                                         tint = MaterialTheme.colorScheme.onPrimary
                                     )
                                 }
-                                TimerState.ENDED    -> Box(
+                                TimerState.ENDED.id    -> Box(
                                     modifier = Modifier
                                         .size(40.dp)
                                         .clip(MaterialTheme.shapes.medium)
@@ -215,7 +215,7 @@ fun TimersPage(
                                         tint = MaterialTheme.colorScheme.onTertiary
                                     )
                                 }
-                                TimerState.DISABLED -> Box(
+                                TimerState.DISABLED.id -> Box(
                                     modifier = Modifier
                                         .size(40.dp)
                                         .clip(MaterialTheme.shapes.medium)
@@ -228,7 +228,7 @@ fun TimersPage(
                                         tint = MaterialTheme.colorScheme.onTertiary
                                     )
                                 }
-                                else                -> {
+                                else                   -> {
                                     Box(
                                         modifier = Modifier
                                             .size(40.dp)
