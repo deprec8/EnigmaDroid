@@ -234,7 +234,7 @@ fun NavDrawerContent(
                                 )
                             }
                         }
-                        LoadingState.NO_DEVICE_AVAILABLE, LoadingState.DEVICE_NOT_ONLINE -> {
+                        LoadingState.NO_DEVICE_AVAILABLE, LoadingState.DEVICE_NOT_ONLINE, LoadingState.NO_NETWORK_AVAILABLE -> {
                             IconButton(onClick = updateDeviceStatus) {
                                 Icon(
                                     Icons.Default.RestartAlt,
@@ -278,6 +278,12 @@ fun NavDrawerContent(
                         LoadingState.LOADING             -> {
                             Text(
                                 stringResource(R.string.searching_for_device),
+                                maxLines = 1, overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                        LoadingState.NO_NETWORK_AVAILABLE -> {
+                            Text(
+                                stringResource(R.string.connect_to_a_network),
                                 maxLines = 1, overflow = TextOverflow.Ellipsis
                             )
                         }

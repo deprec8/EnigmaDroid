@@ -19,6 +19,8 @@
 
 package io.github.deprec8.enigmadroid.data.source.network
 
+import android.content.Context
+import android.net.ConnectivityManager
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -47,7 +49,8 @@ import javax.inject.Singleton
 @Singleton
 class NetworkDataSource @Inject constructor(
     private val dataStore: DataStore<Preferences>,
-    private val devicesDatabase: DevicesDatabase
+    private val devicesDatabase: DevicesDatabase,
+    private val context: Context
 ) {
 
     private val currentDeviceKey = intPreferencesKey(PreferencesKeys.CURRENT_DEVICE)
@@ -77,8 +80,14 @@ class NetworkDataSource @Inject constructor(
         }
 
         if (devicesDatabase.deviceDao().getAll().firstOrNull().isNullOrEmpty().not()) {
-            dataStore.edit { preferences ->
-                preferences[loadingStateKey] = LoadingState.DEVICE_NOT_ONLINE.id
+            if (isNetworkAvailable()) {
+                dataStore.edit { preferences ->
+                    preferences[loadingStateKey] = LoadingState.DEVICE_NOT_ONLINE.id
+                }
+            } else {
+                dataStore.edit { preferences ->
+                    preferences[loadingStateKey] = LoadingState.NO_NETWORK_AVAILABLE.id
+                }
             }
         } else {
             dataStore.edit { preferences ->
@@ -143,6 +152,15 @@ class NetworkDataSource @Inject constructor(
                 }
             } ?: ""
         }
+
+    fun isNetworkAvailable(): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        val activeNetwork = connectivityManager.activeNetwork
+
+        return activeNetwork != null
+    }
 
     suspend fun isDeviceOnline(): Boolean = safeApiCall {
         checkClient.get(buildUrl("currenttime"))

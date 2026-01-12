@@ -140,7 +140,7 @@ fun RemoteControlPage(
                     })
             {
                 when (it) {
-                    LoadingState.LOADED -> Text(
+                    LoadingState.LOADED                                                                                 -> Text(
                         modifier = Modifier
                             .padding(12.dp)
                             .align(Alignment.Center),
@@ -149,7 +149,7 @@ fun RemoteControlPage(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
-                    LoadingState.NO_DEVICE_AVAILABLE, LoadingState.DEVICE_NOT_ONLINE -> IconButton(
+                    LoadingState.NO_DEVICE_AVAILABLE, LoadingState.DEVICE_NOT_ONLINE, LoadingState.NO_NETWORK_AVAILABLE -> IconButton(
                         onClick = { scope.launch { remoteControlViewModel.updateLoadingState(true) } },
                         modifier = Modifier
                             .padding(12.dp)

@@ -20,5 +20,5 @@
 package io.github.deprec8.enigmadroid.data.enums
 
 enum class LoadingState(val id: Int) {
-    LOADING(0), NO_DEVICE_AVAILABLE(1), DEVICE_NOT_ONLINE(2), LOADED(3),
+    LOADING(0), NO_DEVICE_AVAILABLE(1), DEVICE_NOT_ONLINE(2), LOADED(3), NO_NETWORK_AVAILABLE(4)
 }
