@@ -23,14 +23,25 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
+import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.data.objects.PreferencesKeys
+import io.github.deprec8.enigmadroid.data.source.local.devices.DevicesDatabase
+import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class OnboardingRepository @Inject constructor(private val dataStore: DataStore<Preferences>) {
+class OnboardingRepository @Inject constructor(
+    private val dataStore: DataStore<Preferences>,
+    private val devicesDatabase: DevicesDatabase,
+    private val networkDataSource: NetworkDataSource
+) {
 
     private val onboardingKey = booleanPreferencesKey(PreferencesKeys.ONBOARDING_NEEDED)
+    private val loadingStateKey = intPreferencesKey(PreferencesKeys.LOADING_STATE)
 
     val isOnboardingNeeded: Flow<Boolean> = dataStore.data.map { preferences ->
         if (preferences.contains(onboardingKey)) {
@@ -44,6 +55,33 @@ class OnboardingRepository @Inject constructor(private val dataStore: DataStore<
     }
 
     suspend fun completeOnboarding() {
+        val currentLoadingState = dataStore.data.map { preferences ->
+            LoadingState.entries[preferences[loadingStateKey] ?: 3]
+        }.first()
+
+        if (currentLoadingState != LoadingState.LOADING) {
+            dataStore.edit { preferences ->
+                preferences[loadingStateKey] = LoadingState.LOADING.id
+            }
+        }
+
+        if (devicesDatabase.deviceDao().getAll().firstOrNull().isNullOrEmpty().not()) {
+            if (networkDataSource.isNetworkAvailable()) {
+                if (networkDataSource.isDeviceOnline()) {
+                    dataStore.edit { preferences ->
+                        preferences[loadingStateKey] = LoadingState.LOADED.id
+                    }
+                }
+            } else {
+                dataStore.edit { preferences ->
+                    preferences[loadingStateKey] = LoadingState.NO_NETWORK_AVAILABLE.id
+                }
+            }
+        } else {
+            dataStore.edit { preferences ->
+                preferences[loadingStateKey] = LoadingState.NO_DEVICE_AVAILABLE.id
+            }
+        }
         dataStore.edit { settings ->
             settings[onboardingKey] = false
         }
