@@ -22,7 +22,7 @@ VLC is recommended, but other media players can also work.
 Requirements:
 
 - A set-top box running Enigma2.
-- OpenWebif plugin enabled and configured.
+- Up-to-date OpenWebif plugin enabled and configured.
 
 Compatibility:
 
