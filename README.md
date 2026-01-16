@@ -42,7 +42,7 @@ If you notice any errors, feel free to correct them directly on Crowdin.
 ## Requirements
 
 - A set-top box running **Enigma2**
-- **OpenWebif** plugin enabled and configured
+- Up-to-date **OpenWebif** plugin enabled and configured
 
 ## Compatibility
 
