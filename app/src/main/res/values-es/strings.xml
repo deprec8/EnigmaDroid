@@ -213,4 +213,6 @@
     <string name="log_entries">Entradas de registro</string>
     <string name="view_log">Ver registro</string>
     <string name="code">Código: %1$d</string>
+    <string name="no_network_available">No hay red disponible</string>
+    <string name="connect_to_a_network">Conectarse a una red</string>
 </resources>

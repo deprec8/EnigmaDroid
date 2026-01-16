@@ -213,4 +213,6 @@
     <string name="log_entries">Записи журнала</string>
     <string name="view_log">Посмотреть журнал</string>
     <string name="code">Код: %1$d</string>
+    <string name="no_network_available">Сеть недоступна</string>
+    <string name="connect_to_a_network">Подключиться к сети</string>
 </resources>
