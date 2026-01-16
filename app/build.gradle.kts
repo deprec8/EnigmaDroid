@@ -18,30 +18,9 @@
  */
 
 import com.android.build.gradle.internal.tasks.CompileArtProfileTask
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
-/*
- * Copyright (C) 2025 deprec8
- *
- * This file is part of EnigmaDroid.
- *
- * EnigmaDroid is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * EnigmaDroid is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
- */
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.jetbrains.kotlin.compose)
     alias(libs.plugins.google.dagger.hilt.android)
     alias(libs.plugins.google.devtools.ksp)
@@ -88,8 +67,7 @@ android {
             isShrinkResources = true
             isDebuggable = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
             isJniDebuggable = false
             signingConfig = signingConfigs.getByName("release")
@@ -102,17 +80,12 @@ android {
     }
     buildFeatures {
         compose = true
+        resValues = true
     }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
-    }
-}
-
-kotlin {
-    compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_17)
     }
 }
 
