@@ -213,4 +213,6 @@
     <string name="log_entries">Entrées du journal</string>
     <string name="view_log">Voir le journal</string>
     <string name="code">Code : %1$d</string>
+    <string name="no_network_available">Réseau indisponible</string>
+    <string name="connect_to_a_network">Connexion à un réseau</string>
 </resources>
