@@ -26,7 +26,9 @@ Requirements:
 
 Compatibility:
 
-Tested with popular Enigma2 images like VTi.
+Tested with popular Enigma2 images.
+
+Some images, such as VTi, may require the OpenWebif plugin to be updated manually to be compatible with this app.
 
 Free & Open Source:
 
