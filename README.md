@@ -46,7 +46,9 @@ If you notice any errors, feel free to correct them directly on Crowdin.
 
 ## Compatibility
 
-Tested with popular Enigma2 images like **VTi**.
+Tested with popular Enigma2 images.
+
+Some images, such as **VTi**, may require the OpenWebif plugin to be updated manually to be compatible with this app.
 
 ## Screenshots
 
