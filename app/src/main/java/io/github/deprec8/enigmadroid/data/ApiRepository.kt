@@ -140,7 +140,7 @@ class ApiRepository @Inject constructor(
                         bRef.replace(
                             "\\\"", "\""
                         )
-                    }"
+                    }&endTime=10080"
                 )
             )
 
@@ -162,7 +162,8 @@ class ApiRepository @Inject constructor(
     suspend fun fetchServiceEPG(sRef: String): EventList {
         return try {
             json.decodeFromString(
-                EventList.serializer(), networkDataSource.fetchJson("epgservice?sRef=${sRef}")
+                EventList.serializer(),
+                networkDataSource.fetchJson("epgservice?sRef=${sRef}&endTime=10080")
             )
         } catch (_: Exception) {
             EventList()
