@@ -117,13 +117,15 @@ class TvEPGViewModel @Inject constructor(
         _bouquets.value = emptyList()
         fetchJob = viewModelScope.launch {
             _bouquets.value = apiRepository.fetchBouquets(ApiType.TV)
-            if (_currentBouquet.value == "") {
-                _currentBouquet.value = _bouquets.value[0][0]
-            } else if (_bouquets.value.find { it[0] == _currentBouquet.value } == null) {
-                _currentBouquet.value = _bouquets.value[0][0]
+            if (_bouquets.value.isNotEmpty()) {
+                if (_currentBouquet.value == "") {
+                    _currentBouquet.value = _bouquets.value[0][0]
+                } else if (_bouquets.value.find { it[0] == _currentBouquet.value } == null) {
+                    _currentBouquet.value = _bouquets.value[0][0]
+                }
+                _epgs.value =
+                    apiRepository.fetchEpgEvents(_currentBouquet.value)
             }
-            _epgs.value =
-                apiRepository.fetchEpgEvents(_currentBouquet.value)
         }
     }
 
