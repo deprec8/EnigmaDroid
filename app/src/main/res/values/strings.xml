@@ -229,4 +229,6 @@
     <string name="code">Code: %1$d</string>
     <string name="no_network_available">No network available</string>
     <string name="connect_to_a_network">Connect to a network</string>
+    <string name="open_bouquet_menu">Open bouquet menu</string>
+    <string name="current_bouquet">Current bouquet</string>
 </resources>
