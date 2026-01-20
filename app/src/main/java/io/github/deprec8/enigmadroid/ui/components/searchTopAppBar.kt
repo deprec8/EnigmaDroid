@@ -20,6 +20,7 @@
 package io.github.deprec8.enigmadroid.ui.components
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -66,7 +67,8 @@ fun SearchTopAppBar(
     content: @Composable (() -> Unit)? = null,
     tabBar: @Composable (() -> Unit)? = null,
     onSearch: () -> Unit,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    additionalActions: @Composable (() -> Unit)? = null
 ) {
 
     val searchBarState = rememberSearchBarState()
@@ -140,11 +142,16 @@ fun SearchTopAppBar(
                         )
                     }
                 } else {
-                    IconButton(onClick = { onNavigateToRemote() }) {
-                        Icon(
-                            Icons.Default.Dialpad,
-                            contentDescription = stringResource(id = R.string.open_remote_control)
-                        )
+                    Row {
+                        if (additionalActions != null) {
+                            additionalActions()
+                        }
+                        IconButton(onClick = { onNavigateToRemote() }) {
+                            Icon(
+                                Icons.Default.Dialpad,
+                                contentDescription = stringResource(id = R.string.open_remote_control)
+                            )
+                        }
                     }
                 }
             }
