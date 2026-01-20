@@ -141,6 +141,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.browser)
     implementation(libs.jsoup)
+    implementation(libs.re2j)
 
 }
 
