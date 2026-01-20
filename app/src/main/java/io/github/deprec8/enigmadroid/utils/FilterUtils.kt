@@ -19,7 +19,6 @@
 
 package io.github.deprec8.enigmadroid.utils
 
-import io.github.deprec8.enigmadroid.model.api.EPGEvent
 import io.github.deprec8.enigmadroid.model.api.Event
 import io.github.deprec8.enigmadroid.model.api.Movie
 import io.github.deprec8.enigmadroid.model.api.Timer
@@ -163,56 +162,6 @@ object FilterUtils {
                 } else 0
 
                 Triple(event, matches, score)
-            }
-            .filter { it.second }
-            .sortedByDescending { it.third }
-            .map { it.first }
-            .toList()
-    }
-
-    suspend fun filterEPGEvents(
-        filter: String,
-        epgs: List<EPGEvent>
-    ): List<EPGEvent> = withContext(Dispatchers.Default) {
-        if (filter.isBlank() || epgs.isEmpty()) return@withContext emptyList()
-
-        val filterTerms = filter.lowercase().split(" ").filter { it.isNotBlank() }
-
-        epgs
-            .asSequence()
-            .map { item ->
-                val lcService = item.serviceName.lowercase()
-                val lcTitle = item.title.lowercase()
-                val lcLongDesc = item.longDescription.lowercase()
-                val lcShortDesc = item.shortDescription.lowercase()
-                val lcGenre = item.genre.lowercase()
-                val lcDate = item.date.lowercase()
-                val lcBegin = item.begin.lowercase()
-                val lcEnd = item.end.lowercase()
-
-                val matches = filterTerms.all { term ->
-                    lcService.contains(term) ||
-                            lcTitle.contains(term) ||
-                            lcLongDesc.contains(term) ||
-                            lcShortDesc.contains(term) ||
-                            lcGenre.contains(term) ||
-                            lcDate.contains(term) ||
-                            lcBegin.contains(term) ||
-                            lcEnd.contains(term)
-                }
-
-                val score = if (matches) {
-                    filterTerms.count { lcService.contains(it) } * 8 +
-                            filterTerms.count { lcTitle.contains(it) } * 7 +
-                            filterTerms.count { lcLongDesc.contains(it) } * 6 +
-                            filterTerms.count { lcShortDesc.contains(it) } * 5 +
-                            filterTerms.count { lcGenre.contains(it) } * 4 +
-                            filterTerms.count { lcDate.contains(it) } * 3 +
-                            filterTerms.count { lcBegin.contains(it) } * 2 +
-                            filterTerms.count { lcEnd.contains(it) } * 1
-                } else 0
-
-                Triple(item, matches, score)
             }
             .filter { it.second }
             .sortedByDescending { it.third }

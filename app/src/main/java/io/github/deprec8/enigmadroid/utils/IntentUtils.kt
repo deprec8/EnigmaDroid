@@ -33,11 +33,11 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
-import io.github.deprec8.enigmadroid.model.api.EPGEvent
+import io.github.deprec8.enigmadroid.model.api.Event
 
 object IntentUtils {
 
-    fun addReminder(context: Context, event: EPGEvent) {
+    fun addReminder(context: Context, event: Event) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val intent = Intent(Intent.ACTION_CREATE_REMINDER).apply {
                 putExtra(Intent.EXTRA_TITLE, event.title)

@@ -35,11 +35,12 @@ import io.github.deprec8.enigmadroid.model.navigation.MainPages
 import io.github.deprec8.enigmadroid.model.navigation.SettingsPages
 import io.github.deprec8.enigmadroid.ui.current.CurrentPage
 import io.github.deprec8.enigmadroid.ui.deviceInfo.DeviceInfoPage
+import io.github.deprec8.enigmadroid.ui.epg.radioEPG.RadioEPGPage
+import io.github.deprec8.enigmadroid.ui.epg.serviceEPG.ServiceEPGPage
+import io.github.deprec8.enigmadroid.ui.epg.tvEPG.TVEPGPage
 import io.github.deprec8.enigmadroid.ui.movies.MoviesPage
 import io.github.deprec8.enigmadroid.ui.radio.RadioPage
-import io.github.deprec8.enigmadroid.ui.radioEPG.RadioEPGPage
 import io.github.deprec8.enigmadroid.ui.remoteControl.RemoteControlPage
-import io.github.deprec8.enigmadroid.ui.serviceEPG.ServiceEPGPage
 import io.github.deprec8.enigmadroid.ui.settings.SettingsPage
 import io.github.deprec8.enigmadroid.ui.settings.about.AboutPage
 import io.github.deprec8.enigmadroid.ui.settings.about.LibrariesPage
@@ -49,7 +50,6 @@ import io.github.deprec8.enigmadroid.ui.settings.search.SearchSettingsPage
 import io.github.deprec8.enigmadroid.ui.signal.SignalPage
 import io.github.deprec8.enigmadroid.ui.timers.TimersPage
 import io.github.deprec8.enigmadroid.ui.tv.TvPage
-import io.github.deprec8.enigmadroid.ui.tvEPG.TVEPGPage
 
 @Composable
 fun NavHost(

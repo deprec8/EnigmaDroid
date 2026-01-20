@@ -282,7 +282,7 @@ fun TvPage(
                                 Tab(
                                     text = {
                                         Text(
-                                            text = eventList.bouquetName,
+                                            text = eventList.name,
                                             maxLines = 1,
                                             overflow = TextOverflow.Ellipsis
                                         )

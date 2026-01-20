@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.serviceEPG
+package io.github.deprec8.enigmadroid.ui.epg.serviceEPG
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -25,8 +25,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.deprec8.enigmadroid.data.ApiRepository
 import io.github.deprec8.enigmadroid.data.LoadingRepository
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.model.api.EPGEvent
-import io.github.deprec8.enigmadroid.model.api.EPGEventList
+import io.github.deprec8.enigmadroid.model.api.Event
+import io.github.deprec8.enigmadroid.model.api.EventList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -37,12 +37,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ServiceEPGViewModel @Inject constructor(
-    private val apiRepository: ApiRepository,
-    private val loadingRepository: LoadingRepository
+    private val apiRepository: ApiRepository, private val loadingRepository: LoadingRepository
 ) : ViewModel() {
 
-    private val _epg = MutableStateFlow(EPGEventList())
-    val epg: StateFlow<EPGEventList> = _epg.asStateFlow()
+    private val _epg = MutableStateFlow(EventList())
+    val epg: StateFlow<EventList> = _epg.asStateFlow()
 
     private val _loadingState = MutableStateFlow(LoadingState.LOADING)
     val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
@@ -63,13 +62,13 @@ class ServiceEPGViewModel @Inject constructor(
 
     fun fetchData(sRef: String) {
         fetchJob?.cancel()
-        _epg.value = EPGEventList()
+        _epg.value = EventList()
         fetchJob = viewModelScope.launch {
             _epg.value = apiRepository.fetchServiceEPG(sRef)
         }
     }
 
-    fun addTimer(event: EPGEvent) {
+    fun addTimer(event: Event) {
         viewModelScope.launch {
             apiRepository.addTimerForEvent(
                 event.serviceReference, event.id
