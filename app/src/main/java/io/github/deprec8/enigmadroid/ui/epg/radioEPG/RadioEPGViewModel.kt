@@ -139,6 +139,7 @@ class RadioEPGViewModel @Inject constructor(
 
     fun setCurrentBouquet(bRef: String) {
         _currentBouquet.value = bRef
+        fetchData()
     }
 
     fun updateSearchInput() {
