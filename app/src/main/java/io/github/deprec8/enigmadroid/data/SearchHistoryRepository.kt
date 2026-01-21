@@ -43,6 +43,8 @@ class SearchHistoryRepository @Inject constructor(private val dataStore: DataSto
         stringSetPreferencesKey(PreferencesKeys.MOVIES_SEARCH_HISTORY)
     private val timersSearchHistoryKey =
         stringSetPreferencesKey(PreferencesKeys.TIMERS_SEARCH_HISTORY)
+    private val serviceEpgSearchHistoryKey =
+        stringSetPreferencesKey(PreferencesKeys.SERVICE_EPG_SEARCH_HISTORY)
     private val useSearchHistoryKey = booleanPreferencesKey(PreferencesKeys.USE_SEARCH_HISTORY)
 
     fun getUseSearchHistory(): Flow<Boolean> = dataStore.data.map { preferences ->
@@ -57,6 +59,7 @@ class SearchHistoryRepository @Inject constructor(private val dataStore: DataSto
             clearRadioEpgSearchHistory()
             clearMoviesSearchHistory()
             clearTimersSearchHistory()
+            clearServiceEpgSearchHistory()
         }
         dataStore.edit { preferences ->
             preferences[useSearchHistoryKey] = useSearchHistory
@@ -159,8 +162,7 @@ class SearchHistoryRepository @Inject constructor(private val dataStore: DataSto
         if (getUseSearchHistory().first()) {
             dataStore.edit { preferences ->
                 preferences[tvSearchHistoryKey] = dataStore.data.map { preferences ->
-                    val temp =
-                        (preferences[radioEpgSearchHistoryKey] ?: emptySet()).toMutableSet()
+                    val temp = (preferences[radioEpgSearchHistoryKey] ?: emptySet()).toMutableSet()
                     temp.add(string)
                     temp.toSet()
                 }.first()
@@ -193,6 +195,29 @@ class SearchHistoryRepository @Inject constructor(private val dataStore: DataSto
     suspend fun clearMoviesSearchHistory() {
         dataStore.edit { preferences ->
             preferences[moviesSearchHistoryKey] = emptySet()
+        }
+    }
+
+    fun getServiceEpgSearchHistory(): Flow<List<String>> = dataStore.data.map { preferences ->
+        (preferences[serviceEpgSearchHistoryKey] ?: emptySet()).reversed()
+    }
+
+    suspend fun addToServiceEpgSearchHistory(string: String) {
+        if (getUseSearchHistory().first()) {
+            dataStore.edit { preferences ->
+                preferences[serviceEpgSearchHistoryKey] = dataStore.data.map { preferences ->
+                    val temp =
+                        (preferences[serviceEpgSearchHistoryKey] ?: emptySet()).toMutableSet()
+                    temp.add(string)
+                    temp.toSet()
+                }.first()
+            }
+        }
+    }
+
+    suspend fun clearServiceEpgSearchHistory() {
+        dataStore.edit { preferences ->
+            preferences[serviceEpgSearchHistoryKey] = emptySet()
         }
     }
 }

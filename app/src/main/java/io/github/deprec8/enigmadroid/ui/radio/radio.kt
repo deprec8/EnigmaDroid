@@ -77,8 +77,10 @@ import io.github.deprec8.enigmadroid.ui.components.ContentListItem
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.SearchHistory
-import io.github.deprec8.enigmadroid.ui.components.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
+import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarDrawerNavigationButton
+import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarRemoteControlActionButton
 import io.github.deprec8.enigmadroid.utils.IntentUtils
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
 import kotlinx.coroutines.launch
@@ -270,8 +272,12 @@ fun RadioPage(
                         )
                     }
                 },
-                drawerState = drawerState,
-                onNavigateToRemote = { onNavigateToRemoteControl() },
+                navigationButton = { searchBarState ->
+                    SearchTopAppBarDrawerNavigationButton(drawerState, searchBarState)
+                },
+                actionButtons = {
+                    SearchTopAppBarRemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
+                },
                 onSearch = {
                     radioViewModel.updateSearchInput(selectedTabIndex.value)
                 },

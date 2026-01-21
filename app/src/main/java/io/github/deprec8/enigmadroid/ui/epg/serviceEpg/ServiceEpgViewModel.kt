@@ -19,25 +19,33 @@
 
 package io.github.deprec8.enigmadroid.ui.epg.serviceEpg
 
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.deprec8.enigmadroid.data.ApiRepository
 import io.github.deprec8.enigmadroid.data.LoadingRepository
+import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
+import io.github.deprec8.enigmadroid.data.SettingsRepository
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.model.api.Event
 import io.github.deprec8.enigmadroid.model.api.EventList
+import io.github.deprec8.enigmadroid.utils.FilterUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ServiceEpgViewModel @Inject constructor(
-    private val apiRepository: ApiRepository, private val loadingRepository: LoadingRepository
+    private val apiRepository: ApiRepository,
+    private val loadingRepository: LoadingRepository,
+    private val searchHistoryRepository: SearchHistoryRepository,
+    private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
     private val _epg = MutableStateFlow(EventList())
@@ -46,12 +54,48 @@ class ServiceEpgViewModel @Inject constructor(
     private val _loadingState = MutableStateFlow(LoadingState.LOADING)
     val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
 
+    private val _filteredEvents = MutableStateFlow<List<Event>?>(null)
+    val filteredEvents: StateFlow<List<Event>?> = _filteredEvents.asStateFlow()
+
+    private val _searchHistory = MutableStateFlow<List<String>>(emptyList())
+    val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()
+
+    private val _searchInput = MutableStateFlow("")
+    val searchInput: StateFlow<String> = _searchInput.asStateFlow()
+
+    private val _useSearchHighlighting = MutableStateFlow(true)
+    val useSearchHighlighting: StateFlow<Boolean> = _useSearchHighlighting.asStateFlow()
+
+    val searchFieldState = TextFieldState()
+
     private var fetchJob: Job? = null
 
     init {
         viewModelScope.launch {
             loadingRepository.getLoadingState().collectLatest { state ->
                 _loadingState.value = state
+            }
+        }
+        viewModelScope.launch {
+            combine(_epg, _searchInput) { epg, input ->
+                if (input != "" && epg.events.isNotEmpty()) {
+                    searchHistoryRepository.addToTVEpgSearchHistory(input)
+                    FilterUtils.filterEvents(input, epg.events)
+                } else {
+                    null
+                }
+            }.collectLatest {
+                _filteredEvents.value = it
+            }
+        }
+        viewModelScope.launch {
+            searchHistoryRepository.getTVEpgSearchHistory().collectLatest {
+                _searchHistory.value = it
+            }
+        }
+        viewModelScope.launch {
+            settingsRepository.getUseSearchHighlighting().collectLatest {
+                _useSearchHighlighting.value = it
             }
         }
     }
@@ -74,5 +118,9 @@ class ServiceEpgViewModel @Inject constructor(
                 event.serviceReference, event.id
             )
         }
+    }
+
+    fun updateSearchInput() {
+        _searchInput.value = searchFieldState.text.toString()
     }
 }

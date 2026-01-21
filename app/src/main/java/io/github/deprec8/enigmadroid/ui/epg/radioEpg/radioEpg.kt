@@ -23,6 +23,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -58,8 +59,10 @@ import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.SearchHistory
-import io.github.deprec8.enigmadroid.ui.components.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
+import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarDrawerNavigationButton
+import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarRemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.epg.components.BouquetMenu
 import io.github.deprec8.enigmadroid.ui.epg.components.EpgContent
 import kotlinx.coroutines.launch
@@ -143,8 +146,18 @@ fun RadioEpgPage(
                     })
                 }
             },
-            drawerState = drawerState,
-            onNavigateToRemote = { onNavigateToRemoteControl() },
+            navigationButton = { searchBarState ->
+                SearchTopAppBarDrawerNavigationButton(drawerState, searchBarState)
+            },
+            actionButtons = {
+                Row {
+                    BouquetMenu(
+                        bouquets,
+                        currentBouquet,
+                        { bRef -> radioEpgViewModel.setCurrentBouquet(bRef) })
+                    SearchTopAppBarRemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
+                }
+            },
             onSearch = {
                 radioEpgViewModel.updateSearchInput()
             },
@@ -174,10 +187,6 @@ fun RadioEpgPage(
                     HorizontalDivider()
 
                 }
-            },
-            additionalActions = {
-                BouquetMenu(
-                    bouquets, currentBouquet, { bRef -> radioEpgViewModel.setCurrentBouquet(bRef) })
             })
     }
 

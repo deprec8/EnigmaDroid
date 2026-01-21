@@ -22,8 +22,10 @@ package io.github.deprec8.enigmadroid.ui.epg.serviceEpg
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
@@ -32,25 +34,22 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
+import io.github.deprec8.enigmadroid.ui.components.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.epg.components.EpgContent
 import kotlinx.coroutines.launch
 
@@ -64,9 +63,12 @@ fun ServiceEpgPage(
 ) {
     val epg by serviceEpgViewModel.epg.collectAsStateWithLifecycle()
     val loadingState by serviceEpgViewModel.loadingState.collectAsStateWithLifecycle()
+    val filteredEvents by serviceEpgViewModel.filteredEvents.collectAsStateWithLifecycle()
+    val useSearchHighlighting by serviceEpgViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
+    val searchHistory by serviceEpgViewModel.searchHistory.collectAsStateWithLifecycle()
+    val searchInput by serviceEpgViewModel.searchInput.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     LaunchedEffect(Unit) {
         serviceEpgViewModel.updateLoadingState(false)
@@ -96,25 +98,44 @@ fun ServiceEpgPage(
         },
         contentWindowInsets = contentWithDrawerWindowInsets(),
         topBar = {
-            TopAppBar(windowInsets = topAppBarWithDrawerWindowInsets(), title = {
-                Text(
-                    text = stringResource(R.string.epg_for, sName),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }, scrollBehavior = scrollBehavior, navigationIcon = {
-                IconButton(
-                    onClick = { onNavigateBack() }) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.navigate_back)
-                    )
-                }
-            })
-        },
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-
-        ) { innerPadding ->
+            SearchTopAppBar(
+                enabled = epg.events.isNotEmpty(),
+                textFieldState = serviceEpgViewModel.searchFieldState,
+                placeholder = "Search EPG for $sName",
+                content = {
+                    if (filteredEvents != null) {
+                        EpgContent(
+                            events = filteredEvents !!,
+                            paddingValues = PaddingValues(0.dp),
+                            showChannelName = true,
+                            highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
+                                .filter { it.isNotBlank() } else emptyList(),
+                            onAddTimer = { serviceEpgViewModel.addTimer(it) })
+                    } else {
+                        SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
+                            serviceEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
+                            serviceEpgViewModel.updateSearchInput()
+                        }, onTermInsertClick = {
+                            serviceEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
+                                it
+                            )
+                        })
+                    }
+                },
+                navigationButton = {
+                    IconButton(
+                        onClick = { onNavigateBack() }) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.navigate_back)
+                        )
+                    }
+                },
+                onSearch = {
+                    serviceEpgViewModel.updateSearchInput()
+                })
+        }
+    ) { innerPadding ->
         if (epg.events.isNotEmpty()) {
             EpgContent(
                 events = epg.events,
