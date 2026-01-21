@@ -214,7 +214,6 @@
     <string name="translation">Translation</string>
     <string name="app_translation" translatable="false">crowdin.com/project/enigmadroid</string>
     <string name="app_translation_url" translatable="false">https://crowdin.com/project/enigmadroid</string>
-    <string name="epg_for">EPG for %1$s</string>
     <string name="view_epg">View EPG</string>
     <string name="view_epg_for_current_channel">View EPG for current channel</string>
     <string name="all">All</string>
@@ -231,4 +230,5 @@
     <string name="connect_to_a_network">Connect to a network</string>
     <string name="open_bouquet_menu">Open bouquet menu</string>
     <string name="current_bouquet">Current bouquet</string>
+    <string name="search_epg_for">Search EPG for %1$s</string>
 </resources>

@@ -101,7 +101,7 @@ fun ServiceEpgPage(
             SearchTopAppBar(
                 enabled = epg.events.isNotEmpty(),
                 textFieldState = serviceEpgViewModel.searchFieldState,
-                placeholder = "Search EPG for $sName",
+                placeholder = stringResource(R.string.search_epg_for, sName),
                 content = {
                     if (filteredEvents != null) {
                         EpgContent(
