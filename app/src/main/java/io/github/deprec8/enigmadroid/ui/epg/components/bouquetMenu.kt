@@ -43,7 +43,7 @@ fun BouquetMenu(
 
     IconButton(onClick = {
         showMenu = true
-    }) {
+    }, enabled = bouquets.isNotEmpty()) {
         Icon(
             Icons.Default.MoreVert, contentDescription = stringResource(R.string.open_bouquet_menu)
         )
