@@ -86,7 +86,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun TvPage(
     onNavigateToRemoteControl: () -> Unit,
-    onNavigateToServiceEPG: (sRef: String, sName: String) -> Unit,
+    onNavigateToServiceEpg: (sRef: String, sName: String) -> Unit,
     drawerState: DrawerState, tvViewModel: TVViewModel = hiltViewModel()
 ) {
 
@@ -195,7 +195,7 @@ fun TvPage(
                                         outlinedIcon = Icons.AutoMirrored.Outlined.Dvr,
                                         filledIcon = Icons.AutoMirrored.Filled.Dvr,
                                         action = {
-                                            onNavigateToServiceEPG(
+                                            onNavigateToServiceEpg(
                                                 event.serviceReference,
                                                 event.serviceName
                                             )

@@ -123,8 +123,7 @@ class ApiRepository @Inject constructor(
     suspend fun fetchCurrentEventInfo(): CurrentInfo {
         return try {
             json.decodeFromString(
-                CurrentInfo.serializer(),
-                networkDataSource.fetchJson("getcurrent")
+                CurrentInfo.serializer(), networkDataSource.fetchJson("getcurrent")
             )
         } catch (_: Exception) {
 
@@ -159,7 +158,7 @@ class ApiRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchServiceEPG(sRef: String): EventList {
+    suspend fun fetchServiceEpg(sRef: String): EventList {
         return try {
             json.decodeFromString(
                 EventList.serializer(),
@@ -174,27 +173,23 @@ class ApiRepository @Inject constructor(
         try {
             val bookmarks = mutableListOf<Bookmark>()
             val movies = json.decodeFromString(
-                BookmarkList.serializer(),
-                networkDataSource.fetchJson("movielist")
+                BookmarkList.serializer(), networkDataSource.fetchJson("movielist")
             )
             bookmarks.add(
                 Bookmark(
-                    directory = movies.directory,
-                    displayName = "/"
+                    directory = movies.directory, displayName = "/"
                 )
             )
             movies.bookmarks.forEach {
                 bookmarks.add(
                     Bookmark(
-                        directory = bookmarks[0].directory + it,
-                        displayName = "/$it"
+                        directory = bookmarks[0].directory + it, displayName = "/$it"
                     )
                 )
             }
             bookmarks.forEach { bookmark ->
                 val movieList = json.decodeFromString(
-                    MovieList.serializer(),
-                    networkDataSource.fetchJson(
+                    MovieList.serializer(), networkDataSource.fetchJson(
                         "movielist?dirname=${
                             bookmark.directory
                         }"
@@ -224,8 +219,7 @@ class ApiRepository @Inject constructor(
         return try {
             val temp = mutableListOf<ServiceList>()
             json.decodeFromString(
-                BouquetList.serializer(),
-                networkDataSource.fetchJson("bouquets?stype=tv")
+                BouquetList.serializer(), networkDataSource.fetchJson("bouquets?stype=tv")
             ).bouquets.forEach { bouquet ->
                 val nbRef = bouquet[0].replace("\\\"", "\"")
                 temp.add(
@@ -241,22 +235,19 @@ class ApiRepository @Inject constructor(
         }
     }
 
-    fun fetchEvents(type: ApiType): Flow<EventList> =
-        flow {
-            try {
-                fetchBouquets(type).forEach { bouquet ->
-                    val nbRef = bouquet[0].replace("\\\"", "\"")
-                    val eventList = json.decodeFromString(
-                        EventList.serializer(),
-                        networkDataSource.fetchJson("epgnow?bRef=$nbRef")
-                    )
-                    emit(eventList.copy(name = bouquet[1]))
-                }
-            } catch (_: Exception) {
-
-                emitAll(emptyList<EventList>().asFlow())
+    fun fetchEvents(type: ApiType): Flow<EventList> = flow {
+        try {
+            fetchBouquets(type).forEach { bouquet ->
+                val nbRef = bouquet[0].replace("\\\"", "\"")
+                val eventList = json.decodeFromString(
+                    EventList.serializer(), networkDataSource.fetchJson("epgnow?bRef=$nbRef")
+                )
+                emit(eventList.copy(name = bouquet[1]))
             }
+        } catch (_: Exception) {
+            emitAll(emptyList<EventList>().asFlow())
         }
+    }
 
     suspend fun fetchBouquets(type: ApiType): List<List<String>> {
         return try {
@@ -304,8 +295,7 @@ class ApiRepository @Inject constructor(
     suspend fun fetchDeviceInfo(): DeviceInfo {
         return try {
             json.decodeFromString(
-                DeviceInfo.serializer(),
-                networkDataSource.fetchJson("deviceinfo")
+                DeviceInfo.serializer(), networkDataSource.fetchJson("deviceinfo")
             )
 
         } catch (_: Exception) {
@@ -317,8 +307,7 @@ class ApiRepository @Inject constructor(
     suspend fun fetchSignalInfo(): SignalInfo {
         return try {
             json.decodeFromString(
-                SignalInfo.serializer(),
-                networkDataSource.fetchJson("tunersignal")
+                SignalInfo.serializer(), networkDataSource.fetchJson("tunersignal")
             )
         } catch (_: Exception) {
 
@@ -345,8 +334,7 @@ class ApiRepository @Inject constructor(
     suspend fun fetchTimerList(): TimerList {
         return try {
             json.decodeFromString(
-                TimerList.serializer(),
-                networkDataSource.fetchJson("timerlist")
+                TimerList.serializer(), networkDataSource.fetchJson("timerlist")
             )
         } catch (_: Exception) {
             TimerList()

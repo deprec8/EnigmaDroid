@@ -78,7 +78,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun CurrentPage(
     onNavigateToRemoteControl: () -> Unit,
-    onNavigateToServiceEPG: (sRef: String, sName: String) -> Unit,
+    onNavigateToServiceEpg: (sRef: String, sName: String) -> Unit,
     drawerState: DrawerState,
     currentViewModel: CurrentViewModel = hiltViewModel()
 ) {
@@ -261,7 +261,7 @@ fun CurrentPage(
                     Spacer(Modifier.size(16.dp))
                     OutlinedButton(
                         onClick = {
-                            onNavigateToServiceEPG(
+                            onNavigateToServiceEpg(
                                 currentEventInfo.now.serviceReference,
                                 currentEventInfo.now.serviceName
                             )

@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.epg.serviceEPG
+package io.github.deprec8.enigmadroid.ui.epg.serviceEpg
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -36,7 +36,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ServiceEPGViewModel @Inject constructor(
+class ServiceEpgViewModel @Inject constructor(
     private val apiRepository: ApiRepository, private val loadingRepository: LoadingRepository
 ) : ViewModel() {
 
@@ -64,7 +64,7 @@ class ServiceEPGViewModel @Inject constructor(
         fetchJob?.cancel()
         _epg.value = EventList()
         fetchJob = viewModelScope.launch {
-            _epg.value = apiRepository.fetchServiceEPG(sRef)
+            _epg.value = apiRepository.fetchServiceEpg(sRef)
         }
     }
 

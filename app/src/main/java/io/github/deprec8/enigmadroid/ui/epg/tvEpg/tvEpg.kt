@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.epg.tvEPG
+package io.github.deprec8.enigmadroid.ui.epg.tvEpg
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.scaleIn
@@ -66,18 +66,21 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TVEPGPage(
+fun TvEpgPage(
     onNavigateToRemoteControl: () -> Unit,
     drawerState: DrawerState,
-    tvEPGViewModel: TvEPGViewModel = hiltViewModel()
+    tvEpgViewModel: TvEpgViewModel = hiltViewModel()
 ) {
+    val epgs by tvEpgViewModel.epgs.collectAsStateWithLifecycle()
+    val bouquets by tvEpgViewModel.bouquets.collectAsStateWithLifecycle()
+    val currentBouquet by tvEpgViewModel.currentBouquet.collectAsStateWithLifecycle()
+    val filteredEvents by tvEpgViewModel.filteredEvents.collectAsStateWithLifecycle()
+    val searchHistory by tvEpgViewModel.searchHistory.collectAsStateWithLifecycle()
+    val useSearchHighlighting by tvEpgViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
+    val loadingState by tvEpgViewModel.loadingState.collectAsStateWithLifecycle()
+    val searchInput by tvEpgViewModel.searchInput.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
-    val epgs by tvEPGViewModel.epgs.collectAsStateWithLifecycle()
-    val bouquets by tvEPGViewModel.bouquets.collectAsStateWithLifecycle()
-    val currentBouquet by tvEPGViewModel.currentBouquet.collectAsStateWithLifecycle()
-    val filteredEPGEvents by tvEPGViewModel.filteredEPGEvents.collectAsStateWithLifecycle()
-    val searchHistory by tvEPGViewModel.searchHistory.collectAsStateWithLifecycle()
     val pagerState = rememberPagerState(pageCount = { epgs.eventLists.size })
     val selectedTabIndex = remember {
         derivedStateOf {
@@ -90,16 +93,14 @@ fun TVEPGPage(
             )
         }
     }
-    val useSearchHighlighting by tvEPGViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
-    val loadingState by tvEPGViewModel.loadingState.collectAsStateWithLifecycle()
-    val searchInput by tvEPGViewModel.searchInput.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        tvEPGViewModel.updateLoadingState(false)
+        tvEpgViewModel.updateLoadingState(false)
     }
+
     LaunchedEffect(loadingState) {
         if (loadingState == LoadingState.LOADED) {
-            tvEPGViewModel.fetchData()
+            tvEpgViewModel.fetchData()
         }
     }
 
@@ -108,7 +109,7 @@ fun TVEPGPage(
             loadingState == LoadingState.LOADED, enter = scaleIn(), exit = scaleOut()
         ) {
             FloatingActionButton(onClick = {
-                tvEPGViewModel.fetchData()
+                tvEpgViewModel.fetchData()
             }) {
                 Icon(
                     Icons.Default.Refresh,
@@ -119,23 +120,23 @@ fun TVEPGPage(
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
             enabled = epgs.eventLists.isNotEmpty(),
-            textFieldState = tvEPGViewModel.searchFieldState,
+            textFieldState = tvEpgViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_epg),
             content = {
-                if (filteredEPGEvents != null) {
+                if (filteredEvents != null) {
                     EpgContent(
-                        events = filteredEPGEvents !!,
+                        events = filteredEvents !!,
                         paddingValues = PaddingValues(0.dp),
                         showChannelName = true,
                         highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
                             .filter { it.isNotBlank() } else emptyList(),
-                        onAddTimer = { tvEPGViewModel.addTimer(it) })
+                        onAddTimer = { tvEpgViewModel.addTimer(it) })
                 } else {
                     SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
-                        tvEPGViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
-                        tvEPGViewModel.updateSearchInput()
+                        tvEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
+                        tvEpgViewModel.updateSearchInput()
                     }, onTermInsertClick = {
-                        tvEPGViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
+                        tvEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
                             it
                         )
                     })
@@ -144,7 +145,7 @@ fun TVEPGPage(
             drawerState = drawerState,
             onNavigateToRemote = { onNavigateToRemoteControl() },
             onSearch = {
-                tvEPGViewModel.updateSearchInput()
+                tvEpgViewModel.updateSearchInput()
             },
             tabBar = {
                 if (epgs.eventLists.isNotEmpty()) {
@@ -174,7 +175,7 @@ fun TVEPGPage(
             },
             additionalActions = {
                 BouquetMenu(
-                    bouquets, currentBouquet, { bRef -> tvEPGViewModel.setCurrentBouquet(bRef) })
+                    bouquets, currentBouquet, { bRef -> tvEpgViewModel.setCurrentBouquet(bRef) })
             })
     }
 
@@ -187,7 +188,7 @@ fun TVEPGPage(
                 EpgContent(
                     events = epgs.eventLists[service].events,
                     innerPadding,
-                    onAddTimer = { tvEPGViewModel.addTimer(it) })
+                    onAddTimer = { tvEpgViewModel.addTimer(it) })
             }
         } else if (epgs.result) {
             NoResults(
@@ -202,7 +203,7 @@ fun TVEPGPage(
                     .padding(innerPadding),
                 updateLoadingState = {
                     scope.launch {
-                        tvEPGViewModel.updateLoadingState(
+                        tvEpgViewModel.updateLoadingState(
                             it
                         )
                     }

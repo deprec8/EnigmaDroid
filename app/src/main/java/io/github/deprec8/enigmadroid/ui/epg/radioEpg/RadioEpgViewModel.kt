@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.epg.radioEPG
+package io.github.deprec8.enigmadroid.ui.epg.radioEpg
 
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.lifecycle.ViewModel
@@ -42,20 +42,18 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RadioEPGViewModel @Inject constructor(
+class RadioEpgViewModel @Inject constructor(
     private val apiRepository: ApiRepository,
     private val loadingRepository: LoadingRepository,
     private val searchHistoryRepository: SearchHistoryRepository,
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
-    val searchFieldState = TextFieldState()
-
     private val _epgs = MutableStateFlow(EventListList())
     val epgs: StateFlow<EventListList> = _epgs.asStateFlow()
 
-    private val _filteredEPGEvents = MutableStateFlow<List<Event>?>(null)
-    val filteredEPGEvents: StateFlow<List<Event>?> = _filteredEPGEvents.asStateFlow()
+    private val _filteredEvents = MutableStateFlow<List<Event>?>(null)
+    val filteredEvents: StateFlow<List<Event>?> = _filteredEvents.asStateFlow()
 
     private val _loadingState = MutableStateFlow(LoadingState.LOADING)
     val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
@@ -75,6 +73,8 @@ class RadioEPGViewModel @Inject constructor(
     private val _bouquets = MutableStateFlow<List<List<String>>>(emptyList())
     val bouquets: StateFlow<List<List<String>>> = _bouquets.asStateFlow()
 
+    val searchFieldState = TextFieldState()
+
     private var fetchJob: Job? = null
 
     init {
@@ -86,17 +86,17 @@ class RadioEPGViewModel @Inject constructor(
         viewModelScope.launch {
             combine(_epgs, _searchInput) { epgs, input ->
                 if (input != "" && epgs.eventLists.isNotEmpty()) {
-                    searchHistoryRepository.addToRadioEPGSearchHistory(input)
+                    searchHistoryRepository.addToRadioEpgSearchHistory(input)
                     FilterUtils.filterEvents(input, epgs.eventLists.flatMap { it.events })
                 } else {
                     null
                 }
             }.collectLatest {
-                _filteredEPGEvents.value = it
+                _filteredEvents.value = it
             }
         }
         viewModelScope.launch {
-            searchHistoryRepository.getRadioEPGSearchHistory().collectLatest {
+            searchHistoryRepository.getRadioEpgSearchHistory().collectLatest {
                 _searchHistory.value = it
             }
         }
@@ -123,8 +123,7 @@ class RadioEPGViewModel @Inject constructor(
                 } else if (_bouquets.value.find { it[0] == _currentBouquet.value } == null) {
                     _currentBouquet.value = _bouquets.value[0][0]
                 }
-                _epgs.value =
-                    apiRepository.fetchEpgEvents(_currentBouquet.value)
+                _epgs.value = apiRepository.fetchEpgEvents(_currentBouquet.value)
             }
         }
     }

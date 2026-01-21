@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.epg.radioEPG
+package io.github.deprec8.enigmadroid.ui.epg.radioEpg
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.scaleIn
@@ -66,17 +66,21 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RadioEPGPage(
+fun RadioEpgPage(
     onNavigateToRemoteControl: () -> Unit,
     drawerState: DrawerState,
-    radioEPGViewModel: RadioEPGViewModel = hiltViewModel()
+    radioEpgViewModel: RadioEpgViewModel = hiltViewModel()
 ) {
+    val epgs by radioEpgViewModel.epgs.collectAsStateWithLifecycle()
+    val filteredEvents by radioEpgViewModel.filteredEvents.collectAsStateWithLifecycle()
+    val searchHistory by radioEpgViewModel.searchHistory.collectAsStateWithLifecycle()
+    val useSearchHighlighting by radioEpgViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
+    val searchInput by radioEpgViewModel.searchInput.collectAsStateWithLifecycle()
+    val loadingState by radioEpgViewModel.loadingState.collectAsStateWithLifecycle()
+    val bouquets by radioEpgViewModel.bouquets.collectAsStateWithLifecycle()
+    val currentBouquet by radioEpgViewModel.currentBouquet.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
-    val epgs by radioEPGViewModel.epgs.collectAsStateWithLifecycle()
-    val filteredEPGEvents by radioEPGViewModel.filteredEPGEvents.collectAsStateWithLifecycle()
-    val searchHistory by radioEPGViewModel.searchHistory.collectAsStateWithLifecycle()
-    val useSearchHighlighting by radioEPGViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
     val pagerState = rememberPagerState(pageCount = { epgs.eventLists.size })
     val selectedTabIndex = remember {
         derivedStateOf {
@@ -89,18 +93,15 @@ fun RadioEPGPage(
             )
         }
     }
-    val searchInput by radioEPGViewModel.searchInput.collectAsStateWithLifecycle()
-    val loadingState by radioEPGViewModel.loadingState.collectAsStateWithLifecycle()
-    val bouquets by radioEPGViewModel.bouquets.collectAsStateWithLifecycle()
-    val currentBouquet by radioEPGViewModel.currentBouquet.collectAsStateWithLifecycle()
+
 
     LaunchedEffect(Unit) {
-        radioEPGViewModel.updateLoadingState(false)
+        radioEpgViewModel.updateLoadingState(false)
     }
 
     LaunchedEffect(loadingState) {
         if (loadingState == LoadingState.LOADED) {
-            radioEPGViewModel.fetchData()
+            radioEpgViewModel.fetchData()
         }
     }
 
@@ -109,7 +110,7 @@ fun RadioEPGPage(
             loadingState == LoadingState.LOADED, enter = scaleIn(), exit = scaleOut()
         ) {
             FloatingActionButton(onClick = {
-                radioEPGViewModel.fetchData()
+                radioEpgViewModel.fetchData()
             }) {
                 Icon(
                     Icons.Default.Refresh,
@@ -120,23 +121,23 @@ fun RadioEPGPage(
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
             enabled = epgs.eventLists.isNotEmpty() && loadingState == LoadingState.LOADED,
-            textFieldState = radioEPGViewModel.searchFieldState,
+            textFieldState = radioEpgViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_epg),
             content = {
-                if (filteredEPGEvents != null) {
+                if (filteredEvents != null) {
                     EpgContent(
-                        events = filteredEPGEvents !!,
+                        events = filteredEvents !!,
                         paddingValues = PaddingValues(0.dp),
                         showChannelName = true,
                         highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
                             .filter { it.isNotBlank() } else emptyList(),
-                        onAddTimer = { radioEPGViewModel.addTimer(it) })
+                        onAddTimer = { radioEpgViewModel.addTimer(it) })
                 } else {
                     SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
-                        radioEPGViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
-                        radioEPGViewModel.updateSearchInput()
+                        radioEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
+                        radioEpgViewModel.updateSearchInput()
                     }, onTermInsertClick = {
-                        radioEPGViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
+                        radioEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
                             it
                         )
                     })
@@ -145,7 +146,7 @@ fun RadioEPGPage(
             drawerState = drawerState,
             onNavigateToRemote = { onNavigateToRemoteControl() },
             onSearch = {
-                radioEPGViewModel.updateSearchInput()
+                radioEpgViewModel.updateSearchInput()
             },
             tabBar = {
                 if (epgs.eventLists.isNotEmpty()) {
@@ -176,7 +177,7 @@ fun RadioEPGPage(
             },
             additionalActions = {
                 BouquetMenu(
-                    bouquets, currentBouquet, { bRef -> radioEPGViewModel.setCurrentBouquet(bRef) })
+                    bouquets, currentBouquet, { bRef -> radioEpgViewModel.setCurrentBouquet(bRef) })
             })
     }
 
@@ -189,7 +190,7 @@ fun RadioEPGPage(
                 EpgContent(
                     events = epgs.eventLists[service].events,
                     innerPadding,
-                    onAddTimer = { radioEPGViewModel.addTimer(it) })
+                    onAddTimer = { radioEpgViewModel.addTimer(it) })
             }
         } else if (epgs.result) {
             NoResults(
@@ -204,7 +205,7 @@ fun RadioEPGPage(
                     .padding(innerPadding),
                 updateLoadingState = {
                     scope.launch {
-                        radioEPGViewModel.updateLoadingState(
+                        radioEpgViewModel.updateLoadingState(
                             it
                         )
                     }

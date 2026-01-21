@@ -87,7 +87,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun RadioPage(
     onNavigateToRemoteControl: () -> Unit,
-    onNavigateToServiceEPG: (sRef: String, sName: String) -> Unit,
+    onNavigateToServiceEpg: (sRef: String, sName: String) -> Unit,
     drawerState: DrawerState, radioViewModel: RadioViewModel = hiltViewModel()
 ) {
 
@@ -199,7 +199,7 @@ fun RadioPage(
                                         outlinedIcon = Icons.AutoMirrored.Outlined.Dvr,
                                         filledIcon = Icons.AutoMirrored.Filled.Dvr,
                                         action = {
-                                            onNavigateToServiceEPG(
+                                            onNavigateToServiceEpg(
                                                 event.serviceReference,
                                                 event.serviceName
                                             )

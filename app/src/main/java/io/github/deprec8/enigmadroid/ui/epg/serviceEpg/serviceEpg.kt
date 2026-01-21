@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.epg.serviceEPG
+package io.github.deprec8.enigmadroid.ui.epg.serviceEpg
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.scaleIn
@@ -56,25 +56,25 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ServiceEPGPage(
+fun ServiceEpgPage(
     sRef: String,
     sName: String,
     onNavigateBack: () -> Unit,
-    serviceEPGViewModel: ServiceEPGViewModel = hiltViewModel()
+    serviceEpgViewModel: ServiceEpgViewModel = hiltViewModel()
 ) {
+    val epg by serviceEpgViewModel.epg.collectAsStateWithLifecycle()
+    val loadingState by serviceEpgViewModel.loadingState.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
-    val epg by serviceEPGViewModel.epg.collectAsStateWithLifecycle()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    val loadingState by serviceEPGViewModel.loadingState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        serviceEPGViewModel.updateLoadingState(false)
+        serviceEpgViewModel.updateLoadingState(false)
     }
 
     LaunchedEffect(loadingState) {
         if (loadingState == LoadingState.LOADED) {
-            serviceEPGViewModel.fetchData(sRef)
+            serviceEpgViewModel.fetchData(sRef)
         }
     }
 
@@ -85,7 +85,7 @@ fun ServiceEPGPage(
             ) {
                 FloatingActionButton(
                     onClick = {
-                        serviceEPGViewModel.fetchData(sRef)
+                        serviceEpgViewModel.fetchData(sRef)
                     }) {
                     Icon(
                         Icons.Default.Refresh,
@@ -119,7 +119,7 @@ fun ServiceEPGPage(
             EpgContent(
                 events = epg.events,
                 innerPadding,
-                onAddTimer = { serviceEPGViewModel.addTimer(it) })
+                onAddTimer = { serviceEpgViewModel.addTimer(it) })
         } else if (epg.result) {
             NoResults(
                 Modifier
@@ -133,7 +133,7 @@ fun ServiceEPGPage(
                     .consumeWindowInsets(innerPadding),
                 updateLoadingState = {
                     scope.launch {
-                        serviceEPGViewModel.updateLoadingState(
+                        serviceEpgViewModel.updateLoadingState(
                             it
                         )
                     }

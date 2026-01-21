@@ -146,13 +146,13 @@ fun NavDrawerContent(
                 ),
                 DrawerPage(
                     stringResource(R.string.tv_epg),
-                    MainPages.TVEPG,
+                    MainPages.TvEpg,
                     Icons.AutoMirrored.Outlined.Dvr,
                     Icons.AutoMirrored.Filled.Dvr,
                 ),
                 DrawerPage(
                     stringResource(R.string.radio_epg),
-                    MainPages.RadioEPG,
+                    MainPages.RadioEpg,
                     Icons.AutoMirrored.Outlined.LibraryBooks,
                     Icons.AutoMirrored.Filled.LibraryBooks,
                 )
