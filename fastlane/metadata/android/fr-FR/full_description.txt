@@ -22,11 +22,13 @@ VLC est recommandé, mais d'autres lecteurs de médias peuvent aussi fonctionner
 Exigences :
 
 - Une set-top box fonctionnant avec Enigma2.
-- Complément OpenWebif activé et configuré.
+- Complément OpenWebif à jour activé et configuré.
 
 Compatibilité :
 
-Testé avec des images populaires Enigma2 comme VTi.
+Essai avec les images populaires Enigma2.
+
+Certaines images, telles que VTi, peuvent nécessiter la mise à jour manuelle du plugin OpenWebif pour être compatibles avec cette application.
 
 Gratuit et Open Source :
 
