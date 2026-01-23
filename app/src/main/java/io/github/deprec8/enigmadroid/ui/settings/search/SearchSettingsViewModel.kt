@@ -47,11 +47,11 @@ class SearchSettingsViewModel @Inject constructor(
     private val _timersSearchHistory = MutableStateFlow<List<String>>(emptyList())
     val timersSearchHistory = _timersSearchHistory.asStateFlow()
 
-    private val _tvEPGSearchHistory = MutableStateFlow<List<String>>(emptyList())
-    val tvEPGSearchHistory = _tvEPGSearchHistory.asStateFlow()
+    private val _tvEpgSearchHistory = MutableStateFlow<List<String>>(emptyList())
+    val tvEpgSearchHistory = _tvEpgSearchHistory.asStateFlow()
 
-    private val _radioEPGSearchHistory = MutableStateFlow<List<String>>(emptyList())
-    val radioEPGSearchHistory = _radioEPGSearchHistory.asStateFlow()
+    private val _radioEpgSearchHistory = MutableStateFlow<List<String>>(emptyList())
+    val radioEpgSearchHistory = _radioEpgSearchHistory.asStateFlow()
 
     private val _useSearchHistory = MutableStateFlow<Boolean?>(null)
     val useSearchHistories = _useSearchHistory.asStateFlow()
@@ -86,13 +86,13 @@ class SearchSettingsViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            searchHistoryRepository.getTVEPGSearchHistory().collect {
-                _tvEPGSearchHistory.value = it
+            searchHistoryRepository.getTVEpgSearchHistory().collect {
+                _tvEpgSearchHistory.value = it
             }
         }
         viewModelScope.launch {
-            searchHistoryRepository.getRadioEPGSearchHistory().collect {
-                _radioEPGSearchHistory.value = it
+            searchHistoryRepository.getRadioEpgSearchHistory().collect {
+                _radioEpgSearchHistory.value = it
             }
         }
         viewModelScope.launch {
@@ -119,8 +119,8 @@ class SearchSettingsViewModel @Inject constructor(
         radio: Boolean,
         movies: Boolean,
         timers: Boolean,
-        tvEPG: Boolean,
-        radioEPG: Boolean
+        tvEpg: Boolean,
+        radioEpg: Boolean
     ) {
         viewModelScope.launch {
             if (tv) {
@@ -135,11 +135,11 @@ class SearchSettingsViewModel @Inject constructor(
             if (timers) {
                 searchHistoryRepository.clearTimersSearchHistory()
             }
-            if (tvEPG) {
-                searchHistoryRepository.clearTVEPGSearchHistory()
+            if (tvEpg) {
+                searchHistoryRepository.clearTVEpgSearchHistory()
             }
-            if (radioEPG) {
-                searchHistoryRepository.clearRadioEPGSearchHistory()
+            if (radioEpg) {
+                searchHistoryRepository.clearRadioEpgSearchHistory()
             }
         }
     }

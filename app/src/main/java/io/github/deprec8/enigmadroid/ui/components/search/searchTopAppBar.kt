@@ -17,21 +17,19 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.components
+package io.github.deprec8.enigmadroid.ui.components.search
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Dialpad
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExpandedDockedSearchBar
 import androidx.compose.material3.ExpandedFullScreenSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,6 +37,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
+import androidx.compose.material3.SearchBarState
 import androidx.compose.material3.SearchBarValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -54,6 +53,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
+import io.github.deprec8.enigmadroid.ui.components.NoResults
+import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,8 +62,8 @@ import kotlinx.coroutines.launch
 fun SearchTopAppBar(
     textFieldState: TextFieldState,
     placeholder: String,
-    drawerState: DrawerState,
-    onNavigateToRemote: () -> Unit,
+    navigationButton: @Composable ((searchBarState: SearchBarState) -> Unit),
+    actionButtons: @Composable (() -> Unit)? = null,
     content: @Composable (() -> Unit)? = null,
     tabBar: @Composable (() -> Unit)? = null,
     onSearch: () -> Unit,
@@ -87,9 +88,7 @@ fun SearchTopAppBar(
             onSearch = { onSearch() },
             placeholder = {
                 Text(
-                    text = placeholder,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    text = placeholder, maxLines = 1, overflow = TextOverflow.Ellipsis
                 )
             },
             leadingIcon = {
@@ -106,27 +105,8 @@ fun SearchTopAppBar(
                             )
                         )
                     }
-                } else if (
-                    ! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) ||
-                    ! windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
-                ) {
-                    IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                        Icon(
-                            Icons.Default.Menu,
-                            contentDescription = stringResource(id = R.string.open_menu)
-                        )
-                    }
                 } else {
-                    IconButton(onClick = {
-                        scope.launch {
-                            searchBarState.animateToExpanded()
-                        }
-                    }) {
-                        Icon(
-                            Icons.Default.Search,
-                            contentDescription = stringResource(R.string.open_search)
-                        )
-                    }
+                    navigationButton(searchBarState)
                 }
             },
             trailingIcon = {
@@ -140,15 +120,11 @@ fun SearchTopAppBar(
                         )
                     }
                 } else {
-                    IconButton(onClick = { onNavigateToRemote() }) {
-                        Icon(
-                            Icons.Default.Dialpad,
-                            contentDescription = stringResource(id = R.string.open_remote_control)
-                        )
+                    if (actionButtons != null) {
+                        actionButtons()
                     }
                 }
-            }
-        )
+            })
     }
 
     Surface {
@@ -159,8 +135,9 @@ fun SearchTopAppBar(
         ) {
             SearchBar(
                 searchBarState,
-                modifier = if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) ||
-                    ! windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
+                modifier = if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || ! windowSizeClass.isHeightAtLeastBreakpoint(
+                        WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
+                    )
                 ) Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp, start = 16.dp, end = 16.dp)
@@ -171,12 +148,12 @@ fun SearchTopAppBar(
                     ),
                 inputField = inputField
             )
-            if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) ||
-                ! windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
+            if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || ! windowSizeClass.isHeightAtLeastBreakpoint(
+                    WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
+                )
             ) {
                 ExpandedFullScreenSearchBar(
-                    state = searchBarState,
-                    inputField = inputField
+                    state = searchBarState, inputField = inputField
                 ) {
                     if (content != null && enabled) {
                         content()
@@ -199,6 +176,8 @@ fun SearchTopAppBar(
                 Column(Modifier.padding(top = 8.dp)) {
                     tabBar()
                 }
+            } else {
+                Spacer(Modifier.size(8.dp))
             }
         }
     }

@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.tvEPG
+package io.github.deprec8.enigmadroid.ui.epg.serviceEpg
 
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.lifecycle.ViewModel
@@ -27,10 +27,9 @@ import io.github.deprec8.enigmadroid.data.ApiRepository
 import io.github.deprec8.enigmadroid.data.LoadingRepository
 import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.data.SettingsRepository
-import io.github.deprec8.enigmadroid.data.enums.ApiType
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.model.api.EPGEvent
-import io.github.deprec8.enigmadroid.model.api.EPGEventList
+import io.github.deprec8.enigmadroid.model.api.Event
+import io.github.deprec8.enigmadroid.model.api.EventList
 import io.github.deprec8.enigmadroid.utils.FilterUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,23 +41,21 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class TVEPGViewModel @Inject constructor(
+class ServiceEpgViewModel @Inject constructor(
     private val apiRepository: ApiRepository,
     private val loadingRepository: LoadingRepository,
     private val searchHistoryRepository: SearchHistoryRepository,
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
-    private val _epgs = MutableStateFlow(listOf<EPGEventList>())
-    val epgs: StateFlow<List<EPGEventList>> = _epgs.asStateFlow()
-
-    val searchFieldState = TextFieldState()
-
-    private val _filteredEPGEvents = MutableStateFlow<List<EPGEvent>?>(null)
-    val filteredEPGEvents: StateFlow<List<EPGEvent>?> = _filteredEPGEvents.asStateFlow()
+    private val _epg = MutableStateFlow(EventList())
+    val epg: StateFlow<EventList> = _epg.asStateFlow()
 
     private val _loadingState = MutableStateFlow(LoadingState.LOADING)
     val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
+
+    private val _filteredEvents = MutableStateFlow<List<Event>?>(null)
+    val filteredEvents: StateFlow<List<Event>?> = _filteredEvents.asStateFlow()
 
     private val _searchHistory = MutableStateFlow<List<String>>(emptyList())
     val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()
@@ -69,6 +66,8 @@ class TVEPGViewModel @Inject constructor(
     private val _useSearchHighlighting = MutableStateFlow(true)
     val useSearchHighlighting: StateFlow<Boolean> = _useSearchHighlighting.asStateFlow()
 
+    val searchFieldState = TextFieldState()
+
     private var fetchJob: Job? = null
 
     init {
@@ -78,19 +77,19 @@ class TVEPGViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            combine(_epgs, _searchInput) { epgs, input ->
-                if (input != "" && epgs.isNotEmpty()) {
-                    searchHistoryRepository.addToTVEPGSearchHistory(input)
-                    FilterUtils.filterEPGEvents(input, epgs.flatMap { it.events })
+            combine(_epg, _searchInput) { epg, input ->
+                if (input != "" && epg.events.isNotEmpty()) {
+                    searchHistoryRepository.addToTVEpgSearchHistory(input)
+                    FilterUtils.filterEvents(input, epg.events)
                 } else {
                     null
                 }
             }.collectLatest {
-                _filteredEPGEvents.value = it
+                _filteredEvents.value = it
             }
         }
         viewModelScope.launch {
-            searchHistoryRepository.getTVEPGSearchHistory().collectLatest {
+            searchHistoryRepository.getTVEpgSearchHistory().collectLatest {
                 _searchHistory.value = it
             }
         }
@@ -105,17 +104,15 @@ class TVEPGViewModel @Inject constructor(
         loadingRepository.updateLoadingState(forceUpdate)
     }
 
-    fun fetchData() {
+    fun fetchData(sRef: String) {
         fetchJob?.cancel()
-        _epgs.value = emptyList()
+        _epg.value = EventList()
         fetchJob = viewModelScope.launch {
-            apiRepository.fetchEPG(ApiType.TV).collect { epgs ->
-                _epgs.value += epgs
-            }
+            _epg.value = apiRepository.fetchServiceEpg(sRef)
         }
     }
 
-    fun addTimer(event: EPGEvent) {
+    fun addTimer(event: Event) {
         viewModelScope.launch {
             apiRepository.addTimerForEvent(
                 event.serviceReference, event.id
@@ -123,10 +120,7 @@ class TVEPGViewModel @Inject constructor(
         }
     }
 
-
     fun updateSearchInput() {
         _searchInput.value = searchFieldState.text.toString()
     }
-
-
 }

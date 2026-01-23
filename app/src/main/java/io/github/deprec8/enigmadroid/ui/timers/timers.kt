@@ -55,6 +55,7 @@ import androidx.compose.material.icons.outlined.Videocam
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.DrawerState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -88,11 +89,14 @@ import io.github.deprec8.enigmadroid.ui.components.ContentListItem
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.SearchHistory
-import io.github.deprec8.enigmadroid.ui.components.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
+import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarDrawerNavigationButton
+import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarRemoteControlActionButton
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimersPage(
     onNavigateToRemoteControl: () -> Unit,
@@ -404,11 +408,15 @@ fun TimersPage(
                         )
                     }
                 },
-                drawerState = drawerState,
+                navigationButton = { searchBarState ->
+                    SearchTopAppBarDrawerNavigationButton(drawerState, searchBarState)
+                },
                 onSearch = {
                     timersViewModel.updateSearchInput()
                 },
-                onNavigateToRemote = { onNavigateToRemoteControl() }
+                actionButtons = {
+                    SearchTopAppBarRemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
+                }
             )
 
         }, floatingActionButton = {

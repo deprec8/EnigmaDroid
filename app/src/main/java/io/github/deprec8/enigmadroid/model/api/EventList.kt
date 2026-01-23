@@ -25,6 +25,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class EventList(
-    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("bouquetName") val bouquetName: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("bouquetName") val name: String = "N/A",
     @SerialName("events") val events: List<Event> = emptyList(),
+    @SerialName("result") val result: Boolean = false,
 )

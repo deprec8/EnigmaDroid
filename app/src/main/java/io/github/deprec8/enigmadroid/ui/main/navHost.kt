@@ -35,11 +35,12 @@ import io.github.deprec8.enigmadroid.model.navigation.MainPages
 import io.github.deprec8.enigmadroid.model.navigation.SettingsPages
 import io.github.deprec8.enigmadroid.ui.current.CurrentPage
 import io.github.deprec8.enigmadroid.ui.deviceInfo.DeviceInfoPage
+import io.github.deprec8.enigmadroid.ui.epg.radioEpg.RadioEpgPage
+import io.github.deprec8.enigmadroid.ui.epg.serviceEpg.ServiceEpgPage
+import io.github.deprec8.enigmadroid.ui.epg.tvEpg.TvEpgPage
 import io.github.deprec8.enigmadroid.ui.movies.MoviesPage
 import io.github.deprec8.enigmadroid.ui.radio.RadioPage
-import io.github.deprec8.enigmadroid.ui.radioEPG.RadioEPGPage
 import io.github.deprec8.enigmadroid.ui.remoteControl.RemoteControlPage
-import io.github.deprec8.enigmadroid.ui.serviceEPG.ServiceEPGPage
 import io.github.deprec8.enigmadroid.ui.settings.SettingsPage
 import io.github.deprec8.enigmadroid.ui.settings.about.AboutPage
 import io.github.deprec8.enigmadroid.ui.settings.about.LibrariesPage
@@ -49,7 +50,6 @@ import io.github.deprec8.enigmadroid.ui.settings.search.SearchSettingsPage
 import io.github.deprec8.enigmadroid.ui.signal.SignalPage
 import io.github.deprec8.enigmadroid.ui.timers.TimersPage
 import io.github.deprec8.enigmadroid.ui.tv.TvPage
-import io.github.deprec8.enigmadroid.ui.tvEPG.TVEPGPage
 
 @Composable
 fun NavHost(
@@ -65,9 +65,9 @@ fun NavHost(
             composable<MainPages.TV> {
                 TvPage(
                     onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
-                    onNavigateToServiceEPG = { sRef, sName ->
+                    onNavigateToServiceEpg = { sRef, sName ->
                         navController.navigate(
-                            MainPages.ServiceEPG(
+                            MainPages.ServiceEpg(
                                 sRef, sName
                             )
                         )
@@ -75,11 +75,11 @@ fun NavHost(
                     modalDrawerState
                 )
             }
-            composable<MainPages.ServiceEPG> { backStackEntry ->
-                val serviceEPG: MainPages.ServiceEPG = backStackEntry.toRoute()
-                ServiceEPGPage(
-                    sRef = serviceEPG.sRef,
-                    sName = serviceEPG.sName,
+            composable<MainPages.ServiceEpg> { backStackEntry ->
+                val serviceEpg: MainPages.ServiceEpg = backStackEntry.toRoute()
+                ServiceEpgPage(
+                    sRef = serviceEpg.sRef,
+                    sName = serviceEpg.sName,
                     onNavigateBack = { navController.navigateUp() }
                 )
             }
@@ -89,14 +89,14 @@ fun NavHost(
                     modalDrawerState
                 )
             }
-            composable<MainPages.TVEPG> {
-                TVEPGPage(
+            composable<MainPages.TvEpg> {
+                TvEpgPage(
                     onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
                     modalDrawerState
                 )
             }
-            composable<MainPages.RadioEPG> {
-                RadioEPGPage(
+            composable<MainPages.RadioEpg> {
+                RadioEpgPage(
                     onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
                     modalDrawerState
                 )
@@ -104,9 +104,9 @@ fun NavHost(
             composable<MainPages.Current> {
                 CurrentPage(
                     onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
-                    onNavigateToServiceEPG = { sRef, sName ->
+                    onNavigateToServiceEpg = { sRef, sName ->
                         navController.navigate(
-                            MainPages.ServiceEPG(
+                            MainPages.ServiceEpg(
                                 sRef, sName
                             )
                         )
@@ -117,9 +117,9 @@ fun NavHost(
             composable<MainPages.Radio> {
                 RadioPage(
                     onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
-                    onNavigateToServiceEPG = { sRef, sName ->
+                    onNavigateToServiceEpg = { sRef, sName ->
                         navController.navigate(
-                            MainPages.ServiceEPG(
+                            MainPages.ServiceEpg(
                                 sRef, sName
                             )
                         )

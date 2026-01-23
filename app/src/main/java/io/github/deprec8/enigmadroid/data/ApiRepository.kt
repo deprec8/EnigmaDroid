@@ -35,8 +35,8 @@ import io.github.deprec8.enigmadroid.model.api.BookmarkList
 import io.github.deprec8.enigmadroid.model.api.BouquetList
 import io.github.deprec8.enigmadroid.model.api.CurrentInfo
 import io.github.deprec8.enigmadroid.model.api.DeviceInfo
-import io.github.deprec8.enigmadroid.model.api.EPGEventList
 import io.github.deprec8.enigmadroid.model.api.EventList
+import io.github.deprec8.enigmadroid.model.api.EventListList
 import io.github.deprec8.enigmadroid.model.api.MovieList
 import io.github.deprec8.enigmadroid.model.api.ServiceList
 import io.github.deprec8.enigmadroid.model.api.SignalInfo
@@ -123,8 +123,7 @@ class ApiRepository @Inject constructor(
     suspend fun fetchCurrentEventInfo(): CurrentInfo {
         return try {
             json.decodeFromString(
-                CurrentInfo.serializer(),
-                networkDataSource.fetchJson("getcurrent")
+                CurrentInfo.serializer(), networkDataSource.fetchJson("getcurrent")
             )
         } catch (_: Exception) {
 
@@ -132,32 +131,41 @@ class ApiRepository @Inject constructor(
         }
     }
 
-    fun fetchEPG(type: ApiType): Flow<EPGEventList> = flow {
-        try {
-            json.decodeFromString(
-                ServiceList.serializer(),
-                networkDataSource.fetchJson("getallservices${if (type == ApiType.TV) "" else "?type=radio"}")
-            ).services[0].subservices.forEach { service ->
-                val epgEventList = json.decodeFromString(
-                    EPGEventList.serializer(),
-                    networkDataSource.fetchJson("epgservice?sRef=${service.serviceReference}")
+    suspend fun fetchEpgEvents(bRef: String): EventListList {
+        return try {
+            val epgEventList = json.decodeFromString(
+                EventList.serializer(), networkDataSource.fetchJson(
+                    "epgmulti?bRef=${
+                        bRef.replace(
+                            "\\\"", "\""
+                        )
+                    }&endTime=10080"
                 )
-                emit(epgEventList.copy(serviceName = service.serviceName))
-            }
-        } catch (_: Exception) {
+            )
 
-            emitAll(emptyList<EPGEventList>().asFlow())
+            val epgEventListList =
+                EventListList(eventLists = epgEventList.events.groupBy { it.serviceName }
+                    .map { (serviceName, events) ->
+                        EventList(
+                            name = serviceName, events = events
+                        )
+                    }, result = epgEventList.result)
+
+
+            epgEventListList
+        } catch (_: Exception) {
+            EventListList()
         }
     }
 
-    suspend fun fetchServiceEPG(sRef: String): EPGEventList {
+    suspend fun fetchServiceEpg(sRef: String): EventList {
         return try {
             json.decodeFromString(
-                EPGEventList.serializer(),
-                networkDataSource.fetchJson("epgservice?sRef=${sRef}")
+                EventList.serializer(),
+                networkDataSource.fetchJson("epgservice?sRef=${sRef}&endTime=10080")
             )
         } catch (_: Exception) {
-            EPGEventList()
+            EventList()
         }
     }
 
@@ -165,27 +173,23 @@ class ApiRepository @Inject constructor(
         try {
             val bookmarks = mutableListOf<Bookmark>()
             val movies = json.decodeFromString(
-                BookmarkList.serializer(),
-                networkDataSource.fetchJson("movielist")
+                BookmarkList.serializer(), networkDataSource.fetchJson("movielist")
             )
             bookmarks.add(
                 Bookmark(
-                    directory = movies.directory,
-                    displayName = "/"
+                    directory = movies.directory, displayName = "/"
                 )
             )
             movies.bookmarks.forEach {
                 bookmarks.add(
                     Bookmark(
-                        directory = bookmarks[0].directory + it,
-                        displayName = "/$it"
+                        directory = bookmarks[0].directory + it, displayName = "/$it"
                     )
                 )
             }
             bookmarks.forEach { bookmark ->
                 val movieList = json.decodeFromString(
-                    MovieList.serializer(),
-                    networkDataSource.fetchJson(
+                    MovieList.serializer(), networkDataSource.fetchJson(
                         "movielist?dirname=${
                             bookmark.directory
                         }"
@@ -215,8 +219,7 @@ class ApiRepository @Inject constructor(
         return try {
             val temp = mutableListOf<ServiceList>()
             json.decodeFromString(
-                BouquetList.serializer(),
-                networkDataSource.fetchJson("bouquets?stype=tv")
+                BouquetList.serializer(), networkDataSource.fetchJson("bouquets?stype=tv")
             ).bouquets.forEach { bouquet ->
                 val nbRef = bouquet[0].replace("\\\"", "\"")
                 temp.add(
@@ -232,54 +235,58 @@ class ApiRepository @Inject constructor(
         }
     }
 
-    fun fetchEvents(type: ApiType): Flow<EventList> =
-        flow {
-            try {
-                val bouquets = mutableListOf<List<String>>()
-                val response = json.decodeFromString(
-                    BouquetList.serializer(),
-                    networkDataSource.fetchJson("bouquets?stype=${if (type == ApiType.TV) "tv" else "radio"}")
-                ).bouquets
-                for (bouquet in response) {
-                    bouquets.add(bouquet)
-                }
-                bouquets.add(
-                    listOf(
-                        if (type == ApiType.TV) {
-                            "1:7:1:0:0:0:0:0:0:0:(type%20==%201)%20||%20(type%20==%2017)%20||%20(type%20==%20195)%20||%20(type%20==%2025)%20ORDER%20BY%20name"
-                        } else {
-                            "1:7:2:0:0:0:0:0:0:0:(type%20==%202)%20ORDER%20BY%20name"
-                        },
-                        context.getString(R.string.all_services)
-                    )
+    fun fetchEvents(type: ApiType): Flow<EventList> = flow {
+        try {
+            fetchBouquets(type).forEach { bouquet ->
+                val nbRef = bouquet[0].replace("\\\"", "\"")
+                val eventList = json.decodeFromString(
+                    EventList.serializer(), networkDataSource.fetchJson("epgnow?bRef=$nbRef")
                 )
-                val providers = if (type == ApiType.TV) {
-                    json.decodeFromString(
-                        EventList.serializer(),
-                        networkDataSource.fetchJson("epgnow?bRef=1:7:1:0:0:0:0:0:0:0:(type%20==%201)%20||%20(type%20==%2017)%20||%20(type%20==%20195)%20||%20(type%20==%2025)%20FROM%20PROVIDERS%20ORDER%20BY%20name")
-                    ).events
-                } else {
-                    json.decodeFromString(
-                        EventList.serializer(),
-                        networkDataSource.fetchJson("epgnow?bRef=1:7:2:0:0:0:0:0:0:0:(type%20==%202)%20FROM%20PROVIDERS%20ORDER%20BY%20name")
-                    ).events
-                }
-                for (provider in providers) {
-                    bouquets.add(listOf(provider.serviceReference, provider.serviceName))
-                }
-                bouquets.forEach { bouquet ->
-                    val nbRef = bouquet[0].replace("\\\"", "\"")
-                    val eventList = json.decodeFromString(
-                        EventList.serializer(),
-                        networkDataSource.fetchJson("epgnow?bRef=$nbRef")
-                    )
-                    emit(eventList.copy(bouquetName = bouquet[1]))
-                }
-            } catch (_: Exception) {
-
-                emitAll(emptyList<EventList>().asFlow())
+                emit(eventList.copy(name = bouquet[1]))
             }
+        } catch (_: Exception) {
+            emitAll(emptyList<EventList>().asFlow())
         }
+    }
+
+    suspend fun fetchBouquets(type: ApiType): List<List<String>> {
+        return try {
+            val bouquets = mutableListOf<List<String>>()
+            val response = json.decodeFromString(
+                BouquetList.serializer(),
+                networkDataSource.fetchJson("bouquets?stype=${if (type == ApiType.TV) "tv" else "radio"}")
+            ).bouquets
+            for (bouquet in response) {
+                bouquets.add(bouquet)
+            }
+            bouquets.add(
+                listOf(
+                    if (type == ApiType.TV) {
+                        "1:7:1:0:0:0:0:0:0:0:(type%20==%201)%20||%20(type%20==%2017)%20||%20(type%20==%20195)%20||%20(type%20==%2025)%20ORDER%20BY%20name"
+                    } else {
+                        "1:7:2:0:0:0:0:0:0:0:(type%20==%202)%20ORDER%20BY%20name"
+                    }, context.getString(R.string.all_services)
+                )
+            )
+            val providers = if (type == ApiType.TV) {
+                json.decodeFromString(
+                    EventList.serializer(),
+                    networkDataSource.fetchJson("epgnow?bRef=1:7:1:0:0:0:0:0:0:0:(type%20==%201)%20||%20(type%20==%2017)%20||%20(type%20==%20195)%20||%20(type%20==%2025)%20FROM%20PROVIDERS%20ORDER%20BY%20name")
+                ).events
+            } else {
+                json.decodeFromString(
+                    EventList.serializer(),
+                    networkDataSource.fetchJson("epgnow?bRef=1:7:2:0:0:0:0:0:0:0:(type%20==%202)%20FROM%20PROVIDERS%20ORDER%20BY%20name")
+                ).events
+            }
+            for (provider in providers) {
+                bouquets.add(listOf(provider.serviceReference, provider.serviceName))
+            }
+            bouquets
+        } catch (_: Exception) {
+            emptyList()
+        }
+    }
 
     suspend fun play(sRef: String) {
         networkDataSource.call("zap?sRef=$sRef")
@@ -288,8 +295,7 @@ class ApiRepository @Inject constructor(
     suspend fun fetchDeviceInfo(): DeviceInfo {
         return try {
             json.decodeFromString(
-                DeviceInfo.serializer(),
-                networkDataSource.fetchJson("deviceinfo")
+                DeviceInfo.serializer(), networkDataSource.fetchJson("deviceinfo")
             )
 
         } catch (_: Exception) {
@@ -301,8 +307,7 @@ class ApiRepository @Inject constructor(
     suspend fun fetchSignalInfo(): SignalInfo {
         return try {
             json.decodeFromString(
-                SignalInfo.serializer(),
-                networkDataSource.fetchJson("tunersignal")
+                SignalInfo.serializer(), networkDataSource.fetchJson("tunersignal")
             )
         } catch (_: Exception) {
 
@@ -329,8 +334,7 @@ class ApiRepository @Inject constructor(
     suspend fun fetchTimerList(): TimerList {
         return try {
             json.decodeFromString(
-                TimerList.serializer(),
-                networkDataSource.fetchJson("timerlist")
+                TimerList.serializer(), networkDataSource.fetchJson("timerlist")
             )
         } catch (_: Exception) {
             TimerList()
