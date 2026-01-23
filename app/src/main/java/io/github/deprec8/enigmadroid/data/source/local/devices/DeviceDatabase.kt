@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -17,9 +17,13 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.model.api
+package io.github.deprec8.enigmadroid.data.source.local.devices
 
-data class EventListList(
-    val eventLists: List<EventList> = emptyList(),
-    val result: Boolean = false,
-)
+import androidx.room.Database
+import androidx.room.RoomDatabase
+
+@Database(entities = [Device::class], version = 1, exportSchema = false)
+abstract class DeviceDatabase : RoomDatabase() {
+
+    abstract fun deviceDao(): DeviceDao
+}

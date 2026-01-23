@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -39,9 +39,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.model.api.Event
+import io.github.deprec8.enigmadroid.model.api.events.Event
 import io.github.deprec8.enigmadroid.model.menu.MenuItem
-import io.github.deprec8.enigmadroid.model.menu.MenuSection
+import io.github.deprec8.enigmadroid.model.menu.MenuItemGroup
 import io.github.deprec8.enigmadroid.ui.components.ContentListItem
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.utils.IntentUtils
@@ -86,9 +86,9 @@ fun EpgContent(
                     },
                     shortDescription = event.shortDescription,
                     longDescription = event.longDescription,
-                    menuSections = if (event.beginTimestamp * 1000 > System.currentTimeMillis()) {
+                    menuItemGroups = if (event.beginTimestamp * 1000 > System.currentTimeMillis()) {
                         listOf(
-                            MenuSection(
+                            MenuItemGroup(
                                 listOf(
                                     MenuItem(
                                         text = stringResource(R.string.add_timer),

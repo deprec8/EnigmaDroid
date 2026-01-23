@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -28,7 +28,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.github.deprec8.enigmadroid.data.ApiRepository
-import io.github.deprec8.enigmadroid.data.source.local.devices.DevicesDatabase
+import io.github.deprec8.enigmadroid.data.source.local.devices.DeviceDatabase
 import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
 
 @Module
@@ -39,9 +39,9 @@ object ApiRepositoryModule {
     fun provideApiRepository(
         @ApplicationContext context: Context,
         networkDataSource: NetworkDataSource,
-        devicesDatabase: DevicesDatabase,
+        deviceDatabase: DeviceDatabase,
         dataStore: DataStore<Preferences>
     ): ApiRepository {
-        return ApiRepository(context, networkDataSource, devicesDatabase, dataStore)
+        return ApiRepository(context, networkDataSource, deviceDatabase, dataStore)
     }
 }

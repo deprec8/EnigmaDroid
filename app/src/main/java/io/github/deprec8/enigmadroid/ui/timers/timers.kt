@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -82,9 +82,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.data.enums.TimerState
-import io.github.deprec8.enigmadroid.model.api.Timer
+import io.github.deprec8.enigmadroid.model.api.timers.Timer
 import io.github.deprec8.enigmadroid.model.menu.MenuItem
-import io.github.deprec8.enigmadroid.model.menu.MenuSection
+import io.github.deprec8.enigmadroid.model.menu.MenuItemGroup
 import io.github.deprec8.enigmadroid.ui.components.ContentListItem
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
@@ -105,7 +105,7 @@ fun TimersPage(
 ) {
 
     val filteredTimers by timersViewModel.filteredTimers.collectAsStateWithLifecycle()
-    val timerList by timersViewModel.timerList.collectAsStateWithLifecycle()
+    val timerList by timersViewModel.timerBatch.collectAsStateWithLifecycle()
     val services by timersViewModel.services.collectAsStateWithLifecycle()
     val searchHistory by timersViewModel.searchHistory.collectAsStateWithLifecycle()
     var showTimerSetupDialog by rememberSaveable {
@@ -256,9 +256,9 @@ fun TimersPage(
                         ),
                         shortDescription = timer.shortDescription,
                         longDescription = timer.descriptionextended,
-                        menuSections = if (timer.logEntries.isNotEmpty()) {
+                        menuItemGroups = if (timer.logEntries.isNotEmpty()) {
                             listOf(
-                                MenuSection(
+                                MenuItemGroup(
                                     listOf(
                                         MenuItem(
                                             text = stringResource(R.string.view_log),
@@ -271,7 +271,7 @@ fun TimersPage(
                         } else {
                             emptyList()
                         } + listOf(
-                            MenuSection(
+                            MenuItemGroup(
                                 listOf(
                                     MenuItem(
                                         text = stringResource(R.string.edit),

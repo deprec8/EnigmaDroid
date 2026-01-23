@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -19,7 +19,7 @@
 
 package io.github.deprec8.enigmadroid.data.enums
 
-enum class RemoteControlButtons(val value: Int) {
+enum class RemoteControlButton(val value: Int) {
     PREVIOUS_CHANNEL(403),
     NEXT_CHANNEL(402),
     VOLUME_UP(115),
@@ -51,15 +51,5 @@ enum class RemoteControlButtons(val value: Int) {
     RADIO(385),
     TEXT(388),
     RECORD(167),
-    EPG(358),
-    ONE(2),
-    TWO(3),
-    THREE(4),
-    FOUR(5),
-    FIVE(6),
-    SIX(7),
-    SEVEN(8),
-    EIGHT(9),
-    NINE(10),
-    ZERO(11)
+    EPG(358)
 }

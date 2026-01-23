@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -121,7 +121,7 @@ fun AboutPage(
                 supportingContent = { Text(text = stringResource(R.string.app_developer)) },
                 leadingContent = { Icon(Icons.Outlined.Person, contentDescription = null) },
                 modifier = Modifier.clickable {
-                    IntentUtils.openURL(context, appDeveloperURL)
+                    IntentUtils.openUrl(context, appDeveloperURL)
                 })
 
             ListItem(
@@ -142,7 +142,7 @@ fun AboutPage(
                 supportingContent = { Text(text = stringResource(R.string.app_source)) },
                 leadingContent = { Icon(Icons.Outlined.Code, contentDescription = null) },
                 modifier = Modifier.clickable {
-                    IntentUtils.openURL(context, appSourceURL)
+                    IntentUtils.openUrl(context, appSourceURL)
                 })
 
             ListItem(
@@ -153,7 +153,7 @@ fun AboutPage(
                 supportingContent = { Text(text = stringResource(R.string.app_issue)) },
                 leadingContent = { Icon(Icons.Outlined.ReportProblem, contentDescription = null) },
                 modifier = Modifier.clickable {
-                    IntentUtils.openURL(
+                    IntentUtils.openUrl(
                         context,
                         appIssueURL
                     )
@@ -167,7 +167,7 @@ fun AboutPage(
                 supportingContent = { Text(text = stringResource(R.string.app_translation)) },
                 leadingContent = { Icon(Icons.Outlined.Translate, contentDescription = null) },
                 modifier = Modifier.clickable {
-                    IntentUtils.openURL(
+                    IntentUtils.openUrl(
                         context,
                         appTranslationURL
                     )
@@ -183,7 +183,7 @@ fun AboutPage(
                 },
                 leadingContent = { Icon(Icons.Outlined.Shield, contentDescription = null) },
                 modifier = Modifier.clickable {
-                    IntentUtils.openURL(context, appLicenseURL)
+                    IntentUtils.openUrl(context, appLicenseURL)
                 })
 
             ListItem(

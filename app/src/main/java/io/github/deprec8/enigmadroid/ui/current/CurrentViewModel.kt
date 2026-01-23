@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -25,7 +25,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.deprec8.enigmadroid.data.ApiRepository
 import io.github.deprec8.enigmadroid.data.LoadingRepository
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.model.api.CurrentInfo
+import io.github.deprec8.enigmadroid.model.api.current.CurrentInfo
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -64,11 +64,11 @@ class CurrentViewModel @Inject constructor(
         fetchJob?.cancel()
         _currentInfo.value = CurrentInfo()
         viewModelScope.launch {
-            _currentInfo.value = apiRepository.fetchCurrentEventInfo()
+            _currentInfo.value = apiRepository.fetchCurrentInfo()
         }
     }
 
     suspend fun buildStreamUrl(sRef: String): String {
-        return apiRepository.buildLiveStreamURL(sRef)
+        return apiRepository.buildLiveStreamUrl(sRef)
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -23,7 +23,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
-import io.github.deprec8.enigmadroid.data.objects.PreferencesKeys
+import io.github.deprec8.enigmadroid.data.objects.PreferenceKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -31,9 +31,9 @@ import javax.inject.Inject
 class SettingsRepository @Inject constructor(private val dataStore: DataStore<Preferences>) {
 
     private val remoteControlVibrationKey =
-        booleanPreferencesKey(PreferencesKeys.REMOTE_CONTROL_VIBRATION)
+        booleanPreferencesKey(PreferenceKey.REMOTE_CONTROL_VIBRATION)
     private val useSearchHighlightingKey =
-        booleanPreferencesKey(PreferencesKeys.USE_SEARCH_HIGHLIGHTING)
+        booleanPreferencesKey(PreferenceKey.USE_SEARCH_HIGHLIGHTING)
 
     fun getRemoteControlVibration(): Flow<Boolean> = dataStore.data.map { preferences ->
         preferences[remoteControlVibrationKey] ?: true

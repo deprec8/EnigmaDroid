@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -84,8 +84,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.model.api.ServiceList
-import io.github.deprec8.enigmadroid.model.api.Timer
+import io.github.deprec8.enigmadroid.model.api.timers.Timer
+import io.github.deprec8.enigmadroid.model.api.timers.services.ServiceBatch
 import io.github.deprec8.enigmadroid.ui.components.AdaptiveDialog
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
 
@@ -95,7 +95,7 @@ fun TimerSetupDialog(
     oldTimer: Timer? = null,
     onDismiss: () -> Unit,
     onSave: (newTimer: Timer, oldTimer: Timer?) -> Unit,
-    services: List<ServiceList>,
+    services: List<ServiceBatch>,
 ) {
     val titleState = rememberTextFieldState("")
     val shortDescriptionState = rememberTextFieldState("")

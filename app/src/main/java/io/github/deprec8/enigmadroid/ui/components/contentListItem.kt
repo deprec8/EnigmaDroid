@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -49,7 +49,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.model.menu.MenuSection
+import io.github.deprec8.enigmadroid.model.menu.MenuItemGroup
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,11 +59,11 @@ fun ContentListItem(
     supportingText: String,
     overlineText: String? = null,
     additionalInfo: String? = null,
-    menuSections: List<MenuSection>? = null,
+    menuItemGroups: List<MenuItemGroup>? = null,
     progress: Float? = null,
     shortDescription: String,
     longDescription: String,
-    editMenuSection: MenuSection? = null,
+    editMenuItemGroup: MenuItemGroup? = null,
     highlightedWords: List<String> = emptyList()
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -113,7 +113,7 @@ fun ContentListItem(
                     }
                 }
             }, trailingContent = {
-                if (! menuSections.isNullOrEmpty()) {
+                if (! menuItemGroups.isNullOrEmpty()) {
                     IconButton(onClick = { showDropDownMenu = true }) {
                         Icon(
                             Icons.Default.MoreVert,
@@ -124,7 +124,7 @@ fun ContentListItem(
                         DropdownMenu(
                             expanded = showDropDownMenu,
                             onDismissRequest = { showDropDownMenu = false }) {
-                            menuSections.forEachIndexed { index, menuSection ->
+                            menuItemGroups.forEachIndexed { index, menuSection ->
                                 if (index != 0) {
                                     HorizontalDivider()
                                 }
@@ -153,9 +153,9 @@ fun ContentListItem(
                                     )
                                 }
                             }
-                            if (editMenuSection != null) {
+                            if (editMenuItemGroup != null) {
                                 HorizontalDivider()
-                                editMenuSection.menuItems.forEach { menuItem ->
+                                editMenuItemGroup.menuItems.forEach { menuItem ->
                                     DropdownMenuItem(
                                         onClick = {
                                             showDropDownMenu = false
@@ -210,8 +210,8 @@ fun ContentListItem(
                 progress = progress,
                 shortDescription = shortDescription,
                 longDescription = longDescription,
-                menuSections = menuSections,
-                editMenuSection = editMenuSection,
+                menuItemGroups = menuItemGroups,
+                editMenuItemGroup = editMenuItemGroup,
                 highlightedWords = highlightedWords
             )
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -84,14 +84,14 @@ fun RadioEpgPage(
     val currentBouquet by radioEpgViewModel.currentBouquet.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
-    val pagerState = rememberPagerState(pageCount = { epgs.eventLists.size })
+    val pagerState = rememberPagerState(pageCount = { epgs.eventBatches.size })
     val selectedTabIndex = remember {
         derivedStateOf {
             pagerState.currentPage.coerceIn(
-                0, (if (epgs.eventLists.size - 1 < 0) {
+                0, (if (epgs.eventBatches.size - 1 < 0) {
                     0
                 } else {
-                    epgs.eventLists.size - 1
+                    epgs.eventBatches.size - 1
                 })
             )
         }
@@ -123,7 +123,7 @@ fun RadioEpgPage(
         }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = epgs.eventLists.isNotEmpty() && loadingState == LoadingState.LOADED,
+            enabled = epgs.eventBatches.isNotEmpty() && loadingState == LoadingState.LOADED,
             textFieldState = radioEpgViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_epg),
             content = {
@@ -162,13 +162,13 @@ fun RadioEpgPage(
                 radioEpgViewModel.updateSearchInput()
             },
             tabBar = {
-                if (epgs.eventLists.isNotEmpty()) {
+                if (epgs.eventBatches.isNotEmpty()) {
                     PrimaryScrollableTabRow(
                         selectedTabIndex = selectedTabIndex.value,
                         divider = { },
                         scrollState = rememberScrollState()
                     ) {
-                        epgs.eventLists.forEachIndexed { index, epg ->
+                        epgs.eventBatches.forEachIndexed { index, epg ->
                             Tab(
                                 text = {
                                     Text(
@@ -191,13 +191,13 @@ fun RadioEpgPage(
     }
 
     ) { innerPadding ->
-        if (epgs.eventLists.isNotEmpty()) {
+        if (epgs.eventBatches.isNotEmpty()) {
             HorizontalPager(
                 modifier = Modifier.fillMaxSize(),
                 state = pagerState,
             ) { service ->
                 EpgContent(
-                    events = epgs.eventLists[service].events,
+                    events = epgs.eventBatches[service].events,
                     innerPadding,
                     onAddTimer = { radioEpgViewModel.addTimer(it) })
             }

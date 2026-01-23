@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -19,7 +19,7 @@
 
 package io.github.deprec8.enigmadroid.model.drawer
 
-data class DrawerGroup(
+data class DrawerPageGroup(
     val name: String,
     val pages: List<DrawerPage>
 )

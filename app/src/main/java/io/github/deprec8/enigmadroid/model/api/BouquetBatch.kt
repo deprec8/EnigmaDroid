@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -19,18 +19,10 @@
 
 package io.github.deprec8.enigmadroid.model.api
 
-import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Current(
-    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("sname") val serviceName: String = "N/A",
-    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("title") val title: String = "N/A",
-    @SerialName("begin_timestamp") val beginTimestamp: Long = 0L,
-    @SerialName("now_timestamp") val nowTimestamp: Long = 0L,
-    @SerialName("sref") val serviceReference: String = "",
-    @SerialName("duration_sec") val durationInSeconds: Int = 0,
-    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("provider") val provider: String = "N/A",
-    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("shortdesc") val shortDescription: String = "N/A",
+data class BouquetBatch(
+    @SerialName("bouquets") val bouquets: List<List<String>> = emptyList(),
 )

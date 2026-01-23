@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -87,8 +87,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
-import io.github.deprec8.enigmadroid.model.drawer.DrawerGroup
 import io.github.deprec8.enigmadroid.model.drawer.DrawerPage
+import io.github.deprec8.enigmadroid.model.drawer.DrawerPageGroup
 import io.github.deprec8.enigmadroid.model.navigation.MainPages
 import io.github.deprec8.enigmadroid.utils.IntentUtils
 import kotlinx.coroutines.launch
@@ -110,8 +110,8 @@ fun NavDrawerContent(
     val currentDestination = navBackStackEntry?.destination
     val scrollState = rememberScrollState()
 
-    val drawerGroups = listOf(
-        DrawerGroup(
+    val drawerPageGroups = listOf(
+        DrawerPageGroup(
             stringResource(R.string.content),
             listOf(
                 DrawerPage(
@@ -158,7 +158,7 @@ fun NavDrawerContent(
                 )
             )
         ),
-        DrawerGroup(
+        DrawerPageGroup(
             stringResource(R.string.device),
             listOf(
                 DrawerPage(
@@ -175,7 +175,7 @@ fun NavDrawerContent(
                 )
             )
         ),
-        DrawerGroup(
+        DrawerPageGroup(
             stringResource(R.string.settings),
             listOf(
                 DrawerPage(
@@ -225,7 +225,7 @@ fun NavDrawerContent(
                         LoadingState.LOADED                                              -> {
                             IconButton(onClick = {
                                 scope.launch {
-                                    IntentUtils.openOWIF(context, makeOWIFURL())
+                                    IntentUtils.openOwif(context, makeOWIFURL())
                                 }
                             }) {
                                 Icon(
@@ -297,7 +297,7 @@ fun NavDrawerContent(
         )
 
 
-        drawerGroups.forEachIndexed { index, group ->
+        drawerPageGroups.forEachIndexed { index, group ->
             HorizontalDivider(
                 Modifier.padding(
                     start = 28.dp,

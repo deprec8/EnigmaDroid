@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -25,8 +25,8 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.data.objects.PreferencesKeys
-import io.github.deprec8.enigmadroid.data.source.local.devices.DevicesDatabase
+import io.github.deprec8.enigmadroid.data.objects.PreferenceKey
+import io.github.deprec8.enigmadroid.data.source.local.devices.DeviceDatabase
 import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -36,12 +36,12 @@ import javax.inject.Inject
 
 class OnboardingRepository @Inject constructor(
     private val dataStore: DataStore<Preferences>,
-    private val devicesDatabase: DevicesDatabase,
+    private val deviceDatabase: DeviceDatabase,
     private val networkDataSource: NetworkDataSource
 ) {
 
-    private val onboardingKey = booleanPreferencesKey(PreferencesKeys.ONBOARDING_NEEDED)
-    private val loadingStateKey = intPreferencesKey(PreferencesKeys.LOADING_STATE)
+    private val onboardingKey = booleanPreferencesKey(PreferenceKey.ONBOARDING_NEEDED)
+    private val loadingStateKey = intPreferencesKey(PreferenceKey.LOADING_STATE)
 
     val isOnboardingNeeded: Flow<Boolean> = dataStore.data.map { preferences ->
         if (preferences.contains(onboardingKey)) {
@@ -65,7 +65,7 @@ class OnboardingRepository @Inject constructor(
             }
         }
 
-        if (devicesDatabase.deviceDao().getAll().firstOrNull().isNullOrEmpty().not()) {
+        if (deviceDatabase.deviceDao().getAll().firstOrNull().isNullOrEmpty().not()) {
             if (networkDataSource.isNetworkAvailable()) {
                 if (networkDataSource.isDeviceOnline()) {
                     dataStore.edit { preferences ->

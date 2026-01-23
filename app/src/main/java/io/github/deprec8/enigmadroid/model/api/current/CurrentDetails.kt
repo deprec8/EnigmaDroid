@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -17,8 +17,12 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.model.menu
+package io.github.deprec8.enigmadroid.model.api.current
 
-data class MenuSection(
-    val menuItems: List<MenuItem>,
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class CurrentDetails(
+    @SerialName("result") val result: Boolean? = null,
 )

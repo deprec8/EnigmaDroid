@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -75,7 +75,7 @@ class MainViewModel @Inject constructor(
     }
 
     suspend fun makeOWIFURL(): String {
-        return apiRepository.makeOWIFURL()
+        return apiRepository.buildOwifUrl()
     }
 
 }

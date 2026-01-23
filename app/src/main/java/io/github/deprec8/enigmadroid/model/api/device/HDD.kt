@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -17,12 +17,16 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.model.api
+package io.github.deprec8.enigmadroid.model.api.device
 
+import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class CurrentDetails(
-    @SerialName("result") val result: Boolean? = null,
+data class HDD(
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("capacity") val capacity: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("mount") val mount: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("free") val free: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("model") val model: String = "N/A"
 )

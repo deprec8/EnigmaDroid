@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -33,7 +33,7 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
-import io.github.deprec8.enigmadroid.model.api.Event
+import io.github.deprec8.enigmadroid.model.api.events.Event
 
 object IntentUtils {
 
@@ -130,7 +130,7 @@ object IntentUtils {
         }
     }
 
-    fun openURL(context: Context, url: String) {
+    fun openUrl(context: Context, url: String) {
         val intent = Intent(
             Intent.ACTION_VIEW,
             url.toUri()
@@ -160,7 +160,7 @@ object IntentUtils {
         )
     }
 
-    fun pinOWIFDevice(context: Context, device: Device, url: String) {
+    fun pinOwifDevice(context: Context, device: Device, url: String) {
         context.getSystemService(ShortcutManager::class.java).requestPinShortcut(
             ShortcutInfo
                 .Builder(context, "openwebif_${device.id}")
@@ -179,7 +179,7 @@ object IntentUtils {
         )
     }
 
-    fun openOWIF(context: Context, url: String) {
+    fun openOwif(context: Context, url: String) {
         val activityIntent = Intent(Intent.ACTION_VIEW, "http://www.example.com".toUri())
         val resolveInfos =
             context.packageManager.queryIntentActivities(activityIntent, PackageManager.MATCH_ALL)
@@ -194,7 +194,7 @@ object IntentUtils {
                     CustomTabsIntent.SHARE_STATE_ON
                 ).setUrlBarHidingEnabled(true).build().launchUrl(context, url.toUri())
         } else {
-            openURL(context, url)
+            openUrl(context, url)
         }
     }
 }

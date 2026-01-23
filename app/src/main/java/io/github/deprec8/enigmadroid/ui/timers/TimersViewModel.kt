@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -28,9 +28,9 @@ import io.github.deprec8.enigmadroid.data.LoadingRepository
 import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.data.SettingsRepository
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.model.api.ServiceList
-import io.github.deprec8.enigmadroid.model.api.Timer
-import io.github.deprec8.enigmadroid.model.api.TimerList
+import io.github.deprec8.enigmadroid.model.api.timers.Timer
+import io.github.deprec8.enigmadroid.model.api.timers.TimerBatch
+import io.github.deprec8.enigmadroid.model.api.timers.services.ServiceBatch
 import io.github.deprec8.enigmadroid.utils.FilterUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -54,14 +54,14 @@ class TimersViewModel @Inject constructor(
     private val _filteredTimers = MutableStateFlow<List<Timer>?>(null)
     val filteredTimers: StateFlow<List<Timer>?> = _filteredTimers.asStateFlow()
 
-    private val _timerList = MutableStateFlow(TimerList())
-    val timerList: StateFlow<TimerList> = _timerList.asStateFlow()
+    private val _timerBatch = MutableStateFlow(TimerBatch())
+    val timerBatch: StateFlow<TimerBatch> = _timerBatch.asStateFlow()
 
     private val _loadingState = MutableStateFlow(LoadingState.LOADING)
     val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
 
-    private val _services = MutableStateFlow<List<ServiceList>>(emptyList())
-    val services: StateFlow<List<ServiceList>> = _services.asStateFlow()
+    private val _services = MutableStateFlow<List<ServiceBatch>>(emptyList())
+    val services: StateFlow<List<ServiceBatch>> = _services.asStateFlow()
 
     private val _searchHistory = MutableStateFlow<List<String>>(emptyList())
     val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()
@@ -81,7 +81,7 @@ class TimersViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            combine(_timerList, _searchInput) { timerList, input ->
+            combine(_timerBatch, _searchInput) { timerList, input ->
                 if (input != "" && timerList.timers.isNotEmpty()) {
                     searchHistoryRepository.addToTimersSearchHistory(input)
                     FilterUtils.filterTimers(input, timerList.timers)
@@ -110,11 +110,11 @@ class TimersViewModel @Inject constructor(
 
     fun fetchData() {
         fetchJob?.cancel()
-        _timerList.value = TimerList()
+        _timerBatch.value = TimerBatch()
         _services.value = emptyList()
         fetchJob = viewModelScope.launch {
-            _timerList.value = apiRepository.fetchTimerList()
-            _services.value = apiRepository.fetchTimerServices()
+            _timerBatch.value = apiRepository.fetchTimerBatch()
+            _services.value = apiRepository.fetchTimerServiceBatches()
         }
     }
 

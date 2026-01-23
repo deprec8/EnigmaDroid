@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -96,7 +96,7 @@ fun LibrariesPage(
                 ListItem(
                     modifier = Modifier.clickable {
                         if (library.website != null) {
-                            IntentUtils.openURL(context, library.website !!)
+                            IntentUtils.openUrl(context, library.website !!)
                         }
                     },
                     trailingContent = {

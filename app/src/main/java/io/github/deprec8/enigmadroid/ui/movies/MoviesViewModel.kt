@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -29,8 +29,8 @@ import io.github.deprec8.enigmadroid.data.LoadingRepository
 import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.data.SettingsRepository
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.model.api.Movie
-import io.github.deprec8.enigmadroid.model.api.MovieList
+import io.github.deprec8.enigmadroid.model.api.movies.Movie
+import io.github.deprec8.enigmadroid.model.api.movies.MovieBatch
 import io.github.deprec8.enigmadroid.utils.FilterUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,8 +55,8 @@ class MoviesViewModel @Inject constructor(
     private val _filteredMovies = MutableStateFlow<List<Movie>?>(null)
     val filteredMovies: StateFlow<List<Movie>?> = _filteredMovies.asStateFlow()
 
-    private val _movies = MutableStateFlow<List<MovieList>>(emptyList())
-    val movies: StateFlow<List<MovieList>> = _movies.asStateFlow()
+    private val _movies = MutableStateFlow<List<MovieBatch>>(emptyList())
+    val movies: StateFlow<List<MovieBatch>> = _movies.asStateFlow()
 
     private val _loadingState = MutableStateFlow(LoadingState.LOADING)
     val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
@@ -110,7 +110,7 @@ class MoviesViewModel @Inject constructor(
         fetchJob?.cancel()
         _movies.value = emptyList()
         fetchJob = viewModelScope.launch {
-            apiRepository.fetchMovies().collect { movies ->
+            apiRepository.fetchMovieBatches().collect { movies ->
                 _movies.value += movies
             }
         }
@@ -148,13 +148,13 @@ class MoviesViewModel @Inject constructor(
     }
 
     suspend fun buildStreamUrl(sRef: String): String {
-        return apiRepository.buildMovieStreamURL(sRef)
+        return apiRepository.buildMovieStreamUrl(sRef)
     }
 
 
     fun play(sRef: String) {
         viewModelScope.launch {
-            apiRepository.play(sRef)
+            apiRepository.playOnDevice(sRef)
         }
     }
 

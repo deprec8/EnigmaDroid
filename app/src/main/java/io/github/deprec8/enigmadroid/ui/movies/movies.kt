@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -78,9 +78,9 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.model.api.Movie
+import io.github.deprec8.enigmadroid.model.api.movies.Movie
 import io.github.deprec8.enigmadroid.model.menu.MenuItem
-import io.github.deprec8.enigmadroid.model.menu.MenuSection
+import io.github.deprec8.enigmadroid.model.menu.MenuItemGroup
 import io.github.deprec8.enigmadroid.ui.components.ContentListItem
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
@@ -162,8 +162,8 @@ fun MoviesPage(
                         supportingText = movie.begin + " / " + movie.length + " / " + movie.filesizeReadable,
                         shortDescription = movie.shortDescription,
                         longDescription = movie.longDescription,
-                        menuSections = listOf(
-                            MenuSection(
+                        menuItemGroups = listOf(
+                            MenuItemGroup(
                                 listOf(
                                     MenuItem(
                                         text = stringResource(R.string.stream),
@@ -189,7 +189,7 @@ fun MoviesPage(
                                     )
                                 )
                             ),
-                            MenuSection(
+                            MenuItemGroup(
                                 listOf(
                                     MenuItem(
                                         text = stringResource(R.string.download),
@@ -201,7 +201,7 @@ fun MoviesPage(
                                     ))
                             ),
                         ),
-                        editMenuSection = MenuSection(
+                        editMenuItemGroup = MenuItemGroup(
                             listOf(
                                 MenuItem(
                                     text = stringResource(R.string.rename),

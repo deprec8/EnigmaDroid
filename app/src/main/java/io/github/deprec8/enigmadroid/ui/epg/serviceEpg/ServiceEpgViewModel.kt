@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -28,8 +28,8 @@ import io.github.deprec8.enigmadroid.data.LoadingRepository
 import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.data.SettingsRepository
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.model.api.Event
-import io.github.deprec8.enigmadroid.model.api.EventList
+import io.github.deprec8.enigmadroid.model.api.events.Event
+import io.github.deprec8.enigmadroid.model.api.events.EventBatch
 import io.github.deprec8.enigmadroid.utils.FilterUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -48,8 +48,8 @@ class ServiceEpgViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
-    private val _epg = MutableStateFlow(EventList())
-    val epg: StateFlow<EventList> = _epg.asStateFlow()
+    private val _epg = MutableStateFlow(EventBatch())
+    val epg: StateFlow<EventBatch> = _epg.asStateFlow()
 
     private val _loadingState = MutableStateFlow(LoadingState.LOADING)
     val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
@@ -106,9 +106,9 @@ class ServiceEpgViewModel @Inject constructor(
 
     fun fetchData(sRef: String) {
         fetchJob?.cancel()
-        _epg.value = EventList()
+        _epg.value = EventBatch()
         fetchJob = viewModelScope.launch {
-            _epg.value = apiRepository.fetchServiceEpg(sRef)
+            _epg.value = apiRepository.fetchServiceEpgBatch(sRef)
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -27,10 +27,10 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.data.objects.PreferencesKeys
+import io.github.deprec8.enigmadroid.data.objects.PreferenceKey
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
-import io.github.deprec8.enigmadroid.data.source.local.devices.DevicesDatabase
-import io.github.deprec8.enigmadroid.model.api.Movie
+import io.github.deprec8.enigmadroid.data.source.local.devices.DeviceDatabase
+import io.github.deprec8.enigmadroid.model.api.movies.Movie
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
@@ -38,17 +38,17 @@ import kotlinx.coroutines.withContext
 
 class DownloadRepository(
     private val context: Context,
-    private val devicesDatabase: DevicesDatabase,
+    private val deviceDatabase: DeviceDatabase,
     private val dataStore: DataStore<Preferences>
 ) {
 
-    private val currentDeviceKey = intPreferencesKey(PreferencesKeys.CURRENT_DEVICE)
+    private val currentDeviceKey = intPreferencesKey(PreferenceKey.CURRENT_DEVICE)
 
     private suspend fun getCurrentDevice(): Device? {
         val listId = dataStore.data.map { preferences ->
             preferences[currentDeviceKey]
         }.firstOrNull()
-        val allDevices = devicesDatabase.deviceDao().getAll().firstOrNull()
+        val allDevices = deviceDatabase.deviceDao().getAll().firstOrNull()
         return if (allDevices.isNullOrEmpty()) {
             null
         } else {
@@ -56,7 +56,7 @@ class DownloadRepository(
         }
     }
 
-    suspend fun buildMovieDownloadURL(
+    suspend fun buildMovieDownloadUrl(
         file: String,
     ): String = withContext(Dispatchers.Default) {
         getCurrentDevice()?.let { device ->
@@ -71,7 +71,7 @@ class DownloadRepository(
         }
     } ?: ""
 
-    suspend fun buildScreenshotURl(): String = withContext(Dispatchers.Default) {
+    suspend fun buildScreenshotUrl(): String = withContext(Dispatchers.Default) {
         getCurrentDevice()?.let { device ->
             buildString {
                 append(if (device.isHttps) "https://" else "http://")
@@ -85,7 +85,7 @@ class DownloadRepository(
     } ?: ""
 
     suspend fun downloadMovie(movie: Movie) {
-        val request = DownloadManager.Request(buildMovieDownloadURL(movie.fileName).toUri()).apply {
+        val request = DownloadManager.Request(buildMovieDownloadUrl(movie.fileName).toUri()).apply {
             setTitle(context.getString(R.string.downloading, movie.eventName))
             setMimeType("video/mp4")
             setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
@@ -100,7 +100,7 @@ class DownloadRepository(
     }
 
     suspend fun fetchScreenshot() {
-        val request = DownloadManager.Request(buildScreenshotURl().toUri()).apply {
+        val request = DownloadManager.Request(buildScreenshotUrl().toUri()).apply {
             setTitle(context.getString(R.string.fetching_screenshot))
             setMimeType("image/png")
             setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)

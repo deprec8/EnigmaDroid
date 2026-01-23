@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -17,14 +17,18 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.model.api
+package io.github.deprec8.enigmadroid.model.api.movies
 
+import io.github.deprec8.enigmadroid.model.api.movies.bookmarks.Bookmark
 import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Interface(
-    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("ip") val ip: String = "N/A",
-    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("name") val name: String = "N/A"
+data class MovieBatch(
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("directory") val directory: String = "",
+    @Contextual @SerialName("bookmark") val bookmark: Bookmark = Bookmark(),
+    @SerialName("movies") val movies: List<Movie> = emptyList(),
+    @SerialName("bookmarks") val bookmarks: List<String> = emptyList(),
 )

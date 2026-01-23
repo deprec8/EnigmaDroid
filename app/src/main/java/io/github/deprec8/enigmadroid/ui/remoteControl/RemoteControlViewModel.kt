@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -28,7 +28,7 @@ import io.github.deprec8.enigmadroid.data.DownloadRepository
 import io.github.deprec8.enigmadroid.data.LoadingRepository
 import io.github.deprec8.enigmadroid.data.SettingsRepository
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtons
+import io.github.deprec8.enigmadroid.data.enums.RemoteControlButton
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -73,7 +73,7 @@ class RemoteControlViewModel @Inject constructor(
         }
     }
 
-    private fun remoteCall(button: RemoteControlButtons) {
+    private fun remoteCall(button: RemoteControlButton) {
         viewModelScope.launch {
             apiRepository.remoteControlCall(button)
         }
@@ -91,62 +91,62 @@ class RemoteControlViewModel @Inject constructor(
 
     // Volume
     fun volUP() {
-        remoteCall(RemoteControlButtons.VOLUME_UP)
+        remoteCall(RemoteControlButton.VOLUME_UP)
     }
 
     fun volDown() {
-        remoteCall(RemoteControlButtons.VOLUME_DOWN)
+        remoteCall(RemoteControlButton.VOLUME_DOWN)
     }
 
     fun volMute() {
-        remoteCall(RemoteControlButtons.VOLUME_MUTE)
+        remoteCall(RemoteControlButton.VOLUME_MUTE)
     }
 
     // Channel
     fun chUP() {
-        remoteCall(RemoteControlButtons.NEXT_CHANNEL)
+        remoteCall(RemoteControlButton.NEXT_CHANNEL)
     }
 
     fun chDown() {
-        remoteCall(RemoteControlButtons.PREVIOUS_CHANNEL)
+        remoteCall(RemoteControlButton.PREVIOUS_CHANNEL)
     }
 
     // Play Control
     fun play() {
-        remoteCall(RemoteControlButtons.PLAY)
+        remoteCall(RemoteControlButton.PLAY)
     }
 
     fun pause() {
-        remoteCall(RemoteControlButtons.PAUSE)
+        remoteCall(RemoteControlButton.PAUSE)
     }
 
     fun forward() {
-        remoteCall(RemoteControlButtons.FORWARD)
+        remoteCall(RemoteControlButton.FORWARD)
     }
 
     fun rewind() {
-        remoteCall(RemoteControlButtons.REWIND)
+        remoteCall(RemoteControlButton.REWIND)
     }
 
     // Main Buttons
     fun ok() {
-        remoteCall(RemoteControlButtons.OK)
+        remoteCall(RemoteControlButton.OK)
     }
 
     fun menu() {
-        remoteCall(RemoteControlButtons.MENU)
+        remoteCall(RemoteControlButton.MENU)
     }
 
     fun audio() {
-        remoteCall(RemoteControlButtons.AUDIO)
+        remoteCall(RemoteControlButton.AUDIO)
     }
 
     fun epg() {
-        remoteCall(RemoteControlButtons.EPG)
+        remoteCall(RemoteControlButton.EPG)
     }
 
     fun pvr() {
-        remoteCall(RemoteControlButtons.PVR)
+        remoteCall(RemoteControlButton.PVR)
     }
 
     fun power(command: Int) {
@@ -157,82 +157,82 @@ class RemoteControlViewModel @Inject constructor(
     }
 
     fun help() {
-        remoteCall(RemoteControlButtons.HELP)
+        remoteCall(RemoteControlButton.HELP)
     }
 
     fun exit() {
-        remoteCall(RemoteControlButtons.EXIT)
+        remoteCall(RemoteControlButton.EXIT)
     }
 
     fun tv() {
-        remoteCall(RemoteControlButtons.TV)
+        remoteCall(RemoteControlButton.TV)
     }
 
     fun radio() {
-        remoteCall(RemoteControlButtons.RADIO)
+        remoteCall(RemoteControlButton.RADIO)
     }
 
     fun record() {
-        remoteCall(RemoteControlButtons.RECORD)
+        remoteCall(RemoteControlButton.RECORD)
     }
 
     fun stop() {
-        remoteCall(RemoteControlButtons.STOP)
+        remoteCall(RemoteControlButton.STOP)
     }
 
     // Arrows
     fun aUP() {
-        remoteCall(RemoteControlButtons.ARROW_UP)
+        remoteCall(RemoteControlButton.ARROW_UP)
     }
 
     fun aDown() {
-        remoteCall(RemoteControlButtons.ARROW_DOWN)
+        remoteCall(RemoteControlButton.ARROW_DOWN)
     }
 
     fun aLeft() {
-        remoteCall(RemoteControlButtons.ARROW_LEFT)
+        remoteCall(RemoteControlButton.ARROW_LEFT)
     }
 
     fun aRight() {
-        remoteCall(RemoteControlButtons.ARROW_RIGHT)
+        remoteCall(RemoteControlButton.ARROW_RIGHT)
     }
 
     // Number pad
-    fun number(button: RemoteControlButtons) {
+    fun number(button: RemoteControlButton) {
         remoteCall(button)
     }
 
     // Colors
     fun red() {
-        remoteCall(RemoteControlButtons.COLOR_RED)
+        remoteCall(RemoteControlButton.COLOR_RED)
     }
 
     fun green() {
-        remoteCall(RemoteControlButtons.COLOR_GREEN)
+        remoteCall(RemoteControlButton.COLOR_GREEN)
     }
 
     fun yellow() {
-        remoteCall(RemoteControlButtons.COLOR_YELLOW)
+        remoteCall(RemoteControlButton.COLOR_YELLOW)
     }
 
     fun blue() {
-        remoteCall(RemoteControlButtons.COLOR_BLUE)
+        remoteCall(RemoteControlButton.COLOR_BLUE)
     }
 
     fun info() {
-        remoteCall(RemoteControlButtons.INFO)
+        remoteCall(RemoteControlButton.INFO)
     }
 
     fun text() {
-        remoteCall(RemoteControlButtons.TEXT)
+        remoteCall(RemoteControlButton.TEXT)
     }
 
     fun bouUP() {
-        remoteCall(RemoteControlButtons.NEXT_BOUQUET)
+        remoteCall(RemoteControlButton.NEXT_BOUQUET)
     }
 
     fun bouDOWN() {
-        remoteCall(RemoteControlButtons.PREVIOUS_BOUQUET)
+        remoteCall(RemoteControlButton.PREVIOUS_BOUQUET)
     }
 
 

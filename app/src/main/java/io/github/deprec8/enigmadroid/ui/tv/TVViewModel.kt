@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -29,8 +29,8 @@ import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.data.SettingsRepository
 import io.github.deprec8.enigmadroid.data.enums.ApiType
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.model.api.Event
-import io.github.deprec8.enigmadroid.model.api.EventList
+import io.github.deprec8.enigmadroid.model.api.events.Event
+import io.github.deprec8.enigmadroid.model.api.events.EventBatch
 import io.github.deprec8.enigmadroid.utils.FilterUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -54,8 +54,8 @@ class TVViewModel @Inject constructor(
     private val _filteredEvents = MutableStateFlow<List<Event>?>(null)
     val filteredEvents: StateFlow<List<Event>?> = _filteredEvents.asStateFlow()
 
-    private val _allEvents = MutableStateFlow<List<EventList>>(emptyList())
-    val allEvents: StateFlow<List<EventList>> = _allEvents.asStateFlow()
+    private val _allEvents = MutableStateFlow<List<EventBatch>>(emptyList())
+    val allEvents: StateFlow<List<EventBatch>> = _allEvents.asStateFlow()
 
     private val _loadingState = MutableStateFlow(LoadingState.LOADING)
     val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
@@ -112,7 +112,7 @@ class TVViewModel @Inject constructor(
     }
 
     suspend fun buildStreamUrl(sRef: String): String {
-        return apiRepository.buildLiveStreamURL(sRef)
+        return apiRepository.buildLiveStreamUrl(sRef)
     }
 
 
@@ -120,7 +120,7 @@ class TVViewModel @Inject constructor(
         fetchJob?.cancel()
         _allEvents.value = emptyList()
         fetchJob = viewModelScope.launch {
-            apiRepository.fetchEvents(ApiType.TV)
+            apiRepository.fetchEventBatches(ApiType.TV)
                 .collect { events ->
                     _allEvents.value += events
                 }
@@ -129,7 +129,7 @@ class TVViewModel @Inject constructor(
 
     fun play(sRef: String) {
         viewModelScope.launch {
-            apiRepository.play(sRef)
+            apiRepository.playOnDevice(sRef)
         }
     }
 
