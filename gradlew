@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 #
-# Copyright (C) 2025 deprec8
+# Copyright (C) 2025-2026 deprec8
 #
 # This file is part of EnigmaDroid.
 #
