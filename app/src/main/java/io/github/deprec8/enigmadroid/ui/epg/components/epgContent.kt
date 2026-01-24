@@ -42,8 +42,8 @@ import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.model.api.events.Event
 import io.github.deprec8.enigmadroid.model.menu.MenuItem
 import io.github.deprec8.enigmadroid.model.menu.MenuItemGroup
-import io.github.deprec8.enigmadroid.ui.components.ContentListItem
 import io.github.deprec8.enigmadroid.ui.components.NoResults
+import io.github.deprec8.enigmadroid.ui.components.content.ContentListItem
 import io.github.deprec8.enigmadroid.utils.IntentUtils
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
 import kotlinx.coroutines.launch

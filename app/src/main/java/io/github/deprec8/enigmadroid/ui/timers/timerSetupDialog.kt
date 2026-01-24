@@ -195,7 +195,7 @@ fun TimerSetupDialog(
         } else {
             stringResource(R.string.edit_timer)
         },
-        action = {
+        actionButton = {
             TextButton(
                 enabled = isEverythingValid(),
                 onClick = {

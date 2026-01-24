@@ -76,8 +76,8 @@ import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.insets.topAppBarWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.utils.IntentUtils
 
 @OptIn(ExperimentalMaterial3Api::class)

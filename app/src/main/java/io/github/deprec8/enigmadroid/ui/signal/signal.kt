@@ -68,8 +68,8 @@ import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
-import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.insets.topAppBarWithDrawerWindowInsets
 import kotlinx.coroutines.launch
 
 
@@ -223,7 +223,7 @@ fun SignalPage(
                             .consumeWindowInsets(innerPadding)
                             .padding(innerPadding),
                         loadingState = loadingState,
-                        updateLoadingState = {
+                        onUpdateLoadingState = {
                             scope.launch {
                                 signalViewModel.updateLoadingState(false)
                             }

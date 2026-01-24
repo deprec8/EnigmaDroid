@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.components
+package io.github.deprec8.enigmadroid.ui.components.search
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -47,8 +47,7 @@ fun HighlightedText(
                 if (index < start) append(text.substring(index, start))
                 withStyle(
                     SpanStyle(
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold
+                        color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold
                     )
                 ) {
                     append(text.substring(start, end))
@@ -61,8 +60,6 @@ fun HighlightedText(
         AnnotatedString(text)
     }
     Text(
-        text = annotatedString,
-        maxLines = maxLines,
-        overflow = overflow
+        text = annotatedString, maxLines = maxLines, overflow = overflow
     )
 }

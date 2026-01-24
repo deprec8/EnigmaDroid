@@ -68,8 +68,8 @@ import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
-import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.insets.topAppBarWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.utils.IntentUtils
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
 import kotlinx.coroutines.launch
@@ -293,7 +293,7 @@ fun CurrentPage(
                     Modifier
                         .consumeWindowInsets(innerPadding)
                         .padding(innerPadding),
-                    updateLoadingState = {
+                    onUpdateLoadingState = {
                         scope.launch {
                             currentViewModel.updateLoadingState(
                                 it

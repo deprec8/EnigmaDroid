@@ -55,8 +55,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import com.mikepenz.aboutlibraries.ui.compose.android.produceLibraries
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.insets.topAppBarWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.utils.IntentUtils
 
 @OptIn(ExperimentalMaterial3Api::class)

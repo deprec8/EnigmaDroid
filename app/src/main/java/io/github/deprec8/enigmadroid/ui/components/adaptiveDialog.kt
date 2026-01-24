@@ -55,8 +55,8 @@ import io.github.deprec8.enigmadroid.R
 @Composable
 fun AdaptiveDialog(
     onDismissRequest: () -> Unit,
-    content: @Composable (isScrollable: Boolean) -> Unit,
-    action: @Composable () -> Unit,
+    content: @Composable (isContentScrollable: Boolean) -> Unit,
+    actionButton: @Composable () -> Unit,
     title: String
 ) {
 
@@ -84,13 +84,13 @@ fun AdaptiveDialog(
         })
     }
 
-    if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) ||
-        ! windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
+    if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || ! windowSizeClass.isHeightAtLeastBreakpoint(
+            WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
+        )
     ) {
         Dialog(
             properties = DialogProperties(
-                usePlatformDefaultWidth = false,
-                decorFitsSystemWindows = false
+                usePlatformDefaultWidth = false, decorFitsSystemWindows = false
             ),
             onDismissRequest = {
                 showCancelDialog = true
@@ -101,8 +101,7 @@ fun AdaptiveDialog(
                     MaterialTheme.colorScheme.surface
                 } else {
                     MaterialTheme.colorScheme.surfaceContainer
-                },
-                topBar = {
+                }, topBar = {
                     TopAppBar(
                         colors = TopAppBarColors(
                             containerColor = MaterialTheme.colorScheme.surface,
@@ -111,17 +110,13 @@ fun AdaptiveDialog(
                             titleContentColor = MaterialTheme.colorScheme.onSurface,
                             actionIconContentColor = MaterialTheme.colorScheme.primary,
                             subtitleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        ),
-                        title = {
+                        ), title = {
                             Text(
-                                title, maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
+                                title, maxLines = 1, overflow = TextOverflow.Ellipsis
                             )
-                        },
-                        actions = {
-                            action()
-                        },
-                        navigationIcon = {
+                        }, actions = {
+                            actionButton()
+                        }, navigationIcon = {
                             IconButton(onClick = {
                                 showCancelDialog = true
                             }) {
@@ -131,8 +126,7 @@ fun AdaptiveDialog(
                                 )
                             }
                         })
-                }
-            ) { innerPadding ->
+                }) { innerPadding ->
                 Column(
                     Modifier
                         .consumeWindowInsets(innerPadding)
@@ -145,25 +139,18 @@ fun AdaptiveDialog(
             }
         }
     } else {
-        AlertDialog(
-            onDismissRequest = { onDismissRequest() },
-            dismissButton = {
-                TextButton(onClick = { onDismissRequest() }) {
-                    Text(stringResource(R.string.cancel))
-                }
-            },
-            confirmButton = {
-                action()
-            },
-            title = { Text(title) },
-            text = {
-                Column(
-                    Modifier
-                        .verticalScroll(dialogScrollState)
-                ) {
-                    content(false)
-                }
+        AlertDialog(onDismissRequest = { onDismissRequest() }, dismissButton = {
+            TextButton(onClick = { onDismissRequest() }) {
+                Text(stringResource(R.string.cancel))
             }
-        )
+        }, confirmButton = {
+            actionButton()
+        }, title = { Text(title) }, text = {
+            Column(
+                Modifier.verticalScroll(dialogScrollState)
+            ) {
+                content(false)
+            }
+        })
     }
 }

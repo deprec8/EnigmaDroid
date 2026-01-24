@@ -62,8 +62,8 @@ import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.model.api.device.DeviceInfo
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
-import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.insets.topAppBarWithDrawerWindowInsets
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -266,7 +266,7 @@ fun DeviceInfoPage(
                 Modifier
                     .padding(innerPadding)
                     .consumeWindowInsets(innerPadding),
-                updateLoadingState = {
+                onUpdateLoadingState = {
                     scope.launch {
                         deviceInfoViewModel.updateLoadingState(
                             it

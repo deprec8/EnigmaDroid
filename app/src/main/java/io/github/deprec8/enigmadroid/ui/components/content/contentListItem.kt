@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.components
+package io.github.deprec8.enigmadroid.ui.components.content
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -50,6 +50,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.model.menu.MenuItemGroup
+import io.github.deprec8.enigmadroid.ui.components.search.HighlightedText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -112,12 +113,12 @@ fun ContentListItem(
                         )
                     }
                 }
-            }, trailingContent = {
+            },
+            trailingContent = {
                 if (! menuItemGroups.isNullOrEmpty()) {
                     IconButton(onClick = { showDropDownMenu = true }) {
                         Icon(
-                            Icons.Default.MoreVert,
-                            contentDescription = stringResource(
+                            Icons.Default.MoreVert, contentDescription = stringResource(
                                 R.string.open_action_menu
                             )
                         )
@@ -129,26 +130,23 @@ fun ContentListItem(
                                     HorizontalDivider()
                                 }
                                 menuSection.menuItems.forEach { menuItem ->
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            showDropDownMenu = false
-                                            menuItem.action()
-                                        },
-                                        text = {
-                                            Text(
-                                                text = menuItem.text,
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis
+                                    DropdownMenuItem(onClick = {
+                                        showDropDownMenu = false
+                                        menuItem.action()
+                                    }, text = {
+                                        Text(
+                                            text = menuItem.text,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                    }, leadingIcon = {
+                                        Icon(
+                                            menuItem.outlinedIcon,
+                                            contentDescription = stringResource(
+                                                R.string.open_action_menu
                                             )
-                                        },
-                                        leadingIcon = {
-                                            Icon(
-                                                menuItem.outlinedIcon,
-                                                contentDescription = stringResource(
-                                                    R.string.open_action_menu
-                                                )
-                                            )
-                                        }
+                                        )
+                                    }
 
                                     )
                                 }
@@ -156,26 +154,23 @@ fun ContentListItem(
                             if (editMenuItemGroup != null) {
                                 HorizontalDivider()
                                 editMenuItemGroup.menuItems.forEach { menuItem ->
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            showDropDownMenu = false
-                                            menuItem.action()
-                                        },
-                                        text = {
-                                            Text(
-                                                text = menuItem.text,
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis
+                                    DropdownMenuItem(onClick = {
+                                        showDropDownMenu = false
+                                        menuItem.action()
+                                    }, text = {
+                                        Text(
+                                            text = menuItem.text,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                    }, leadingIcon = {
+                                        Icon(
+                                            menuItem.outlinedIcon,
+                                            contentDescription = stringResource(
+                                                R.string.open_action_menu
                                             )
-                                        },
-                                        leadingIcon = {
-                                            Icon(
-                                                menuItem.outlinedIcon,
-                                                contentDescription = stringResource(
-                                                    R.string.open_action_menu
-                                                )
-                                            )
-                                        }
+                                        )
+                                    }
 
                                     )
                                 }
@@ -198,8 +193,7 @@ fun ContentListItem(
     }
     if (showBottomSheet) {
         ModalBottomSheet(
-            onDismissRequest = { showBottomSheet = false },
-            sheetState = sheetState
+            onDismissRequest = { showBottomSheet = false }, sheetState = sheetState
         ) {
             ContentDetails(
                 headlineText = headlineText,

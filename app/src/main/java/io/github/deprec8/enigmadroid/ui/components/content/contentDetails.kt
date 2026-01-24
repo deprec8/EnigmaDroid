@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.components
+package io.github.deprec8.enigmadroid.ui.components.content
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -57,6 +57,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.model.menu.MenuItemGroup
+import io.github.deprec8.enigmadroid.ui.components.search.HighlightedText
 
 @Composable
 fun ContentDetails(
@@ -83,8 +84,7 @@ fun ContentDetails(
             ListItem(
                 headlineContent = {
                     HighlightedText(
-                        text = headlineText,
-                        highlightedWords = highlightedWords
+                        text = headlineText, highlightedWords = highlightedWords
                     )
                 },
                 leadingContent = leadingContent,
@@ -103,13 +103,11 @@ fun ContentDetails(
                 supportingContent = {
                     Column {
                         HighlightedText(
-                            text = supportingText,
-                            highlightedWords = highlightedWords
+                            text = supportingText, highlightedWords = highlightedWords
                         )
                         if (additionalInfo != null) {
                             HighlightedText(
-                                text = additionalInfo,
-                                highlightedWords = highlightedWords
+                                text = additionalInfo, highlightedWords = highlightedWords
                             )
                         }
                     }
@@ -118,8 +116,7 @@ fun ContentDetails(
                     {
                         OutlinedIconButton(onClick = { showDropDownMenu = true }) {
                             Icon(
-                                Icons.Default.MoreVert,
-                                contentDescription = stringResource(
+                                Icons.Default.MoreVert, contentDescription = stringResource(
                                     R.string.open_action_menu
                                 )
                             )
@@ -127,26 +124,23 @@ fun ContentDetails(
                                 expanded = showDropDownMenu,
                                 onDismissRequest = { showDropDownMenu = false }) {
                                 editMenuItemGroup.menuItems.forEach { menuItem ->
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            showDropDownMenu = false
-                                            menuItem.action()
-                                        },
-                                        text = {
-                                            Text(
-                                                text = menuItem.text,
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis
+                                    DropdownMenuItem(onClick = {
+                                        showDropDownMenu = false
+                                        menuItem.action()
+                                    }, text = {
+                                        Text(
+                                            text = menuItem.text,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                    }, leadingIcon = {
+                                        Icon(
+                                            menuItem.outlinedIcon,
+                                            contentDescription = stringResource(
+                                                R.string.open_action_menu
                                             )
-                                        },
-                                        leadingIcon = {
-                                            Icon(
-                                                menuItem.outlinedIcon,
-                                                contentDescription = stringResource(
-                                                    R.string.open_action_menu
-                                                )
-                                            )
-                                        }
+                                        )
+                                    }
 
                                     )
                                 }
@@ -156,8 +150,7 @@ fun ContentDetails(
                 } else {
                     null
                 },
-                colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.primaryContainer)
-            )
+                colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.primaryContainer))
             if (progress != null) {
                 LinearProgressIndicator(
                     progress = { progress },
@@ -185,8 +178,7 @@ fun ContentDetails(
                                 modifier = Modifier.weight(1f),
                                 content = {
                                     Icon(
-                                        imageVector = menuItem.filledIcon,
-                                        contentDescription = null
+                                        imageVector = menuItem.filledIcon, contentDescription = null
                                     )
                                     Spacer(Modifier.size(12.dp))
                                     Text(
@@ -199,12 +191,11 @@ fun ContentDetails(
                                     menuItem.action()
                                 },
                             )
-                            else                            -> OutlinedButton(
+                            else                                                               -> OutlinedButton(
                                 modifier = Modifier.weight(1f),
                                 content = {
                                     Icon(
-                                        imageVector = menuItem.filledIcon,
-                                        contentDescription = null
+                                        imageVector = menuItem.filledIcon, contentDescription = null
                                     )
                                     Spacer(Modifier.size(12.dp))
                                     Text(
@@ -234,8 +225,7 @@ fun ContentDetails(
                     if (shortDescription.isNotEmpty()) {
                         item {
                             HighlightedText(
-                                text = shortDescription,
-                                highlightedWords = highlightedWords
+                                text = shortDescription, highlightedWords = highlightedWords
                             )
                         }
                     }
@@ -247,8 +237,7 @@ fun ContentDetails(
                     if (longDescription.isNotEmpty()) {
                         item {
                             HighlightedText(
-                                text = longDescription,
-                                highlightedWords = highlightedWords
+                                text = longDescription, highlightedWords = highlightedWords
                             )
                         }
                     }

@@ -49,7 +49,7 @@ import io.github.deprec8.enigmadroid.data.enums.LoadingState
 @Composable
 fun LoadingScreen(
     modifier: Modifier,
-    updateLoadingState: (forceUpdate: Boolean) -> Unit,
+    onUpdateLoadingState: (isForcedUpdate: Boolean) -> Unit,
     loadingState: LoadingState,
 ) {
     val scrollState = rememberScrollState()
@@ -61,18 +61,14 @@ fun LoadingScreen(
             .verticalScroll(scrollState)
     ) {
         AnimatedContent(
-            modifier = Modifier.fillMaxSize(),
-            targetState = loadingState, transitionSpec =
-                {
-                    scaleIn(
-                        initialScale = 0f,
-                        animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioMediumBouncy,
-                            stiffness = Spring.StiffnessLow
-                        )
-                    ) + fadeIn() togetherWith
-                            scaleOut(targetScale = 0f) + fadeOut()
-                }, label = ""
+            modifier = Modifier.fillMaxSize(), targetState = loadingState, transitionSpec = {
+                scaleIn(
+                    initialScale = 0f, animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessLow
+                    )
+                ) + fadeIn() togetherWith scaleOut(targetScale = 0f) + fadeOut()
+            }, label = ""
         ) {
             when (it) {
                 LoadingState.LOADED               -> {
@@ -95,7 +91,7 @@ fun LoadingScreen(
                                 .padding(16.dp)
                         )
                         OutlinedButton(
-                            onClick = { updateLoadingState(true) },
+                            onClick = { onUpdateLoadingState(true) },
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
                                 .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
@@ -114,7 +110,7 @@ fun LoadingScreen(
                                 .padding(16.dp),
                         )
                         OutlinedButton(
-                            onClick = { updateLoadingState(true) },
+                            onClick = { onUpdateLoadingState(true) },
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
                                 .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
@@ -150,7 +146,7 @@ fun LoadingScreen(
                                 .padding(16.dp),
                         )
                         OutlinedButton(
-                            onClick = { updateLoadingState(true) },
+                            onClick = { onUpdateLoadingState(true) },
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
                                 .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)

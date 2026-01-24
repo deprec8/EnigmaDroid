@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.components
+package io.github.deprec8.enigmadroid.ui.components.insets
 
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -31,8 +31,9 @@ import androidx.window.core.layout.WindowSizeClass
 @Composable
 fun contentWithDrawerWindowInsets(): WindowInsets {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-    return if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) ||
-        ! windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
+    return if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || ! windowSizeClass.isHeightAtLeastBreakpoint(
+            WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
+        )
     ) {
         ScaffoldDefaults.contentWindowInsets
     } else {

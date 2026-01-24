@@ -102,7 +102,7 @@ fun DeviceSetupDialog(
         } else {
             stringResource(id = R.string.edit_device)
         },
-        action = {
+        actionButton = {
             TextButton(
                 onClick = {
                     if (isSaveReady()) {

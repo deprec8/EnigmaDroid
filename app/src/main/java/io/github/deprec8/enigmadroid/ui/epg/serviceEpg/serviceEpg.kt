@@ -47,8 +47,8 @@ import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
-import io.github.deprec8.enigmadroid.ui.components.SearchHistory
-import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.epg.components.EpgContent
 import kotlinx.coroutines.launch
@@ -152,7 +152,7 @@ fun ServiceEpgPage(
                 Modifier
                     .padding(innerPadding)
                     .consumeWindowInsets(innerPadding),
-                updateLoadingState = {
+                onUpdateLoadingState = {
                     scope.launch {
                         serviceEpgViewModel.updateLoadingState(
                             it

@@ -54,7 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.ui.components.NoResults
-import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.insets.topAppBarWithDrawerWindowInsets
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,9 +71,7 @@ fun SearchTopAppBar(
 ) {
 
     val searchBarState = rememberSearchBarState()
-
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-
     val scope = rememberCoroutineScope()
 
     val inputField = @Composable {

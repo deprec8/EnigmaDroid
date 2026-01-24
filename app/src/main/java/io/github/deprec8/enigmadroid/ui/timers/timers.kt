@@ -85,11 +85,11 @@ import io.github.deprec8.enigmadroid.data.enums.TimerState
 import io.github.deprec8.enigmadroid.model.api.timers.Timer
 import io.github.deprec8.enigmadroid.model.menu.MenuItem
 import io.github.deprec8.enigmadroid.model.menu.MenuItemGroup
-import io.github.deprec8.enigmadroid.ui.components.ContentListItem
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
-import io.github.deprec8.enigmadroid.ui.components.SearchHistory
-import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.content.ContentListItem
+import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarDrawerNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarRemoteControlActionButton
@@ -461,7 +461,7 @@ fun TimersPage(
                 Modifier
                     .consumeWindowInsets(innerPadding)
                     .padding(innerPadding),
-                updateLoadingState = {
+                onUpdateLoadingState = {
                     scope.launch {
                         timersViewModel.updateLoadingState(
                             it
