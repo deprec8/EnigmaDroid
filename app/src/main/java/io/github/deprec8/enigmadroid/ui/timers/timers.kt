@@ -31,11 +31,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
@@ -52,19 +50,13 @@ import androidx.compose.material.icons.outlined.QuestionMark
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material.icons.outlined.TimerOff
 import androidx.compose.material.icons.outlined.Videocam
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -93,6 +85,9 @@ import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarDrawerNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarRemoteControlActionButton
+import io.github.deprec8.enigmadroid.ui.timers.components.DeleteTimerDialog
+import io.github.deprec8.enigmadroid.ui.timers.components.TimerLogDialog
+import io.github.deprec8.enigmadroid.ui.timers.components.TimerSetupDialog
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
 import kotlinx.coroutines.launch
 
@@ -143,11 +138,11 @@ fun TimersPage(
 
     @Composable
     fun Content(
-        list: List<Timer>,
+        timers: List<Timer>,
         paddingValues: PaddingValues,
         highlightedWords: List<String> = emptyList()
     ) {
-        if (list.isNotEmpty()) {
+        if (timers.isNotEmpty()) {
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(310.dp),
                 contentPadding = paddingValues,
@@ -157,7 +152,7 @@ fun TimersPage(
                     .imePadding()
 
             ) {
-                items(list) { timer ->
+                items(timers) { timer ->
                     var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
                     var showEditDialog by rememberSaveable { mutableStateOf(false) }
                     var showLogDialog by rememberSaveable { mutableStateOf(false) }
@@ -289,66 +284,14 @@ fun TimersPage(
                     )
 
                     if (showLogDialog) {
-                        AlertDialog(
-                            onDismissRequest = {
-                                showLogDialog = false
-                            },
-                            title = { Text(text = stringResource(R.string.log_entries)) },
-                            text = {
-                                LazyColumn {
-                                    items(timer.logEntries) {
-                                        ListItem(
-                                            overlineContent = {
-                                                Text(stringResource(R.string.code, it.code))
-                                            },
-                                            headlineContent = {
-                                                Text(
-                                                    text = TimestampUtils.formatApiTimestampToDate(
-                                                        it.timestamp
-                                                    ) + " " + TimestampUtils.formatApiTimestampToTime(
-                                                        it.timestamp
-                                                    )
-                                                )
-                                            },
-                                            supportingContent = {
-                                                Text(text = it.message)
-                                            },
-                                            colors = ListItemDefaults.colors(containerColor = AlertDialogDefaults.containerColor)
-                                        )
-                                    }
-                                }
-                            },
-                            icon = {
-                                Icon(
-                                    Icons.AutoMirrored.Outlined.List, contentDescription = null
-                                )
-                            },
-                            confirmButton = {},
-                            dismissButton = {
-                                TextButton(onClick = {
-                                    showLogDialog = false
-                                }) { Text(stringResource(R.string.close)) }
-                            })
+                        TimerLogDialog(timer, { showLogDialog = false })
                     }
+
                     if (showDeleteDialog) {
-                        AlertDialog(
-                            onDismissRequest = {
-                                showDeleteDialog = false
-                            },
-                            title = { Text(text = stringResource(R.string.delete_timer)) },
-                            text = { Text(text = stringResource(R.string.if_you_delete_this_timer_it_will_not_be_recoverable)) },
-                            icon = { Icon(Icons.Outlined.Delete, contentDescription = null) },
-                            confirmButton = {
-                                TextButton(onClick = {
-                                    timersViewModel.deleteTimer(timer)
-                                    showDeleteDialog = false
-                                }) { Text(stringResource(R.string.confirm)) }
-                            },
-                            dismissButton = {
-                                TextButton(onClick = {
-                                    showDeleteDialog = false
-                                }) { Text(stringResource(R.string.cancel)) }
-                            })
+                        DeleteTimerDialog({ showDeleteDialog = false }, {
+                            timersViewModel.deleteTimer(timer)
+                            showDeleteDialog = false
+                        })
                     }
                     if (showEditDialog) {
                         TimerSetupDialog(
@@ -383,7 +326,7 @@ fun TimersPage(
             content = {
                 if (filteredTimers != null) {
                     Content(
-                        list = filteredTimers !!,
+                        timers = filteredTimers !!,
                         paddingValues = PaddingValues(0.dp),
                         highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
                             .filter { it.isNotBlank() } else emptyList())
@@ -434,7 +377,7 @@ fun TimersPage(
     ) { innerPadding ->
         if (timerBatch.timers.isNotEmpty()) {
             Content(
-                list = timerBatch.timers, innerPadding
+                timers = timerBatch.timers, innerPadding
             )
         } else if (timerBatch.result) {
             NoResults(

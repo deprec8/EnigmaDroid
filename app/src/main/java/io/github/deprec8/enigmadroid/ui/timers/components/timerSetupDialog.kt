@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.timers
+package io.github.deprec8.enigmadroid.ui.timers.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
