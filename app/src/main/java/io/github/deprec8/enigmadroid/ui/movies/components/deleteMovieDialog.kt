@@ -30,7 +30,7 @@ import androidx.compose.ui.res.stringResource
 import io.github.deprec8.enigmadroid.R
 
 @Composable
-fun DeleteDialog(onDismissRequest: () -> Unit, onConfirmRequest: () -> Unit) {
+fun DeleteMovieDialog(onDismissRequest: () -> Unit, onConfirmRequest: () -> Unit) {
     AlertDialog(
         onDismissRequest = {
             onDismissRequest()

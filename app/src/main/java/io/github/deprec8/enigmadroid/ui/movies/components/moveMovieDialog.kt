@@ -35,7 +35,7 @@ import androidx.compose.ui.res.stringResource
 import io.github.deprec8.enigmadroid.R
 
 @Composable
-fun MoveDialog(onDismissRequest: () -> Unit, onConfirmRequest: (input: String) -> Unit) {
+fun MoveMovieDialog(onDismissRequest: () -> Unit, onConfirmRequest: (input: String) -> Unit) {
     var input by rememberSaveable {
         mutableStateOf("")
     }

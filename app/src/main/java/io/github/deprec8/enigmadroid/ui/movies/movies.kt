@@ -81,9 +81,9 @@ import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarDrawerNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarRemoteControlActionButton
-import io.github.deprec8.enigmadroid.ui.movies.components.DeleteDialog
-import io.github.deprec8.enigmadroid.ui.movies.components.MoveDialog
-import io.github.deprec8.enigmadroid.ui.movies.components.RenameDialog
+import io.github.deprec8.enigmadroid.ui.movies.components.DeleteMovieDialog
+import io.github.deprec8.enigmadroid.ui.movies.components.MoveMovieDialog
+import io.github.deprec8.enigmadroid.ui.movies.components.RenameMovieDialog
 import io.github.deprec8.enigmadroid.utils.IntentUtils
 import kotlinx.coroutines.launch
 
@@ -212,7 +212,7 @@ fun MoviesPage(
                     )
 
                     if (showDeleteDialog) {
-                        DeleteDialog(
+                        DeleteMovieDialog(
                             onDismissRequest = { showDeleteDialog = false },
                             onConfirmRequest = {
                                 showDeleteDialog = false
@@ -221,7 +221,7 @@ fun MoviesPage(
                     }
 
                     if (showRenameDialog) {
-                        RenameDialog(
+                        RenameMovieDialog(
                             movie,
                             onDismissRequest = { showRenameDialog = false },
                             onConfirmRequest = { input ->
@@ -233,7 +233,7 @@ fun MoviesPage(
                     }
 
                     if (showMoveDialog) {
-                        MoveDialog(
+                        MoveMovieDialog(
                             onDismissRequest = { showMoveDialog = false },
                             onConfirmRequest = {
                                 showMoveDialog = false

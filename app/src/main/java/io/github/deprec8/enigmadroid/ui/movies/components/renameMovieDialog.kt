@@ -36,7 +36,7 @@ import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.model.api.movies.Movie
 
 @Composable
-fun RenameDialog(
+fun RenameMovieDialog(
     movie: Movie, onDismissRequest: () -> Unit, onConfirmRequest: (input: String) -> Unit
 ) {
     var input by rememberSaveable {
