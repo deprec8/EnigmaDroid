@@ -20,14 +20,6 @@
 package io.github.deprec8.enigmadroid.ui.remoteControl
 
 import android.view.HapticFeedbackConstants
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,23 +28,12 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Dialpad
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.PowerSettingsNew
-import androidx.compose.material.icons.filled.RestartAlt
-import androidx.compose.material.icons.filled.ScreenshotMonitor
-import androidx.compose.material.icons.outlined.PowerSettingsNew
-import androidx.compose.material.icons.outlined.RestartAlt
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
@@ -74,7 +55,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -82,10 +62,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
+import io.github.deprec8.enigmadroid.ui.remoteControl.components.ActionMenu
 import io.github.deprec8.enigmadroid.ui.remoteControl.components.ArrowButtons
 import io.github.deprec8.enigmadroid.ui.remoteControl.components.BouquetButtons
 import io.github.deprec8.enigmadroid.ui.remoteControl.components.ColorButtons
 import io.github.deprec8.enigmadroid.ui.remoteControl.components.ControlButtons
+import io.github.deprec8.enigmadroid.ui.remoteControl.components.DeviceText
 import io.github.deprec8.enigmadroid.ui.remoteControl.components.MediaButtons
 import io.github.deprec8.enigmadroid.ui.remoteControl.components.NumberButtons
 import kotlinx.coroutines.launch
@@ -103,15 +85,11 @@ fun RemoteControlPage(
     var showNumbers by rememberSaveable {
         mutableStateOf(false)
     }
-    var showMenu by rememberSaveable {
-        mutableStateOf(false)
-    }
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-
     val view = LocalView.current
 
     LaunchedEffect(Unit) {
@@ -122,52 +100,6 @@ fun RemoteControlPage(
         if (remoteVibration) {
             view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
         }
-    }
-
-    @Composable
-    fun DeviceText() {
-        Box {
-            AnimatedContent(
-                loadingState, label = "", transitionSpec = {
-                    scaleIn(
-                        initialScale = 0f, animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioLowBouncy,
-                            stiffness = Spring.StiffnessLow
-                        )
-                    ) + fadeIn() togetherWith scaleOut(targetScale = 0f) + fadeOut()
-                }) {
-                when (it) {
-                    LoadingState.LOADED -> Text(
-                        modifier = Modifier
-                            .padding(12.dp)
-                            .align(Alignment.Center),
-                        text = currentDevice?.name ?: "",
-                        textAlign = TextAlign.Center,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    LoadingState.NO_DEVICE_AVAILABLE, LoadingState.DEVICE_NOT_ONLINE, LoadingState.NO_NETWORK_AVAILABLE -> IconButton(
-                        onClick = { scope.launch { remoteControlViewModel.updateLoadingState(true) } },
-                        modifier = Modifier
-                            .padding(12.dp)
-                            .size(24.dp)
-                            .align(Alignment.Center)
-                    ) {
-                        Icon(
-                            Icons.Default.RestartAlt,
-                            contentDescription = stringResource(R.string.retry)
-                        )
-                    }
-                    LoadingState.LOADING -> CircularProgressIndicator(
-                        Modifier
-                            .padding(12.dp)
-                            .size(24.dp)
-                            .align(Alignment.Center)
-                    )
-                }
-            }
-        }
-
     }
 
     Scaffold(
@@ -188,7 +120,11 @@ fun RemoteControlPage(
                 }
             }, scrollBehavior = scrollBehavior, actions = {
                 Row {
-                    DeviceText()
+                    DeviceText(loadingState, currentDevice, {
+                        scope.launch {
+                            remoteControlViewModel.updateLoadingState(true)
+                        }
+                    })
                     if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)) {
                         IconButton(
                             onClick = { showNumbers = true },
@@ -200,91 +136,10 @@ fun RemoteControlPage(
                             )
                         }
                     }
-                    IconButton(
-                        onClick = { showMenu = true }, enabled = loadingState == LoadingState.LOADED
-                    ) {
-                        Icon(
-                            Icons.Default.MoreVert,
-                            contentDescription = stringResource(R.string.open_menu)
-                        )
-                        DropdownMenu(
-                            expanded = showMenu, onDismissRequest = { showMenu = false }) {
-                            DropdownMenuItem(text = {
-                                Text(
-                                    text = stringResource(R.string.screenshot),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }, onClick = {
-                                showMenu = false
-                                scope.launch {
-                                    remoteControlViewModel.fetchScreenshot()
-                                }
-                            }, leadingIcon = {
-                                Icon(
-                                    Icons.Default.ScreenshotMonitor, contentDescription = null
-                                )
-                            })
-                            HorizontalDivider()
-
-                            DropdownMenuItem(text = {
-                                Text(
-                                    text = stringResource(R.string.toggle_standby),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }, onClick = {
-                                showMenu = false
-                                remoteControlViewModel.power(0)
-                            }, leadingIcon = {
-                                Icon(
-                                    Icons.Default.PowerSettingsNew, contentDescription = null
-                                )
-                            })
-                            DropdownMenuItem(text = {
-                                Text(
-                                    text = stringResource(R.string.restart),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }, onClick = {
-                                showMenu = false
-                                remoteControlViewModel.power(2)
-                            }, leadingIcon = {
-                                Icon(
-                                    Icons.Outlined.RestartAlt, contentDescription = null
-                                )
-                            })
-                            DropdownMenuItem(text = {
-                                Text(
-                                    text = stringResource(R.string.restart_gui),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }, onClick = {
-                                showMenu = false
-                                remoteControlViewModel.power(3)
-                            }, leadingIcon = {
-                                Icon(
-                                    Icons.Outlined.RestartAlt, contentDescription = null
-                                )
-                            })
-                            DropdownMenuItem(text = {
-                                Text(
-                                    text = stringResource(R.string.shutdown),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }, onClick = {
-                                showMenu = false
-                                remoteControlViewModel.power(1)
-                            }, leadingIcon = {
-                                Icon(
-                                    Icons.Outlined.PowerSettingsNew, contentDescription = null
-                                )
-                            })
-                        }
-                    }
+                    ActionMenu(
+                        loadingState == LoadingState.LOADED,
+                        { remoteControlViewModel.fetchScreenshot() },
+                        { remoteControlViewModel.onPowerButtonClicked(it) })
                 }
             })
         }, modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)

@@ -29,6 +29,7 @@ import io.github.deprec8.enigmadroid.data.LoadingRepository
 import io.github.deprec8.enigmadroid.data.SettingsRepository
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtonType
+import io.github.deprec8.enigmadroid.data.enums.RemoteControlPowerButtonType
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -89,9 +90,9 @@ class RemoteControlViewModel @Inject constructor(
         }
     }
 
-    fun power(command: Int) {
+    fun onPowerButtonClicked(type: RemoteControlPowerButtonType) {
         viewModelScope.launch {
-            apiRepository.setPowerState(command)
+            apiRepository.setPowerState(type)
             updateLoadingState(true)
         }
     }
