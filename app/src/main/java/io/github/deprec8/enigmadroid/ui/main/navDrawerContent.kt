@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2025-2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -87,8 +87,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
-import io.github.deprec8.enigmadroid.model.drawer.DrawerGroup
 import io.github.deprec8.enigmadroid.model.drawer.DrawerPage
+import io.github.deprec8.enigmadroid.model.drawer.DrawerPageGroup
 import io.github.deprec8.enigmadroid.model.navigation.MainPages
 import io.github.deprec8.enigmadroid.utils.IntentUtils
 import kotlinx.coroutines.launch
@@ -98,25 +98,25 @@ import kotlin.reflect.KSuspendFunction0
 fun NavDrawerContent(
     currentDevice: Device?,
     loadingState: LoadingState,
-    makeOWIFURL: KSuspendFunction0<String>,
+    buildOwifUrl: KSuspendFunction0<String>,
     updateDeviceStatus: () -> Unit,
-    navController: NavHostController,
-    modalDrawerState: DrawerState
+    navHostController: NavHostController,
+    drawerState: DrawerState
 ) {
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val navBackStackEntry by navHostController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
     val scrollState = rememberScrollState()
 
-    val drawerGroups = listOf(
-        DrawerGroup(
+    val drawerPageGroups = listOf(
+        DrawerPageGroup(
             stringResource(R.string.content),
             listOf(
                 DrawerPage(
                     stringResource(R.string.tv),
-                    MainPages.TV,
+                    MainPages.Tv,
                     Icons.Outlined.LiveTv,
                     Icons.Filled.LiveTv
                 ),
@@ -158,7 +158,7 @@ fun NavDrawerContent(
                 )
             )
         ),
-        DrawerGroup(
+        DrawerPageGroup(
             stringResource(R.string.device),
             listOf(
                 DrawerPage(
@@ -175,7 +175,7 @@ fun NavDrawerContent(
                 )
             )
         ),
-        DrawerGroup(
+        DrawerPageGroup(
             stringResource(R.string.settings),
             listOf(
                 DrawerPage(
@@ -190,7 +190,7 @@ fun NavDrawerContent(
 
     fun closeNavDrawer() {
         scope.launch {
-            modalDrawerState.apply {
+            drawerState.apply {
                 close()
             }
         }
@@ -222,10 +222,10 @@ fun NavDrawerContent(
                 })
                 {
                     when (it) {
-                        LoadingState.LOADED                                              -> {
+                        LoadingState.LOADED  -> {
                             IconButton(onClick = {
                                 scope.launch {
-                                    IntentUtils.openOWIF(context, makeOWIFURL())
+                                    IntentUtils.openOwif(context, buildOwifUrl())
                                 }
                             }) {
                                 Icon(
@@ -242,7 +242,7 @@ fun NavDrawerContent(
                                 )
                             }
                         }
-                        LoadingState.LOADING                                             -> {
+                        LoadingState.LOADING -> {
                             IconButton(onClick = {}, enabled = false) {
                                 CircularProgressIndicator(Modifier.size(24.dp))
                             }
@@ -296,8 +296,7 @@ fun NavDrawerContent(
             )
         )
 
-
-        drawerGroups.forEachIndexed { index, group ->
+        drawerPageGroups.forEachIndexed { index, group ->
             HorizontalDivider(
                 Modifier.padding(
                     start = 28.dp,
@@ -326,7 +325,7 @@ fun NavDrawerContent(
                     selected = currentDestination?.hierarchy?.any { it.hasRoute(drawerPage.route::class) } == true,
                     onClick = {
                         if (currentDestination?.hierarchy?.any { it.hasRoute(drawerPage.route::class) } == false) {
-                            navController.navigate(drawerPage.route)
+                            navHostController.navigate(drawerPage.route)
                         }
                         closeNavDrawer()
                     },

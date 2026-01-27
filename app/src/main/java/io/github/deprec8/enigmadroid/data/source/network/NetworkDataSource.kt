@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2025-2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -26,10 +26,10 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtons
-import io.github.deprec8.enigmadroid.data.objects.PreferencesKeys
+import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtonType
+import io.github.deprec8.enigmadroid.data.objects.PreferenceKey
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
-import io.github.deprec8.enigmadroid.data.source.local.devices.DevicesDatabase
+import io.github.deprec8.enigmadroid.data.source.local.devices.DeviceDatabase
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.engine.cio.endpoint
@@ -49,18 +49,18 @@ import javax.inject.Singleton
 @Singleton
 class NetworkDataSource @Inject constructor(
     private val dataStore: DataStore<Preferences>,
-    private val devicesDatabase: DevicesDatabase,
+    private val deviceDatabase: DeviceDatabase,
     private val context: Context
 ) {
 
-    private val currentDeviceKey = intPreferencesKey(PreferencesKeys.CURRENT_DEVICE)
-    private val loadingStateKey = intPreferencesKey(PreferencesKeys.LOADING_STATE)
+    private val currentDeviceKey = intPreferencesKey(PreferenceKey.CURRENT_DEVICE)
+    private val loadingStateKey = intPreferencesKey(PreferenceKey.LOADING_STATE)
 
     private suspend fun getCurrentDevice(): Device? {
         val listId = dataStore.data.map { preferences ->
             preferences[currentDeviceKey]
         }.firstOrNull()
-        val allDevices = devicesDatabase.deviceDao().getAll().firstOrNull()
+        val allDevices = deviceDatabase.deviceDao().getAll().firstOrNull()
         return if (allDevices.isNullOrEmpty()) {
             null
         } else {
@@ -79,7 +79,7 @@ class NetworkDataSource @Inject constructor(
             }
         }
 
-        if (devicesDatabase.deviceDao().getAll().firstOrNull().isNullOrEmpty().not()) {
+        if (deviceDatabase.deviceDao().getAll().firstOrNull().isNullOrEmpty().not()) {
             if (isNetworkAvailable()) {
                 dataStore.edit { preferences ->
                     preferences[loadingStateKey] = LoadingState.DEVICE_NOT_ONLINE.id
@@ -139,7 +139,7 @@ class NetworkDataSource @Inject constructor(
         }
     } ?: ""
 
-    private suspend fun buildRemoteUrl(button: RemoteControlButtons): String =
+    private suspend fun buildUrl(button: RemoteControlButtonType): String =
         withContext(Dispatchers.Default) {
             getCurrentDevice()?.let { device ->
                 buildString {
@@ -148,7 +148,7 @@ class NetworkDataSource @Inject constructor(
                     if (device.isLogin) {
                         append("${device.user}:${device.password}@")
                     }
-                    append("${device.ip}:${device.port}/web/remotecontrol?command=${button.value}")
+                    append("${device.ip}:${device.port}/web/remotecontrol?command=${button.id}")
                 }
             } ?: ""
         }
@@ -167,16 +167,16 @@ class NetworkDataSource @Inject constructor(
         true
     } == true
 
-    suspend fun remoteControlCall(button: RemoteControlButtons) = safeApiCall {
-        client.get(buildRemoteUrl(button))
+    suspend fun postApi(endpoint: String) = safeApiCall {
+        client.get(buildUrl(endpoint))
     }
 
-    suspend fun call(urlEnd: String) = safeApiCall {
-        client.get(buildUrl(urlEnd))
+    suspend fun postApi(button: RemoteControlButtonType) = safeApiCall {
+        client.get(buildUrl(button))
     }
 
-    suspend fun fetchJson(file: String): String = safeApiCall {
-        client.get(buildUrl(file)) {
+    suspend fun fetchApi(endpoint: String): String = safeApiCall {
+        client.get(buildUrl(endpoint)) {
             header(HttpHeaders.Connection, "close")
         }.bodyAsText()
     } ?: ""

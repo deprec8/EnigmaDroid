@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2025-2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -66,7 +66,7 @@ class SearchSettingsViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            searchHistoryRepository.getTVSearchHistory().collect {
+            searchHistoryRepository.getTvSearchHistory().collect {
                 _tvSearchHistory.value = it
             }
         }
@@ -86,7 +86,7 @@ class SearchSettingsViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            searchHistoryRepository.getTVEpgSearchHistory().collect {
+            searchHistoryRepository.getTvEpgSearchHistory().collect {
                 _tvEpgSearchHistory.value = it
             }
         }
@@ -102,15 +102,15 @@ class SearchSettingsViewModel @Inject constructor(
         }
     }
 
-    fun setUseSearchHistory(value: Boolean) {
+    fun setUseSearchHistory(useSearchHistory: Boolean) {
         viewModelScope.launch {
-            searchHistoryRepository.setUseSearchHistory(value)
+            searchHistoryRepository.setUseSearchHistory(useSearchHistory)
         }
     }
 
-    fun setUseSearchHighlighting(value: Boolean) {
+    fun setUseSearchHighlighting(useSearchHighlighting: Boolean) {
         viewModelScope.launch {
-            settingsRepository.setUseSearchHighlighting(value)
+            settingsRepository.setUseSearchHighlighting(useSearchHighlighting)
         }
     }
 
@@ -124,7 +124,7 @@ class SearchSettingsViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             if (tv) {
-                searchHistoryRepository.clearTVSearchHistory()
+                searchHistoryRepository.clearTvSearchHistory()
             }
             if (radio) {
                 searchHistoryRepository.clearRadioSearchHistory()
@@ -136,7 +136,7 @@ class SearchSettingsViewModel @Inject constructor(
                 searchHistoryRepository.clearTimersSearchHistory()
             }
             if (tvEpg) {
-                searchHistoryRepository.clearTVEpgSearchHistory()
+                searchHistoryRepository.clearTvEpgSearchHistory()
             }
             if (radioEpg) {
                 searchHistoryRepository.clearRadioEpgSearchHistory()

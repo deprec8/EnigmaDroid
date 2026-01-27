@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2025-2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -45,8 +45,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.insets.topAppBarWithDrawerWindowInsets
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,35 +54,31 @@ fun RemoteControlSettingsPage(
     onNavigateBack: () -> Unit,
     remoteControlSettingsViewModel: RemoteControlSettingsViewModel = hiltViewModel()
 ) {
+
+    val remoteVibration by remoteControlSettingsViewModel.remoteVibration.collectAsStateWithLifecycle()
+
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val scrollState = rememberScrollState()
-    val remoteVibration by remoteControlSettingsViewModel.remoteVibration.collectAsStateWithLifecycle()
 
     Scaffold(
         contentWindowInsets = contentWithDrawerWindowInsets(),
         topBar = {
-            TopAppBar(
-                windowInsets = topAppBarWithDrawerWindowInsets(),
-                title = {
-                    Text(
-                        text = stringResource(id = R.string.remote_control),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+            TopAppBar(windowInsets = topAppBarWithDrawerWindowInsets(), title = {
+                Text(
+                    text = stringResource(id = R.string.remote_control),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }, scrollBehavior = scrollBehavior, navigationIcon = {
+                IconButton(onClick = { onNavigateBack() }) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.navigate_back)
                     )
-                },
-                scrollBehavior = scrollBehavior,
-                navigationIcon = {
-                    IconButton(onClick = { onNavigateBack() }) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.navigate_back)
-                        )
-                    }
                 }
-            )
+            })
         },
-        modifier = Modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { innerPadding ->
         Column(
             Modifier
@@ -92,22 +88,16 @@ fun RemoteControlSettingsPage(
                 .padding(innerPadding)
         ) {
             remoteVibration?.let { remoteVibration ->
-                ListItem(
-                    headlineContent = {
-                        Text(stringResource(R.string.haptic_feedback))
-                    },
-                    supportingContent = {
-                        Text(stringResource(R.string.vibrate_when_buttons_are_pressed))
-                    },
-                    trailingContent = {
-                        Switch(
-                            checked = remoteVibration,
-                            onCheckedChange = {
-                                remoteControlSettingsViewModel.setRemoteVibration(it)
-                            }
-                        )
-                    }
-                )
+                ListItem(headlineContent = {
+                    Text(stringResource(R.string.haptic_feedback))
+                }, supportingContent = {
+                    Text(stringResource(R.string.vibrate_when_buttons_are_pressed))
+                }, trailingContent = {
+                    Switch(
+                        checked = remoteVibration, onCheckedChange = {
+                            remoteControlSettingsViewModel.setRemoteVibration(it)
+                        })
+                })
             }
         }
     }

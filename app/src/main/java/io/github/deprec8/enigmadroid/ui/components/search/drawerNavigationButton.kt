@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2025-2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -38,8 +38,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchTopAppBarDrawerNavigationButton(
-    drawerState: DrawerState,
-    searchBarState: SearchBarState
+    drawerState: DrawerState, searchBarState: SearchBarState
 ) {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     val scope = rememberCoroutineScope()

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2025-2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -19,9 +19,6 @@
 
 package io.github.deprec8.enigmadroid.ui.deviceInfo
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -32,10 +29,8 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dialpad
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -59,25 +54,28 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.model.api.DeviceInfo
+import io.github.deprec8.enigmadroid.model.api.device.DeviceInfo
+import io.github.deprec8.enigmadroid.ui.components.FloatingRefreshButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
-import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.insets.topAppBarWithDrawerWindowInsets
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeviceInfoPage(
     onNavigateToRemoteControl: () -> Unit,
-    drawerState: DrawerState, deviceInfoViewModel: DeviceInfoViewModel = hiltViewModel()
+    drawerState: DrawerState,
+    deviceInfoViewModel: DeviceInfoViewModel = hiltViewModel()
 ) {
+
+    val loadingState by deviceInfoViewModel.loadingState.collectAsStateWithLifecycle()
+    val deviceInfo by deviceInfoViewModel.deviceInfo.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-    val deviceInfo by deviceInfoViewModel.deviceInfo.collectAsStateWithLifecycle()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    val loadingState by deviceInfoViewModel.loadingState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         deviceInfoViewModel.updateLoadingState(false)
@@ -91,59 +89,38 @@ fun DeviceInfoPage(
 
     Scaffold(
         floatingActionButton = {
-            AnimatedVisibility(
-                loadingState == LoadingState.LOADED,
-                enter = scaleIn(),
-                exit = scaleOut()
-            ) {
-                FloatingActionButton(
-                    onClick = {
-                        deviceInfoViewModel.fetchData()
-                    }
-                ) {
-                    Icon(
-                        Icons.Default.Refresh,
-                        contentDescription = stringResource(R.string.refresh_page)
-                    )
-                }
-            }
+            FloatingRefreshButton(loadingState, { deviceInfoViewModel.fetchData() })
         },
         contentWindowInsets = contentWithDrawerWindowInsets(),
         topBar = {
-            TopAppBar(
-                windowInsets = topAppBarWithDrawerWindowInsets(),
-                title = {
-                    Text(
-                        text = stringResource(id = R.string.deviceinfo),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+            TopAppBar(windowInsets = topAppBarWithDrawerWindowInsets(), title = {
+                Text(
+                    text = stringResource(id = R.string.deviceinfo),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }, scrollBehavior = scrollBehavior, navigationIcon = {
+                if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || ! windowSizeClass.isHeightAtLeastBreakpoint(
+                        WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
                     )
-                },
-                scrollBehavior = scrollBehavior,
-                navigationIcon = {
-                    if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) ||
-                        ! windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
-                    ) {
-                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Icon(
-                                Icons.Default.Menu,
-                                contentDescription = stringResource(R.string.open_menu)
-                            )
-                        }
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { onNavigateToRemoteControl() }) {
+                ) {
+                    IconButton(onClick = { scope.launch { drawerState.open() } }) {
                         Icon(
-                            Icons.Default.Dialpad,
-                            contentDescription = stringResource(R.string.open_remote_control)
+                            Icons.Default.Menu,
+                            contentDescription = stringResource(R.string.open_menu)
                         )
                     }
                 }
-            )
+            }, actions = {
+                IconButton(onClick = { onNavigateToRemoteControl() }) {
+                    Icon(
+                        Icons.Default.Dialpad,
+                        contentDescription = stringResource(R.string.open_remote_control)
+                    )
+                }
+            })
         },
-        modifier = Modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
 
         ) { innerPadding ->
         if (deviceInfo != DeviceInfo()) {
@@ -212,13 +189,11 @@ fun DeviceInfoPage(
                     )
                 }
                 items(deviceInfo.tuners) { tuner ->
-                    ListItem(
-                        headlineContent = { Text(text = tuner.name) },
-                        supportingContent = {
-                            Text(
-                                text = tuner.type
-                            )
-                        })
+                    ListItem(headlineContent = { Text(text = tuner.name) }, supportingContent = {
+                        Text(
+                            text = tuner.type
+                        )
+                    })
                 }
                 item(span = { GridItemSpan(maxLineSpan) }) {
                     Text(
@@ -228,13 +203,11 @@ fun DeviceInfoPage(
                     )
                 }
                 items(deviceInfo.interfaces) { iface ->
-                    ListItem(
-                        headlineContent = { Text(text = iface.name) },
-                        supportingContent = {
-                            Text(
-                                text = iface.ip
-                            )
-                        })
+                    ListItem(headlineContent = { Text(text = iface.name) }, supportingContent = {
+                        Text(
+                            text = iface.ip
+                        )
+                    })
                 }
                 item(span = { GridItemSpan(maxLineSpan) }) {
                     Text(
@@ -245,10 +218,10 @@ fun DeviceInfoPage(
                 }
                 items(deviceInfo.hdds) { hdd ->
                     ListItem(
-                        headlineContent = { Text(text = hdd.model + " (" + hdd.mount + ")") },
+                        headlineContent = { Text(text = "${hdd.model} (${hdd.mount})") },
                         supportingContent = {
                             Text(
-                                text = hdd.capacity + " (" + hdd.free + " " + stringResource(
+                                text = "${hdd.capacity} (${hdd.free} " + stringResource(
                                     R.string.free
                                 ) + ")"
                             )
@@ -266,7 +239,7 @@ fun DeviceInfoPage(
                 Modifier
                     .padding(innerPadding)
                     .consumeWindowInsets(innerPadding),
-                updateLoadingState = {
+                onUpdateLoadingState = {
                     scope.launch {
                         deviceInfoViewModel.updateLoadingState(
                             it

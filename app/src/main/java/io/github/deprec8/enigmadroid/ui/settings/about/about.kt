@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2025-2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -55,20 +55,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import com.mikepenz.aboutlibraries.ui.compose.android.produceLibraries
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.insets.topAppBarWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.utils.IntentUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AboutPage(
-    onNavigateBack: () -> Unit,
-    onNavigateToLibraries: () -> Unit
+    onNavigateBack: () -> Unit, onNavigateToLibraries: () -> Unit
 ) {
     val context = LocalContext.current
     val info = context.packageManager.getPackageInfo(
-        context.packageName,
-        PackageManager.GET_ACTIVITIES
+        context.packageName, PackageManager.GET_ACTIVITIES
     )
     val libraries by produceLibraries()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -83,28 +81,22 @@ fun AboutPage(
     Scaffold(
         contentWindowInsets = contentWithDrawerWindowInsets(),
         topBar = {
-            TopAppBar(
-                windowInsets = topAppBarWithDrawerWindowInsets(),
-                title = {
-                    Text(
-                        text = stringResource(id = R.string.about),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+            TopAppBar(windowInsets = topAppBarWithDrawerWindowInsets(), title = {
+                Text(
+                    text = stringResource(id = R.string.about),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }, scrollBehavior = scrollBehavior, navigationIcon = {
+                IconButton(onClick = { onNavigateBack() }) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.navigate_back)
                     )
-                },
-                scrollBehavior = scrollBehavior,
-                navigationIcon = {
-                    IconButton(onClick = { onNavigateBack() }) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.navigate_back)
-                        )
-                    }
                 }
-            )
+            })
         },
-        modifier = Modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { innerPadding ->
         Column(
             Modifier
@@ -121,7 +113,7 @@ fun AboutPage(
                 supportingContent = { Text(text = stringResource(R.string.app_developer)) },
                 leadingContent = { Icon(Icons.Outlined.Person, contentDescription = null) },
                 modifier = Modifier.clickable {
-                    IntentUtils.openURL(context, appDeveloperURL)
+                    IntentUtils.openUrl(context, appDeveloperURL)
                 })
 
             ListItem(
@@ -129,8 +121,7 @@ fun AboutPage(
                 leadingContent = { Icon(Icons.Outlined.Info, contentDescription = null) },
                 supportingContent = {
                     Text(
-                        text = info.versionName
-                            ?: stringResource(R.string.version_not_found)
+                        text = info.versionName ?: stringResource(R.string.version_not_found)
                     )
                 })
 
@@ -142,7 +133,7 @@ fun AboutPage(
                 supportingContent = { Text(text = stringResource(R.string.app_source)) },
                 leadingContent = { Icon(Icons.Outlined.Code, contentDescription = null) },
                 modifier = Modifier.clickable {
-                    IntentUtils.openURL(context, appSourceURL)
+                    IntentUtils.openUrl(context, appSourceURL)
                 })
 
             ListItem(
@@ -153,9 +144,8 @@ fun AboutPage(
                 supportingContent = { Text(text = stringResource(R.string.app_issue)) },
                 leadingContent = { Icon(Icons.Outlined.ReportProblem, contentDescription = null) },
                 modifier = Modifier.clickable {
-                    IntentUtils.openURL(
-                        context,
-                        appIssueURL
+                    IntentUtils.openUrl(
+                        context, appIssueURL
                     )
                 })
 
@@ -167,9 +157,8 @@ fun AboutPage(
                 supportingContent = { Text(text = stringResource(R.string.app_translation)) },
                 leadingContent = { Icon(Icons.Outlined.Translate, contentDescription = null) },
                 modifier = Modifier.clickable {
-                    IntentUtils.openURL(
-                        context,
-                        appTranslationURL
+                    IntentUtils.openUrl(
+                        context, appTranslationURL
                     )
                 })
 
@@ -183,7 +172,7 @@ fun AboutPage(
                 },
                 leadingContent = { Icon(Icons.Outlined.Shield, contentDescription = null) },
                 modifier = Modifier.clickable {
-                    IntentUtils.openURL(context, appLicenseURL)
+                    IntentUtils.openUrl(context, appLicenseURL)
                 })
 
             ListItem(
@@ -194,8 +183,7 @@ fun AboutPage(
                 supportingContent = {
                     Text(
                         text = stringResource(
-                            R.string.libraries,
-                            libraries?.libraries?.size ?: ""
+                            R.string.libraries, libraries?.libraries?.size ?: ""
                         )
                     )
                 },

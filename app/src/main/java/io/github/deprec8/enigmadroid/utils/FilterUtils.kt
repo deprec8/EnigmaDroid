@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2025-2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -19,9 +19,9 @@
 
 package io.github.deprec8.enigmadroid.utils
 
-import io.github.deprec8.enigmadroid.model.api.Event
-import io.github.deprec8.enigmadroid.model.api.Movie
-import io.github.deprec8.enigmadroid.model.api.Timer
+import io.github.deprec8.enigmadroid.model.api.events.Event
+import io.github.deprec8.enigmadroid.model.api.movies.Movie
+import io.github.deprec8.enigmadroid.model.api.timers.Timer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2025-2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -36,10 +36,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignalViewModel @Inject constructor(
-    private val apiRepository: ApiRepository,
-    private val loadingRepository: LoadingRepository
-) :
-    ViewModel() {
+    private val apiRepository: ApiRepository, private val loadingRepository: LoadingRepository
+) : ViewModel() {
 
     private val _signalInfo = MutableStateFlow(SignalInfo())
     val signalInfo: StateFlow<SignalInfo> = _signalInfo.asStateFlow()
@@ -57,8 +55,8 @@ class SignalViewModel @Inject constructor(
         }
     }
 
-    suspend fun updateLoadingState(forceUpdate: Boolean) {
-        loadingRepository.updateLoadingState(forceUpdate)
+    suspend fun updateLoadingState(isForcedUpdate: Boolean) {
+        loadingRepository.updateLoadingState(isForcedUpdate)
     }
 
     fun fetchData() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2025-2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -19,9 +19,6 @@
 
 package io.github.deprec8.enigmadroid.ui.signal
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,11 +32,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dialpad
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -66,10 +61,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
+import io.github.deprec8.enigmadroid.ui.components.FloatingRefreshButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
-import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.insets.topAppBarWithDrawerWindowInsets
 import kotlinx.coroutines.launch
 
 
@@ -77,21 +73,21 @@ import kotlinx.coroutines.launch
 @Composable
 fun SignalPage(
     onNavigateToRemoteControl: () -> Unit,
-    drawerState: DrawerState, signalViewModel: SignalViewModel = hiltViewModel()
+    drawerState: DrawerState,
+    signalViewModel: SignalViewModel = hiltViewModel()
 ) {
+
+    val signalInfo by signalViewModel.signalInfo.collectAsStateWithLifecycle()
+    val loadingState by signalViewModel.loadingState.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-    val signalInfo by signalViewModel.signalInfo.collectAsStateWithLifecycle()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    val loadingState by signalViewModel.loadingState.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
-
 
     LaunchedEffect(Unit) {
         signalViewModel.updateLoadingState(false)
     }
-
     LaunchedEffect(loadingState) {
         if (loadingState == LoadingState.LOADED) {
             signalViewModel.fetchData()
@@ -100,30 +96,16 @@ fun SignalPage(
 
     Scaffold(
         floatingActionButton = {
-            AnimatedVisibility(
-                loadingState == LoadingState.LOADED,
-                enter = scaleIn(),
-                exit = scaleOut()
-            ) {
-                FloatingActionButton(onClick = {
-                    signalViewModel.fetchData()
-                }) {
-                    Icon(
-                        Icons.Default.Refresh,
-                        contentDescription = stringResource(R.string.refresh_page)
-                    )
-                }
-            }
-        },
-        contentWindowInsets = contentWithDrawerWindowInsets(),
-        topBar = {
+            FloatingRefreshButton(loadingState, { signalViewModel.fetchData() })
+        }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
             TopAppBar(
                 windowInsets = topAppBarWithDrawerWindowInsets(),
                 title = { Text(text = stringResource(R.string.signal)) },
                 scrollBehavior = scrollBehavior,
                 navigationIcon = {
-                    if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) ||
-                        ! windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
+                    if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || ! windowSizeClass.isHeightAtLeastBreakpoint(
+                            WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
+                        )
                     ) {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(
@@ -132,7 +114,8 @@ fun SignalPage(
                             )
                         }
                     }
-                }, actions = {
+                },
+                actions = {
                     IconButton(onClick = { onNavigateToRemoteControl() }) {
                         Icon(
                             Icons.Default.Dialpad,
@@ -140,11 +123,8 @@ fun SignalPage(
                         )
                     }
                 })
-        },
-        modifier = Modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
-
-        ) { innerPadding ->
+        }, modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+    ) { innerPadding ->
         when (signalInfo.inStandby) {
             "false" -> {
                 Column(
@@ -168,21 +148,18 @@ fun SignalPage(
                             color = MaterialTheme.colorScheme.surfaceContainer
                         )
                         CircularProgressIndicator(
-                            strokeWidth = 10.dp,
-                            progress = {
+                            strokeWidth = 10.dp, progress = {
                                 if (signalInfo.agc.isNotBlank()) {
                                     signalInfo.agc.toFloat() / 100
                                 } else {
                                     0f
                                 }
-                            },
-                            modifier = Modifier.size(300.dp),
-                            strokeCap = StrokeCap.Round
+                            }, modifier = Modifier.size(300.dp), strokeCap = StrokeCap.Round
                         )
                         Text(
                             modifier = Modifier.align(Alignment.Center),
                             textAlign = TextAlign.Center,
-                            text = "${(signalInfo.agc)}%",
+                            text = "${signalInfo.agc}%",
                             fontSize = 40.sp
                         )
                     }
@@ -204,10 +181,9 @@ fun SignalPage(
                         headlineContent = { Text(text = stringResource(R.string.snr)) },
                         supportingContent = {
                             Text(
-                                text = signalInfo.snr + "%"
+                                text = "${signalInfo.snr}%",
                             )
                         })
-
                 }
             }
             "true"  -> {
@@ -223,12 +199,11 @@ fun SignalPage(
                             .consumeWindowInsets(innerPadding)
                             .padding(innerPadding),
                         loadingState = loadingState,
-                        updateLoadingState = {
+                        onUpdateLoadingState = {
                             scope.launch {
                                 signalViewModel.updateLoadingState(false)
                             }
-                        }
-                    )
+                        })
                 }
             }
         }

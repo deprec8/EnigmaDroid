@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2025-2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -56,17 +56,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.insets.topAppBarWithDrawerWindowInsets
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchSettingsPage(
-    onNavigateBack: () -> Unit,
-    searchSettingsViewModel: SearchSettingsViewModel = hiltViewModel()
+    onNavigateBack: () -> Unit, searchSettingsViewModel: SearchSettingsViewModel = hiltViewModel()
 ) {
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    val scrollState = rememberScrollState()
 
     val tvSearchHistory by searchSettingsViewModel.tvSearchHistory.collectAsStateWithLifecycle()
     val radioSearchHistory by searchSettingsViewModel.radioSearchHistory.collectAsStateWithLifecycle()
@@ -74,38 +71,33 @@ fun SearchSettingsPage(
     val timersSearchHistory by searchSettingsViewModel.timersSearchHistory.collectAsStateWithLifecycle()
     val tvEpgSearchHistory by searchSettingsViewModel.tvEpgSearchHistory.collectAsStateWithLifecycle()
     val radioEpgSearchHistory by searchSettingsViewModel.radioEpgSearchHistory.collectAsStateWithLifecycle()
-
     val useSearchHistories by searchSettingsViewModel.useSearchHistories.collectAsStateWithLifecycle()
     val useSearchHighlighting by searchSettingsViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
 
     var showSearchHistoriesDialog by rememberSaveable { mutableStateOf(false) }
     val searchHistoriesDialogScrollState = rememberScrollState()
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val scrollState = rememberScrollState()
 
     Scaffold(
         contentWindowInsets = contentWithDrawerWindowInsets(),
         topBar = {
-            TopAppBar(
-                windowInsets = topAppBarWithDrawerWindowInsets(),
-                title = {
-                    Text(
-                        text = stringResource(R.string.search),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+            TopAppBar(windowInsets = topAppBarWithDrawerWindowInsets(), title = {
+                Text(
+                    text = stringResource(R.string.search),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }, scrollBehavior = scrollBehavior, navigationIcon = {
+                IconButton(onClick = { onNavigateBack() }) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.navigate_back)
                     )
-                },
-                scrollBehavior = scrollBehavior,
-                navigationIcon = {
-                    IconButton(onClick = { onNavigateBack() }) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.navigate_back)
-                        )
-                    }
                 }
-            )
+            })
         },
-        modifier = Modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { innerPadding ->
         Column(
             Modifier
@@ -115,49 +107,35 @@ fun SearchSettingsPage(
                 .padding(innerPadding)
         ) {
             useSearchHistories?.let {
-                ListItem(
-                    headlineContent = {
-                        Text(stringResource(R.string.use_search_histories))
-                    },
-                    supportingContent = {
-                        Text(stringResource(R.string.disabling_this_will_clear_all_search_histories))
-                    },
-                    trailingContent = {
-                        Switch(
-                            checked = it,
-                            onCheckedChange = { value ->
-                                searchSettingsViewModel.setUseSearchHistory(value)
-                            }
-                        )
-                    }
-                )
+                ListItem(headlineContent = {
+                    Text(stringResource(R.string.use_search_histories))
+                }, supportingContent = {
+                    Text(stringResource(R.string.disabling_this_will_clear_all_search_histories))
+                }, trailingContent = {
+                    Switch(
+                        checked = it, onCheckedChange = { value ->
+                            searchSettingsViewModel.setUseSearchHistory(value)
+                        })
+                })
             }
             ListItem(
                 headlineContent = {
                     Text(stringResource(R.string.clear_search_histories))
-                },
-                supportingContent = {
+                }, supportingContent = {
                     Text(stringResource(R.string.select_which_search_histories_to_clear))
-                },
-                modifier = Modifier.clickable(onClick = { showSearchHistoriesDialog = true })
+                }, modifier = Modifier.clickable(onClick = { showSearchHistoriesDialog = true })
             )
             useSearchHighlighting?.let {
-                ListItem(
-                    headlineContent = {
-                        Text(stringResource(R.string.highlight_matches))
-                    },
-                    supportingContent = {
-                        Text(stringResource(R.string.highlight_matches_in_search_results))
-                    },
-                    trailingContent = {
-                        Switch(
-                            checked = it,
-                            onCheckedChange = { value ->
-                                searchSettingsViewModel.setUseSearchHighlighting(value)
-                            }
-                        )
-                    }
-                )
+                ListItem(headlineContent = {
+                    Text(stringResource(R.string.highlight_matches))
+                }, supportingContent = {
+                    Text(stringResource(R.string.highlight_matches_in_search_results))
+                }, trailingContent = {
+                    Switch(
+                        checked = it, onCheckedChange = { value ->
+                            searchSettingsViewModel.setUseSearchHighlighting(value)
+                        })
+                })
             }
         }
     }
@@ -171,9 +149,7 @@ fun SearchSettingsPage(
         var radioEpg by rememberSaveable { mutableStateOf(false) }
 
         fun isAnyEnabled(): Boolean {
-            return tvSearchHistory.isNotEmpty() || radioSearchHistory.isNotEmpty() ||
-                    moviesSearchHistory.isNotEmpty() || timersSearchHistory.isNotEmpty() ||
-                    tvEpgSearchHistory.isNotEmpty() || radioEpgSearchHistory.isNotEmpty()
+            return tvSearchHistory.isNotEmpty() || radioSearchHistory.isNotEmpty() || moviesSearchHistory.isNotEmpty() || timersSearchHistory.isNotEmpty() || tvEpgSearchHistory.isNotEmpty() || radioEpgSearchHistory.isNotEmpty()
         }
 
 
@@ -219,16 +195,10 @@ fun SearchSettingsPage(
                 TextButton(
                     onClick = {
                         searchSettingsViewModel.clearSearchHistory(
-                            tv,
-                            radio,
-                            movies,
-                            timers,
-                            tvEpg,
-                            radioEpg
+                            tv, radio, movies, timers, tvEpg, radioEpg
                         )
                         showSearchHistoriesDialog = false
-                    },
-                    enabled = tv || radio || movies || timers || tvEpg || radioEpg
+                    }, enabled = tv || radio || movies || timers || tvEpg || radioEpg
                 ) { Text(stringResource(R.string.clear)) }
             },
             dismissButton = {
@@ -247,8 +217,7 @@ fun SearchSettingsPage(
                                 checked = getAllEnabled(),
                                 onCheckedChange = {
                                     setAllEnabled(it)
-                                }
-                            )
+                                })
                         })
                     HorizontalDivider(Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
                     ListItem(
@@ -258,8 +227,7 @@ fun SearchSettingsPage(
                             Checkbox(
                                 enabled = tvSearchHistory.isNotEmpty(),
                                 checked = tv,
-                                onCheckedChange = { tv = it }
-                            )
+                                onCheckedChange = { tv = it })
                         })
                     ListItem(
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
@@ -268,8 +236,7 @@ fun SearchSettingsPage(
                             Checkbox(
                                 enabled = radioSearchHistory.isNotEmpty(),
                                 checked = radio,
-                                onCheckedChange = { radio = it }
-                            )
+                                onCheckedChange = { radio = it })
                         })
                     ListItem(
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
@@ -278,8 +245,7 @@ fun SearchSettingsPage(
                             Checkbox(
                                 enabled = moviesSearchHistory.isNotEmpty(),
                                 checked = movies,
-                                onCheckedChange = { movies = it }
-                            )
+                                onCheckedChange = { movies = it })
                         })
                     ListItem(
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
@@ -288,8 +254,7 @@ fun SearchSettingsPage(
                             Checkbox(
                                 enabled = timersSearchHistory.isNotEmpty(),
                                 checked = timers,
-                                onCheckedChange = { timers = it }
-                            )
+                                onCheckedChange = { timers = it })
                         })
                     ListItem(
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
@@ -298,8 +263,7 @@ fun SearchSettingsPage(
                             Checkbox(
                                 enabled = tvEpgSearchHistory.isNotEmpty(),
                                 checked = tvEpg,
-                                onCheckedChange = { tvEpg = it }
-                            )
+                                onCheckedChange = { tvEpg = it })
                         })
                     ListItem(
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
@@ -308,11 +272,9 @@ fun SearchSettingsPage(
                             Checkbox(
                                 enabled = radioEpgSearchHistory.isNotEmpty(),
                                 checked = radioEpg,
-                                onCheckedChange = { radioEpg = it }
-                            )
+                                onCheckedChange = { radioEpg = it })
                         })
                 }
-            }
-        )
+            })
     }
 }

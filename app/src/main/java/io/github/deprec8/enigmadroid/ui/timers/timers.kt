@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2025-2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -31,11 +31,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
@@ -52,19 +50,13 @@ import androidx.compose.material.icons.outlined.QuestionMark
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material.icons.outlined.TimerOff
 import androidx.compose.material.icons.outlined.Videocam
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -82,17 +74,20 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.data.enums.TimerState
-import io.github.deprec8.enigmadroid.model.api.Timer
+import io.github.deprec8.enigmadroid.model.api.timers.Timer
 import io.github.deprec8.enigmadroid.model.menu.MenuItem
-import io.github.deprec8.enigmadroid.model.menu.MenuSection
-import io.github.deprec8.enigmadroid.ui.components.ContentListItem
+import io.github.deprec8.enigmadroid.model.menu.MenuItemGroup
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
-import io.github.deprec8.enigmadroid.ui.components.SearchHistory
-import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.content.ContentListItem
+import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarDrawerNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarRemoteControlActionButton
+import io.github.deprec8.enigmadroid.ui.timers.components.DeleteTimerDialog
+import io.github.deprec8.enigmadroid.ui.timers.components.TimerLogDialog
+import io.github.deprec8.enigmadroid.ui.timers.components.TimerSetupDialog
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
 import kotlinx.coroutines.launch
 
@@ -105,16 +100,17 @@ fun TimersPage(
 ) {
 
     val filteredTimers by timersViewModel.filteredTimers.collectAsStateWithLifecycle()
-    val timerList by timersViewModel.timerList.collectAsStateWithLifecycle()
+    val timerBatch by timersViewModel.timerBatch.collectAsStateWithLifecycle()
     val services by timersViewModel.services.collectAsStateWithLifecycle()
     val searchHistory by timersViewModel.searchHistory.collectAsStateWithLifecycle()
+    val loadingState by timersViewModel.loadingState.collectAsStateWithLifecycle()
+    val searchInput by timersViewModel.searchInput.collectAsStateWithLifecycle()
+    val useSearchHighlighting by timersViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
+
+    val scope = rememberCoroutineScope()
     var showTimerSetupDialog by rememberSaveable {
         mutableStateOf(false)
     }
-    val loadingState by timersViewModel.loadingState.collectAsStateWithLifecycle()
-    val scope = rememberCoroutineScope()
-    val searchInput by timersViewModel.searchInput.collectAsStateWithLifecycle()
-    val useSearchHighlighting by timersViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         timersViewModel.updateLoadingState(false)
@@ -142,11 +138,11 @@ fun TimersPage(
 
     @Composable
     fun Content(
-        list: List<Timer>,
+        timers: List<Timer>,
         paddingValues: PaddingValues,
         highlightedWords: List<String> = emptyList()
     ) {
-        if (list.isNotEmpty()) {
+        if (timers.isNotEmpty()) {
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(310.dp),
                 contentPadding = paddingValues,
@@ -156,7 +152,7 @@ fun TimersPage(
                     .imePadding()
 
             ) {
-                items(list) { timer ->
+                items(timers) { timer ->
                     var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
                     var showEditDialog by rememberSaveable { mutableStateOf(false) }
                     var showLogDialog by rememberSaveable { mutableStateOf(false) }
@@ -164,7 +160,7 @@ fun TimersPage(
                     ContentListItem(
                         highlightedWords = highlightedWords,
                         headlineText = timer.title,
-                        overlineText = timer.serviceName + " - " + getTimerState(timer),
+                        overlineText = "${timer.serviceName} - ${getTimerState(timer)}",
                         leadingContent = {
                             when (timer.state + timer.disabled) {
                                 TimerState.WAITING.id  -> Box(
@@ -256,9 +252,9 @@ fun TimersPage(
                         ),
                         shortDescription = timer.shortDescription,
                         longDescription = timer.descriptionextended,
-                        menuSections = if (timer.logEntries.isNotEmpty()) {
+                        menuItemGroups = if (timer.logEntries.isNotEmpty()) {
                             listOf(
-                                MenuSection(
+                                MenuItemGroup(
                                     listOf(
                                         MenuItem(
                                             text = stringResource(R.string.view_log),
@@ -271,14 +267,13 @@ fun TimersPage(
                         } else {
                             emptyList()
                         } + listOf(
-                            MenuSection(
+                            MenuItemGroup(
                                 listOf(
                                     MenuItem(
                                         text = stringResource(R.string.edit),
                                         outlinedIcon = Icons.Outlined.Edit,
                                         filledIcon = Icons.Filled.Edit,
-                                        action = { showEditDialog = true }),
-                                    MenuItem(
+                                        action = { showEditDialog = true }), MenuItem(
                                         text = stringResource(R.string.delete),
                                         outlinedIcon = Icons.Outlined.Delete,
                                         filledIcon = Icons.Filled.Delete,
@@ -289,75 +284,20 @@ fun TimersPage(
                     )
 
                     if (showLogDialog) {
-                        AlertDialog(
-                            onDismissRequest = {
-                                showLogDialog = false
-                            },
-                            title = { Text(text = stringResource(R.string.log_entries)) },
-                            text = {
-                                LazyColumn {
-                                    items(timer.logEntries) {
-                                        ListItem(
-                                            overlineContent = {
-                                                Text(stringResource(R.string.code, it.code))
-                                            },
-                                            headlineContent = {
-                                                Text(
-                                                    text = TimestampUtils.formatApiTimestampToDate(
-                                                        it.timestamp
-                                                    ) + " " + TimestampUtils.formatApiTimestampToTime(
-                                                        it.timestamp
-                                                    )
-                                                )
-                                            },
-                                            supportingContent = {
-                                                Text(text = it.message)
-                                            },
-                                            colors = ListItemDefaults.colors(containerColor = AlertDialogDefaults.containerColor)
-                                        )
-                                    }
-                                }
-                            },
-                            icon = {
-                                Icon(
-                                    Icons.AutoMirrored.Outlined.List,
-                                    contentDescription = null
-                                )
-                            },
-                            confirmButton = {},
-                            dismissButton = {
-                                TextButton(onClick = {
-                                    showLogDialog = false
-                                }) { Text(stringResource(R.string.close)) }
-                            }
-                        )
+                        TimerLogDialog(timer, { showLogDialog = false })
                     }
+
                     if (showDeleteDialog) {
-                        AlertDialog(
-                            onDismissRequest = {
-                                showDeleteDialog = false
-                            },
-                            title = { Text(text = stringResource(R.string.delete_timer)) },
-                            text = { Text(text = stringResource(R.string.if_you_delete_this_timer_it_will_not_be_recoverable)) },
-                            icon = { Icon(Icons.Outlined.Delete, contentDescription = null) },
-                            confirmButton = {
-                                TextButton(onClick = {
-                                    timersViewModel.deleteTimer(timer)
-                                    showDeleteDialog = false
-                                }) { Text(stringResource(R.string.confirm)) }
-                            },
-                            dismissButton = {
-                                TextButton(onClick = {
-                                    showDeleteDialog = false
-                                }) { Text(stringResource(R.string.cancel)) }
-                            }
-                        )
+                        DeleteTimerDialog({ showDeleteDialog = false }, {
+                            timersViewModel.deleteTimer(timer)
+                            showDeleteDialog = false
+                        })
                     }
                     if (showEditDialog) {
                         TimerSetupDialog(
-                            onDismiss = { showEditDialog = false },
+                            onDismissRequest = { showEditDialog = false },
                             oldTimer = timer,
-                            onSave = { newTimer, oldTimer ->
+                            onSaveRequest = { newTimer, oldTimer ->
                                 if (oldTimer != null) {
                                     timersViewModel.editTimer(oldTimer, newTimer)
                                 }
@@ -378,79 +318,68 @@ fun TimersPage(
         }
     }
 
-    Scaffold(
-        contentWindowInsets = contentWithDrawerWindowInsets(),
-        topBar = {
-            SearchTopAppBar(
-                enabled = timerList.result,
-                textFieldState = timersViewModel.searchFieldState,
-                placeholder = stringResource(R.string.search_timers),
-                content = {
-                    if (filteredTimers != null) {
-                        Content(
-                            list = filteredTimers !!,
-                            paddingValues = PaddingValues(0.dp),
-                            highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
-                                .filter { it.isNotBlank() } else emptyList()
+    Scaffold(contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
+        SearchTopAppBar(
+            enabled = timerBatch.result,
+            textFieldState = timersViewModel.searchFieldState,
+            placeholder = stringResource(R.string.search_timers),
+            content = {
+                if (filteredTimers != null) {
+                    Content(
+                        timers = filteredTimers !!,
+                        paddingValues = PaddingValues(0.dp),
+                        highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
+                            .filter { it.isNotBlank() } else emptyList())
+                } else {
+                    SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
+                        timersViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
+                        timersViewModel.updateSearchInput()
+                    }, onTermInsertClick = {
+                        timersViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
+                            it
                         )
-                    } else {
-                        SearchHistory(
-                            searchHistory = searchHistory,
-                            onTermSearchClick = {
-                                timersViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
-                                timersViewModel.updateSearchInput()
-                            },
-                            onTermInsertClick = {
-                                timersViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
-                                    it
-                                )
-                            }
-                        )
-                    }
-                },
-                navigationButton = { searchBarState ->
-                    SearchTopAppBarDrawerNavigationButton(drawerState, searchBarState)
-                },
-                onSearch = {
-                    timersViewModel.updateSearchInput()
-                },
-                actionButtons = {
-                    SearchTopAppBarRemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
+                    })
                 }
-            )
+            },
+            navigationButton = { searchBarState ->
+                SearchTopAppBarDrawerNavigationButton(drawerState, searchBarState)
+            },
+            onSearch = {
+                timersViewModel.updateSearchInput()
+            },
+            actionButtons = {
+                SearchTopAppBarRemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
+            })
 
-        }, floatingActionButton = {
-            AnimatedVisibility(
-                loadingState == LoadingState.LOADED,
-                enter = scaleIn(),
-                exit = scaleOut()
-            ) {
-                Column {
-                    SmallFloatingActionButton(onClick = {
-                        timersViewModel.fetchData()
-                    }, Modifier.align(Alignment.End)) {
-                        Icon(
-                            Icons.Default.Refresh,
-                            contentDescription = stringResource(R.string.refresh_page)
-                        )
-                    }
-                    FloatingActionButton(onClick = { showTimerSetupDialog = true }) {
-                        Icon(
-                            Icons.Default.Add,
-                            contentDescription = stringResource(id = R.string.add_timer)
-                        )
-                    }
+    }, floatingActionButton = {
+        AnimatedVisibility(
+            loadingState == LoadingState.LOADED, enter = scaleIn(), exit = scaleOut()
+        ) {
+            Column {
+                SmallFloatingActionButton(onClick = {
+                    timersViewModel.fetchData()
+                }, Modifier.align(Alignment.End)) {
+                    Icon(
+                        Icons.Default.Refresh,
+                        contentDescription = stringResource(R.string.refresh_page)
+                    )
+                }
+                FloatingActionButton(onClick = { showTimerSetupDialog = true }) {
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = stringResource(id = R.string.add_timer)
+                    )
                 }
             }
         }
+    }
 
     ) { innerPadding ->
-        if (timerList.timers.isNotEmpty()) {
+        if (timerBatch.timers.isNotEmpty()) {
             Content(
-                list = timerList.timers,
-                innerPadding
+                timers = timerBatch.timers, innerPadding
             )
-        } else if (timerList.result) {
+        } else if (timerBatch.result) {
             NoResults(
                 Modifier
                     .consumeWindowInsets(innerPadding)
@@ -461,7 +390,7 @@ fun TimersPage(
                 Modifier
                     .consumeWindowInsets(innerPadding)
                     .padding(innerPadding),
-                updateLoadingState = {
+                onUpdateLoadingState = {
                     scope.launch {
                         timersViewModel.updateLoadingState(
                             it
@@ -475,13 +404,12 @@ fun TimersPage(
 
     if (showTimerSetupDialog) {
         TimerSetupDialog(
-            onDismiss = { showTimerSetupDialog = false },
-            onSave = { newTimer, _ ->
+            onDismissRequest = { showTimerSetupDialog = false },
+            onSaveRequest = { newTimer, _ ->
                 timersViewModel.addTimer(newTimer)
                 showTimerSetupDialog = false
             },
             services = services,
         )
-
     }
 }

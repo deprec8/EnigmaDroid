@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2025-2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -51,10 +51,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.model.navigation.Page
 import io.github.deprec8.enigmadroid.model.navigation.SettingsPages
-import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.insets.topAppBarWithDrawerWindowInsets
 import kotlinx.coroutines.launch
 
 
@@ -62,7 +61,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun SettingsPage(
     drawerState: DrawerState,
-    onNavigateToSubPage: (Page) -> Unit,
+    onNavigateToSettingsPage: (SettingsPages) -> Unit,
 ) {
 
     val scope = rememberCoroutineScope()
@@ -72,32 +71,28 @@ fun SettingsPage(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                windowInsets = topAppBarWithDrawerWindowInsets(),
-                title = {
-                    Text(
-                        text = stringResource(id = R.string.settings),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+            TopAppBar(windowInsets = topAppBarWithDrawerWindowInsets(), title = {
+                Text(
+                    text = stringResource(id = R.string.settings),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }, scrollBehavior = scrollBehavior, navigationIcon = {
+                if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || ! windowSizeClass.isHeightAtLeastBreakpoint(
+                        WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
                     )
-                },
-                scrollBehavior = scrollBehavior,
-                navigationIcon = {
-                    if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) ||
-                        ! windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
-                    ) {
-                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Icon(
-                                Icons.Default.Menu,
-                                contentDescription = stringResource(id = R.string.open_menu)
-                            )
-                        }
+                ) {
+                    IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                        Icon(
+                            Icons.Default.Menu,
+                            contentDescription = stringResource(id = R.string.open_menu)
+                        )
                     }
-                })
+                }
+            })
         },
         contentWindowInsets = contentWithDrawerWindowInsets(),
-        modifier = Modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { innerPadding ->
         Column(
             Modifier
@@ -118,7 +113,7 @@ fun SettingsPage(
                     Icon(Icons.Outlined.Devices, contentDescription = null)
                 },
                 modifier = Modifier.clickable(onClick = {
-                    onNavigateToSubPage(SettingsPages.Devices)
+                    onNavigateToSettingsPage(SettingsPages.Devices)
                 })
             )
             ListItem(
@@ -133,7 +128,7 @@ fun SettingsPage(
                     Icon(Icons.Outlined.Search, contentDescription = null)
                 },
                 modifier = Modifier.clickable(onClick = {
-                    onNavigateToSubPage(SettingsPages.Search)
+                    onNavigateToSettingsPage(SettingsPages.Search)
                 })
             )
             ListItem(
@@ -148,22 +143,18 @@ fun SettingsPage(
                     Icon(Icons.Outlined.Dialpad, contentDescription = null)
                 },
                 modifier = Modifier.clickable(onClick = {
-                    onNavigateToSubPage(SettingsPages.RemoteControl)
+                    onNavigateToSettingsPage(SettingsPages.RemoteControl)
                 })
             )
             ListItem(
-                headlineContent = { Text(stringResource(R.string.about)) },
-                trailingContent = {
+                headlineContent = { Text(stringResource(R.string.about)) }, trailingContent = {
                     Icon(Icons.AutoMirrored.Filled.ArrowRight, contentDescription = null)
-                },
-                supportingContent = {
+                }, supportingContent = {
                     Text(stringResource(R.string.information_about_the_app))
-                },
-                leadingContent = {
+                }, leadingContent = {
                     Icon(Icons.Outlined.Info, contentDescription = null)
-                },
-                modifier = Modifier.clickable(onClick = {
-                    onNavigateToSubPage(SettingsPages.About)
+                }, modifier = Modifier.clickable(onClick = {
+                    onNavigateToSettingsPage(SettingsPages.About)
                 })
             )
         }

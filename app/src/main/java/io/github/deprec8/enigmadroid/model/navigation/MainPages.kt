@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2025-2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -25,13 +25,13 @@ import kotlinx.serialization.Serializable
 sealed class MainPages : Page {
 
     @Serializable
-    data object TV : MainPages()
+    data object Tv : MainPages()
 
     @Serializable
     data object TvEpg : MainPages()
 
     @Serializable
-    data class ServiceEpg(val sRef: String, val sName: String) : MainPages()
+    data class ServiceEpg(val serviceReference: String, val serviceName: String) : MainPages()
 
     @Serializable
     data object RadioEpg : MainPages()

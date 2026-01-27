@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2025-2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -28,8 +28,8 @@ import io.github.deprec8.enigmadroid.data.LoadingRepository
 import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.data.SettingsRepository
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.model.api.Event
-import io.github.deprec8.enigmadroid.model.api.EventList
+import io.github.deprec8.enigmadroid.model.api.events.Event
+import io.github.deprec8.enigmadroid.model.api.events.EventBatch
 import io.github.deprec8.enigmadroid.utils.FilterUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -48,8 +48,8 @@ class ServiceEpgViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
-    private val _epg = MutableStateFlow(EventList())
-    val epg: StateFlow<EventList> = _epg.asStateFlow()
+    private val _eventBatch = MutableStateFlow(EventBatch())
+    val eventBatch: StateFlow<EventBatch> = _eventBatch.asStateFlow()
 
     private val _loadingState = MutableStateFlow(LoadingState.LOADING)
     val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
@@ -77,10 +77,10 @@ class ServiceEpgViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            combine(_epg, _searchInput) { epg, input ->
-                if (input != "" && epg.events.isNotEmpty()) {
-                    searchHistoryRepository.addToTVEpgSearchHistory(input)
-                    FilterUtils.filterEvents(input, epg.events)
+            combine(_eventBatch, _searchInput) { eventBatch, searchInput ->
+                if (searchInput.isNotBlank() && eventBatch.events.isNotEmpty()) {
+                    searchHistoryRepository.addToTvEpgSearchHistory(searchInput)
+                    FilterUtils.filterEvents(searchInput, eventBatch.events)
                 } else {
                     null
                 }
@@ -89,7 +89,7 @@ class ServiceEpgViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            searchHistoryRepository.getTVEpgSearchHistory().collectLatest {
+            searchHistoryRepository.getTvEpgSearchHistory().collectLatest {
                 _searchHistory.value = it
             }
         }
@@ -100,19 +100,19 @@ class ServiceEpgViewModel @Inject constructor(
         }
     }
 
-    suspend fun updateLoadingState(forceUpdate: Boolean) {
-        loadingRepository.updateLoadingState(forceUpdate)
+    suspend fun updateLoadingState(isForcedUpdate: Boolean) {
+        loadingRepository.updateLoadingState(isForcedUpdate)
     }
 
-    fun fetchData(sRef: String) {
+    fun fetchData(serviceReference: String) {
         fetchJob?.cancel()
-        _epg.value = EventList()
+        _eventBatch.value = EventBatch()
         fetchJob = viewModelScope.launch {
-            _epg.value = apiRepository.fetchServiceEpg(sRef)
+            _eventBatch.value = apiRepository.fetchServiceEpgBatch(serviceReference)
         }
     }
 
-    fun addTimer(event: Event) {
+    fun addTimerForEvent(event: Event) {
         viewModelScope.launch {
             apiRepository.addTimerForEvent(
                 event.serviceReference, event.id

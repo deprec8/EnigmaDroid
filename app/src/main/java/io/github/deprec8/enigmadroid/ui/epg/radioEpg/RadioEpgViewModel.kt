@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2025-2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -29,8 +29,8 @@ import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.data.SettingsRepository
 import io.github.deprec8.enigmadroid.data.enums.ApiType
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.model.api.Event
-import io.github.deprec8.enigmadroid.model.api.EventListList
+import io.github.deprec8.enigmadroid.model.api.events.Event
+import io.github.deprec8.enigmadroid.model.api.events.EventBatchSet
 import io.github.deprec8.enigmadroid.utils.FilterUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -49,8 +49,8 @@ class RadioEpgViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
-    private val _epgs = MutableStateFlow(EventListList())
-    val epgs: StateFlow<EventListList> = _epgs.asStateFlow()
+    private val _eventBatchSet = MutableStateFlow(EventBatchSet())
+    val eventBatchSet: StateFlow<EventBatchSet> = _eventBatchSet.asStateFlow()
 
     private val _filteredEvents = MutableStateFlow<List<Event>?>(null)
     val filteredEvents: StateFlow<List<Event>?> = _filteredEvents.asStateFlow()
@@ -84,10 +84,11 @@ class RadioEpgViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            combine(_epgs, _searchInput) { epgs, input ->
-                if (input != "" && epgs.eventLists.isNotEmpty()) {
-                    searchHistoryRepository.addToRadioEpgSearchHistory(input)
-                    FilterUtils.filterEvents(input, epgs.eventLists.flatMap { it.events })
+            combine(_eventBatchSet, _searchInput) { eventBatchSet, searchInput ->
+                if (searchInput.isNotBlank() && eventBatchSet.eventBatches.isNotEmpty()) {
+                    searchHistoryRepository.addToRadioEpgSearchHistory(searchInput)
+                    FilterUtils.filterEvents(
+                        searchInput, eventBatchSet.eventBatches.flatMap { it.events })
                 } else {
                     null
                 }
@@ -107,28 +108,28 @@ class RadioEpgViewModel @Inject constructor(
         }
     }
 
-    suspend fun updateLoadingState(forceUpdate: Boolean) {
-        loadingRepository.updateLoadingState(forceUpdate)
+    suspend fun updateLoadingState(isForcedUpdate: Boolean) {
+        loadingRepository.updateLoadingState(isForcedUpdate)
     }
 
     fun fetchData() {
         fetchJob?.cancel()
-        _epgs.value = EventListList()
+        _eventBatchSet.value = EventBatchSet()
         _bouquets.value = emptyList()
         fetchJob = viewModelScope.launch {
             _bouquets.value = apiRepository.fetchBouquets(ApiType.RADIO)
             if (_bouquets.value.isNotEmpty()) {
-                if (_currentBouquet.value == "") {
+                if (_currentBouquet.value.isBlank()) {
                     _currentBouquet.value = _bouquets.value[0][0]
                 } else if (_bouquets.value.find { it[0] == _currentBouquet.value } == null) {
                     _currentBouquet.value = _bouquets.value[0][0]
                 }
-                _epgs.value = apiRepository.fetchEpgEvents(_currentBouquet.value)
+                _eventBatchSet.value = apiRepository.fetchEpgEventBatchSet(_currentBouquet.value)
             }
         }
     }
 
-    fun addTimer(event: Event) {
+    fun addTimerForEvent(event: Event) {
         viewModelScope.launch {
             apiRepository.addTimerForEvent(
                 event.serviceReference, event.id
@@ -136,8 +137,8 @@ class RadioEpgViewModel @Inject constructor(
         }
     }
 
-    fun setCurrentBouquet(bRef: String) {
-        _currentBouquet.value = bRef
+    fun setCurrentBouquet(bouquetReference: String) {
+        _currentBouquet.value = bouquetReference
         fetchData()
     }
 

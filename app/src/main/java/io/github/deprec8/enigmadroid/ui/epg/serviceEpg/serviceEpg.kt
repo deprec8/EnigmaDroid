@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2025-2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -19,18 +19,13 @@
 
 package io.github.deprec8.enigmadroid.ui.epg.serviceEpg
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -45,10 +40,11 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
+import io.github.deprec8.enigmadroid.ui.components.FloatingRefreshButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
-import io.github.deprec8.enigmadroid.ui.components.SearchHistory
-import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.epg.components.EpgContent
 import kotlinx.coroutines.launch
@@ -56,12 +52,12 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ServiceEpgPage(
-    sRef: String,
-    sName: String,
+    serviceReference: String,
+    serviceName: String,
     onNavigateBack: () -> Unit,
     serviceEpgViewModel: ServiceEpgViewModel = hiltViewModel()
 ) {
-    val epg by serviceEpgViewModel.epg.collectAsStateWithLifecycle()
+    val eventBatch by serviceEpgViewModel.eventBatch.collectAsStateWithLifecycle()
     val loadingState by serviceEpgViewModel.loadingState.collectAsStateWithLifecycle()
     val filteredEvents by serviceEpgViewModel.filteredEvents.collectAsStateWithLifecycle()
     val useSearchHighlighting by serviceEpgViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
@@ -76,32 +72,20 @@ fun ServiceEpgPage(
 
     LaunchedEffect(loadingState) {
         if (loadingState == LoadingState.LOADED) {
-            serviceEpgViewModel.fetchData(sRef)
+            serviceEpgViewModel.fetchData(serviceReference)
         }
     }
 
     Scaffold(
         floatingActionButton = {
-            AnimatedVisibility(
-                loadingState == LoadingState.LOADED, enter = scaleIn(), exit = scaleOut()
-            ) {
-                FloatingActionButton(
-                    onClick = {
-                        serviceEpgViewModel.fetchData(sRef)
-                    }) {
-                    Icon(
-                        Icons.Default.Refresh,
-                        contentDescription = stringResource(R.string.refresh_page)
-                    )
-                }
-            }
+            FloatingRefreshButton(loadingState, { serviceEpgViewModel.fetchData(serviceReference) })
         },
         contentWindowInsets = contentWithDrawerWindowInsets(),
         topBar = {
             SearchTopAppBar(
-                enabled = epg.events.isNotEmpty(),
+                enabled = eventBatch.events.isNotEmpty(),
                 textFieldState = serviceEpgViewModel.searchFieldState,
-                placeholder = stringResource(R.string.search_epg_for, sName),
+                placeholder = stringResource(R.string.search_epg_for, serviceName),
                 content = {
                     if (filteredEvents != null) {
                         EpgContent(
@@ -110,7 +94,7 @@ fun ServiceEpgPage(
                             showChannelName = true,
                             highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
                                 .filter { it.isNotBlank() } else emptyList(),
-                            onAddTimer = { serviceEpgViewModel.addTimer(it) })
+                            onAddTimerForEvent = { serviceEpgViewModel.addTimerForEvent(it) })
                     } else {
                         SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
                             serviceEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
@@ -136,12 +120,12 @@ fun ServiceEpgPage(
                 })
         }
     ) { innerPadding ->
-        if (epg.events.isNotEmpty()) {
+        if (eventBatch.events.isNotEmpty()) {
             EpgContent(
-                events = epg.events,
+                events = eventBatch.events,
                 innerPadding,
-                onAddTimer = { serviceEpgViewModel.addTimer(it) })
-        } else if (epg.result) {
+                onAddTimerForEvent = { serviceEpgViewModel.addTimerForEvent(it) })
+        } else if (eventBatch.result) {
             NoResults(
                 Modifier
                     .consumeWindowInsets(innerPadding)
@@ -152,7 +136,7 @@ fun ServiceEpgPage(
                 Modifier
                     .padding(innerPadding)
                     .consumeWindowInsets(innerPadding),
-                updateLoadingState = {
+                onUpdateLoadingState = {
                     scope.launch {
                         serviceEpgViewModel.updateLoadingState(
                             it

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2025-2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -19,9 +19,6 @@
 
 package io.github.deprec8.enigmadroid.ui.epg.radioEpg
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -31,13 +28,9 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
@@ -56,10 +49,11 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
+import io.github.deprec8.enigmadroid.ui.components.FloatingRefreshButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
-import io.github.deprec8.enigmadroid.ui.components.SearchHistory
-import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarDrawerNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarRemoteControlActionButton
@@ -74,7 +68,7 @@ fun RadioEpgPage(
     drawerState: DrawerState,
     radioEpgViewModel: RadioEpgViewModel = hiltViewModel()
 ) {
-    val epgs by radioEpgViewModel.epgs.collectAsStateWithLifecycle()
+    val eventBatchSet by radioEpgViewModel.eventBatchSet.collectAsStateWithLifecycle()
     val filteredEvents by radioEpgViewModel.filteredEvents.collectAsStateWithLifecycle()
     val searchHistory by radioEpgViewModel.searchHistory.collectAsStateWithLifecycle()
     val useSearchHighlighting by radioEpgViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
@@ -84,14 +78,14 @@ fun RadioEpgPage(
     val currentBouquet by radioEpgViewModel.currentBouquet.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
-    val pagerState = rememberPagerState(pageCount = { epgs.eventLists.size })
+    val pagerState = rememberPagerState(pageCount = { eventBatchSet.eventBatches.size })
     val selectedTabIndex = remember {
         derivedStateOf {
             pagerState.currentPage.coerceIn(
-                0, (if (epgs.eventLists.size - 1 < 0) {
+                0, (if (eventBatchSet.eventBatches.size - 1 < 0) {
                     0
                 } else {
-                    epgs.eventLists.size - 1
+                    eventBatchSet.eventBatches.size - 1
                 })
             )
         }
@@ -109,21 +103,10 @@ fun RadioEpgPage(
     }
 
     Scaffold(floatingActionButton = {
-        AnimatedVisibility(
-            loadingState == LoadingState.LOADED, enter = scaleIn(), exit = scaleOut()
-        ) {
-            FloatingActionButton(onClick = {
-                radioEpgViewModel.fetchData()
-            }) {
-                Icon(
-                    Icons.Default.Refresh,
-                    contentDescription = stringResource(R.string.refresh_page)
-                )
-            }
-        }
+        FloatingRefreshButton(loadingState, { radioEpgViewModel.fetchData() })
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = epgs.eventLists.isNotEmpty() && loadingState == LoadingState.LOADED,
+            enabled = eventBatchSet.eventBatches.isNotEmpty() && loadingState == LoadingState.LOADED,
             textFieldState = radioEpgViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_epg),
             content = {
@@ -134,7 +117,7 @@ fun RadioEpgPage(
                         showChannelName = true,
                         highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
                             .filter { it.isNotBlank() } else emptyList(),
-                        onAddTimer = { radioEpgViewModel.addTimer(it) })
+                        onAddTimerForEvent = { radioEpgViewModel.addTimerForEvent(it) })
                 } else {
                     SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
                         radioEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
@@ -162,17 +145,17 @@ fun RadioEpgPage(
                 radioEpgViewModel.updateSearchInput()
             },
             tabBar = {
-                if (epgs.eventLists.isNotEmpty()) {
+                if (eventBatchSet.eventBatches.isNotEmpty()) {
                     PrimaryScrollableTabRow(
                         selectedTabIndex = selectedTabIndex.value,
                         divider = { },
                         scrollState = rememberScrollState()
                     ) {
-                        epgs.eventLists.forEachIndexed { index, epg ->
+                        eventBatchSet.eventBatches.forEachIndexed { index, eventBatch ->
                             Tab(
                                 text = {
                                     Text(
-                                        text = epg.name,
+                                        text = eventBatch.name,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis
                                     )
@@ -191,17 +174,17 @@ fun RadioEpgPage(
     }
 
     ) { innerPadding ->
-        if (epgs.eventLists.isNotEmpty()) {
+        if (eventBatchSet.eventBatches.isNotEmpty()) {
             HorizontalPager(
                 modifier = Modifier.fillMaxSize(),
                 state = pagerState,
             ) { service ->
                 EpgContent(
-                    events = epgs.eventLists[service].events,
+                    events = eventBatchSet.eventBatches[service].events,
                     innerPadding,
-                    onAddTimer = { radioEpgViewModel.addTimer(it) })
+                    onAddTimerForEvent = { radioEpgViewModel.addTimerForEvent(it) })
             }
-        } else if (epgs.result) {
+        } else if (eventBatchSet.result) {
             NoResults(
                 Modifier
                     .consumeWindowInsets(innerPadding)
@@ -212,7 +195,7 @@ fun RadioEpgPage(
                 Modifier
                     .consumeWindowInsets(innerPadding)
                     .padding(innerPadding),
-                updateLoadingState = {
+                onUpdateLoadingState = {
                     scope.launch {
                         radioEpgViewModel.updateLoadingState(
                             it

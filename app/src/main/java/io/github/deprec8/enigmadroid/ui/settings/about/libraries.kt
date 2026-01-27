@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2025-2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -46,8 +46,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.mikepenz.aboutlibraries.ui.compose.android.produceLibraries
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.insets.topAppBarWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.utils.IntentUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,28 +62,22 @@ fun LibrariesPage(
     Scaffold(
         contentWindowInsets = contentWithDrawerWindowInsets(),
         topBar = {
-            TopAppBar(
-                windowInsets = topAppBarWithDrawerWindowInsets(),
-                title = {
-                    Text(
-                        text = stringResource(id = R.string.third_party_libraries),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+            TopAppBar(windowInsets = topAppBarWithDrawerWindowInsets(), title = {
+                Text(
+                    text = stringResource(id = R.string.third_party_libraries),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }, scrollBehavior = scrollBehavior, navigationIcon = {
+                IconButton(onClick = { onNavigateBack() }) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.navigate_back)
                     )
-                },
-                scrollBehavior = scrollBehavior,
-                navigationIcon = {
-                    IconButton(onClick = { onNavigateBack() }) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.navigate_back)
-                        )
-                    }
                 }
-            )
+            })
         },
-        modifier = Modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { innerPadding ->
         LazyVerticalGrid(
             modifier = Modifier
@@ -93,34 +87,27 @@ fun LibrariesPage(
             contentPadding = innerPadding
         ) {
             items(libraries?.libraries ?: emptyList()) { library ->
-                ListItem(
-                    modifier = Modifier.clickable {
-                        if (library.website != null) {
-                            IntentUtils.openURL(context, library.website !!)
-                        }
-                    },
-                    trailingContent = {
-                        Icon(Icons.Outlined.Link, contentDescription = null)
-                    },
-                    overlineContent = {
-                        Text(
-                            text = library.licenses.first().name + " - " + if ((library.artifactVersion?.length
-                                    ?: 0) > 15
-                            ) {
-                                (library.artifactVersion?.substring(0, 10) ?: "") + "…"
-                            } else {
-                                library.artifactVersion ?: ""
-                            }
-                        )
-                    },
-                    headlineContent = { Text(text = library.name) },
-                    supportingContent = {
-                        Text(
-                            text = library.developers.firstOrNull()?.name
-                                ?: ""
-                        )
+                ListItem(modifier = Modifier.clickable {
+                    if (library.website != null) {
+                        IntentUtils.openUrl(context, library.website !!)
                     }
-                )
+                }, trailingContent = {
+                    Icon(Icons.Outlined.Link, contentDescription = null)
+                }, overlineContent = {
+                    Text(
+                        text = "${library.licenses.first().name} - " + if ((library.artifactVersion?.length
+                                ?: 0) > 15
+                        ) {
+                            "${library.artifactVersion?.substring(0, 10) ?: ""}…"
+                        } else {
+                            library.artifactVersion ?: ""
+                        }
+                    )
+                }, headlineContent = { Text(text = library.name) }, supportingContent = {
+                    Text(
+                        text = library.developers.firstOrNull()?.name ?: ""
+                    )
+                })
             }
         }
     }

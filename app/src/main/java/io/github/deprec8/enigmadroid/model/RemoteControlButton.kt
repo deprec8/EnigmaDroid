@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2025-2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -21,11 +21,12 @@ package io.github.deprec8.enigmadroid.model
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtonType
 
 data class RemoteControlButton(
     val text: String? = null,
     val icon: ImageVector? = null,
     val iconLabel: String? = null,
     val iconTint: Color? = null,
-    val onClick: () -> Unit,
+    val type: RemoteControlButtonType
 )

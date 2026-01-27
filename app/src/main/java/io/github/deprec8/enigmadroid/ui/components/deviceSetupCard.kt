@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2025-2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -78,20 +78,19 @@ fun DeviceSetupCard(
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
 
-
     Column(
         modifier = modifier
     ) {
-        if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) &&
-            windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
+        if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) && windowSizeClass.isHeightAtLeastBreakpoint(
+                WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
+            )
         ) {
             Row {
                 OutlinedTextField(
                     state = nameState,
                     lineLimits = TextFieldLineLimits.SingleLine,
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Next
+                        keyboardType = KeyboardType.Text, imeAction = ImeAction.Next
                     ),
                     label = {
                         Text(
@@ -108,8 +107,7 @@ fun DeviceSetupCard(
                     state = portState,
                     lineLimits = TextFieldLineLimits.SingleLine,
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Next
+                        keyboardType = KeyboardType.Number, imeAction = ImeAction.Next
                     ),
                     label = {
                         Text(
@@ -129,8 +127,7 @@ fun DeviceSetupCard(
                     state = ipState,
                     lineLimits = TextFieldLineLimits.SingleLine,
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Next
+                        keyboardType = KeyboardType.Number, imeAction = ImeAction.Next
                     ),
                     label = {
                         Text(
@@ -147,8 +144,7 @@ fun DeviceSetupCard(
                     state = livePortState,
                     lineLimits = TextFieldLineLimits.SingleLine,
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = if (! isLogin) {
+                        keyboardType = KeyboardType.Number, imeAction = if (! isLogin) {
                             ImeAction.Done
                         } else {
                             ImeAction.Next
@@ -168,50 +164,40 @@ fun DeviceSetupCard(
             }
             Spacer(modifier = Modifier.size(8.dp))
             Row {
-                FilterChip(
-                    selected = isHttps, onClick = onHttpsChange,
-                    label = {
-                        Text(
-                            text = stringResource(R.string.https),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }, leadingIcon = {
-                        AnimatedVisibility(isHttps) {
-                            Icon(
-                                Icons.Default.Check,
-                                contentDescription = null,
-                                Modifier.size(
-                                    FilterChipDefaults.IconSize
-                                )
+                FilterChip(selected = isHttps, onClick = onHttpsChange, label = {
+                    Text(
+                        text = stringResource(R.string.https),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }, leadingIcon = {
+                    AnimatedVisibility(isHttps) {
+                        Icon(
+                            Icons.Default.Check, contentDescription = null, Modifier.size(
+                                FilterChipDefaults.IconSize
                             )
-                        }
-                    })
+                        )
+                    }
+                })
                 FilterChip(
-                    selected = isLogin,
-                    onClick = {
+                    selected = isLogin, onClick = {
                         passwordVisible = false
                         onLoginChange()
-                    },
-                    label = {
+                    }, label = {
                         Text(
                             text = stringResource(R.string.login),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
-                    },
-                    leadingIcon = {
+                    }, leadingIcon = {
                         AnimatedVisibility(isLogin) {
                             Icon(
-                                Icons.Default.Check,
-                                contentDescription = null,
-                                Modifier.size(
+                                Icons.Default.Check, contentDescription = null, Modifier.size(
                                     FilterChipDefaults.IconSize
                                 )
                             )
                         }
-                    },
-                    modifier = Modifier.padding(start = 8.dp)
+                    }, modifier = Modifier.padding(start = 8.dp)
                 )
             }
             Spacer(modifier = Modifier.size(8.dp))
@@ -221,8 +207,7 @@ fun DeviceSetupCard(
                     state = userState,
                     lineLimits = TextFieldLineLimits.SingleLine,
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Next
+                        keyboardType = KeyboardType.Text, imeAction = ImeAction.Next
                     ),
                     label = {
                         Text(
@@ -236,15 +221,11 @@ fun DeviceSetupCard(
                         .fillMaxWidth(0.5f)
                         .semantics {
                             contentType = ContentType.Username
-                        }
-                )
+                        })
                 OutlinedSecureTextField(
-                    state = passwordState,
-                    enabled = isLogin,
-                    trailingIcon = {
+                    state = passwordState, enabled = isLogin, trailingIcon = {
                         IconButton(
-                            onClick = { passwordVisible = ! passwordVisible },
-                            enabled = isLogin
+                            onClick = { passwordVisible = ! passwordVisible }, enabled = isLogin
                         ) {
                             when (passwordVisible) {
                                 true  -> {
@@ -261,29 +242,24 @@ fun DeviceSetupCard(
                                 }
                             }
                         }
-                    },
-                    keyboardOptions = KeyboardOptions(
+                    }, keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Done
-                    ),
-                    textObfuscationMode = if (! passwordVisible) {
+                    ), textObfuscationMode = if (! passwordVisible) {
                         TextObfuscationMode.Hidden
                     } else {
                         TextObfuscationMode.Visible
-                    },
-                    label = {
+                    }, label = {
                         Text(
                             text = stringResource(R.string.password),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
-                    },
-                    modifier = Modifier
+                    }, modifier = Modifier
                         .padding(start = 8.dp)
                         .fillMaxWidth(1f)
                         .semantics {
                             contentType = ContentType.Password
-                        }
-                )
+                        })
 
             }
         } else {
@@ -291,8 +267,7 @@ fun DeviceSetupCard(
                 state = nameState,
                 lineLimits = TextFieldLineLimits.SingleLine,
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next
+                    keyboardType = KeyboardType.Text, imeAction = ImeAction.Next
                 ),
                 label = {
                     Text(
@@ -301,16 +276,14 @@ fun DeviceSetupCard(
                         overflow = TextOverflow.Ellipsis
                     )
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.size(8.dp))
             OutlinedTextField(
                 state = ipState,
                 lineLimits = TextFieldLineLimits.SingleLine,
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Next
+                    keyboardType = KeyboardType.Number, imeAction = ImeAction.Next
                 ),
                 label = {
                     Text(
@@ -319,8 +292,7 @@ fun DeviceSetupCard(
                         overflow = TextOverflow.Ellipsis
                     )
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.size(8.dp))
             Row {
@@ -328,8 +300,7 @@ fun DeviceSetupCard(
                     state = portState,
                     lineLimits = TextFieldLineLimits.SingleLine,
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Next
+                        keyboardType = KeyboardType.Number, imeAction = ImeAction.Next
                     ),
                     label = {
                         Text(
@@ -346,8 +317,7 @@ fun DeviceSetupCard(
                     state = livePortState,
                     lineLimits = TextFieldLineLimits.SingleLine,
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = if (! isLogin) {
+                        keyboardType = KeyboardType.Number, imeAction = if (! isLogin) {
                             ImeAction.Done
                         } else {
                             ImeAction.Next
@@ -367,50 +337,40 @@ fun DeviceSetupCard(
             }
             Spacer(modifier = Modifier.size(8.dp))
             Row {
-                FilterChip(
-                    selected = isHttps, onClick = onHttpsChange,
-                    label = {
-                        Text(
-                            text = stringResource(R.string.https),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }, leadingIcon = {
-                        AnimatedVisibility(isHttps) {
-                            Icon(
-                                Icons.Default.Check,
-                                contentDescription = null,
-                                Modifier.size(
-                                    FilterChipDefaults.IconSize
-                                )
+                FilterChip(selected = isHttps, onClick = onHttpsChange, label = {
+                    Text(
+                        text = stringResource(R.string.https),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }, leadingIcon = {
+                    AnimatedVisibility(isHttps) {
+                        Icon(
+                            Icons.Default.Check, contentDescription = null, Modifier.size(
+                                FilterChipDefaults.IconSize
                             )
-                        }
-                    })
+                        )
+                    }
+                })
                 FilterChip(
-                    selected = isLogin,
-                    onClick = {
+                    selected = isLogin, onClick = {
                         passwordVisible = false
                         onLoginChange()
-                    },
-                    label = {
+                    }, label = {
                         Text(
                             text = stringResource(R.string.login),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
-                    },
-                    leadingIcon = {
+                    }, leadingIcon = {
                         AnimatedVisibility(isLogin) {
                             Icon(
-                                Icons.Default.Check,
-                                contentDescription = null,
-                                Modifier.size(
+                                Icons.Default.Check, contentDescription = null, Modifier.size(
                                     FilterChipDefaults.IconSize
                                 )
                             )
                         }
-                    },
-                    modifier = Modifier.padding(start = 8.dp)
+                    }, modifier = Modifier.padding(start = 8.dp)
                 )
             }
 
@@ -421,8 +381,7 @@ fun DeviceSetupCard(
                 state = userState,
                 lineLimits = TextFieldLineLimits.SingleLine,
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next
+                    keyboardType = KeyboardType.Text, imeAction = ImeAction.Next
                 ),
                 label = {
                     Text(
@@ -435,17 +394,13 @@ fun DeviceSetupCard(
                     .fillMaxWidth()
                     .semantics {
                         contentType = ContentType.Username
-                    }
-            )
+                    })
             Spacer(modifier = Modifier.size(8.dp))
 
             OutlinedSecureTextField(
-                state = passwordState,
-                enabled = isLogin,
-                trailingIcon = {
+                state = passwordState, enabled = isLogin, trailingIcon = {
                     IconButton(
-                        onClick = { passwordVisible = ! passwordVisible },
-                        enabled = isLogin
+                        onClick = { passwordVisible = ! passwordVisible }, enabled = isLogin
                     ) {
                         when (passwordVisible) {
                             true  -> {
@@ -462,28 +417,23 @@ fun DeviceSetupCard(
                             }
                         }
                     }
-                },
-                keyboardOptions = KeyboardOptions(
+                }, keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done
-                ),
-                textObfuscationMode = if (! passwordVisible) {
+                ), textObfuscationMode = if (! passwordVisible) {
                     TextObfuscationMode.Hidden
                 } else {
                     TextObfuscationMode.Visible
-                },
-                label = {
+                }, label = {
                     Text(
                         text = stringResource(R.string.password),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
-                },
-                modifier = Modifier
+                }, modifier = Modifier
                     .fillMaxWidth()
                     .semantics {
                         contentType = ContentType.Password
-                    }
-            )
+                    })
         }
     }
 }

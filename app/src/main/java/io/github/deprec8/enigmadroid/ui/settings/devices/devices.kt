@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2025-2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -76,8 +76,8 @@ import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.insets.topAppBarWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.utils.IntentUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -88,7 +88,7 @@ fun DevicesPage(
 ) {
 
     val currentDeviceId by devicesViewModel.currentDeviceId.collectAsStateWithLifecycle()
-    val devices by devicesViewModel.allDevices.collectAsStateWithLifecycle()
+    val devices by devicesViewModel.devices.collectAsStateWithLifecycle()
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val context = LocalContext.current
@@ -99,32 +99,26 @@ fun DevicesPage(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                windowInsets = topAppBarWithDrawerWindowInsets(),
-                title = {
-                    Text(
-                        text = stringResource(id = R.string.devices),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+            TopAppBar(windowInsets = topAppBarWithDrawerWindowInsets(), title = {
+                Text(
+                    text = stringResource(id = R.string.devices),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }, scrollBehavior = scrollBehavior, navigationIcon = {
+                IconButton(onClick = { onNavigateBack() }) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.navigate_back)
                     )
-                },
-                scrollBehavior = scrollBehavior,
-                navigationIcon = {
-                    IconButton(onClick = { onNavigateBack() }) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.navigate_back)
-                        )
-                    }
-                })
+                }
+            })
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick =
-                    {
-                        showAddDialog = true
-                    }
-            ) {
+                onClick = {
+                    showAddDialog = true
+                }) {
                 Icon(
                     Icons.Default.Add,
                     contentDescription = stringResource(id = R.string.add_device),
@@ -132,8 +126,7 @@ fun DevicesPage(
             }
         },
         contentWindowInsets = contentWithDrawerWindowInsets(),
-        modifier = Modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { innerPadding ->
         if (devices.isEmpty()) {
             Column(
@@ -158,7 +151,7 @@ fun DevicesPage(
                 contentPadding = innerPadding,
                 columns = GridCells.Adaptive(350.dp),
             ) {
-                itemsIndexed(devices, key = { index, device -> device.id }) { index, device ->
+                itemsIndexed(devices, key = { _, device -> device.id }) { index, device ->
                     var showDropDownMenu by rememberSaveable {
                         mutableStateOf(false)
                     }
@@ -169,26 +162,21 @@ fun DevicesPage(
                         mutableStateOf(false)
                     }
                     ListItem(
-                        headlineContent = { Text(text = device.name) },
-                        supportingContent = {
+                        headlineContent = { Text(text = device.name) }, supportingContent = {
                             Text(
-                                text = device.ip + ":" + device.port
+                                text = "${device.ip}:${device.port}"
                             )
-                        },
-                        modifier = Modifier
+                        }, modifier = Modifier
                             .clickable(
-                                onClick =
-                                    {
-                                        if (currentDeviceId != index) {
-                                            devicesViewModel.setCurrentDevice(index)
-                                        }
-                                    })
-                            .animateItem(),
-                        leadingContent = {
+                                onClick = {
+                                    if (currentDeviceId != index) {
+                                        devicesViewModel.setCurrentDevice(index)
+                                    }
+                                })
+                            .animateItem(), leadingContent = {
                             AnimatedVisibility(
                                 visible = currentDeviceId == index,
-                                enter =
-                                    expandIn(expandFrom = Alignment.Center) + fadeIn(),
+                                enter = expandIn(expandFrom = Alignment.Center) + fadeIn(),
                                 exit = shrinkOut(shrinkTowards = Alignment.Center) + fadeOut()
                             ) {
                                 Icon(
@@ -196,8 +184,7 @@ fun DevicesPage(
                                     contentDescription = stringResource(R.string.current_device)
                                 )
                             }
-                        },
-                        trailingContent = {
+                        }, trailingContent = {
                             IconButton(onClick = { showDropDownMenu = true }) {
                                 Icon(
                                     Icons.Default.MoreVert,
@@ -212,136 +199,117 @@ fun DevicesPage(
                                         text = { Text(stringResource(R.string.pin_shortcut)) },
                                         leadingIcon = {
                                             Icon(
-                                                Icons.Outlined.ResetTv,
-                                                contentDescription = null
+                                                Icons.Outlined.ResetTv, contentDescription = null
                                             )
                                         },
-                                        onClick =
-                                            {
-                                                showDropDownMenu = false
-                                                IntentUtils.pinDevice(
-                                                    context,
-                                                    device,
-                                                    index
-                                                )
+                                        onClick = {
+                                            showDropDownMenu = false
+                                            IntentUtils.pinDevice(
+                                                context, device, index
+                                            )
 
-                                            })
+                                        })
                                     DropdownMenuItem(
                                         text = { Text(stringResource(R.string.pin_webif)) },
                                         leadingIcon = {
                                             Icon(
-                                                Icons.Outlined.Web,
-                                                contentDescription = null
+                                                Icons.Outlined.Web, contentDescription = null
                                             )
                                         },
-                                        onClick =
-                                            {
-                                                showDropDownMenu = false
-                                                IntentUtils.pinOWIFDevice(
-                                                    context,
-                                                    device,
-                                                    devicesViewModel.makeDeviceOWIFURL(device)
-                                                )
+                                        onClick = {
+                                            showDropDownMenu = false
+                                            IntentUtils.pinOwifDevice(
+                                                context,
+                                                device,
+                                                devicesViewModel.buildDeviceOwifUrl(device)
+                                            )
 
-                                            })
+                                        })
                                     HorizontalDivider()
                                 }
                                 DropdownMenuItem(
                                     text = { Text(text = stringResource(R.string.edit)) },
                                     leadingIcon = {
                                         Icon(
-                                            Icons.Outlined.Edit,
-                                            contentDescription = null
+                                            Icons.Outlined.Edit, contentDescription = null
                                         )
                                     },
-                                    onClick =
-                                        {
-                                            showDropDownMenu = false
-                                            showEditDialog = true
+                                    onClick = {
+                                        showDropDownMenu = false
+                                        showEditDialog = true
 
-                                        })
+                                    })
 
                                 DropdownMenuItem(
                                     text = { Text(text = stringResource(R.string.delete)) },
                                     leadingIcon = {
                                         Icon(
-                                            Icons.Outlined.Delete,
-                                            contentDescription = null
+                                            Icons.Outlined.Delete, contentDescription = null
                                         )
                                     },
-                                    onClick =
-                                        {
-                                            showDropDownMenu = false
-                                            showDeleteDialog = true
-                                        }
-                                )
+                                    onClick = {
+                                        showDropDownMenu = false
+                                        showDeleteDialog = true
+                                    })
                             }
                         })
 
                     if (showDeleteDialog) {
                         AlertDialog(
-                            onDismissRequest =
-                                {
-                                    showDeleteDialog = false
+                            onDismissRequest = {
+                                showDeleteDialog = false
 
-                                },
+                            },
                             title = { Text(text = stringResource(R.string.delete_device)) },
                             text = { Text(text = stringResource(R.string.if_you_delete_this_device_it_will_not_be_recoverable)) },
                             icon = {
                                 Icon(
-                                    Icons.Outlined.Delete,
-                                    contentDescription = null
+                                    Icons.Outlined.Delete, contentDescription = null
                                 )
                             },
                             confirmButton = {
                                 TextButton(
-                                    onClick =
-                                        {
-                                            showDeleteDialog = false
-                                            shortcutManager.disableShortcuts(
-                                                listOf(
-                                                    "device_${device.id}",
-                                                    "openwebif_${device.id}"
-                                                )
+                                    onClick = {
+                                        showDeleteDialog = false
+                                        shortcutManager.disableShortcuts(
+                                            listOf(
+                                                "device_${device.id}", "openwebif_${device.id}"
                                             )
-                                            devicesViewModel.deleteDevice(index)
+                                        )
+                                        devicesViewModel.deleteDevice(index)
 
-                                        }) { Text(stringResource(R.string.confirm)) }
+                                    }) { Text(stringResource(R.string.confirm)) }
                             },
                             dismissButton = {
                                 TextButton(onClick = {
                                     showDeleteDialog = false
                                 }) { Text(stringResource(R.string.cancel)) }
-                            }
-                        )
+                            })
                     }
                     if (showEditDialog) {
                         DeviceSetupDialog(
-                            onDismiss = { showEditDialog = false },
+                            onDismissRequest = { showEditDialog = false },
                             oldDevice = device,
                             onSave = { newDevice, oldDevice ->
                                 oldDevice?.let {
                                     shortcutManager.updateShortcuts(
                                         listOf(
-                                            ShortcutInfo
-                                                .Builder(context, "openwebif_${it.id}")
-                                                .setShortLabel(newDevice.name + " (Web)").setIntent(
+                                            ShortcutInfo.Builder(context, "openwebif_${it.id}")
+                                                .setShortLabel("${newDevice.name} (Web)").setIntent(
                                                     Intent(
                                                         Intent.ACTION_DEFAULT,
                                                         devicesViewModel
-                                                            .makeDeviceOWIFURL(newDevice).toUri()
+                                                            .buildDeviceOwifUrl(newDevice).toUri()
                                                     )
                                                 ).build(),
-                                            ShortcutInfo
-                                                .Builder(context, "device_${it.id}")
+                                            ShortcutInfo.Builder(context, "device_${it.id}")
                                                 .setShortLabel(newDevice.name).build()
                                         )
                                     )
                                 }
                                 devicesViewModel.editDevice(oldDevice !!, newDevice)
                                 showEditDialog = false
-                            }
-                        )
+                            })
                     }
 
                 }
@@ -349,12 +317,11 @@ fun DevicesPage(
         }
         if (showAddDialog) {
             DeviceSetupDialog(
-                onDismiss = { showAddDialog = false },
+                onDismissRequest = { showAddDialog = false },
                 onSave = { newDevice, _ ->
                     devicesViewModel.addDevice(newDevice)
                     showAddDialog = false
-                }
-            )
+                })
         }
     }
 }

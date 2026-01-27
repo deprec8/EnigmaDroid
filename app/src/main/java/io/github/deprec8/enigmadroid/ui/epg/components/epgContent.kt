@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2025-2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -39,11 +39,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.model.api.Event
+import io.github.deprec8.enigmadroid.model.api.events.Event
 import io.github.deprec8.enigmadroid.model.menu.MenuItem
-import io.github.deprec8.enigmadroid.model.menu.MenuSection
-import io.github.deprec8.enigmadroid.ui.components.ContentListItem
+import io.github.deprec8.enigmadroid.model.menu.MenuItemGroup
 import io.github.deprec8.enigmadroid.ui.components.NoResults
+import io.github.deprec8.enigmadroid.ui.components.content.ContentListItem
 import io.github.deprec8.enigmadroid.utils.IntentUtils
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
 import kotlinx.coroutines.launch
@@ -54,7 +54,7 @@ fun EpgContent(
     paddingValues: PaddingValues,
     showChannelName: Boolean = false,
     highlightedWords: List<String> = emptyList(),
-    onAddTimer: (Event) -> Unit,
+    onAddTimerForEvent: (Event) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -80,22 +80,22 @@ fun EpgContent(
                             event.beginTimestamp
                         )
                     } + if (showChannelName) {
-                        " - " + event.serviceName
+                        " - ${event.serviceName}"
                     } else {
                         ""
                     },
                     shortDescription = event.shortDescription,
                     longDescription = event.longDescription,
-                    menuSections = if (event.beginTimestamp * 1000 > System.currentTimeMillis()) {
+                    menuItemGroups = if (event.beginTimestamp * 1000 > System.currentTimeMillis()) {
                         listOf(
-                            MenuSection(
+                            MenuItemGroup(
                                 listOf(
                                     MenuItem(
                                         text = stringResource(R.string.add_timer),
                                         outlinedIcon = Icons.Outlined.Timer,
                                         filledIcon = Icons.Filled.Timer,
                                         action = {
-                                            onAddTimer(event)
+                                            onAddTimerForEvent(event)
                                         }), MenuItem(
                                         text = stringResource(R.string.add_reminder),
                                         outlinedIcon = Icons.Outlined.AddAlert,

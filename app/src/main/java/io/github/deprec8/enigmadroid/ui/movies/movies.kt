@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 deprec8
+ * Copyright (C) 2025-2026 deprec8
  *
  * This file is part of EnigmaDroid.
  *
@@ -19,9 +19,6 @@
 
 package io.github.deprec8.enigmadroid.ui.movies
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -42,24 +39,18 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.Cast
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.PlayArrow
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -78,17 +69,21 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.model.api.Movie
+import io.github.deprec8.enigmadroid.model.api.movies.Movie
 import io.github.deprec8.enigmadroid.model.menu.MenuItem
-import io.github.deprec8.enigmadroid.model.menu.MenuSection
-import io.github.deprec8.enigmadroid.ui.components.ContentListItem
+import io.github.deprec8.enigmadroid.model.menu.MenuItemGroup
+import io.github.deprec8.enigmadroid.ui.components.FloatingRefreshButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
-import io.github.deprec8.enigmadroid.ui.components.SearchHistory
-import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.content.ContentListItem
+import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarDrawerNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarRemoteControlActionButton
+import io.github.deprec8.enigmadroid.ui.movies.components.DeleteMovieDialog
+import io.github.deprec8.enigmadroid.ui.movies.components.MoveMovieDialog
+import io.github.deprec8.enigmadroid.ui.movies.components.RenameMovieDialog
 import io.github.deprec8.enigmadroid.utils.IntentUtils
 import kotlinx.coroutines.launch
 
@@ -96,30 +91,31 @@ import kotlinx.coroutines.launch
 @Composable
 fun MoviesPage(
     onNavigateToRemoteControl: () -> Unit,
-    drawerState: DrawerState, moviesViewModel: MoviesViewModel = hiltViewModel()
+    drawerState: DrawerState,
+    moviesViewModel: MoviesViewModel = hiltViewModel()
 ) {
 
-    val movies by moviesViewModel.movies.collectAsStateWithLifecycle()
+    val movieBatches by moviesViewModel.movieBatches.collectAsStateWithLifecycle()
     val filteredMovies by moviesViewModel.filteredMovies.collectAsStateWithLifecycle()
     val searchHistory by moviesViewModel.searchHistory.collectAsStateWithLifecycle()
+    val loadingState by moviesViewModel.loadingState.collectAsStateWithLifecycle()
+    val searchInput by moviesViewModel.searchInput.collectAsStateWithLifecycle()
+    val useSearchHighlighting by moviesViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
+
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val pagerState = rememberPagerState(pageCount = { movies.size })
+    val pagerState = rememberPagerState(pageCount = { movieBatches.size })
     val selectedTabIndex = remember {
         derivedStateOf {
             pagerState.currentPage.coerceIn(
-                0,
-                (if (movies.size - 1 < 0) {
+                0, (if (movieBatches.size - 1 < 0) {
                     0
                 } else {
-                    movies.size - 1
+                    movieBatches.size - 1
                 })
             )
         }
     }
-    val loadingState by moviesViewModel.loadingState.collectAsStateWithLifecycle()
-    val searchInput by moviesViewModel.searchInput.collectAsStateWithLifecycle()
-    val useSearchHighlighting by moviesViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         moviesViewModel.updateLoadingState(false)
@@ -133,11 +129,11 @@ fun MoviesPage(
 
     @Composable
     fun Content(
-        list: List<Movie>,
+        movies: List<Movie>,
         paddingValues: PaddingValues,
         highlightedWords: List<String> = emptyList()
     ) {
-        if (list.isNotEmpty()) {
+        if (movies.isNotEmpty()) {
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(310.dp),
                 Modifier
@@ -146,7 +142,7 @@ fun MoviesPage(
                     .imePadding(),
                 contentPadding = paddingValues
             ) {
-                items(list) { movie ->
+                items(movies) { movie ->
                     var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
                     var showRenameDialog by rememberSaveable { mutableStateOf(false) }
                     var showMoveDialog by rememberSaveable { mutableStateOf(false) }
@@ -154,16 +150,14 @@ fun MoviesPage(
                     ContentListItem(
                         highlightedWords = highlightedWords,
                         headlineText = movie.eventName,
-                        overlineText = if (movie.serviceName != "") {
-                            movie.serviceName
-                        } else {
+                        overlineText = movie.serviceName.ifBlank {
                             null
                         },
-                        supportingText = movie.begin + " / " + movie.length + " / " + movie.filesizeReadable,
+                        supportingText = "${movie.begin} / ${movie.length} / ${movie.filesizeReadable}",
                         shortDescription = movie.shortDescription,
                         longDescription = movie.longDescription,
-                        menuSections = listOf(
-                            MenuSection(
+                        menuItemGroups = listOf(
+                            MenuItemGroup(
                                 listOf(
                                     MenuItem(
                                         text = stringResource(R.string.stream),
@@ -173,23 +167,20 @@ fun MoviesPage(
                                             scope.launch {
                                                 IntentUtils.playMedia(
                                                     context,
-                                                    moviesViewModel.buildStreamUrl(movie.fileName),
+                                                    moviesViewModel.buildMovieStreamUrl(movie.fileName),
                                                     movie.eventName
                                                 )
                                             }
-                                        }
-                                    ),
-                                    MenuItem(
+                                        }), MenuItem(
                                         text = stringResource(R.string.switch_channel),
                                         outlinedIcon = Icons.Outlined.PlayArrow,
                                         filledIcon = Icons.Filled.PlayArrow,
                                         action = {
-                                            moviesViewModel.play(movie.serviceReference)
-                                        }
-                                    )
+                                            moviesViewModel.playOnDevice(movie.serviceReference)
+                                        })
                                 )
                             ),
-                            MenuSection(
+                            MenuItemGroup(
                                 listOf(
                                     MenuItem(
                                         text = stringResource(R.string.download),
@@ -197,142 +188,57 @@ fun MoviesPage(
                                         filledIcon = Icons.Filled.Download,
                                         action = {
                                             moviesViewModel.downloadMovie(movie)
-                                        }
-                                    ))
+                                        })
+                                )
                             ),
                         ),
-                        editMenuSection = MenuSection(
+                        editMenuItemGroup = MenuItemGroup(
                             listOf(
                                 MenuItem(
                                     text = stringResource(R.string.rename),
                                     outlinedIcon = Icons.Outlined.Edit,
                                     filledIcon = Icons.Filled.Edit,
-                                    action = { showRenameDialog = true }
-                                ),
-                                MenuItem(
+                                    action = { showRenameDialog = true }), MenuItem(
                                     text = stringResource(R.string.move),
                                     outlinedIcon = Icons.AutoMirrored.Outlined.DriveFileMove,
                                     filledIcon = Icons.AutoMirrored.Filled.DriveFileMove,
-                                    action = { showMoveDialog = true }
-                                ),
-                                MenuItem(
+                                    action = { showMoveDialog = true }), MenuItem(
                                     text = stringResource(R.string.delete),
                                     outlinedIcon = Icons.Outlined.Delete,
                                     filledIcon = Icons.Filled.Delete,
-                                    action = { showDeleteDialog = true }
-                                )
+                                    action = { showDeleteDialog = true })
                             )
                         )
                     )
 
                     if (showDeleteDialog) {
-                        AlertDialog(
-                            onDismissRequest = {
+                        DeleteMovieDialog(
+                            onDismissRequest = { showDeleteDialog = false },
+                            onConfirmRequest = {
                                 showDeleteDialog = false
-                            },
-                            title = { Text(text = stringResource(R.string.delete_movie)) },
-                            text = { Text(text = stringResource(R.string.if_you_delete_this_movie_it_will_not_be_recoverable)) },
-                            icon = {
-                                Icon(
-                                    Icons.Outlined.Delete,
-                                    contentDescription = null
-                                )
-                            },
-                            confirmButton = {
-                                TextButton(onClick = {
-                                    showDeleteDialog = false
-                                    moviesViewModel.delete(movie.serviceReference)
-                                }) { Text(stringResource(R.string.confirm)) }
-                            },
-                            dismissButton = {
-                                TextButton(onClick = {
-                                    showDeleteDialog = false
-                                }) { Text(stringResource(R.string.cancel)) }
-                            }
-                        )
+                                moviesViewModel.delete(movie.serviceReference)
+                            })
                     }
 
                     if (showRenameDialog) {
-                        var renameInput by rememberSaveable {
-                            mutableStateOf(movie.eventName)
-                        }
-                        AlertDialog(
-                            onDismissRequest = {
+                        RenameMovieDialog(
+                            movie,
+                            onDismissRequest = { showRenameDialog = false },
+                            onConfirmRequest = { input ->
                                 showRenameDialog = false
-                            },
-                            title = { Text(text = stringResource(R.string.rename_movie)) },
-                            icon = {
-                                Icon(
-                                    Icons.Outlined.Edit,
-                                    contentDescription = null
+                                moviesViewModel.rename(
+                                    movie.serviceReference, input
                                 )
-                            },
-                            text = {
-                                OutlinedTextField(
-                                    value = renameInput,
-                                    onValueChange = { renameInput = it }, label = {
-                                        Text(
-                                            text = stringResource(R.string.new_name)
-                                        )
-                                    })
-                            },
-                            confirmButton = {
-                                TextButton(
-                                    onClick = {
-                                        showRenameDialog = false
-                                        moviesViewModel.rename(
-                                            movie.serviceReference,
-                                            renameInput
-                                        )
-                                    },
-                                    enabled = renameInput != movie.eventName && ! renameInput.isBlank()
-                                ) { Text(stringResource(R.string.confirm)) }
-                            },
-                            dismissButton = {
-                                TextButton(onClick = {
-                                    showRenameDialog = false
-                                }) { Text(stringResource(R.string.cancel)) }
-                            }
-                        )
+                            })
                     }
 
                     if (showMoveDialog) {
-                        var moveInput by rememberSaveable {
-                            mutableStateOf("")
-                        }
-                        AlertDialog(
-                            onDismissRequest = {
+                        MoveMovieDialog(
+                            onDismissRequest = { showMoveDialog = false },
+                            onConfirmRequest = {
                                 showMoveDialog = false
-                            },
-                            title = { Text(text = stringResource(R.string.move_movie)) },
-                            text = {
-                                OutlinedTextField(
-                                    prefix = { Text("/") },
-                                    value = moveInput,
-                                    onValueChange = { moveInput = it }, label = {
-                                        Text(
-                                            text = stringResource(R.string.new_location)
-                                        )
-                                    })
-                            },
-                            icon = {
-                                Icon(
-                                    Icons.AutoMirrored.Outlined.DriveFileMove,
-                                    contentDescription = null
-                                )
-                            },
-                            confirmButton = {
-                                TextButton(onClick = {
-                                    showMoveDialog = false
-                                    moviesViewModel.move(movie.serviceReference, moveInput)
-                                }) { Text(stringResource(R.string.confirm)) }
-                            },
-                            dismissButton = {
-                                TextButton(onClick = {
-                                    showMoveDialog = false
-                                }) { Text(stringResource(R.string.cancel)) }
-                            }
-                        )
+                                moviesViewModel.move(movie.serviceReference, it)
+                            })
                     }
                 }
             }
@@ -345,99 +251,77 @@ fun MoviesPage(
         }
     }
 
-    Scaffold(
-        floatingActionButton = {
-            AnimatedVisibility(
-                loadingState == LoadingState.LOADED,
-                enter = scaleIn(),
-                exit = scaleOut()
-            ) {
-                FloatingActionButton(onClick = {
-                    moviesViewModel.fetchData()
-                }) {
-                    Icon(
-                        Icons.Default.Refresh,
-                        contentDescription = stringResource(R.string.refresh_page)
-                    )
+    Scaffold(floatingActionButton = {
+        FloatingRefreshButton(loadingState, { moviesViewModel.fetchData() })
+    }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
+        SearchTopAppBar(
+            enabled = movieBatches.isNotEmpty(),
+            textFieldState = moviesViewModel.searchFieldState,
+            placeholder = stringResource(R.string.search_movies),
+            content = {
+                if (filteredMovies != null) {
+                    Content(
+                        movies = filteredMovies !!,
+                        paddingValues = PaddingValues(0.dp),
+                        highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
+                            .filter { it.isNotBlank() } else emptyList())
+                } else {
+                    SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
+                        moviesViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
+                        moviesViewModel.updateSearchInput()
+                    }, onTermInsertClick = {
+                        moviesViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
+                            it
+                        )
+                    })
                 }
-            }
-        },
-        contentWindowInsets = contentWithDrawerWindowInsets(),
-        topBar = {
-            SearchTopAppBar(
-                enabled = movies.isNotEmpty(),
-                textFieldState = moviesViewModel.searchFieldState,
-                placeholder = stringResource(R.string.search_movies),
-                content = {
-                    if (filteredMovies != null) {
-                        Content(
-                            list = filteredMovies !!,
-                            paddingValues = PaddingValues(0.dp),
-                            highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
-                                .filter { it.isNotBlank() } else emptyList()
-                        )
-                    } else {
-                        SearchHistory(
-                            searchHistory = searchHistory,
-                            onTermSearchClick = {
-                                moviesViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
-                                moviesViewModel.updateSearchInput()
-                            },
-                            onTermInsertClick = {
-                                moviesViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
-                                    it
-                                )
-                            }
-                        )
-                    }
-                },
-                navigationButton = { searchBarState ->
-                    SearchTopAppBarDrawerNavigationButton(drawerState, searchBarState)
-                },
-                actionButtons = {
-                    SearchTopAppBarRemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
-                },
-                onSearch = {
-                    moviesViewModel.updateSearchInput()
-                },
-                tabBar = {
-                    if (movies.isNotEmpty()) {
-                        PrimaryScrollableTabRow(
-                            selectedTabIndex = selectedTabIndex.value,
-                            divider = { },
-                            scrollState = rememberScrollState()
-                        ) {
-                            movies.forEachIndexed { index, movieList ->
-                                Tab(
-                                    text = {
-                                        Text(
-                                            text = movieList.bookmark.displayName,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                    },
-                                    onClick = {
-                                        scope.launch { pagerState.animateScrollToPage(index) }
-                                    },
-                                    selected = index == selectedTabIndex.value,
-                                )
-                            }
+            },
+            navigationButton = { searchBarState ->
+                SearchTopAppBarDrawerNavigationButton(drawerState, searchBarState)
+            },
+            actionButtons = {
+                SearchTopAppBarRemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
+            },
+            onSearch = {
+                moviesViewModel.updateSearchInput()
+            },
+            tabBar = {
+                if (movieBatches.isNotEmpty()) {
+                    PrimaryScrollableTabRow(
+                        selectedTabIndex = selectedTabIndex.value,
+                        divider = { },
+                        scrollState = rememberScrollState()
+                    ) {
+                        movieBatches.forEachIndexed { index, movieBatch ->
+                            Tab(
+                                text = {
+                                    Text(
+                                        text = movieBatch.bookmark.displayName,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                },
+                                onClick = {
+                                    scope.launch { pagerState.animateScrollToPage(index) }
+                                },
+                                selected = index == selectedTabIndex.value,
+                            )
                         }
-                        HorizontalDivider()
-
                     }
-                }
-            )
+                    HorizontalDivider()
 
-        }
+                }
+            })
+
+    }
 
     ) { innerPadding ->
-        if (movies.isNotEmpty()) {
+        if (movieBatches.isNotEmpty()) {
             HorizontalPager(
                 modifier = Modifier.fillMaxSize(),
                 state = pagerState,
             ) { index ->
-                Content(list = movies[index].movies, innerPadding)
+                Content(movies = movieBatches[index].movies, innerPadding)
             }
         } else {
             LoadingScreen(
@@ -445,14 +329,13 @@ fun MoviesPage(
                     .consumeWindowInsets(innerPadding)
                     .padding(innerPadding),
 
-                updateLoadingState = {
+                onUpdateLoadingState = {
                     scope.launch {
                         moviesViewModel.updateLoadingState(
                             it
                         )
                     }
-                },
-                loadingState = loadingState
+                }, loadingState = loadingState
             )
 
         }
