@@ -213,4 +213,8 @@
     <string name="code">Código: %1$d</string>
     <string name="no_network_available">No hay red disponible</string>
     <string name="connect_to_a_network">Conectarse a una red</string>
+    <string name="open_bouquet_menu">Abrir menú de bouquet</string>
+    <string name="current_bouquet">Rama actual</string>
+    <string name="search_epg_for">Buscar EPG por %1$s</string>
+    <string name="service_epg">Servicio EPG</string>
 </resources>
