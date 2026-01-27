@@ -164,7 +164,6 @@
     <string name="refresh_page">Seite neu laden</string>
     <string name="issue_tracker">Fehlerverfolgung</string>
     <string name="ok">OK</string>
-    <string name="toggle_time_picker_type">Art der Zeitauswahl umschalten</string>
     <string name="begin_date">Anfangsdatum</string>
     <string name="begin_time">Anfangszeit</string>
     <string name="end_date">Enddatum</string>
@@ -200,7 +199,6 @@
     <string name="highlight_matches">Treffer hervorheben</string>
     <string name="highlight_matches_in_search_results">Treffer in Suchergebnissen hervorheben.</string>
     <string name="translation">Übersetzung</string>
-    <string name="epg_for">EPG für %1$s</string>
     <string name="view_epg">EPG anzeigen</string>
     <string name="view_epg_for_current_channel">EPG für aktuellen Kanal anzeigen</string>
     <string name="all">Alle</string>

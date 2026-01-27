@@ -96,7 +96,7 @@ fun SignalPage(
 
     Scaffold(
         floatingActionButton = {
-            FloatingRefreshButton(loadingState, { signalViewModel.fetchData() })
+            FloatingRefreshButton(loadingState) { signalViewModel.fetchData() }
         }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
             TopAppBar(
                 windowInsets = topAppBarWithDrawerWindowInsets(),

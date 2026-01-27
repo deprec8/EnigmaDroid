@@ -101,7 +101,7 @@ fun CurrentPage(
 
     Scaffold(
         floatingActionButton = {
-            FloatingRefreshButton(loadingState, { currentViewModel.fetchData() })
+            FloatingRefreshButton(loadingState) { currentViewModel.fetchData() }
         },
         contentWindowInsets = contentWithDrawerWindowInsets(),
         topBar = {

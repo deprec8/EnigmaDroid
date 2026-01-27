@@ -175,7 +175,6 @@
     <string name="issue_tracker">Issue tracker</string>
     <string name="app_issue_url" translatable="false">https://github.com/deprec8/EnigmaDroid/issues</string>
     <string name="ok">OK</string>
-    <string name="toggle_time_picker_type">Toggle time picker type</string>
     <string name="begin_date">Begin date</string>
     <string name="begin_time">Begin time</string>
     <string name="end_date">End date</string>

@@ -103,7 +103,7 @@ fun RadioEpgPage(
     }
 
     Scaffold(floatingActionButton = {
-        FloatingRefreshButton(loadingState, { radioEpgViewModel.fetchData() })
+        FloatingRefreshButton(loadingState) { radioEpgViewModel.fetchData() }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
             enabled = eventBatchSet.eventBatches.isNotEmpty() && loadingState == LoadingState.LOADED,
@@ -136,8 +136,8 @@ fun RadioEpgPage(
                 Row {
                     BouquetMenu(
                         bouquets,
-                        currentBouquet,
-                        { bRef -> radioEpgViewModel.setCurrentBouquet(bRef) })
+                        currentBouquet
+                    ) { bRef -> radioEpgViewModel.setCurrentBouquet(bRef) }
                     SearchTopAppBarRemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
                 }
             },

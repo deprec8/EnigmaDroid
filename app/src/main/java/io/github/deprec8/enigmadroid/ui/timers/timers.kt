@@ -284,7 +284,7 @@ fun TimersPage(
                     )
 
                     if (showLogDialog) {
-                        TimerLogDialog(timer, { showLogDialog = false })
+                        TimerLogDialog(timer) { showLogDialog = false }
                     }
 
                     if (showDeleteDialog) {

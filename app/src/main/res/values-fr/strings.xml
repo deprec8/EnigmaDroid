@@ -164,7 +164,6 @@
     <string name="refresh_page">Actualiser la page</string>
     <string name="issue_tracker">Suivi des problèmes</string>
     <string name="ok">OK</string>
-    <string name="toggle_time_picker_type">Changer le type de sélecteur d’heure</string>
     <string name="begin_date">Date de début</string>
     <string name="begin_time">Heure de début</string>
     <string name="end_date">Date de fin</string>
@@ -200,7 +199,6 @@
     <string name="highlight_matches">Surligner les correspondances</string>
     <string name="highlight_matches_in_search_results">Surligner les correspondances dans les résultats de recherche.</string>
     <string name="translation">Traduction</string>
-    <string name="epg_for">EPG pour %1$s</string>
     <string name="view_epg">Voir EPG</string>
     <string name="view_epg_for_current_channel">Voir EPG pour le canal actuel</string>
     <string name="all">Tous</string>

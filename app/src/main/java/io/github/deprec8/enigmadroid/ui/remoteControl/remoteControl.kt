@@ -120,11 +120,11 @@ fun RemoteControlPage(
                 }
             }, scrollBehavior = scrollBehavior, actions = {
                 Row {
-                    DeviceText(loadingState, currentDevice, {
+                    DeviceText(loadingState, currentDevice) {
                         scope.launch {
                             remoteControlViewModel.updateLoadingState(true)
                         }
-                    })
+                    }
                     if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)) {
                         IconButton(
                             onClick = { showNumbers = true },

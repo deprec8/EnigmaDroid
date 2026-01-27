@@ -99,7 +99,7 @@ fun RadioPage(
     }
 
     Scaffold(floatingActionButton = {
-        FloatingRefreshButton(loadingState, { radioViewModel.fetchData() })
+        FloatingRefreshButton(loadingState) { radioViewModel.fetchData() }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
             enabled = eventBatches.isNotEmpty(),

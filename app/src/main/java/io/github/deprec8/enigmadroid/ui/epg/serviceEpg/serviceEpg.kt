@@ -78,7 +78,7 @@ fun ServiceEpgPage(
 
     Scaffold(
         floatingActionButton = {
-            FloatingRefreshButton(loadingState, { serviceEpgViewModel.fetchData(serviceReference) })
+            FloatingRefreshButton(loadingState) { serviceEpgViewModel.fetchData(serviceReference) }
         },
         contentWindowInsets = contentWithDrawerWindowInsets(),
         topBar = {

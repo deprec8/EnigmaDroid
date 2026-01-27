@@ -17,6 +17,8 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+package io.github.deprec8.enigmadroid.utils
+
 import io.github.deprec8.enigmadroid.model.api.timers.LogEntry
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
@@ -46,9 +48,7 @@ object LogEntrySerializer : KSerializer<List<LogEntry>> {
             val message = entryArray.getOrNull(2) ?: throw IllegalStateException("Missing message")
 
             LogEntry(
-                timestamp = timestampString.toLong(),
-                code = codeString.toInt(),
-                message = message
+                timestamp = timestampString.toLong(), code = codeString.toInt(), message = message
             )
         }
     }

@@ -19,8 +19,8 @@
 
 package io.github.deprec8.enigmadroid.model.api.timers
 
-import LogEntrySerializer
 import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
+import io.github.deprec8.enigmadroid.utils.LogEntrySerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

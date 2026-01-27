@@ -89,7 +89,7 @@ fun DeviceInfoPage(
 
     Scaffold(
         floatingActionButton = {
-            FloatingRefreshButton(loadingState, { deviceInfoViewModel.fetchData() })
+            FloatingRefreshButton(loadingState) { deviceInfoViewModel.fetchData() }
         },
         contentWindowInsets = contentWithDrawerWindowInsets(),
         topBar = {

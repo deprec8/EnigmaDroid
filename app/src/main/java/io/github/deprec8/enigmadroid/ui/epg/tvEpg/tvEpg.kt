@@ -102,7 +102,7 @@ fun TvEpgPage(
     }
 
     Scaffold(floatingActionButton = {
-        FloatingRefreshButton(loadingState, { tvEpgViewModel.fetchData() })
+        FloatingRefreshButton(loadingState) { tvEpgViewModel.fetchData() }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
             enabled = eventBatchSet.eventBatches.isNotEmpty(),
@@ -135,8 +135,8 @@ fun TvEpgPage(
                 Row {
                     BouquetMenu(
                         bouquets,
-                        currentBouquet,
-                        { bRef -> tvEpgViewModel.setCurrentBouquet(bRef) })
+                        currentBouquet
+                    ) { bRef -> tvEpgViewModel.setCurrentBouquet(bRef) }
                     SearchTopAppBarRemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
                 }
             },
