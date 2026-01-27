@@ -30,6 +30,7 @@ import io.github.deprec8.enigmadroid.data.source.local.devices.DeviceDatabase
 import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -43,17 +44,11 @@ class DevicesRepository @Inject constructor(
     private val currentDeviceKey = intPreferencesKey(PreferenceKey.CURRENT_DEVICE)
     private val loadingStateKey = intPreferencesKey(PreferenceKey.LOADING_STATE)
 
-    fun getCurrentDeviceId(): Flow<Int> {
-        return dataStore.data.map { preferences ->
-            preferences[currentDeviceKey] ?: 0
-        }
-    }
-
-    suspend fun setCurrentDeviceId(listId: Int) {
+    suspend fun updateLoadingState() {
         dataStore.edit { preferences ->
-            preferences[currentDeviceKey] = listId
             preferences[loadingStateKey] = LoadingState.LOADING.id
         }
+
         if (networkDataSource.isNetworkAvailable()) {
             if (networkDataSource.isDeviceOnline()) {
                 dataStore.edit { preferences ->
@@ -65,6 +60,19 @@ class DevicesRepository @Inject constructor(
                 preferences[loadingStateKey] = LoadingState.NO_NETWORK_AVAILABLE.id
             }
         }
+    }
+
+    fun getCurrentDeviceId(): Flow<Int> {
+        return dataStore.data.map { preferences ->
+            preferences[currentDeviceKey] ?: 0
+        }
+    }
+
+    suspend fun setCurrentDeviceId(listId: Int) {
+        dataStore.edit { preferences ->
+            preferences[currentDeviceKey] = listId
+        }
+        updateLoadingState()
     }
 
     fun getCurrentDevice(): Flow<Device?> {
@@ -92,29 +100,13 @@ class DevicesRepository @Inject constructor(
 
     suspend fun editDevice(oldDevice: Device, newDevice: Device) {
         deviceDatabase.deviceDao().update(newDevice.copy(id = oldDevice.id))
-        if (networkDataSource.isDeviceOnline()) {
-            dataStore.edit { preferences ->
-                preferences[loadingStateKey] = LoadingState.LOADED.id
-            }
-        } else {
-            dataStore.edit { preferences ->
-                preferences[loadingStateKey] = LoadingState.DEVICE_NOT_ONLINE.id
-            }
-        }
+        updateLoadingState()
     }
 
     suspend fun addDevice(device: Device) {
         deviceDatabase.deviceDao().insert(device)
-        if (deviceDatabase.deviceDao().getAll().firstOrNull() !!.size == 1) {
-            if (networkDataSource.isDeviceOnline()) {
-                dataStore.edit { preferences ->
-                    preferences[loadingStateKey] = LoadingState.LOADED.id
-                }
-            } else {
-                dataStore.edit { preferences ->
-                    preferences[loadingStateKey] = LoadingState.DEVICE_NOT_ONLINE.id
-                }
-            }
+        if (deviceDatabase.deviceDao().getAll().first().size == 1) {
+            updateLoadingState()
         }
     }
 }
