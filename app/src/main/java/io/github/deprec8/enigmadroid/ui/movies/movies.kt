@@ -19,9 +19,6 @@
 
 package io.github.deprec8.enigmadroid.ui.movies
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -42,7 +39,6 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.Cast
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Download
@@ -51,7 +47,6 @@ import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
@@ -81,6 +76,7 @@ import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.model.api.movies.Movie
 import io.github.deprec8.enigmadroid.model.menu.MenuItem
 import io.github.deprec8.enigmadroid.model.menu.MenuItemGroup
+import io.github.deprec8.enigmadroid.ui.components.FloatingRefreshButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.content.ContentListItem
@@ -333,18 +329,7 @@ fun MoviesPage(
     }
 
     Scaffold(floatingActionButton = {
-        AnimatedVisibility(
-            loadingState == LoadingState.LOADED, enter = scaleIn(), exit = scaleOut()
-        ) {
-            FloatingActionButton(onClick = {
-                moviesViewModel.fetchData()
-            }) {
-                Icon(
-                    Icons.Default.Refresh,
-                    contentDescription = stringResource(R.string.refresh_page)
-                )
-            }
-        }
+        FloatingRefreshButton(loadingState, { moviesViewModel.fetchData() })
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
             enabled = movieBatches.isNotEmpty(),

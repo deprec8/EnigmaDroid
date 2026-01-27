@@ -19,9 +19,6 @@
 
 package io.github.deprec8.enigmadroid.ui.epg.radioEpg
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -31,13 +28,9 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
@@ -56,6 +49,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
+import io.github.deprec8.enigmadroid.ui.components.FloatingRefreshButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
@@ -109,18 +103,7 @@ fun RadioEpgPage(
     }
 
     Scaffold(floatingActionButton = {
-        AnimatedVisibility(
-            loadingState == LoadingState.LOADED, enter = scaleIn(), exit = scaleOut()
-        ) {
-            FloatingActionButton(onClick = {
-                radioEpgViewModel.fetchData()
-            }) {
-                Icon(
-                    Icons.Default.Refresh,
-                    contentDescription = stringResource(R.string.refresh_page)
-                )
-            }
-        }
+        FloatingRefreshButton(loadingState, { radioEpgViewModel.fetchData() })
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
             enabled = eventBatchSet.eventBatches.isNotEmpty() && loadingState == LoadingState.LOADED,

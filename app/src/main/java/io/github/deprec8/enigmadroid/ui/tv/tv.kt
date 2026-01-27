@@ -19,9 +19,6 @@
 
 package io.github.deprec8.enigmadroid.ui.tv
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,16 +36,13 @@ import androidx.compose.material.icons.automirrored.filled.Dvr
 import androidx.compose.material.icons.automirrored.outlined.Dvr
 import androidx.compose.material.icons.filled.Cast
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Videocam
 import androidx.compose.material.icons.outlined.Cast
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.Videocam
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
@@ -72,6 +66,7 @@ import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.model.api.events.Event
 import io.github.deprec8.enigmadroid.model.menu.MenuItem
 import io.github.deprec8.enigmadroid.model.menu.MenuItemGroup
+import io.github.deprec8.enigmadroid.ui.components.FloatingRefreshButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.content.ContentListItem
@@ -214,18 +209,7 @@ fun TvPage(
     }
 
     Scaffold(floatingActionButton = {
-        AnimatedVisibility(
-            loadingState == LoadingState.LOADED, enter = scaleIn(), exit = scaleOut()
-        ) {
-            FloatingActionButton(onClick = {
-                tvViewModel.fetchData()
-            }) {
-                Icon(
-                    Icons.Default.Refresh,
-                    contentDescription = stringResource(R.string.refresh_page)
-                )
-            }
-        }
+        FloatingRefreshButton(loadingState, { tvViewModel.fetchData() })
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
             textFieldState = tvViewModel.searchFieldState,

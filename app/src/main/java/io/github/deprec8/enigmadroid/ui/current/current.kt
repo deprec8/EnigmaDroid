@@ -19,9 +19,6 @@
 
 package io.github.deprec8.enigmadroid.ui.current
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -35,10 +32,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dialpad
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -67,6 +62,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
+import io.github.deprec8.enigmadroid.ui.components.FloatingRefreshButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.insets.topAppBarWithDrawerWindowInsets
@@ -105,18 +101,7 @@ fun CurrentPage(
 
     Scaffold(
         floatingActionButton = {
-            AnimatedVisibility(
-                loadingState == LoadingState.LOADED, enter = scaleIn(), exit = scaleOut()
-            ) {
-                FloatingActionButton(onClick = {
-                    currentViewModel.fetchData()
-                }) {
-                    Icon(
-                        Icons.Default.Refresh,
-                        contentDescription = stringResource(R.string.refresh_page)
-                    )
-                }
-            }
+            FloatingRefreshButton(loadingState, { currentViewModel.fetchData() })
         },
         contentWindowInsets = contentWithDrawerWindowInsets(),
         topBar = {

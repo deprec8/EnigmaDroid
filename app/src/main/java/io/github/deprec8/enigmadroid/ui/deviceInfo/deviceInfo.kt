@@ -19,9 +19,6 @@
 
 package io.github.deprec8.enigmadroid.ui.deviceInfo
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -32,10 +29,8 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dialpad
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -60,6 +55,7 @@ import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.model.api.device.DeviceInfo
+import io.github.deprec8.enigmadroid.ui.components.FloatingRefreshButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
@@ -93,19 +89,7 @@ fun DeviceInfoPage(
 
     Scaffold(
         floatingActionButton = {
-            AnimatedVisibility(
-                loadingState == LoadingState.LOADED, enter = scaleIn(), exit = scaleOut()
-            ) {
-                FloatingActionButton(
-                    onClick = {
-                        deviceInfoViewModel.fetchData()
-                    }) {
-                    Icon(
-                        Icons.Default.Refresh,
-                        contentDescription = stringResource(R.string.refresh_page)
-                    )
-                }
-            }
+            FloatingRefreshButton(loadingState, { deviceInfoViewModel.fetchData() })
         },
         contentWindowInsets = contentWithDrawerWindowInsets(),
         topBar = {

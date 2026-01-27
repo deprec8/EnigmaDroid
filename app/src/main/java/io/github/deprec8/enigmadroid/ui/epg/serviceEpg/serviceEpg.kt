@@ -19,18 +19,13 @@
 
 package io.github.deprec8.enigmadroid.ui.epg.serviceEpg
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -45,6 +40,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
+import io.github.deprec8.enigmadroid.ui.components.FloatingRefreshButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
@@ -82,19 +78,7 @@ fun ServiceEpgPage(
 
     Scaffold(
         floatingActionButton = {
-            AnimatedVisibility(
-                loadingState == LoadingState.LOADED, enter = scaleIn(), exit = scaleOut()
-            ) {
-                FloatingActionButton(
-                    onClick = {
-                        serviceEpgViewModel.fetchData(sRef)
-                    }) {
-                    Icon(
-                        Icons.Default.Refresh,
-                        contentDescription = stringResource(R.string.refresh_page)
-                    )
-                }
-            }
+            FloatingRefreshButton(loadingState, { serviceEpgViewModel.fetchData(sRef) })
         },
         contentWindowInsets = contentWithDrawerWindowInsets(),
         topBar = {
