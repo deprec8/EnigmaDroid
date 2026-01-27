@@ -25,7 +25,7 @@ import kotlinx.serialization.Serializable
 sealed class MainPages : Page {
 
     @Serializable
-    data object TV : MainPages()
+    data object Tv : MainPages()
 
     @Serializable
     data object TvEpg : MainPages()

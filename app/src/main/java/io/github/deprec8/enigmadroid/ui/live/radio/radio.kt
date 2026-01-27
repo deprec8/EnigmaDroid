@@ -119,7 +119,7 @@ fun RadioPage(
                             )
                         },
                         onPlayOnDevice = {
-                            radioViewModel.play(it)
+                            radioViewModel.playOnDevice(it)
                         },
                         onAddTimerForEvent = {
                             radioViewModel.addTimerForEvent(it)
@@ -193,7 +193,7 @@ fun RadioPage(
                         )
                     },
                     onPlayOnDevice = {
-                        radioViewModel.play(it)
+                        radioViewModel.playOnDevice(it)
                     },
                     onAddTimerForEvent = {
                         radioViewModel.addTimerForEvent(it)

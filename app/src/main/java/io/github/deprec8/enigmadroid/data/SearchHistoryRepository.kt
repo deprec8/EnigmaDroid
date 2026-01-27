@@ -51,9 +51,9 @@ class SearchHistoryRepository @Inject constructor(private val dataStore: DataSto
 
     suspend fun setUseSearchHistory(useSearchHistory: Boolean) {
         if (! useSearchHistory) {
-            clearTVSearchHistory()
+            clearTvSearchHistory()
             clearRadioSearchHistory()
-            clearTVEpgSearchHistory()
+            clearTvEpgSearchHistory()
             clearRadioEpgSearchHistory()
             clearMoviesSearchHistory()
             clearTimersSearchHistory()
@@ -68,7 +68,7 @@ class SearchHistoryRepository @Inject constructor(private val dataStore: DataSto
         (preferences[tvSearchHistoryKey] ?: emptySet()).reversed()
     }
 
-    suspend fun addToTVSearchHistory(string: String) {
+    suspend fun addToTvSearchHistory(string: String) {
         if (getUseSearchHistory().first()) {
             dataStore.edit { preferences ->
                 preferences[tvSearchHistoryKey] = dataStore.data.map { preferences ->
@@ -80,7 +80,7 @@ class SearchHistoryRepository @Inject constructor(private val dataStore: DataSto
         }
     }
 
-    suspend fun clearTVSearchHistory() {
+    suspend fun clearTvSearchHistory() {
         dataStore.edit { preferences ->
             preferences[tvSearchHistoryKey] = emptySet()
         }
@@ -134,7 +134,7 @@ class SearchHistoryRepository @Inject constructor(private val dataStore: DataSto
         (preferences[tvEpgSearchHistoryKey] ?: emptySet()).reversed()
     }
 
-    suspend fun addToTVEpgSearchHistory(string: String) {
+    suspend fun addToTvEpgSearchHistory(string: String) {
         if (getUseSearchHistory().first()) {
             dataStore.edit { preferences ->
                 preferences[tvEpgSearchHistoryKey] = dataStore.data.map { preferences ->
@@ -146,7 +146,7 @@ class SearchHistoryRepository @Inject constructor(private val dataStore: DataSto
         }
     }
 
-    suspend fun clearTVEpgSearchHistory() {
+    suspend fun clearTvEpgSearchHistory() {
         dataStore.edit { preferences ->
             preferences[tvEpgSearchHistoryKey] = emptySet()
         }

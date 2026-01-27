@@ -62,7 +62,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun TvPage(
     onNavigateToRemoteControl: () -> Unit,
-    onNavigateToServiceEpg: (sRef: String, sName: String) -> Unit,
+    onNavigateToServiceEpg: (serviceReference: String, serviceName: String) -> Unit,
     drawerState: DrawerState,
     tvViewModel: TvViewModel = hiltViewModel()
 ) {

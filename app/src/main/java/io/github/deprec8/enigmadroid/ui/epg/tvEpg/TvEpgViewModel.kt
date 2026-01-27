@@ -86,7 +86,7 @@ class TvEpgViewModel @Inject constructor(
         viewModelScope.launch {
             combine(_epgBatchSet, _searchInput) { eventBatchSet, searchInput ->
                 if (searchInput.isNotBlank() && eventBatchSet.eventBatches.isNotEmpty()) {
-                    searchHistoryRepository.addToTVEpgSearchHistory(searchInput)
+                    searchHistoryRepository.addToTvEpgSearchHistory(searchInput)
                     FilterUtils.filterEvents(
                         searchInput, eventBatchSet.eventBatches.flatMap { it.events })
                 } else {

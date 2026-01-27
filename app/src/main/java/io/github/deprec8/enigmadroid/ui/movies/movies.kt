@@ -176,7 +176,7 @@ fun MoviesPage(
                                         outlinedIcon = Icons.Outlined.PlayArrow,
                                         filledIcon = Icons.Filled.PlayArrow,
                                         action = {
-                                            moviesViewModel.play(movie.serviceReference)
+                                            moviesViewModel.playOnDevice(movie.serviceReference)
                                         })
                                 )
                             ),

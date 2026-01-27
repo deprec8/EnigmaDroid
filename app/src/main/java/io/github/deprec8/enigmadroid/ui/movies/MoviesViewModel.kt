@@ -152,7 +152,7 @@ class MoviesViewModel @Inject constructor(
     }
 
 
-    fun play(serviceReference: String) {
+    fun playOnDevice(serviceReference: String) {
         viewModelScope.launch {
             apiRepository.playOnDevice(serviceReference)
         }

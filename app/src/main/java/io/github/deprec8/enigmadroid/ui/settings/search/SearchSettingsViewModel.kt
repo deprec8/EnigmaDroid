@@ -124,7 +124,7 @@ class SearchSettingsViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             if (tv) {
-                searchHistoryRepository.clearTVSearchHistory()
+                searchHistoryRepository.clearTvSearchHistory()
             }
             if (radio) {
                 searchHistoryRepository.clearRadioSearchHistory()
@@ -136,7 +136,7 @@ class SearchSettingsViewModel @Inject constructor(
                 searchHistoryRepository.clearTimersSearchHistory()
             }
             if (tvEpg) {
-                searchHistoryRepository.clearTVEpgSearchHistory()
+                searchHistoryRepository.clearTvEpgSearchHistory()
             }
             if (radioEpg) {
                 searchHistoryRepository.clearRadioEpgSearchHistory()

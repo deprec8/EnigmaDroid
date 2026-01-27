@@ -116,7 +116,7 @@ fun NavDrawerContent(
             listOf(
                 DrawerPage(
                     stringResource(R.string.tv),
-                    MainPages.TV,
+                    MainPages.Tv,
                     Icons.Outlined.LiveTv,
                     Icons.Filled.LiveTv
                 ),

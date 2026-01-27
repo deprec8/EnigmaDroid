@@ -84,7 +84,7 @@ class TvViewModel @Inject constructor(
                 _eventBatches, _searchInput, currentBouquetIndex
             ) { eventBatches, searchInput, currentBouquetIndex ->
                 if (searchInput.isNotBlank() && eventBatches.isNotEmpty()) {
-                    searchHistoryRepository.addToTVSearchHistory(searchInput)
+                    searchHistoryRepository.addToTvSearchHistory(searchInput)
                     FilterUtils.filterEvents(searchInput, eventBatches[currentBouquetIndex].events)
                 } else {
                     null

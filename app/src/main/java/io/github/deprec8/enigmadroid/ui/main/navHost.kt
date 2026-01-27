@@ -57,11 +57,11 @@ fun NavHost(
 ) {
     Surface {
         NavHost(
-            navController = navHostController, startDestination = MainPages.TV,
+            navController = navHostController, startDestination = MainPages.Tv,
             enterTransition = { fadeIn() }, exitTransition = { fadeOut() },
         ) {
 
-            composable<MainPages.TV> {
+            composable<MainPages.Tv> {
                 TvPage(
                     onNavigateToRemoteControl = { navHostController.navigate(MainPages.RemoteControl) },
                     onNavigateToServiceEpg = { serviceReference, serviceName ->
