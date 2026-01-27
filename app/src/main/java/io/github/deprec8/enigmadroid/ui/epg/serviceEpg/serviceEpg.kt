@@ -52,8 +52,8 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ServiceEpgPage(
-    sRef: String,
-    sName: String,
+    serviceReference: String,
+    serviceName: String,
     onNavigateBack: () -> Unit,
     serviceEpgViewModel: ServiceEpgViewModel = hiltViewModel()
 ) {
@@ -72,20 +72,20 @@ fun ServiceEpgPage(
 
     LaunchedEffect(loadingState) {
         if (loadingState == LoadingState.LOADED) {
-            serviceEpgViewModel.fetchData(sRef)
+            serviceEpgViewModel.fetchData(serviceReference)
         }
     }
 
     Scaffold(
         floatingActionButton = {
-            FloatingRefreshButton(loadingState, { serviceEpgViewModel.fetchData(sRef) })
+            FloatingRefreshButton(loadingState, { serviceEpgViewModel.fetchData(serviceReference) })
         },
         contentWindowInsets = contentWithDrawerWindowInsets(),
         topBar = {
             SearchTopAppBar(
                 enabled = eventBatch.events.isNotEmpty(),
                 textFieldState = serviceEpgViewModel.searchFieldState,
-                placeholder = stringResource(R.string.search_epg_for, sName),
+                placeholder = stringResource(R.string.search_epg_for, serviceName),
                 content = {
                     if (filteredEvents != null) {
                         EpgContent(

@@ -77,8 +77,8 @@ fun NavHost(
             composable<MainPages.ServiceEpg> { backStackEntry ->
                 val serviceEpg: MainPages.ServiceEpg = backStackEntry.toRoute()
                 ServiceEpgPage(
-                    sRef = serviceEpg.serviceReference,
-                    sName = serviceEpg.serviceName,
+                    serviceReference = serviceEpg.serviceReference,
+                    serviceName = serviceEpg.serviceName,
                     onNavigateBack = { navHostController.navigateUp() })
             }
             composable<MainPages.Movies> {
