@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.remoteControl.modules
+package io.github.deprec8.enigmadroid.ui.remoteControl.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column

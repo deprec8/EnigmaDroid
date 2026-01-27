@@ -82,12 +82,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.ui.remoteControl.modules.ArrowButtons
-import io.github.deprec8.enigmadroid.ui.remoteControl.modules.BouquetButtons
-import io.github.deprec8.enigmadroid.ui.remoteControl.modules.ColorButtons
-import io.github.deprec8.enigmadroid.ui.remoteControl.modules.ControlButtons
-import io.github.deprec8.enigmadroid.ui.remoteControl.modules.MediaButtons
-import io.github.deprec8.enigmadroid.ui.remoteControl.modules.NumberButtons
+import io.github.deprec8.enigmadroid.ui.remoteControl.components.ArrowButtons
+import io.github.deprec8.enigmadroid.ui.remoteControl.components.BouquetButtons
+import io.github.deprec8.enigmadroid.ui.remoteControl.components.ColorButtons
+import io.github.deprec8.enigmadroid.ui.remoteControl.components.ControlButtons
+import io.github.deprec8.enigmadroid.ui.remoteControl.components.MediaButtons
+import io.github.deprec8.enigmadroid.ui.remoteControl.components.NumberButtons
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
