@@ -139,12 +139,12 @@ class ApiRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchEpgEventBatchSet(bRef: String): EventBatchSet {
+    suspend fun fetchEpgEventBatchSet(bouquetReference: String): EventBatchSet {
         return try {
             val epgEventBatch = json.decodeFromString(
                 EventBatch.serializer(), networkDataSource.fetchApi(
                     "epgmulti?bRef=${
-                        bRef.replace(
+                        bouquetReference.replace(
                             "\\\"", "\""
                         )
                     }&endTime=10080"
@@ -226,11 +226,11 @@ class ApiRepository @Inject constructor(
             json.decodeFromString(
                 BouquetBatch.serializer(), networkDataSource.fetchApi("bouquets?stype=tv")
             ).bouquets.forEach { bouquet ->
-                val nbRef = bouquet[0].replace("\\\"", "\"")
+                val newBouquetReference = bouquet[0].replace("\\\"", "\"")
                 serviceBatches.add(
                     json.decodeFromString(
                         ServiceBatch.serializer(),
-                        networkDataSource.fetchApi("getallservices?sRef=$nbRef")
+                        networkDataSource.fetchApi("getallservices?sRef=$newBouquetReference")
                     )
                 )
             }
@@ -243,9 +243,10 @@ class ApiRepository @Inject constructor(
     fun fetchEventBatches(apiType: ApiType): Flow<EventBatch> = flow {
         try {
             fetchBouquets(apiType).forEach { bouquet ->
-                val nbRef = bouquet[0].replace("\\\"", "\"")
+                val newBouquetReference = bouquet[0].replace("\\\"", "\"")
                 val eventBatch = json.decodeFromString(
-                    EventBatch.serializer(), networkDataSource.fetchApi("epgnow?bRef=$nbRef")
+                    EventBatch.serializer(),
+                    networkDataSource.fetchApi("epgnow?bRef=$newBouquetReference")
                 )
                 emit(eventBatch.copy(name = bouquet[1]))
             }

@@ -137,7 +137,7 @@ fun RadioEpgPage(
                     BouquetMenu(
                         bouquets,
                         currentBouquet
-                    ) { bRef -> radioEpgViewModel.setCurrentBouquet(bRef) }
+                    ) { bouquetReference -> radioEpgViewModel.setCurrentBouquet(bouquetReference) }
                     SearchTopAppBarRemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
                 }
             },

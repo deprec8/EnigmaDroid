@@ -136,7 +136,7 @@ fun TvEpgPage(
                     BouquetMenu(
                         bouquets,
                         currentBouquet
-                    ) { bRef -> tvEpgViewModel.setCurrentBouquet(bRef) }
+                    ) { bouquetReference -> tvEpgViewModel.setCurrentBouquet(bouquetReference) }
                     SearchTopAppBarRemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
                 }
             },
