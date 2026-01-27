@@ -64,7 +64,7 @@ class SearchHistoryRepository @Inject constructor(private val dataStore: DataSto
         }
     }
 
-    fun getTVSearchHistory(): Flow<List<String>> = dataStore.data.map { preferences ->
+    fun getTvSearchHistory(): Flow<List<String>> = dataStore.data.map { preferences ->
         (preferences[tvSearchHistoryKey] ?: emptySet()).reversed()
     }
 
@@ -130,7 +130,7 @@ class SearchHistoryRepository @Inject constructor(private val dataStore: DataSto
         }
     }
 
-    fun getTVEpgSearchHistory(): Flow<List<String>> = dataStore.data.map { preferences ->
+    fun getTvEpgSearchHistory(): Flow<List<String>> = dataStore.data.map { preferences ->
         (preferences[tvEpgSearchHistoryKey] ?: emptySet()).reversed()
     }
 

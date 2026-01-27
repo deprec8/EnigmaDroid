@@ -37,41 +37,39 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
+import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtonType
 import io.github.deprec8.enigmadroid.model.RemoteControlButton
-import io.github.deprec8.enigmadroid.ui.remoteControl.RemoteControlViewModel
 
 @Composable
-fun BouquetButtons(remoteControlViewModel: RemoteControlViewModel, enabled: Boolean, performHaptic: () -> Unit) {
+fun BouquetButtons(
+    onButtonClicked: (RemoteControlButtonType) -> Unit, enabled: Boolean
+) {
 
     val bouquetButtons = listOf(
         RemoteControlButton(
             icon = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
             iconLabel = stringResource(R.string.bouquet_down),
-            onClick = remoteControlViewModel::bouDOWN
+            type = RemoteControlButtonType.PREVIOUS_BOUQUET
         ),
         RemoteControlButton(
-            text = "INFO",
-            onClick = remoteControlViewModel::info
+            text = "INFO", type = RemoteControlButtonType.INFO
         ),
         RemoteControlButton(
-            text = "TEXT",
-            onClick = remoteControlViewModel::text
+            text = "TEXT", type = RemoteControlButtonType.TEXT
         ),
         RemoteControlButton(
             icon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             iconLabel = stringResource(R.string.bouquet_up),
-            onClick = remoteControlViewModel::bouUP
+            type = RemoteControlButtonType.NEXT_BOUQUET
         ),
     )
     Row(
-        Modifier
-            .widthIn(0.dp, 500.dp)
+        Modifier.widthIn(0.dp, 500.dp)
     ) {
         bouquetButtons.forEach { button ->
             FilledTonalButton(
                 onClick = {
-                    button.onClick()
-                    performHaptic()
+                    onButtonClicked(button.type)
                 },
                 contentPadding = PaddingValues(),
                 enabled = enabled,
@@ -83,14 +81,12 @@ fun BouquetButtons(remoteControlViewModel: RemoteControlViewModel, enabled: Bool
             ) {
                 button.icon?.let { icon ->
                     Icon(
-                        icon,
-                        contentDescription = button.iconLabel
+                        icon, contentDescription = button.iconLabel
                     )
                 }
                 button.text?.let { text ->
                     Text(
-                        text,
-                        textAlign = TextAlign.Center
+                        text, textAlign = TextAlign.Center
                     )
                 }
             }

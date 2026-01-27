@@ -37,7 +37,9 @@ import io.github.deprec8.enigmadroid.R
 
 @Composable
 fun BouquetMenu(
-    bouquets: List<List<String>>, currentBouquet: String, onBouquetChange: (bRef: String) -> Unit
+    bouquets: List<List<String>>,
+    currentBouquet: String,
+    onBouquetChange: (bouquetReference: String) -> Unit
 ) {
     var showMenu by rememberSaveable { mutableStateOf(false) }
 

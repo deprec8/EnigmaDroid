@@ -42,20 +42,18 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class TVViewModel @Inject constructor(
+class TvViewModel @Inject constructor(
     private val apiRepository: ApiRepository,
     private val loadingRepository: LoadingRepository,
     private val searchHistoryRepository: SearchHistoryRepository,
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
-    val searchFieldState = TextFieldState()
-
     private val _filteredEvents = MutableStateFlow<List<Event>?>(null)
     val filteredEvents: StateFlow<List<Event>?> = _filteredEvents.asStateFlow()
 
-    private val _allEvents = MutableStateFlow<List<EventBatch>>(emptyList())
-    val allEvents: StateFlow<List<EventBatch>> = _allEvents.asStateFlow()
+    private val _eventBatches = MutableStateFlow<List<EventBatch>>(emptyList())
+    val eventBatches: StateFlow<List<EventBatch>> = _eventBatches.asStateFlow()
 
     private val _loadingState = MutableStateFlow(LoadingState.LOADING)
     val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
@@ -69,6 +67,8 @@ class TVViewModel @Inject constructor(
     private val _useSearchHighlighting = MutableStateFlow(true)
     val useSearchHighlighting: StateFlow<Boolean> = _useSearchHighlighting.asStateFlow()
 
+    val searchFieldState = TextFieldState()
+
     private val currentBouquetIndex = MutableStateFlow(0)
 
     private var fetchJob: Job? = null
@@ -81,13 +81,11 @@ class TVViewModel @Inject constructor(
         }
         viewModelScope.launch {
             combine(
-                _allEvents,
-                _searchInput,
-                currentBouquetIndex
-            ) { allEvents, input, currentBouquetIndex ->
-                if (input != "" && allEvents.isNotEmpty()) {
-                    searchHistoryRepository.addToTVSearchHistory(input)
-                    FilterUtils.filterEvents(input, allEvents[currentBouquetIndex].events)
+                _eventBatches, _searchInput, currentBouquetIndex
+            ) { eventBatches, searchInput, currentBouquetIndex ->
+                if (searchInput.isNotBlank() && eventBatches.isNotEmpty()) {
+                    searchHistoryRepository.addToTVSearchHistory(searchInput)
+                    FilterUtils.filterEvents(searchInput, eventBatches[currentBouquetIndex].events)
                 } else {
                     null
                 }
@@ -96,7 +94,7 @@ class TVViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            searchHistoryRepository.getTVSearchHistory().collectLatest {
+            searchHistoryRepository.getTvSearchHistory().collectLatest {
                 _searchHistory.value = it
             }
         }
@@ -107,33 +105,31 @@ class TVViewModel @Inject constructor(
         }
     }
 
-    suspend fun updateLoadingState(forceUpdate: Boolean) {
-        loadingRepository.updateLoadingState(forceUpdate)
+    suspend fun updateLoadingState(isForcedUpdate: Boolean) {
+        loadingRepository.updateLoadingState(isForcedUpdate)
     }
 
-    suspend fun buildStreamUrl(sRef: String): String {
-        return apiRepository.buildLiveStreamUrl(sRef)
+    suspend fun buildLiveStreamUrl(serviceReference: String): String {
+        return apiRepository.buildLiveStreamUrl(serviceReference)
     }
-
 
     fun fetchData() {
         fetchJob?.cancel()
-        _allEvents.value = emptyList()
+        _eventBatches.value = emptyList()
         fetchJob = viewModelScope.launch {
-            apiRepository.fetchEventBatches(ApiType.TV)
-                .collect { events ->
-                    _allEvents.value += events
-                }
+            apiRepository.fetchEventBatches(ApiType.TV).collect { events ->
+                _eventBatches.value += events
+            }
         }
     }
 
-    fun play(sRef: String) {
+    fun playOnDevice(serviceReference: String) {
         viewModelScope.launch {
-            apiRepository.playOnDevice(sRef)
+            apiRepository.playOnDevice(serviceReference)
         }
     }
 
-    fun addTimer(event: Event) {
+    fun addTimerForEvent(event: Event) {
         viewModelScope.launch {
             apiRepository.addTimerForEvent(
                 event.serviceReference, event.id
@@ -141,10 +137,8 @@ class TVViewModel @Inject constructor(
         }
     }
 
-    fun updateSearchInput(index: Int) {
-        currentBouquetIndex.value = index
+    fun updateSearchInput(bouquetIndex: Int) {
+        currentBouquetIndex.value = bouquetIndex
         _searchInput.value = searchFieldState.text.toString()
     }
-
-
 }

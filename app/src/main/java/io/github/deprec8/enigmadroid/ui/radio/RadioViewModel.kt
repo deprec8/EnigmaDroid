@@ -49,13 +49,11 @@ class RadioViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
-    val searchFieldState = TextFieldState()
-
     private val _filteredEvents = MutableStateFlow<List<Event>?>(null)
     val filteredEvents: StateFlow<List<Event>?> = _filteredEvents.asStateFlow()
 
-    private val _allEvents = MutableStateFlow<List<EventBatch>>(emptyList())
-    val allEvents: StateFlow<List<EventBatch>> = _allEvents.asStateFlow()
+    private val _eventBatches = MutableStateFlow<List<EventBatch>>(emptyList())
+    val eventBatches: StateFlow<List<EventBatch>> = _eventBatches.asStateFlow()
 
     private val _loadingState = MutableStateFlow(LoadingState.LOADING)
     val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
@@ -71,6 +69,8 @@ class RadioViewModel @Inject constructor(
 
     private val currentBouquetIndex = MutableStateFlow(0)
 
+    val searchFieldState = TextFieldState()
+
     private var fetchJob: Job? = null
 
     init {
@@ -81,13 +81,11 @@ class RadioViewModel @Inject constructor(
         }
         viewModelScope.launch {
             combine(
-                _allEvents,
-                _searchInput,
-                currentBouquetIndex
-            ) { allEvents, input, currentBouquetIndex ->
-                if (input != "" && allEvents.isNotEmpty()) {
-                    searchHistoryRepository.addToRadioSearchHistory(input)
-                    FilterUtils.filterEvents(input, allEvents[currentBouquetIndex].events)
+                _eventBatches, _searchInput, currentBouquetIndex
+            ) { eventBatches, searchInput, currentBouquetIndex ->
+                if (searchInput.isNotBlank() && eventBatches.isNotEmpty()) {
+                    searchHistoryRepository.addToRadioSearchHistory(searchInput)
+                    FilterUtils.filterEvents(searchInput, eventBatches[currentBouquetIndex].events)
                 } else {
                     null
                 }
@@ -107,41 +105,40 @@ class RadioViewModel @Inject constructor(
         }
     }
 
-    suspend fun updateLoadingState(forceUpdate: Boolean) {
-        loadingRepository.updateLoadingState(forceUpdate)
+    suspend fun updateLoadingState(isForcedUpdate: Boolean) {
+        loadingRepository.updateLoadingState(isForcedUpdate)
     }
 
-    suspend fun buildStreamUrl(sRef: String): String {
-        return apiRepository.buildLiveStreamUrl(sRef)
+    suspend fun buildLiveStreamUrl(serviceReference: String): String {
+        return apiRepository.buildLiveStreamUrl(serviceReference)
     }
 
     fun fetchData() {
         fetchJob?.cancel()
-        _allEvents.value = emptyList()
+        _eventBatches.value = emptyList()
         fetchJob = viewModelScope.launch {
-            apiRepository.fetchEventBatches(ApiType.RADIO)
-                .collect { events ->
-                    _allEvents.value += events
-                }
+            apiRepository.fetchEventBatches(ApiType.RADIO).collect { events ->
+                _eventBatches.value += events
+            }
         }
     }
 
-    fun play(sRef: String) {
+    fun play(serviceReference: String) {
         viewModelScope.launch {
-            apiRepository.playOnDevice(sRef)
+            apiRepository.playOnDevice(serviceReference)
         }
     }
 
-    suspend fun addTimer(event: Event) {
-        apiRepository.addTimerForEvent(
-            event.serviceReference, event.id
-        )
+    fun addTimerForEvent(event: Event) {
+        viewModelScope.launch {
+            apiRepository.addTimerForEvent(
+                event.serviceReference, event.id
+            )
+        }
     }
 
-    fun updateSearchInput(index: Int) {
-        currentBouquetIndex.value = index
+    fun updateSearchInput(bouquetIndex: Int) {
+        currentBouquetIndex.value = bouquetIndex
         _searchInput.value = searchFieldState.text.toString()
     }
-
-
 }

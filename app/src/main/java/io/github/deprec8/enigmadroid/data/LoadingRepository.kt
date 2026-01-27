@@ -60,12 +60,12 @@ class LoadingRepository @Inject constructor(
         }
     }
 
-    suspend fun updateLoadingState(forceUpdate: Boolean) {
+    suspend fun updateLoadingState(isForcedUpdate: Boolean) {
         val currentLoadingState = dataStore.data.map { preferences ->
             LoadingState.entries[preferences[loadingStateKey] ?: 3]
         }.first()
 
-        if (currentLoadingState == LoadingState.LOADING || forceUpdate) {
+        if (currentLoadingState == LoadingState.LOADING || isForcedUpdate) {
             if (currentLoadingState != LoadingState.LOADING) {
                 dataStore.edit { preferences ->
                     preferences[loadingStateKey] = LoadingState.LOADING.id

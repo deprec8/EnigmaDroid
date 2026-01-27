@@ -70,14 +70,16 @@ import kotlinx.coroutines.launch
 @Composable
 fun DeviceInfoPage(
     onNavigateToRemoteControl: () -> Unit,
-    drawerState: DrawerState, deviceInfoViewModel: DeviceInfoViewModel = hiltViewModel()
+    drawerState: DrawerState,
+    deviceInfoViewModel: DeviceInfoViewModel = hiltViewModel()
 ) {
+
+    val loadingState by deviceInfoViewModel.loadingState.collectAsStateWithLifecycle()
+    val deviceInfo by deviceInfoViewModel.deviceInfo.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-    val deviceInfo by deviceInfoViewModel.deviceInfo.collectAsStateWithLifecycle()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    val loadingState by deviceInfoViewModel.loadingState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         deviceInfoViewModel.updateLoadingState(false)
@@ -92,15 +94,12 @@ fun DeviceInfoPage(
     Scaffold(
         floatingActionButton = {
             AnimatedVisibility(
-                loadingState == LoadingState.LOADED,
-                enter = scaleIn(),
-                exit = scaleOut()
+                loadingState == LoadingState.LOADED, enter = scaleIn(), exit = scaleOut()
             ) {
                 FloatingActionButton(
                     onClick = {
                         deviceInfoViewModel.fetchData()
-                    }
-                ) {
+                    }) {
                     Icon(
                         Icons.Default.Refresh,
                         contentDescription = stringResource(R.string.refresh_page)
@@ -110,40 +109,34 @@ fun DeviceInfoPage(
         },
         contentWindowInsets = contentWithDrawerWindowInsets(),
         topBar = {
-            TopAppBar(
-                windowInsets = topAppBarWithDrawerWindowInsets(),
-                title = {
-                    Text(
-                        text = stringResource(id = R.string.deviceinfo),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+            TopAppBar(windowInsets = topAppBarWithDrawerWindowInsets(), title = {
+                Text(
+                    text = stringResource(id = R.string.deviceinfo),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }, scrollBehavior = scrollBehavior, navigationIcon = {
+                if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || ! windowSizeClass.isHeightAtLeastBreakpoint(
+                        WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
                     )
-                },
-                scrollBehavior = scrollBehavior,
-                navigationIcon = {
-                    if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) ||
-                        ! windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
-                    ) {
-                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Icon(
-                                Icons.Default.Menu,
-                                contentDescription = stringResource(R.string.open_menu)
-                            )
-                        }
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { onNavigateToRemoteControl() }) {
+                ) {
+                    IconButton(onClick = { scope.launch { drawerState.open() } }) {
                         Icon(
-                            Icons.Default.Dialpad,
-                            contentDescription = stringResource(R.string.open_remote_control)
+                            Icons.Default.Menu,
+                            contentDescription = stringResource(R.string.open_menu)
                         )
                     }
                 }
-            )
+            }, actions = {
+                IconButton(onClick = { onNavigateToRemoteControl() }) {
+                    Icon(
+                        Icons.Default.Dialpad,
+                        contentDescription = stringResource(R.string.open_remote_control)
+                    )
+                }
+            })
         },
-        modifier = Modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
 
         ) { innerPadding ->
         if (deviceInfo != DeviceInfo()) {
@@ -212,13 +205,11 @@ fun DeviceInfoPage(
                     )
                 }
                 items(deviceInfo.tuners) { tuner ->
-                    ListItem(
-                        headlineContent = { Text(text = tuner.name) },
-                        supportingContent = {
-                            Text(
-                                text = tuner.type
-                            )
-                        })
+                    ListItem(headlineContent = { Text(text = tuner.name) }, supportingContent = {
+                        Text(
+                            text = tuner.type
+                        )
+                    })
                 }
                 item(span = { GridItemSpan(maxLineSpan) }) {
                     Text(
@@ -228,13 +219,11 @@ fun DeviceInfoPage(
                     )
                 }
                 items(deviceInfo.interfaces) { iface ->
-                    ListItem(
-                        headlineContent = { Text(text = iface.name) },
-                        supportingContent = {
-                            Text(
-                                text = iface.ip
-                            )
-                        })
+                    ListItem(headlineContent = { Text(text = iface.name) }, supportingContent = {
+                        Text(
+                            text = iface.ip
+                        )
+                    })
                 }
                 item(span = { GridItemSpan(maxLineSpan) }) {
                     Text(
@@ -245,10 +234,10 @@ fun DeviceInfoPage(
                 }
                 items(deviceInfo.hdds) { hdd ->
                     ListItem(
-                        headlineContent = { Text(text = hdd.model + " (" + hdd.mount + ")") },
+                        headlineContent = { Text(text = "${hdd.model} (${hdd.mount})") },
                         supportingContent = {
                             Text(
-                                text = hdd.capacity + " (" + hdd.free + " " + stringResource(
+                                text = "${hdd.capacity} (${hdd.free} " + stringResource(
                                     R.string.free
                                 ) + ")"
                             )

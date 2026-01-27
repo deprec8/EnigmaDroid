@@ -78,22 +78,24 @@ import kotlinx.coroutines.launch
 @Composable
 fun CurrentPage(
     onNavigateToRemoteControl: () -> Unit,
-    onNavigateToServiceEpg: (sRef: String, sName: String) -> Unit,
+    onNavigateToServiceEpg: (serviceReference: String, serviceName: String) -> Unit,
     drawerState: DrawerState,
     currentViewModel: CurrentViewModel = hiltViewModel()
 ) {
 
-    LaunchedEffect(Unit) {
-        currentViewModel.updateLoadingState(false)
-    }
+    val currentEventInfo by currentViewModel.currentInfo.collectAsStateWithLifecycle()
+    val loadingState by currentViewModel.loadingState.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-    val currentEventInfo by currentViewModel.currentInfo.collectAsStateWithLifecycle()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val context = LocalContext.current
     val scrollState = rememberScrollState()
-    val loadingState by currentViewModel.loadingState.collectAsStateWithLifecycle()
+
+
+    LaunchedEffect(Unit) {
+        currentViewModel.updateLoadingState(false)
+    }
 
     LaunchedEffect(loadingState) {
         if (loadingState == LoadingState.LOADED) {
@@ -104,9 +106,7 @@ fun CurrentPage(
     Scaffold(
         floatingActionButton = {
             AnimatedVisibility(
-                loadingState == LoadingState.LOADED,
-                enter = scaleIn(),
-                exit = scaleOut()
+                loadingState == LoadingState.LOADED, enter = scaleIn(), exit = scaleOut()
             ) {
                 FloatingActionButton(onClick = {
                     currentViewModel.fetchData()
@@ -131,8 +131,9 @@ fun CurrentPage(
                 windowInsets = topAppBarWithDrawerWindowInsets(),
                 scrollBehavior = scrollBehavior,
                 navigationIcon = {
-                    if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) ||
-                        ! windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
+                    if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || ! windowSizeClass.isHeightAtLeastBreakpoint(
+                            WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
+                        )
                     ) {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(
@@ -149,11 +150,9 @@ fun CurrentPage(
                             contentDescription = stringResource(R.string.open_remote_control)
                         )
                     }
-                }
-            )
+                })
         },
-        modifier = Modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { innerPadding ->
         when (currentEventInfo.info.result) {
             true -> {
@@ -168,14 +167,12 @@ fun CurrentPage(
                         headlineContent = { Text(text = stringResource(R.string.channel)) },
                         supportingContent = {
                             Text(text = currentEventInfo.now.serviceName)
-                        }
-                    )
+                        })
                     ListItem(
                         headlineContent = { Text(text = stringResource(R.string.provider)) },
                         supportingContent = {
                             Text(text = currentEventInfo.now.provider)
-                        }
-                    )
+                        })
                     ListItem(
                         overlineContent = {
                             Text(text = stringResource(R.string.now))
@@ -185,8 +182,7 @@ fun CurrentPage(
                             Column {
                                 if (currentEventInfo.now.shortDescription.isNotBlank()) {
                                     Text(
-                                        text = currentEventInfo.now.shortDescription,
-                                        maxLines = 1
+                                        text = currentEventInfo.now.shortDescription, maxLines = 1
                                     )
                                 }
                                 Text(
@@ -194,12 +190,10 @@ fun CurrentPage(
                                         currentEventInfo.now.beginTimestamp
                                     ) + " - " + TimestampUtils.formatApiTimestampToTime(
                                         currentEventInfo.now.beginTimestamp + currentEventInfo.now.durationInSeconds
-                                    ),
-                                    maxLines = 1
+                                    ), maxLines = 1
                                 )
                             }
-                        }
-                    )
+                        })
                     LinearProgressIndicator(
                         progress = {
                             if (currentEventInfo.now.durationInSeconds > 0) {
@@ -211,8 +205,7 @@ fun CurrentPage(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(
-                                start = 16.dp,
-                                end = 16.dp
+                                start = 16.dp, end = 16.dp
                             ),
                         strokeCap = StrokeCap.Round,
                     )
@@ -226,8 +219,7 @@ fun CurrentPage(
                             Column {
                                 if (currentEventInfo.next.shortDescription.isNotBlank()) {
                                     Text(
-                                        text = currentEventInfo.next.shortDescription,
-                                        maxLines = 1
+                                        text = currentEventInfo.next.shortDescription, maxLines = 1
                                     )
                                 }
                                 Text(
@@ -235,24 +227,21 @@ fun CurrentPage(
                                         currentEventInfo.next.beginTimestamp
                                     ) + " - " + TimestampUtils.formatApiTimestampToTime(
                                         currentEventInfo.next.beginTimestamp + currentEventInfo.next.durationInSeconds
-                                    ),
-                                    maxLines = 1
+                                    ), maxLines = 1
                                 )
                             }
-                        }
-                    )
+                        })
                     Spacer(Modifier.size(16.dp))
                     OutlinedButton(
                         onClick = {
                             scope.launch {
                                 IntentUtils.playMedia(
                                     context,
-                                    currentViewModel.buildStreamUrl(currentEventInfo.now.serviceReference),
+                                    currentViewModel.buildLiveStreamUrl(currentEventInfo.now.serviceReference),
                                     currentEventInfo.now.serviceName
                                 )
                             }
-                        },
-                        Modifier
+                        }, Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp)
                     ) {
@@ -265,8 +254,7 @@ fun CurrentPage(
                                 currentEventInfo.now.serviceReference,
                                 currentEventInfo.now.serviceName
                             )
-                        },
-                        Modifier
+                        }, Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp)
                     ) {

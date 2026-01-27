@@ -28,7 +28,7 @@ import io.github.deprec8.enigmadroid.data.DownloadRepository
 import io.github.deprec8.enigmadroid.data.LoadingRepository
 import io.github.deprec8.enigmadroid.data.SettingsRepository
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.data.enums.RemoteControlButton
+import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtonType
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -73,14 +73,8 @@ class RemoteControlViewModel @Inject constructor(
         }
     }
 
-    private fun remoteCall(button: RemoteControlButton) {
-        viewModelScope.launch {
-            apiRepository.remoteControlCall(button)
-        }
-    }
-
-    suspend fun updateLoadingState(forceUpdate: Boolean) {
-        loadingRepository.updateLoadingState(forceUpdate)
+    suspend fun updateLoadingState(isForcedUpdate: Boolean) {
+        loadingRepository.updateLoadingState(isForcedUpdate)
     }
 
     fun fetchScreenshot() {
@@ -89,64 +83,10 @@ class RemoteControlViewModel @Inject constructor(
         }
     }
 
-    // Volume
-    fun volUP() {
-        remoteCall(RemoteControlButton.VOLUME_UP)
-    }
-
-    fun volDown() {
-        remoteCall(RemoteControlButton.VOLUME_DOWN)
-    }
-
-    fun volMute() {
-        remoteCall(RemoteControlButton.VOLUME_MUTE)
-    }
-
-    // Channel
-    fun chUP() {
-        remoteCall(RemoteControlButton.NEXT_CHANNEL)
-    }
-
-    fun chDown() {
-        remoteCall(RemoteControlButton.PREVIOUS_CHANNEL)
-    }
-
-    // Play Control
-    fun play() {
-        remoteCall(RemoteControlButton.PLAY)
-    }
-
-    fun pause() {
-        remoteCall(RemoteControlButton.PAUSE)
-    }
-
-    fun forward() {
-        remoteCall(RemoteControlButton.FORWARD)
-    }
-
-    fun rewind() {
-        remoteCall(RemoteControlButton.REWIND)
-    }
-
-    // Main Buttons
-    fun ok() {
-        remoteCall(RemoteControlButton.OK)
-    }
-
-    fun menu() {
-        remoteCall(RemoteControlButton.MENU)
-    }
-
-    fun audio() {
-        remoteCall(RemoteControlButton.AUDIO)
-    }
-
-    fun epg() {
-        remoteCall(RemoteControlButton.EPG)
-    }
-
-    fun pvr() {
-        remoteCall(RemoteControlButton.PVR)
+    fun onButtonClicked(type: RemoteControlButtonType) {
+        viewModelScope.launch {
+            apiRepository.remoteControlCall(type)
+        }
     }
 
     fun power(command: Int) {
@@ -155,85 +95,4 @@ class RemoteControlViewModel @Inject constructor(
             updateLoadingState(true)
         }
     }
-
-    fun help() {
-        remoteCall(RemoteControlButton.HELP)
-    }
-
-    fun exit() {
-        remoteCall(RemoteControlButton.EXIT)
-    }
-
-    fun tv() {
-        remoteCall(RemoteControlButton.TV)
-    }
-
-    fun radio() {
-        remoteCall(RemoteControlButton.RADIO)
-    }
-
-    fun record() {
-        remoteCall(RemoteControlButton.RECORD)
-    }
-
-    fun stop() {
-        remoteCall(RemoteControlButton.STOP)
-    }
-
-    // Arrows
-    fun aUP() {
-        remoteCall(RemoteControlButton.ARROW_UP)
-    }
-
-    fun aDown() {
-        remoteCall(RemoteControlButton.ARROW_DOWN)
-    }
-
-    fun aLeft() {
-        remoteCall(RemoteControlButton.ARROW_LEFT)
-    }
-
-    fun aRight() {
-        remoteCall(RemoteControlButton.ARROW_RIGHT)
-    }
-
-    // Number pad
-    fun number(button: RemoteControlButton) {
-        remoteCall(button)
-    }
-
-    // Colors
-    fun red() {
-        remoteCall(RemoteControlButton.COLOR_RED)
-    }
-
-    fun green() {
-        remoteCall(RemoteControlButton.COLOR_GREEN)
-    }
-
-    fun yellow() {
-        remoteCall(RemoteControlButton.COLOR_YELLOW)
-    }
-
-    fun blue() {
-        remoteCall(RemoteControlButton.COLOR_BLUE)
-    }
-
-    fun info() {
-        remoteCall(RemoteControlButton.INFO)
-    }
-
-    fun text() {
-        remoteCall(RemoteControlButton.TEXT)
-    }
-
-    fun bouUP() {
-        remoteCall(RemoteControlButton.NEXT_BOUQUET)
-    }
-
-    fun bouDOWN() {
-        remoteCall(RemoteControlButton.PREVIOUS_BOUQUET)
-    }
-
-
 }

@@ -49,8 +49,8 @@ class TvEpgViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
-    private val _epgs = MutableStateFlow(EventBatchSet())
-    val epgs: StateFlow<EventBatchSet> = _epgs.asStateFlow()
+    private val _epgBatchSet = MutableStateFlow(EventBatchSet())
+    val eventBatchSet: StateFlow<EventBatchSet> = _epgBatchSet.asStateFlow()
 
     private val _filteredEvents = MutableStateFlow<List<Event>?>(null)
     val filteredEvents: StateFlow<List<Event>?> = _filteredEvents.asStateFlow()
@@ -84,10 +84,11 @@ class TvEpgViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            combine(_epgs, _searchInput) { epgs, input ->
-                if (input != "" && epgs.eventBatches.isNotEmpty()) {
-                    searchHistoryRepository.addToTVEpgSearchHistory(input)
-                    FilterUtils.filterEvents(input, epgs.eventBatches.flatMap { it.events })
+            combine(_epgBatchSet, _searchInput) { eventBatchSet, searchInput ->
+                if (searchInput.isNotBlank() && eventBatchSet.eventBatches.isNotEmpty()) {
+                    searchHistoryRepository.addToTVEpgSearchHistory(searchInput)
+                    FilterUtils.filterEvents(
+                        searchInput, eventBatchSet.eventBatches.flatMap { it.events })
                 } else {
                     null
                 }
@@ -96,7 +97,7 @@ class TvEpgViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            searchHistoryRepository.getTVEpgSearchHistory().collectLatest {
+            searchHistoryRepository.getTvEpgSearchHistory().collectLatest {
                 _searchHistory.value = it
             }
         }
@@ -107,28 +108,28 @@ class TvEpgViewModel @Inject constructor(
         }
     }
 
-    suspend fun updateLoadingState(forceUpdate: Boolean) {
-        loadingRepository.updateLoadingState(forceUpdate)
+    suspend fun updateLoadingState(isForcedUpdate: Boolean) {
+        loadingRepository.updateLoadingState(isForcedUpdate)
     }
 
     fun fetchData() {
         fetchJob?.cancel()
-        _epgs.value = EventBatchSet()
+        _epgBatchSet.value = EventBatchSet()
         _bouquets.value = emptyList()
         fetchJob = viewModelScope.launch {
             _bouquets.value = apiRepository.fetchBouquets(ApiType.TV)
             if (_bouquets.value.isNotEmpty()) {
-                if (_currentBouquet.value == "") {
+                if (_currentBouquet.value.isBlank()) {
                     _currentBouquet.value = _bouquets.value[0][0]
                 } else if (_bouquets.value.find { it[0] == _currentBouquet.value } == null) {
                     _currentBouquet.value = _bouquets.value[0][0]
                 }
-                _epgs.value = apiRepository.fetchEpgEventBatchSet(_currentBouquet.value)
+                _epgBatchSet.value = apiRepository.fetchEpgEventBatchSet(_currentBouquet.value)
             }
         }
     }
 
-    fun addTimer(event: Event) {
+    fun addTimerForEvent(event: Event) {
         viewModelScope.launch {
             apiRepository.addTimerForEvent(
                 event.serviceReference, event.id
@@ -136,8 +137,8 @@ class TvEpgViewModel @Inject constructor(
         }
     }
 
-    fun setCurrentBouquet(bRef: String) {
-        _currentBouquet.value = bRef
+    fun setCurrentBouquet(bouquetReference: String) {
+        _currentBouquet.value = bouquetReference
         fetchData()
     }
 

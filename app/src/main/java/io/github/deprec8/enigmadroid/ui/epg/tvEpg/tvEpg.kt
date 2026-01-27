@@ -74,7 +74,7 @@ fun TvEpgPage(
     drawerState: DrawerState,
     tvEpgViewModel: TvEpgViewModel = hiltViewModel()
 ) {
-    val epgs by tvEpgViewModel.epgs.collectAsStateWithLifecycle()
+    val eventBatchSet by tvEpgViewModel.eventBatchSet.collectAsStateWithLifecycle()
     val bouquets by tvEpgViewModel.bouquets.collectAsStateWithLifecycle()
     val currentBouquet by tvEpgViewModel.currentBouquet.collectAsStateWithLifecycle()
     val filteredEvents by tvEpgViewModel.filteredEvents.collectAsStateWithLifecycle()
@@ -84,14 +84,14 @@ fun TvEpgPage(
     val searchInput by tvEpgViewModel.searchInput.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
-    val pagerState = rememberPagerState(pageCount = { epgs.eventBatches.size })
+    val pagerState = rememberPagerState(pageCount = { eventBatchSet.eventBatches.size })
     val selectedTabIndex = remember {
         derivedStateOf {
             pagerState.currentPage.coerceIn(
-                0, (if (epgs.eventBatches.size - 1 < 0) {
+                0, (if (eventBatchSet.eventBatches.size - 1 < 0) {
                     0
                 } else {
-                    epgs.eventBatches.size - 1
+                    eventBatchSet.eventBatches.size - 1
                 })
             )
         }
@@ -122,7 +122,7 @@ fun TvEpgPage(
         }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = epgs.eventBatches.isNotEmpty(),
+            enabled = eventBatchSet.eventBatches.isNotEmpty(),
             textFieldState = tvEpgViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_epg),
             content = {
@@ -133,7 +133,7 @@ fun TvEpgPage(
                         showChannelName = true,
                         highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
                             .filter { it.isNotBlank() } else emptyList(),
-                        onAddTimer = { tvEpgViewModel.addTimer(it) })
+                        onAddTimerForEvent = { tvEpgViewModel.addTimerForEvent(it) })
                 } else {
                     SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
                         tvEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
@@ -161,17 +161,17 @@ fun TvEpgPage(
                 tvEpgViewModel.updateSearchInput()
             },
             tabBar = {
-                if (epgs.eventBatches.isNotEmpty()) {
+                if (eventBatchSet.eventBatches.isNotEmpty()) {
                     PrimaryScrollableTabRow(
                         selectedTabIndex = selectedTabIndex.value,
                         divider = { },
                         scrollState = rememberScrollState()
                     ) {
-                        epgs.eventBatches.forEachIndexed { index, epg ->
+                        eventBatchSet.eventBatches.forEachIndexed { index, eventBatch ->
                             Tab(
                                 text = {
                                     Text(
-                                        text = epg.name,
+                                        text = eventBatch.name,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis
                                     )
@@ -189,17 +189,17 @@ fun TvEpgPage(
     }
 
     ) { innerPadding ->
-        if (epgs.eventBatches.isNotEmpty()) {
+        if (eventBatchSet.eventBatches.isNotEmpty()) {
             HorizontalPager(
                 modifier = Modifier.fillMaxSize(),
                 state = pagerState,
             ) { service ->
                 EpgContent(
-                    events = epgs.eventBatches[service].events,
+                    events = eventBatchSet.eventBatches[service].events,
                     innerPadding,
-                    onAddTimer = { tvEpgViewModel.addTimer(it) })
+                    onAddTimerForEvent = { tvEpgViewModel.addTimerForEvent(it) })
             }
-        } else if (epgs.result) {
+        } else if (eventBatchSet.result) {
             NoResults(
                 Modifier
                     .consumeWindowInsets(innerPadding)

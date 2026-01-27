@@ -74,7 +74,7 @@ class MainViewModel @Inject constructor(
         loadingRepository.updateLoadingState(forceUpdate)
     }
 
-    suspend fun makeOWIFURL(): String {
+    suspend fun buildOwifUrl(): String {
         return apiRepository.buildOwifUrl()
     }
 

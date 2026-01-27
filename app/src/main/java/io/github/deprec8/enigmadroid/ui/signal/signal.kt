@@ -77,21 +77,21 @@ import kotlinx.coroutines.launch
 @Composable
 fun SignalPage(
     onNavigateToRemoteControl: () -> Unit,
-    drawerState: DrawerState, signalViewModel: SignalViewModel = hiltViewModel()
+    drawerState: DrawerState,
+    signalViewModel: SignalViewModel = hiltViewModel()
 ) {
+
+    val signalInfo by signalViewModel.signalInfo.collectAsStateWithLifecycle()
+    val loadingState by signalViewModel.loadingState.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-    val signalInfo by signalViewModel.signalInfo.collectAsStateWithLifecycle()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    val loadingState by signalViewModel.loadingState.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
-
 
     LaunchedEffect(Unit) {
         signalViewModel.updateLoadingState(false)
     }
-
     LaunchedEffect(loadingState) {
         if (loadingState == LoadingState.LOADED) {
             signalViewModel.fetchData()
@@ -101,9 +101,7 @@ fun SignalPage(
     Scaffold(
         floatingActionButton = {
             AnimatedVisibility(
-                loadingState == LoadingState.LOADED,
-                enter = scaleIn(),
-                exit = scaleOut()
+                loadingState == LoadingState.LOADED, enter = scaleIn(), exit = scaleOut()
             ) {
                 FloatingActionButton(onClick = {
                     signalViewModel.fetchData()
@@ -114,16 +112,15 @@ fun SignalPage(
                     )
                 }
             }
-        },
-        contentWindowInsets = contentWithDrawerWindowInsets(),
-        topBar = {
+        }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
             TopAppBar(
                 windowInsets = topAppBarWithDrawerWindowInsets(),
                 title = { Text(text = stringResource(R.string.signal)) },
                 scrollBehavior = scrollBehavior,
                 navigationIcon = {
-                    if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) ||
-                        ! windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
+                    if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || ! windowSizeClass.isHeightAtLeastBreakpoint(
+                            WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
+                        )
                     ) {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(
@@ -132,7 +129,8 @@ fun SignalPage(
                             )
                         }
                     }
-                }, actions = {
+                },
+                actions = {
                     IconButton(onClick = { onNavigateToRemoteControl() }) {
                         Icon(
                             Icons.Default.Dialpad,
@@ -140,11 +138,8 @@ fun SignalPage(
                         )
                     }
                 })
-        },
-        modifier = Modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
-
-        ) { innerPadding ->
+        }, modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+    ) { innerPadding ->
         when (signalInfo.inStandby) {
             "false" -> {
                 Column(
@@ -168,21 +163,18 @@ fun SignalPage(
                             color = MaterialTheme.colorScheme.surfaceContainer
                         )
                         CircularProgressIndicator(
-                            strokeWidth = 10.dp,
-                            progress = {
+                            strokeWidth = 10.dp, progress = {
                                 if (signalInfo.agc.isNotBlank()) {
                                     signalInfo.agc.toFloat() / 100
                                 } else {
                                     0f
                                 }
-                            },
-                            modifier = Modifier.size(300.dp),
-                            strokeCap = StrokeCap.Round
+                            }, modifier = Modifier.size(300.dp), strokeCap = StrokeCap.Round
                         )
                         Text(
                             modifier = Modifier.align(Alignment.Center),
                             textAlign = TextAlign.Center,
-                            text = "${(signalInfo.agc)}%",
+                            text = "${signalInfo.agc}%",
                             fontSize = 40.sp
                         )
                     }
@@ -204,10 +196,9 @@ fun SignalPage(
                         headlineContent = { Text(text = stringResource(R.string.snr)) },
                         supportingContent = {
                             Text(
-                                text = signalInfo.snr + "%"
+                                text = "${signalInfo.snr}%",
                             )
                         })
-
                 }
             }
             "true"  -> {
@@ -227,8 +218,7 @@ fun SignalPage(
                             scope.launch {
                                 signalViewModel.updateLoadingState(false)
                             }
-                        }
-                    )
+                        })
                 }
             }
         }

@@ -93,8 +93,8 @@ import io.github.deprec8.enigmadroid.utils.TimestampUtils
 @Composable
 fun TimerSetupDialog(
     oldTimer: Timer? = null,
-    onDismiss: () -> Unit,
-    onSave: (newTimer: Timer, oldTimer: Timer?) -> Unit,
+    onDismissRequest: () -> Unit,
+    onSaveRequest: (newTimer: Timer, oldTimer: Timer?) -> Unit,
     services: List<ServiceBatch>,
 ) {
     val titleState = rememberTextFieldState("")
@@ -132,7 +132,6 @@ fun TimerSetupDialog(
         Pair(0b0100000, R.string.saturday),
         Pair(0b1000000, R.string.sunday)
     )
-
 
     LaunchedEffect(Unit) {
         if (oldTimer != null) {
@@ -188,7 +187,7 @@ fun TimerSetupDialog(
 
     AdaptiveDialog(
         onDismissRequest = {
-            onDismiss()
+            onDismissRequest()
         },
         title = if (oldTimer == null) {
             stringResource(R.string.add_timer)
@@ -199,7 +198,7 @@ fun TimerSetupDialog(
             TextButton(
                 enabled = isEverythingValid(),
                 onClick = {
-                    onSave(
+                    onSaveRequest(
                         Timer(
                             serviceReference = serviceReference,
                             beginTimestamp = beginTimestamp / 1000,
@@ -223,7 +222,7 @@ fun TimerSetupDialog(
                 )
             }
         },
-        content = { isScrollable ->
+        content = { isContentScrollable ->
             Column {
                 ExposedDropdownMenuBox(
                     expanded = showServicesMenu,
@@ -256,7 +255,7 @@ fun TimerSetupDialog(
                         expanded = showServicesMenu,
                         scrollState = rememberScrollState(),
                         onDismissRequest = { showServicesMenu = false },
-                        containerColor = if (isScrollable) {
+                        containerColor = if (isContentScrollable) {
                             MaterialTheme.colorScheme.surfaceContainerHigh
                         } else {
                             MenuDefaults.containerColor
@@ -482,7 +481,7 @@ fun TimerSetupDialog(
                         expanded = showAftereventMenu,
                         scrollState = rememberScrollState(),
                         onDismissRequest = { showAftereventMenu = false },
-                        containerColor = if (isScrollable) {
+                        containerColor = if (isContentScrollable) {
                             MaterialTheme.colorScheme.surfaceContainerHigh
                         } else {
                             MenuDefaults.containerColor

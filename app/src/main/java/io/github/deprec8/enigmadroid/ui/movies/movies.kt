@@ -96,30 +96,31 @@ import kotlinx.coroutines.launch
 @Composable
 fun MoviesPage(
     onNavigateToRemoteControl: () -> Unit,
-    drawerState: DrawerState, moviesViewModel: MoviesViewModel = hiltViewModel()
+    drawerState: DrawerState,
+    moviesViewModel: MoviesViewModel = hiltViewModel()
 ) {
 
-    val movies by moviesViewModel.movies.collectAsStateWithLifecycle()
+    val movieBatches by moviesViewModel.movieBatches.collectAsStateWithLifecycle()
     val filteredMovies by moviesViewModel.filteredMovies.collectAsStateWithLifecycle()
     val searchHistory by moviesViewModel.searchHistory.collectAsStateWithLifecycle()
+    val loadingState by moviesViewModel.loadingState.collectAsStateWithLifecycle()
+    val searchInput by moviesViewModel.searchInput.collectAsStateWithLifecycle()
+    val useSearchHighlighting by moviesViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
+
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val pagerState = rememberPagerState(pageCount = { movies.size })
+    val pagerState = rememberPagerState(pageCount = { movieBatches.size })
     val selectedTabIndex = remember {
         derivedStateOf {
             pagerState.currentPage.coerceIn(
-                0,
-                (if (movies.size - 1 < 0) {
+                0, (if (movieBatches.size - 1 < 0) {
                     0
                 } else {
-                    movies.size - 1
+                    movieBatches.size - 1
                 })
             )
         }
     }
-    val loadingState by moviesViewModel.loadingState.collectAsStateWithLifecycle()
-    val searchInput by moviesViewModel.searchInput.collectAsStateWithLifecycle()
-    val useSearchHighlighting by moviesViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         moviesViewModel.updateLoadingState(false)
@@ -133,11 +134,11 @@ fun MoviesPage(
 
     @Composable
     fun Content(
-        list: List<Movie>,
+        movies: List<Movie>,
         paddingValues: PaddingValues,
         highlightedWords: List<String> = emptyList()
     ) {
-        if (list.isNotEmpty()) {
+        if (movies.isNotEmpty()) {
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(310.dp),
                 Modifier
@@ -146,7 +147,7 @@ fun MoviesPage(
                     .imePadding(),
                 contentPadding = paddingValues
             ) {
-                items(list) { movie ->
+                items(movies) { movie ->
                     var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
                     var showRenameDialog by rememberSaveable { mutableStateOf(false) }
                     var showMoveDialog by rememberSaveable { mutableStateOf(false) }
@@ -154,12 +155,10 @@ fun MoviesPage(
                     ContentListItem(
                         highlightedWords = highlightedWords,
                         headlineText = movie.eventName,
-                        overlineText = if (movie.serviceName != "") {
-                            movie.serviceName
-                        } else {
+                        overlineText = movie.serviceName.ifBlank {
                             null
                         },
-                        supportingText = movie.begin + " / " + movie.length + " / " + movie.filesizeReadable,
+                        supportingText = "${movie.begin} / ${movie.length} / ${movie.filesizeReadable}",
                         shortDescription = movie.shortDescription,
                         longDescription = movie.longDescription,
                         menuItemGroups = listOf(
@@ -173,20 +172,17 @@ fun MoviesPage(
                                             scope.launch {
                                                 IntentUtils.playMedia(
                                                     context,
-                                                    moviesViewModel.buildStreamUrl(movie.fileName),
+                                                    moviesViewModel.buildMovieStreamUrl(movie.fileName),
                                                     movie.eventName
                                                 )
                                             }
-                                        }
-                                    ),
-                                    MenuItem(
+                                        }), MenuItem(
                                         text = stringResource(R.string.switch_channel),
                                         outlinedIcon = Icons.Outlined.PlayArrow,
                                         filledIcon = Icons.Filled.PlayArrow,
                                         action = {
                                             moviesViewModel.play(movie.serviceReference)
-                                        }
-                                    )
+                                        })
                                 )
                             ),
                             MenuItemGroup(
@@ -197,8 +193,8 @@ fun MoviesPage(
                                         filledIcon = Icons.Filled.Download,
                                         action = {
                                             moviesViewModel.downloadMovie(movie)
-                                        }
-                                    ))
+                                        })
+                                )
                             ),
                         ),
                         editMenuItemGroup = MenuItemGroup(
@@ -207,20 +203,15 @@ fun MoviesPage(
                                     text = stringResource(R.string.rename),
                                     outlinedIcon = Icons.Outlined.Edit,
                                     filledIcon = Icons.Filled.Edit,
-                                    action = { showRenameDialog = true }
-                                ),
-                                MenuItem(
+                                    action = { showRenameDialog = true }), MenuItem(
                                     text = stringResource(R.string.move),
                                     outlinedIcon = Icons.AutoMirrored.Outlined.DriveFileMove,
                                     filledIcon = Icons.AutoMirrored.Filled.DriveFileMove,
-                                    action = { showMoveDialog = true }
-                                ),
-                                MenuItem(
+                                    action = { showMoveDialog = true }), MenuItem(
                                     text = stringResource(R.string.delete),
                                     outlinedIcon = Icons.Outlined.Delete,
                                     filledIcon = Icons.Filled.Delete,
-                                    action = { showDeleteDialog = true }
-                                )
+                                    action = { showDeleteDialog = true })
                             )
                         )
                     )
@@ -234,8 +225,7 @@ fun MoviesPage(
                             text = { Text(text = stringResource(R.string.if_you_delete_this_movie_it_will_not_be_recoverable)) },
                             icon = {
                                 Icon(
-                                    Icons.Outlined.Delete,
-                                    contentDescription = null
+                                    Icons.Outlined.Delete, contentDescription = null
                                 )
                             },
                             confirmButton = {
@@ -248,8 +238,7 @@ fun MoviesPage(
                                 TextButton(onClick = {
                                     showDeleteDialog = false
                                 }) { Text(stringResource(R.string.cancel)) }
-                            }
-                        )
+                            })
                     }
 
                     if (showRenameDialog) {
@@ -263,14 +252,14 @@ fun MoviesPage(
                             title = { Text(text = stringResource(R.string.rename_movie)) },
                             icon = {
                                 Icon(
-                                    Icons.Outlined.Edit,
-                                    contentDescription = null
+                                    Icons.Outlined.Edit, contentDescription = null
                                 )
                             },
                             text = {
                                 OutlinedTextField(
                                     value = renameInput,
-                                    onValueChange = { renameInput = it }, label = {
+                                    onValueChange = { renameInput = it },
+                                    label = {
                                         Text(
                                             text = stringResource(R.string.new_name)
                                         )
@@ -281,8 +270,7 @@ fun MoviesPage(
                                     onClick = {
                                         showRenameDialog = false
                                         moviesViewModel.rename(
-                                            movie.serviceReference,
-                                            renameInput
+                                            movie.serviceReference, renameInput
                                         )
                                     },
                                     enabled = renameInput != movie.eventName && ! renameInput.isBlank()
@@ -292,8 +280,7 @@ fun MoviesPage(
                                 TextButton(onClick = {
                                     showRenameDialog = false
                                 }) { Text(stringResource(R.string.cancel)) }
-                            }
-                        )
+                            })
                     }
 
                     if (showMoveDialog) {
@@ -309,7 +296,8 @@ fun MoviesPage(
                                 OutlinedTextField(
                                     prefix = { Text("/") },
                                     value = moveInput,
-                                    onValueChange = { moveInput = it }, label = {
+                                    onValueChange = { moveInput = it },
+                                    label = {
                                         Text(
                                             text = stringResource(R.string.new_location)
                                         )
@@ -331,8 +319,7 @@ fun MoviesPage(
                                 TextButton(onClick = {
                                     showMoveDialog = false
                                 }) { Text(stringResource(R.string.cancel)) }
-                            }
-                        )
+                            })
                     }
                 }
             }
@@ -345,99 +332,88 @@ fun MoviesPage(
         }
     }
 
-    Scaffold(
-        floatingActionButton = {
-            AnimatedVisibility(
-                loadingState == LoadingState.LOADED,
-                enter = scaleIn(),
-                exit = scaleOut()
-            ) {
-                FloatingActionButton(onClick = {
-                    moviesViewModel.fetchData()
-                }) {
-                    Icon(
-                        Icons.Default.Refresh,
-                        contentDescription = stringResource(R.string.refresh_page)
-                    )
-                }
+    Scaffold(floatingActionButton = {
+        AnimatedVisibility(
+            loadingState == LoadingState.LOADED, enter = scaleIn(), exit = scaleOut()
+        ) {
+            FloatingActionButton(onClick = {
+                moviesViewModel.fetchData()
+            }) {
+                Icon(
+                    Icons.Default.Refresh,
+                    contentDescription = stringResource(R.string.refresh_page)
+                )
             }
-        },
-        contentWindowInsets = contentWithDrawerWindowInsets(),
-        topBar = {
-            SearchTopAppBar(
-                enabled = movies.isNotEmpty(),
-                textFieldState = moviesViewModel.searchFieldState,
-                placeholder = stringResource(R.string.search_movies),
-                content = {
-                    if (filteredMovies != null) {
-                        Content(
-                            list = filteredMovies !!,
-                            paddingValues = PaddingValues(0.dp),
-                            highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
-                                .filter { it.isNotBlank() } else emptyList()
-                        )
-                    } else {
-                        SearchHistory(
-                            searchHistory = searchHistory,
-                            onTermSearchClick = {
-                                moviesViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
-                                moviesViewModel.updateSearchInput()
-                            },
-                            onTermInsertClick = {
-                                moviesViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
-                                    it
-                                )
-                            }
-                        )
-                    }
-                },
-                navigationButton = { searchBarState ->
-                    SearchTopAppBarDrawerNavigationButton(drawerState, searchBarState)
-                },
-                actionButtons = {
-                    SearchTopAppBarRemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
-                },
-                onSearch = {
-                    moviesViewModel.updateSearchInput()
-                },
-                tabBar = {
-                    if (movies.isNotEmpty()) {
-                        PrimaryScrollableTabRow(
-                            selectedTabIndex = selectedTabIndex.value,
-                            divider = { },
-                            scrollState = rememberScrollState()
-                        ) {
-                            movies.forEachIndexed { index, movieList ->
-                                Tab(
-                                    text = {
-                                        Text(
-                                            text = movieList.bookmark.displayName,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                    },
-                                    onClick = {
-                                        scope.launch { pagerState.animateScrollToPage(index) }
-                                    },
-                                    selected = index == selectedTabIndex.value,
-                                )
-                            }
-                        }
-                        HorizontalDivider()
-
-                    }
-                }
-            )
-
         }
+    }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
+        SearchTopAppBar(
+            enabled = movieBatches.isNotEmpty(),
+            textFieldState = moviesViewModel.searchFieldState,
+            placeholder = stringResource(R.string.search_movies),
+            content = {
+                if (filteredMovies != null) {
+                    Content(
+                        movies = filteredMovies !!,
+                        paddingValues = PaddingValues(0.dp),
+                        highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
+                            .filter { it.isNotBlank() } else emptyList())
+                } else {
+                    SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
+                        moviesViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
+                        moviesViewModel.updateSearchInput()
+                    }, onTermInsertClick = {
+                        moviesViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
+                            it
+                        )
+                    })
+                }
+            },
+            navigationButton = { searchBarState ->
+                SearchTopAppBarDrawerNavigationButton(drawerState, searchBarState)
+            },
+            actionButtons = {
+                SearchTopAppBarRemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
+            },
+            onSearch = {
+                moviesViewModel.updateSearchInput()
+            },
+            tabBar = {
+                if (movieBatches.isNotEmpty()) {
+                    PrimaryScrollableTabRow(
+                        selectedTabIndex = selectedTabIndex.value,
+                        divider = { },
+                        scrollState = rememberScrollState()
+                    ) {
+                        movieBatches.forEachIndexed { index, movieBatch ->
+                            Tab(
+                                text = {
+                                    Text(
+                                        text = movieBatch.bookmark.displayName,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                },
+                                onClick = {
+                                    scope.launch { pagerState.animateScrollToPage(index) }
+                                },
+                                selected = index == selectedTabIndex.value,
+                            )
+                        }
+                    }
+                    HorizontalDivider()
+
+                }
+            })
+
+    }
 
     ) { innerPadding ->
-        if (movies.isNotEmpty()) {
+        if (movieBatches.isNotEmpty()) {
             HorizontalPager(
                 modifier = Modifier.fillMaxSize(),
                 state = pagerState,
             ) { index ->
-                Content(list = movies[index].movies, innerPadding)
+                Content(movies = movieBatches[index].movies, innerPadding)
             }
         } else {
             LoadingScreen(
@@ -451,8 +427,7 @@ fun MoviesPage(
                             it
                         )
                     }
-                },
-                loadingState = loadingState
+                }, loadingState = loadingState
             )
 
         }

@@ -62,13 +62,11 @@ import io.github.deprec8.enigmadroid.utils.IntentUtils
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AboutPage(
-    onNavigateBack: () -> Unit,
-    onNavigateToLibraries: () -> Unit
+    onNavigateBack: () -> Unit, onNavigateToLibraries: () -> Unit
 ) {
     val context = LocalContext.current
     val info = context.packageManager.getPackageInfo(
-        context.packageName,
-        PackageManager.GET_ACTIVITIES
+        context.packageName, PackageManager.GET_ACTIVITIES
     )
     val libraries by produceLibraries()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -83,28 +81,22 @@ fun AboutPage(
     Scaffold(
         contentWindowInsets = contentWithDrawerWindowInsets(),
         topBar = {
-            TopAppBar(
-                windowInsets = topAppBarWithDrawerWindowInsets(),
-                title = {
-                    Text(
-                        text = stringResource(id = R.string.about),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+            TopAppBar(windowInsets = topAppBarWithDrawerWindowInsets(), title = {
+                Text(
+                    text = stringResource(id = R.string.about),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }, scrollBehavior = scrollBehavior, navigationIcon = {
+                IconButton(onClick = { onNavigateBack() }) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.navigate_back)
                     )
-                },
-                scrollBehavior = scrollBehavior,
-                navigationIcon = {
-                    IconButton(onClick = { onNavigateBack() }) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.navigate_back)
-                        )
-                    }
                 }
-            )
+            })
         },
-        modifier = Modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { innerPadding ->
         Column(
             Modifier
@@ -129,8 +121,7 @@ fun AboutPage(
                 leadingContent = { Icon(Icons.Outlined.Info, contentDescription = null) },
                 supportingContent = {
                     Text(
-                        text = info.versionName
-                            ?: stringResource(R.string.version_not_found)
+                        text = info.versionName ?: stringResource(R.string.version_not_found)
                     )
                 })
 
@@ -154,8 +145,7 @@ fun AboutPage(
                 leadingContent = { Icon(Icons.Outlined.ReportProblem, contentDescription = null) },
                 modifier = Modifier.clickable {
                     IntentUtils.openUrl(
-                        context,
-                        appIssueURL
+                        context, appIssueURL
                     )
                 })
 
@@ -168,8 +158,7 @@ fun AboutPage(
                 leadingContent = { Icon(Icons.Outlined.Translate, contentDescription = null) },
                 modifier = Modifier.clickable {
                     IntentUtils.openUrl(
-                        context,
-                        appTranslationURL
+                        context, appTranslationURL
                     )
                 })
 
@@ -194,8 +183,7 @@ fun AboutPage(
                 supportingContent = {
                     Text(
                         text = stringResource(
-                            R.string.libraries,
-                            libraries?.libraries?.size ?: ""
+                            R.string.libraries, libraries?.libraries?.size ?: ""
                         )
                     )
                 },

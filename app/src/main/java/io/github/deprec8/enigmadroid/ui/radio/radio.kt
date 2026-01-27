@@ -53,7 +53,6 @@ import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -89,33 +88,32 @@ import kotlinx.coroutines.launch
 @Composable
 fun RadioPage(
     onNavigateToRemoteControl: () -> Unit,
-    onNavigateToServiceEpg: (sRef: String, sName: String) -> Unit,
-    drawerState: DrawerState, radioViewModel: RadioViewModel = hiltViewModel()
+    onNavigateToServiceEpg: (serviceReference: String, serviceName: String) -> Unit,
+    drawerState: DrawerState,
+    radioViewModel: RadioViewModel = hiltViewModel()
 ) {
 
-    val context = LocalContext.current
-    val filteredRadioEvents by radioViewModel.filteredEvents.collectAsStateWithLifecycle()
-    val allRadioEvents by radioViewModel.allEvents.collectAsStateWithLifecycle()
+    val filteredEvents by radioViewModel.filteredEvents.collectAsStateWithLifecycle()
+    val eventBatches by radioViewModel.eventBatches.collectAsStateWithLifecycle()
     val searchHistory by radioViewModel.searchHistory.collectAsStateWithLifecycle()
     val useSearchHighlighting by radioViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
+    val loadingState by radioViewModel.loadingState.collectAsStateWithLifecycle()
+    val searchInput by radioViewModel.searchInput.collectAsStateWithLifecycle()
 
-    currentWindowAdaptiveInfo().windowSizeClass
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val pagerState = rememberPagerState(pageCount = { allRadioEvents.size })
+    val pagerState = rememberPagerState(pageCount = { eventBatches.size })
     val selectedTabIndex = remember {
         derivedStateOf {
             pagerState.currentPage.coerceIn(
-                0,
-                (if (allRadioEvents.size - 1 < 0) {
+                0, (if (eventBatches.size - 1 < 0) {
                     0
                 } else {
-                    allRadioEvents.size - 1
+                    eventBatches.size - 1
                 })
             )
         }
     }
-    val loadingState by radioViewModel.loadingState.collectAsStateWithLifecycle()
-    val searchInput by radioViewModel.searchInput.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         radioViewModel.updateLoadingState(false)
@@ -127,14 +125,14 @@ fun RadioPage(
         }
     }
 
-
     @Composable
     fun Content(
-        list: List<Event>,
+        events: List<Event>,
         paddingValues: PaddingValues,
-        showChannelNumbers: Boolean = true, highlightedWords: List<String> = emptyList()
+        showChannelNumbers: Boolean = true,
+        highlightedWords: List<String> = emptyList()
     ) {
-        if (list.isNotEmpty()) {
+        if (events.isNotEmpty()) {
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(310.dp),
                 Modifier
@@ -143,14 +141,14 @@ fun RadioPage(
                     .imePadding(),
                 contentPadding = paddingValues
             ) {
-                items(list) { event ->
+                items(events) { event ->
                     ContentListItem(
                         highlightedWords = highlightedWords,
                         headlineText = event.serviceName,
                         leadingContent = if (showChannelNumbers) {
                             {
                                 Text(
-                                    text = "${list.indexOf(event) + 1}.",
+                                    text = "${events.indexOf(event) + 1}.",
                                     textAlign = TextAlign.Center,
                                 )
                             }
@@ -158,7 +156,7 @@ fun RadioPage(
                             null
                         },
                         supportingText = event.title,
-                        additionalInfo = TimestampUtils.formatApiTimestampToTime(event.beginTimestamp) + " - " + TimestampUtils.formatApiTimestampToTime(
+                        additionalInfo = "${TimestampUtils.formatApiTimestampToTime(event.beginTimestamp)} - " + TimestampUtils.formatApiTimestampToTime(
                             event.beginTimestamp + event.durationInSeconds
                         ),
                         menuItemGroups = listOf(
@@ -172,41 +170,31 @@ fun RadioPage(
                                             scope.launch {
                                                 IntentUtils.playMedia(
                                                     context,
-                                                    radioViewModel.buildStreamUrl(event.serviceReference),
+                                                    radioViewModel.buildLiveStreamUrl(event.serviceReference),
                                                     event.serviceName
                                                 )
                                             }
-                                        }
-                                    ),
-                                    MenuItem(
+                                        }), MenuItem(
                                         text = stringResource(R.string.switch_channel),
                                         outlinedIcon = Icons.Outlined.PlayArrow,
                                         filledIcon = Icons.Filled.PlayArrow,
                                         action = {
                                             radioViewModel.play(event.serviceReference)
-                                        }
-                                    ),
-                                    MenuItem(
+                                        }), MenuItem(
                                         text = stringResource(R.string.record),
                                         outlinedIcon = Icons.Outlined.Videocam,
                                         filledIcon = Icons.Filled.Videocam,
                                         action = {
-                                            scope.launch {
-                                                radioViewModel.addTimer(event)
-                                            }
-                                        }
-                                    ),
-                                    MenuItem(
+                                            radioViewModel.addTimerForEvent(event)
+                                        }), MenuItem(
                                         text = stringResource(R.string.view_epg),
                                         outlinedIcon = Icons.AutoMirrored.Outlined.Dvr,
                                         filledIcon = Icons.AutoMirrored.Filled.Dvr,
                                         action = {
                                             onNavigateToServiceEpg(
-                                                event.serviceReference,
-                                                event.serviceName
+                                                event.serviceReference, event.serviceName
                                             )
-                                        }
-                                    )
+                                        })
                                 )
                             )
                         ),
@@ -225,102 +213,91 @@ fun RadioPage(
         }
     }
 
-    Scaffold(
-        floatingActionButton = {
-            AnimatedVisibility(
-                loadingState == LoadingState.LOADED,
-                enter = scaleIn(),
-                exit = scaleOut()
-            ) {
-                FloatingActionButton(onClick = {
-                    radioViewModel.fetchData()
-                }) {
-                    Icon(
-                        Icons.Default.Refresh,
-                        contentDescription = stringResource(R.string.refresh_page)
-                    )
-                }
+    Scaffold(floatingActionButton = {
+        AnimatedVisibility(
+            loadingState == LoadingState.LOADED, enter = scaleIn(), exit = scaleOut()
+        ) {
+            FloatingActionButton(onClick = {
+                radioViewModel.fetchData()
+            }) {
+                Icon(
+                    Icons.Default.Refresh,
+                    contentDescription = stringResource(R.string.refresh_page)
+                )
             }
-        },
-        contentWindowInsets = contentWithDrawerWindowInsets(),
-        topBar = {
-            SearchTopAppBar(
-                enabled = allRadioEvents.isNotEmpty(),
-                textFieldState = radioViewModel.searchFieldState,
-                placeholder = stringResource(R.string.search_events),
-                content = {
-                    if (filteredRadioEvents != null) {
-                        Content(
-                            list = filteredRadioEvents !!,
-                            paddingValues = PaddingValues(0.dp),
-                            showChannelNumbers = false,
-                            highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
-                                .filter { it.isNotBlank() } else emptyList()
-                        )
-                    } else {
-                        SearchHistory(
-                            searchHistory = searchHistory,
-                            onTermSearchClick = {
-                                radioViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
-                                radioViewModel.updateSearchInput(selectedTabIndex.value)
-                            },
-                            onTermInsertClick = {
-                                radioViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
-                                    it
-                                )
-                            }
-                        )
-                    }
-                },
-                navigationButton = { searchBarState ->
-                    SearchTopAppBarDrawerNavigationButton(drawerState, searchBarState)
-                },
-                actionButtons = {
-                    SearchTopAppBarRemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
-                },
-                onSearch = {
-                    radioViewModel.updateSearchInput(selectedTabIndex.value)
-                },
-                tabBar = {
-                    if (allRadioEvents.isNotEmpty()) {
-                        PrimaryScrollableTabRow(
-                            selectedTabIndex = selectedTabIndex.value,
-                            divider = { },
-                            scrollState = rememberScrollState()
-                        ) {
-                            allRadioEvents.forEachIndexed { index, eventList ->
-                                Tab(
-                                    text = {
-                                        Text(
-                                            text = eventList.name,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                    },
-                                    onClick = {
-                                        scope.launch {
-                                            pagerState.animateScrollToPage(index)
-                                        }
-                                    },
-                                    selected = index == selectedTabIndex.value,
-                                )
-                            }
-                        }
-                        HorizontalDivider()
-
-                    }
-                }
-            )
-
         }
+    }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
+        SearchTopAppBar(
+            enabled = eventBatches.isNotEmpty(),
+            textFieldState = radioViewModel.searchFieldState,
+            placeholder = stringResource(R.string.search_events),
+            content = {
+                if (filteredEvents != null) {
+                    Content(
+                        events = filteredEvents !!,
+                        paddingValues = PaddingValues(0.dp),
+                        showChannelNumbers = false,
+                        highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
+                            .filter { it.isNotBlank() } else emptyList())
+                } else {
+                    SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
+                        radioViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
+                        radioViewModel.updateSearchInput(selectedTabIndex.value)
+                    }, onTermInsertClick = {
+                        radioViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
+                            it
+                        )
+                    })
+                }
+            },
+            navigationButton = { searchBarState ->
+                SearchTopAppBarDrawerNavigationButton(drawerState, searchBarState)
+            },
+            actionButtons = {
+                SearchTopAppBarRemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
+            },
+            onSearch = {
+                radioViewModel.updateSearchInput(selectedTabIndex.value)
+            },
+            tabBar = {
+                if (eventBatches.isNotEmpty()) {
+                    PrimaryScrollableTabRow(
+                        selectedTabIndex = selectedTabIndex.value,
+                        divider = { },
+                        scrollState = rememberScrollState()
+                    ) {
+                        eventBatches.forEachIndexed { index, eventBatch ->
+                            Tab(
+                                text = {
+                                    Text(
+                                        text = eventBatch.name,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                },
+                                onClick = {
+                                    scope.launch {
+                                        pagerState.animateScrollToPage(index)
+                                    }
+                                },
+                                selected = index == selectedTabIndex.value,
+                            )
+                        }
+                    }
+                    HorizontalDivider()
+
+                }
+            })
+
+    }
 
     ) { innerPadding ->
-        if (allRadioEvents.isNotEmpty()) {
+        if (eventBatches.isNotEmpty()) {
             HorizontalPager(
                 modifier = Modifier.fillMaxSize(),
                 state = pagerState,
             ) { index ->
-                Content(list = allRadioEvents[index].events, innerPadding)
+                Content(events = eventBatches[index].events, innerPadding)
             }
         } else {
             LoadingScreen(

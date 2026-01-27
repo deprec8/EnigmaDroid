@@ -52,30 +52,30 @@ fun MainPage(
     val loadingState by mainViewModel.loadingState.collectAsStateWithLifecycle()
     val isOnboardingNeeded by mainViewModel.isOnboardingNeeded.collectAsStateWithLifecycle()
 
-    val navController = rememberNavController()
-    val modalDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val navHostController = rememberNavController()
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(
-        windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) &&
-                windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
+        windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) && windowSizeClass.isHeightAtLeastBreakpoint(
+            WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
+        )
     ) {
-        modalDrawerState.close()
+        drawerState.close()
     }
 
     if (isOnboardingNeeded) {
         OnboardingPage()
     } else {
-        if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) ||
-            ! windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
+        if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || ! windowSizeClass.isHeightAtLeastBreakpoint(
+                WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
+            )
         ) {
             ModalNavigationDrawer(
                 drawerContent = {
                     ModalDrawerSheet(
-                        drawerState = modalDrawerState,
-                        modifier = Modifier
+                        drawerState = drawerState, modifier = Modifier
                             .consumeWindowInsets(
                                 WindowInsets.safeDrawing.only(
                                     WindowInsetsSides.Vertical
@@ -89,8 +89,8 @@ fun MainPage(
                     ) {
                         NavDrawerContent(
                             currentDevice = currentDevice,
-                            navController = navController,
-                            modalDrawerState = modalDrawerState,
+                            navHostController = navHostController,
+                            drawerState = drawerState,
                             updateDeviceStatus = {
                                 scope.launch {
                                     mainViewModel.updateLoadingState(
@@ -98,16 +98,14 @@ fun MainPage(
                                     )
                                 }
                             },
-                            makeOWIFURL = mainViewModel::makeOWIFURL,
+                            buildOwifUrl = mainViewModel::buildOwifUrl,
                             loadingState = loadingState
                         )
                     }
-                },
-                drawerState = modalDrawerState
+                }, drawerState = drawerState
             ) {
                 NavHost(
-                    navController,
-                    modalDrawerState
+                    navHostController, drawerState
                 )
             }
         } else {
@@ -128,8 +126,8 @@ fun MainPage(
                     ) {
                         NavDrawerContent(
                             currentDevice = currentDevice,
-                            navController = navController,
-                            modalDrawerState = modalDrawerState,
+                            navHostController = navHostController,
+                            drawerState = drawerState,
                             updateDeviceStatus = {
                                 scope.launch {
                                     mainViewModel.updateLoadingState(
@@ -137,14 +135,13 @@ fun MainPage(
                                     )
                                 }
                             },
-                            makeOWIFURL = mainViewModel::makeOWIFURL,
+                            buildOwifUrl = mainViewModel::buildOwifUrl,
                             loadingState = loadingState
                         )
                     }
-                }
-            ) {
+                }) {
                 NavHost(
-                    navController, modalDrawerState
+                    navHostController, drawerState
                 )
             }
         }

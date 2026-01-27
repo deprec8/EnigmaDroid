@@ -98,15 +98,15 @@ import kotlin.reflect.KSuspendFunction0
 fun NavDrawerContent(
     currentDevice: Device?,
     loadingState: LoadingState,
-    makeOWIFURL: KSuspendFunction0<String>,
+    buildOwifUrl: KSuspendFunction0<String>,
     updateDeviceStatus: () -> Unit,
-    navController: NavHostController,
-    modalDrawerState: DrawerState
+    navHostController: NavHostController,
+    drawerState: DrawerState
 ) {
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val navBackStackEntry by navHostController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
     val scrollState = rememberScrollState()
 
@@ -190,7 +190,7 @@ fun NavDrawerContent(
 
     fun closeNavDrawer() {
         scope.launch {
-            modalDrawerState.apply {
+            drawerState.apply {
                 close()
             }
         }
@@ -222,10 +222,10 @@ fun NavDrawerContent(
                 })
                 {
                     when (it) {
-                        LoadingState.LOADED                                              -> {
+                        LoadingState.LOADED  -> {
                             IconButton(onClick = {
                                 scope.launch {
-                                    IntentUtils.openOwif(context, makeOWIFURL())
+                                    IntentUtils.openOwif(context, buildOwifUrl())
                                 }
                             }) {
                                 Icon(
@@ -242,7 +242,7 @@ fun NavDrawerContent(
                                 )
                             }
                         }
-                        LoadingState.LOADING                                             -> {
+                        LoadingState.LOADING -> {
                             IconButton(onClick = {}, enabled = false) {
                                 CircularProgressIndicator(Modifier.size(24.dp))
                             }
@@ -296,7 +296,6 @@ fun NavDrawerContent(
             )
         )
 
-
         drawerPageGroups.forEachIndexed { index, group ->
             HorizontalDivider(
                 Modifier.padding(
@@ -326,7 +325,7 @@ fun NavDrawerContent(
                     selected = currentDestination?.hierarchy?.any { it.hasRoute(drawerPage.route::class) } == true,
                     onClick = {
                         if (currentDestination?.hierarchy?.any { it.hasRoute(drawerPage.route::class) } == false) {
-                            navController.navigate(drawerPage.route)
+                            navHostController.navigate(drawerPage.route)
                         }
                         closeNavDrawer()
                     },

@@ -33,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import io.github.deprec8.enigmadroid.R
+import io.github.deprec8.enigmadroid.data.objects.DefaultPort
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.ui.components.AdaptiveDialog
 import io.github.deprec8.enigmadroid.ui.components.DeviceSetupCard
@@ -41,7 +42,7 @@ import io.github.deprec8.enigmadroid.ui.components.DeviceSetupCard
 @Composable
 fun DeviceSetupDialog(
     oldDevice: Device? = null,
-    onDismiss: () -> Unit,
+    onDismissRequest: () -> Unit,
     onSave: (newDevice: Device, oldDevice: Device?) -> Unit
 ) {
     var isHttps by rememberSaveable { mutableStateOf(false) }
@@ -49,21 +50,21 @@ fun DeviceSetupDialog(
 
     val nameState = rememberTextFieldState("")
     val ipState = rememberTextFieldState("")
-    val portState = rememberTextFieldState("80")
-    val livePortState = rememberTextFieldState("8001")
+    val portState = rememberTextFieldState(DefaultPort.HTTP)
+    val livePortState = rememberTextFieldState(DefaultPort.LIVE)
     val userState = rememberTextFieldState("")
     val passwordState = rememberTextFieldState("")
-
 
     fun setDeviceData() {
         nameState.setTextAndPlaceCursorAtEnd(oldDevice?.name ?: "")
         ipState.setTextAndPlaceCursorAtEnd(oldDevice?.ip ?: "")
-        portState.setTextAndPlaceCursorAtEnd(oldDevice?.port ?: "80")
-        livePortState.setTextAndPlaceCursorAtEnd(oldDevice?.livePort ?: "8001")
-        isHttps = oldDevice?.isHttps == true
-        isLogin = oldDevice?.isLogin == true
+        portState.setTextAndPlaceCursorAtEnd(oldDevice?.port ?: DefaultPort.HTTP)
+        livePortState.setTextAndPlaceCursorAtEnd(oldDevice?.livePort ?: DefaultPort.LIVE)
         userState.setTextAndPlaceCursorAtEnd(oldDevice?.user ?: "")
         passwordState.setTextAndPlaceCursorAtEnd(oldDevice?.password ?: "")
+
+        isHttps = oldDevice?.isHttps == true
+        isLogin = oldDevice?.isLogin == true
     }
 
     LaunchedEffect(Unit) {
@@ -95,14 +96,12 @@ fun DeviceSetupDialog(
 
     AdaptiveDialog(
         onDismissRequest = {
-            onDismiss()
-        },
-        title = if (oldDevice == null) {
+            onDismissRequest()
+        }, title = if (oldDevice == null) {
             stringResource(id = R.string.add_device)
         } else {
             stringResource(id = R.string.edit_device)
-        },
-        actionButton = {
+        }, actionButton = {
             TextButton(
                 onClick = {
                     if (isSaveReady()) {
@@ -130,8 +129,7 @@ fun DeviceSetupDialog(
                     }
                 )
             }
-        },
-        content = {
+        }, content = {
             DeviceSetupCard(
                 modifier = Modifier,
                 nameState = nameState,
@@ -144,17 +142,15 @@ fun DeviceSetupDialog(
                 passwordState = passwordState,
                 onHttpsChange = {
                     isHttps = ! isHttps
-                    if (portState.text == "80" && isHttps) {
-                        portState.setTextAndPlaceCursorAtEnd("443")
-                    } else if (portState.text == "443" && ! isHttps) {
-                        portState.setTextAndPlaceCursorAtEnd("80")
+                    if (portState.text == DefaultPort.HTTP && isHttps) {
+                        portState.setTextAndPlaceCursorAtEnd(DefaultPort.HTTPS)
+                    } else if (portState.text == DefaultPort.HTTPS && ! isHttps) {
+                        portState.setTextAndPlaceCursorAtEnd(DefaultPort.HTTP)
 
                     }
                 },
                 onLoginChange = {
                     isLogin = ! isLogin
-                }
-            )
-        }
-    )
+                })
+        })
 }

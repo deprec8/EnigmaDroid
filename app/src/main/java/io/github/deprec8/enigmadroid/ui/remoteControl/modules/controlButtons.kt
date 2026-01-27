@@ -41,52 +41,52 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
+import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtonType
 import io.github.deprec8.enigmadroid.model.RemoteControlButton
-import io.github.deprec8.enigmadroid.ui.remoteControl.RemoteControlViewModel
 
 @Composable
-fun ControlButtons(remoteControlViewModel: RemoteControlViewModel, enabled: Boolean, performHaptic: () -> Unit) {
+fun ControlButtons(
+    onButtonClicked: (RemoteControlButtonType) -> Unit, enabled: Boolean
+) {
 
     val controlButtons = listOf(
         listOf(
             RemoteControlButton(
                 icon = Icons.Default.FastRewind,
                 iconLabel = stringResource(R.string.rewind),
-                onClick = remoteControlViewModel::rewind
+                type = RemoteControlButtonType.REWIND
             ),
             RemoteControlButton(
                 icon = Icons.Default.PlayArrow,
                 iconLabel = stringResource(R.string.play),
-                onClick = remoteControlViewModel::play
+                type = RemoteControlButtonType.PLAY
             ),
             RemoteControlButton(
                 icon = Icons.Default.Pause,
                 iconLabel = stringResource(R.string.pause),
-                onClick = remoteControlViewModel::pause
+                type = RemoteControlButtonType.PAUSE
             ),
             RemoteControlButton(
                 icon = Icons.Default.FastForward,
                 iconLabel = stringResource(R.string.forward),
-                onClick = remoteControlViewModel::forward
+                type = RemoteControlButtonType.FORWARD
             ),
         ), listOf(
             RemoteControlButton(
-                text = "TV",
-                onClick = remoteControlViewModel::tv
+                text = "TV", type = RemoteControlButtonType.TV
             ),
             RemoteControlButton(
                 icon = Icons.Default.Circle,
                 iconLabel = stringResource(R.string.record),
-                onClick = remoteControlViewModel::record
+                type = RemoteControlButtonType.RECORD
             ),
             RemoteControlButton(
                 icon = Icons.Default.Stop,
                 iconLabel = stringResource(R.string.stop),
-                onClick = remoteControlViewModel::stop
+                type = RemoteControlButtonType.STOP
             ),
             RemoteControlButton(
-                text = "RADIO",
-                onClick = remoteControlViewModel::radio
+                text = "RADIO", type = RemoteControlButtonType.RADIO
             ),
         )
     )
@@ -96,22 +96,19 @@ fun ControlButtons(remoteControlViewModel: RemoteControlViewModel, enabled: Bool
             row.forEach { button ->
                 FilledTonalButton(
                     onClick = {
-                        button.onClick()
-                        performHaptic()
+                        onButtonClicked(button.type)
                     },
                     contentPadding = PaddingValues(),
                     enabled = enabled,
-                    modifier =
-                        Modifier
-                            .padding(8.dp)
-                            .weight(1f)
-                            .aspectRatio(1.5f),
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .weight(1f)
+                        .aspectRatio(1.5f),
                     shape = MaterialTheme.shapes.extraLarge,
                 ) {
                     button.icon?.let { icon ->
                         Icon(
-                            icon,
-                            contentDescription = button.iconLabel
+                            icon, contentDescription = button.iconLabel
                         )
                     }
                     button.text?.let { text ->

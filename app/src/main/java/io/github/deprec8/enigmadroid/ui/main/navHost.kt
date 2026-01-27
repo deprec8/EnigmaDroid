@@ -53,153 +53,143 @@ import io.github.deprec8.enigmadroid.ui.tv.TvPage
 
 @Composable
 fun NavHost(
-    navController: NavHostController,
-    modalDrawerState: DrawerState
+    navHostController: NavHostController, drawerState: DrawerState
 ) {
     Surface {
         NavHost(
-            navController = navController, startDestination = MainPages.TV,
+            navController = navHostController, startDestination = MainPages.TV,
             enterTransition = { fadeIn() }, exitTransition = { fadeOut() },
         ) {
 
             composable<MainPages.TV> {
                 TvPage(
-                    onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
-                    onNavigateToServiceEpg = { sRef, sName ->
-                        navController.navigate(
+                    onNavigateToRemoteControl = { navHostController.navigate(MainPages.RemoteControl) },
+                    onNavigateToServiceEpg = { serviceReference, serviceName ->
+                        navHostController.navigate(
                             MainPages.ServiceEpg(
-                                sRef, sName
+                                serviceReference, serviceName
                             )
                         )
                     },
-                    modalDrawerState
+                    drawerState
                 )
             }
             composable<MainPages.ServiceEpg> { backStackEntry ->
                 val serviceEpg: MainPages.ServiceEpg = backStackEntry.toRoute()
                 ServiceEpgPage(
-                    sRef = serviceEpg.sRef,
-                    sName = serviceEpg.sName,
-                    onNavigateBack = { navController.navigateUp() }
-                )
+                    sRef = serviceEpg.serviceReference,
+                    sName = serviceEpg.serviceName,
+                    onNavigateBack = { navHostController.navigateUp() })
             }
             composable<MainPages.Movies> {
                 MoviesPage(
-                    onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
-                    modalDrawerState
+                    onNavigateToRemoteControl = { navHostController.navigate(MainPages.RemoteControl) },
+                    drawerState
                 )
             }
             composable<MainPages.TvEpg> {
                 TvEpgPage(
-                    onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
-                    modalDrawerState
+                    onNavigateToRemoteControl = { navHostController.navigate(MainPages.RemoteControl) },
+                    drawerState
                 )
             }
             composable<MainPages.RadioEpg> {
                 RadioEpgPage(
-                    onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
-                    modalDrawerState
+                    onNavigateToRemoteControl = { navHostController.navigate(MainPages.RemoteControl) },
+                    drawerState
                 )
             }
             composable<MainPages.Current> {
                 CurrentPage(
-                    onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
-                    onNavigateToServiceEpg = { sRef, sName ->
-                        navController.navigate(
+                    onNavigateToRemoteControl = { navHostController.navigate(MainPages.RemoteControl) },
+                    onNavigateToServiceEpg = { serviceReference, serviceName ->
+                        navHostController.navigate(
                             MainPages.ServiceEpg(
-                                sRef, sName
+                                serviceReference, serviceName
                             )
                         )
                     },
-                    drawerState = modalDrawerState
+                    drawerState = drawerState
                 )
             }
             composable<MainPages.Radio> {
                 RadioPage(
-                    onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
-                    onNavigateToServiceEpg = { sRef, sName ->
-                        navController.navigate(
+                    onNavigateToRemoteControl = { navHostController.navigate(MainPages.RemoteControl) },
+                    onNavigateToServiceEpg = { serviceReference, serviceName ->
+                        navHostController.navigate(
                             MainPages.ServiceEpg(
-                                sRef, sName
+                                serviceReference, serviceName
                             )
                         )
                     },
-                    modalDrawerState
+                    drawerState
                 )
             }
             composable<MainPages.Timers> {
                 TimersPage(
-                    onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
-                    modalDrawerState
+                    onNavigateToRemoteControl = { navHostController.navigate(MainPages.RemoteControl) },
+                    drawerState
                 )
             }
 
             composable<MainPages.Signal> {
                 SignalPage(
-                    onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
-                    modalDrawerState
+                    onNavigateToRemoteControl = { navHostController.navigate(MainPages.RemoteControl) },
+                    drawerState
                 )
             }
             composable<MainPages.DeviceInfo> {
                 DeviceInfoPage(
-                    onNavigateToRemoteControl = { navController.navigate(MainPages.RemoteControl) },
-                    modalDrawerState
+                    onNavigateToRemoteControl = { navHostController.navigate(MainPages.RemoteControl) },
+                    drawerState
                 )
             }
             composable<MainPages.Settings> {
                 SettingsPage(
-                    modalDrawerState,
-                    onNavigateToSubPage = {
-                        navController.navigate(it)
-                    }
-                )
+                    drawerState, onNavigateToSettingsPage = {
+                        navHostController.navigate(it)
+                    })
             }
             composable<SettingsPages.About> {
                 AboutPage(
-                    onNavigateBack = { navController.navigate(MainPages.Settings) },
+                    onNavigateBack = { navHostController.navigate(MainPages.Settings) },
                     onNavigateToLibraries = {
-                        navController.navigate(SettingsPages.Libraries)
-                    }
-                )
+                        navHostController.navigate(SettingsPages.Libraries)
+                    })
             }
             composable<SettingsPages.Libraries> {
                 LibrariesPage(
-                    onNavigateBack = { navController.navigate(SettingsPages.About) }
-                )
+                    onNavigateBack = { navHostController.navigate(SettingsPages.About) })
             }
             composable<SettingsPages.Devices> {
                 DevicesPage(
                     onNavigateBack = {
-                        navController.navigate(MainPages.Settings)
-                    }
-                )
+                        navHostController.navigate(MainPages.Settings)
+                    })
             }
             composable<SettingsPages.RemoteControl> {
                 RemoteControlSettingsPage(
                     onNavigateBack = {
-                        navController.navigate(MainPages.Settings)
-                    }
-                )
+                        navHostController.navigate(MainPages.Settings)
+                    })
             }
             composable<SettingsPages.Search> {
                 SearchSettingsPage(
                     onNavigateBack = {
-                        navController.navigate(MainPages.Settings)
-                    }
-                )
+                        navHostController.navigate(MainPages.Settings)
+                    })
             }
             dialog<MainPages.RemoteControl>(
                 deepLinks = listOf(navDeepLink {
                     uriPattern = "enigmadroid://remotecontrol"
-                }),
-                dialogProperties = DialogProperties(
+                }), dialogProperties = DialogProperties(
                     dismissOnClickOutside = false,
                     decorFitsSystemWindows = false,
                     usePlatformDefaultWidth = false
                 )
             ) {
                 RemoteControlPage(onNavigateBack = {
-                    navController.navigateUp()
+                    navHostController.navigateUp()
                 })
             }
         }

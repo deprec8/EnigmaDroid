@@ -49,8 +49,6 @@ class TimersViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
-    val searchFieldState = TextFieldState()
-
     private val _filteredTimers = MutableStateFlow<List<Timer>?>(null)
     val filteredTimers: StateFlow<List<Timer>?> = _filteredTimers.asStateFlow()
 
@@ -72,6 +70,8 @@ class TimersViewModel @Inject constructor(
     private val _useSearchHighlighting = MutableStateFlow(true)
     val useSearchHighlighting: StateFlow<Boolean> = _useSearchHighlighting.asStateFlow()
 
+    val searchFieldState = TextFieldState()
+
     private var fetchJob: Job? = null
 
     init {
@@ -81,10 +81,10 @@ class TimersViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            combine(_timerBatch, _searchInput) { timerList, input ->
-                if (input != "" && timerList.timers.isNotEmpty()) {
-                    searchHistoryRepository.addToTimersSearchHistory(input)
-                    FilterUtils.filterTimers(input, timerList.timers)
+            combine(_timerBatch, _searchInput) { timerBatch, searchInput ->
+                if (searchInput.isNotBlank() && timerBatch.timers.isNotEmpty()) {
+                    searchHistoryRepository.addToTimersSearchHistory(searchInput)
+                    FilterUtils.filterTimers(searchInput, timerBatch.timers)
                 } else {
                     null
                 }
@@ -104,8 +104,8 @@ class TimersViewModel @Inject constructor(
         }
     }
 
-    suspend fun updateLoadingState(forceUpdate: Boolean) {
-        loadingRepository.updateLoadingState(forceUpdate)
+    suspend fun updateLoadingState(isForcedUpdate: Boolean) {
+        loadingRepository.updateLoadingState(isForcedUpdate)
     }
 
     fun fetchData() {
@@ -125,8 +125,6 @@ class TimersViewModel @Inject constructor(
             fetchData()
         }
     }
-
-
 
     fun updateSearchInput() {
         _searchInput.value = searchFieldState.text.toString()

@@ -39,72 +39,63 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
+import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtonType
 import io.github.deprec8.enigmadroid.model.RemoteControlButton
-import io.github.deprec8.enigmadroid.ui.remoteControl.RemoteControlViewModel
 
 @Composable
 fun ArrowButtons(
-    remoteControlViewModel: RemoteControlViewModel,
-    enabled: Boolean,
-    performHaptic: () -> Unit
+    onButtonClicked: (RemoteControlButtonType) -> Unit, enabled: Boolean
 ) {
 
     val arrowButtons = listOf(
         listOf(
             RemoteControlButton(
-                text = "PVR",
-                onClick = remoteControlViewModel::pvr
+                text = "PVR", type = RemoteControlButtonType.PVR
             ),
             RemoteControlButton(
                 icon = Icons.Default.KeyboardArrowUp,
                 iconLabel = stringResource(R.string.arrow_up),
-                onClick = remoteControlViewModel::aUP
+                type = RemoteControlButtonType.ARROW_UP
             ),
             RemoteControlButton(
-                text = "MENU",
-                onClick = remoteControlViewModel::menu
+                text = "MENU", type = RemoteControlButtonType.MENU
             ),
         ), listOf(
             RemoteControlButton(
                 icon = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                 iconLabel = stringResource(R.string.arrow_left),
-                onClick = remoteControlViewModel::aLeft
+                type = RemoteControlButtonType.ARROW_LEFT
             ),
             RemoteControlButton(
-                text = "OK",
-                onClick = remoteControlViewModel::ok
+                text = "OK", type = RemoteControlButtonType.OK
             ),
             RemoteControlButton(
                 icon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 iconLabel = stringResource(R.string.arrow_right),
-                onClick = remoteControlViewModel::aRight
+                type = RemoteControlButtonType.ARROW_RIGHT
             ),
         ), listOf(
             RemoteControlButton(
-                text = "EPG",
-                onClick = remoteControlViewModel::epg
+                text = "EPG", type = RemoteControlButtonType.EPG
             ),
             RemoteControlButton(
                 icon = Icons.Default.KeyboardArrowDown,
                 iconLabel = stringResource(R.string.arrow_down),
-                onClick = remoteControlViewModel::aDown
+                type = RemoteControlButtonType.ARROW_DOWN
             ),
             RemoteControlButton(
-                text = "EXIT",
-                onClick = remoteControlViewModel::exit
+                text = "EXIT", type = RemoteControlButtonType.EXIT
             ),
         )
     )
     arrowButtons.forEach { row ->
         Row(
-            Modifier
-                .widthIn(0.dp, 500.dp)
+            Modifier.widthIn(0.dp, 500.dp)
         ) {
             row.forEach { button ->
                 FilledTonalButton(
                     onClick = {
-                        button.onClick()
-                        performHaptic()
+                        onButtonClicked(button.type)
                     },
                     contentPadding = PaddingValues(),
                     enabled = enabled,
@@ -119,8 +110,7 @@ fun ArrowButtons(
                     }
                     button.icon?.let { icon ->
                         Icon(
-                            icon,
-                            contentDescription = button.iconLabel
+                            icon, contentDescription = button.iconLabel
                         )
                     }
                 }

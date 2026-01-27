@@ -26,7 +26,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.data.enums.RemoteControlButton
+import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtonType
 import io.github.deprec8.enigmadroid.data.objects.PreferenceKey
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.data.source.local.devices.DeviceDatabase
@@ -139,7 +139,7 @@ class NetworkDataSource @Inject constructor(
         }
     } ?: ""
 
-    private suspend fun buildUrl(button: RemoteControlButton): String =
+    private suspend fun buildUrl(button: RemoteControlButtonType): String =
         withContext(Dispatchers.Default) {
             getCurrentDevice()?.let { device ->
                 buildString {
@@ -148,7 +148,7 @@ class NetworkDataSource @Inject constructor(
                     if (device.isLogin) {
                         append("${device.user}:${device.password}@")
                     }
-                    append("${device.ip}:${device.port}/web/remotecontrol?command=${button.value}")
+                    append("${device.ip}:${device.port}/web/remotecontrol?command=${button.id}")
                 }
             } ?: ""
         }
@@ -171,7 +171,7 @@ class NetworkDataSource @Inject constructor(
         client.get(buildUrl(endpoint))
     }
 
-    suspend fun postApi(button: RemoteControlButton) = safeApiCall {
+    suspend fun postApi(button: RemoteControlButtonType) = safeApiCall {
         client.get(buildUrl(button))
     }
 

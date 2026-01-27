@@ -32,60 +32,45 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import io.github.deprec8.enigmadroid.data.enums.RemoteControlButton
+import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtonType
 import io.github.deprec8.enigmadroid.model.RemoteControlButton
-import io.github.deprec8.enigmadroid.ui.remoteControl.RemoteControlViewModel
 
 @Composable
 fun NumberButtons(
-    remoteControlViewModel: RemoteControlViewModel,
-    enabled: Boolean,
-    performHaptic: () -> Unit
+    onButtonClicked: (RemoteControlButtonType) -> Unit, enabled: Boolean
 ) {
 
     val numberButtons = listOf(
         listOf(
             RemoteControlButton(
-                text = "1",
-                onClick = { remoteControlViewModel.number(RemoteControlButton.ONE) }
+                text = "1", type = RemoteControlButtonType.ONE
+            ), RemoteControlButton(
+                text = "4 ghi", type = RemoteControlButtonType.FOUR
+            ), RemoteControlButton(
+                text = "7 pqrs", type = RemoteControlButtonType.SEVEN
+            )
+        ), listOf(
+            RemoteControlButton(
+                text = "2 abc", type = RemoteControlButtonType.TWO
             ),
             RemoteControlButton(
-                text = "4 ghi",
-                onClick = { remoteControlViewModel.number(RemoteControlButton.FOUR) }
+                text = "5 jkl", type = RemoteControlButtonType.FIVE
             ),
             RemoteControlButton(
-                text = "7 pqrs",
-                onClick = { remoteControlViewModel.number(RemoteControlButton.SEVEN) }
+                text = "8 tuv", type = RemoteControlButtonType.EIGHT
+            ),
+            RemoteControlButton(
+                text = "0", type = RemoteControlButtonType.ZERO
             ),
         ), listOf(
             RemoteControlButton(
-                text = "2 abc",
-                onClick = { remoteControlViewModel.number(RemoteControlButton.TWO) }
+                text = "3 def", type = RemoteControlButtonType.THREE
             ),
             RemoteControlButton(
-                text = "5 jkl",
-                onClick = { remoteControlViewModel.number(RemoteControlButton.FIVE) }
+                text = "6 mno", type = RemoteControlButtonType.SIX
             ),
             RemoteControlButton(
-                text = "8 tuv",
-                onClick = { remoteControlViewModel.number(RemoteControlButton.EIGHT) }
-            ),
-            RemoteControlButton(
-                text = "0",
-                onClick = { remoteControlViewModel.number(RemoteControlButton.ZERO) }
-            ),
-        ), listOf(
-            RemoteControlButton(
-                text = "3 def",
-                onClick = { remoteControlViewModel.number(RemoteControlButton.THREE) }
-            ),
-            RemoteControlButton(
-                text = "6 mno",
-                onClick = { remoteControlViewModel.number(RemoteControlButton.SIX) }
-            ),
-            RemoteControlButton(
-                text = "9 wxyz",
-                onClick = { remoteControlViewModel.number(RemoteControlButton.NINE) }
+                text = "9 wxyz", type = RemoteControlButtonType.NINE
             ),
         )
     )
@@ -96,8 +81,7 @@ fun NumberButtons(
                 column.forEach { button ->
                     FilledTonalButton(
                         onClick = {
-                            button.onClick()
-                            performHaptic()
+                            onButtonClicked(button.type)
                         },
                         contentPadding = PaddingValues(),
                         enabled = enabled,

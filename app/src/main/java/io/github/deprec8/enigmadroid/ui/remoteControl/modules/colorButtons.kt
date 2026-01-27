@@ -36,48 +36,46 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
+import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtonType
 import io.github.deprec8.enigmadroid.model.RemoteControlButton
-import io.github.deprec8.enigmadroid.ui.remoteControl.RemoteControlViewModel
 
 @Composable
-fun ColorButtons(remoteControlViewModel: RemoteControlViewModel, enabled: Boolean, performHaptic: () -> Unit) {
+fun ColorButtons(onButtonClicked: (RemoteControlButtonType) -> Unit, enabled: Boolean) {
 
     val colorButtons = listOf(
         RemoteControlButton(
             icon = Icons.Default.TripOrigin,
             iconLabel = stringResource(R.string.red),
             iconTint = Color.Red,
-            onClick = remoteControlViewModel::red
+            type = RemoteControlButtonType.COLOR_RED
         ),
         RemoteControlButton(
             icon = Icons.Default.TripOrigin,
             iconLabel = stringResource(R.string.green),
             iconTint = Color.Green,
-            onClick = remoteControlViewModel::green
+            type = RemoteControlButtonType.COLOR_GREEN
         ),
         RemoteControlButton(
             icon = Icons.Default.TripOrigin,
             iconLabel = stringResource(R.string.yellow),
             iconTint = Color.Yellow,
-            onClick = remoteControlViewModel::yellow
+            type = RemoteControlButtonType.COLOR_YELLOW
         ),
         RemoteControlButton(
             icon = Icons.Default.TripOrigin,
             iconLabel = stringResource(R.string.blue),
             iconTint = Color.Blue,
-            onClick = remoteControlViewModel::blue
+            type = RemoteControlButtonType.COLOR_BLUE
         ),
     )
 
     Row(
-        Modifier
-            .widthIn(0.dp, 500.dp)
+        Modifier.widthIn(0.dp, 500.dp)
     ) {
         colorButtons.forEach { button ->
             FilledTonalButton(
                 onClick = {
-                    button.onClick()
-                    performHaptic()
+                    onButtonClicked(button.type)
                 },
                 contentPadding = PaddingValues(),
                 enabled = enabled,

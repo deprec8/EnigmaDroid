@@ -36,8 +36,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CurrentViewModel @Inject constructor(
-    private val apiRepository: ApiRepository,
-    private val loadingRepository: LoadingRepository
+    private val apiRepository: ApiRepository, private val loadingRepository: LoadingRepository
 ) : ViewModel() {
 
     private val _currentInfo = MutableStateFlow(CurrentInfo())
@@ -56,8 +55,8 @@ class CurrentViewModel @Inject constructor(
         }
     }
 
-    suspend fun updateLoadingState(forceUpdate: Boolean) {
-        loadingRepository.updateLoadingState(forceUpdate)
+    suspend fun updateLoadingState(isForcedUpdate: Boolean) {
+        loadingRepository.updateLoadingState(isForcedUpdate)
     }
 
     fun fetchData() {
@@ -68,7 +67,7 @@ class CurrentViewModel @Inject constructor(
         }
     }
 
-    suspend fun buildStreamUrl(sRef: String): String {
-        return apiRepository.buildLiveStreamUrl(sRef)
+    suspend fun buildLiveStreamUrl(serviceReference: String): String {
+        return apiRepository.buildLiveStreamUrl(serviceReference)
     }
 }

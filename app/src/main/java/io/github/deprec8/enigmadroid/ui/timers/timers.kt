@@ -105,16 +105,17 @@ fun TimersPage(
 ) {
 
     val filteredTimers by timersViewModel.filteredTimers.collectAsStateWithLifecycle()
-    val timerList by timersViewModel.timerBatch.collectAsStateWithLifecycle()
+    val timerBatch by timersViewModel.timerBatch.collectAsStateWithLifecycle()
     val services by timersViewModel.services.collectAsStateWithLifecycle()
     val searchHistory by timersViewModel.searchHistory.collectAsStateWithLifecycle()
+    val loadingState by timersViewModel.loadingState.collectAsStateWithLifecycle()
+    val searchInput by timersViewModel.searchInput.collectAsStateWithLifecycle()
+    val useSearchHighlighting by timersViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
+
+    val scope = rememberCoroutineScope()
     var showTimerSetupDialog by rememberSaveable {
         mutableStateOf(false)
     }
-    val loadingState by timersViewModel.loadingState.collectAsStateWithLifecycle()
-    val scope = rememberCoroutineScope()
-    val searchInput by timersViewModel.searchInput.collectAsStateWithLifecycle()
-    val useSearchHighlighting by timersViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         timersViewModel.updateLoadingState(false)
@@ -164,7 +165,7 @@ fun TimersPage(
                     ContentListItem(
                         highlightedWords = highlightedWords,
                         headlineText = timer.title,
-                        overlineText = timer.serviceName + " - " + getTimerState(timer),
+                        overlineText = "${timer.serviceName} - ${getTimerState(timer)}",
                         leadingContent = {
                             when (timer.state + timer.disabled) {
                                 TimerState.WAITING.id  -> Box(
@@ -277,8 +278,7 @@ fun TimersPage(
                                         text = stringResource(R.string.edit),
                                         outlinedIcon = Icons.Outlined.Edit,
                                         filledIcon = Icons.Filled.Edit,
-                                        action = { showEditDialog = true }),
-                                    MenuItem(
+                                        action = { showEditDialog = true }), MenuItem(
                                         text = stringResource(R.string.delete),
                                         outlinedIcon = Icons.Outlined.Delete,
                                         filledIcon = Icons.Filled.Delete,
@@ -320,8 +320,7 @@ fun TimersPage(
                             },
                             icon = {
                                 Icon(
-                                    Icons.AutoMirrored.Outlined.List,
-                                    contentDescription = null
+                                    Icons.AutoMirrored.Outlined.List, contentDescription = null
                                 )
                             },
                             confirmButton = {},
@@ -329,8 +328,7 @@ fun TimersPage(
                                 TextButton(onClick = {
                                     showLogDialog = false
                                 }) { Text(stringResource(R.string.close)) }
-                            }
-                        )
+                            })
                     }
                     if (showDeleteDialog) {
                         AlertDialog(
@@ -350,14 +348,13 @@ fun TimersPage(
                                 TextButton(onClick = {
                                     showDeleteDialog = false
                                 }) { Text(stringResource(R.string.cancel)) }
-                            }
-                        )
+                            })
                     }
                     if (showEditDialog) {
                         TimerSetupDialog(
-                            onDismiss = { showEditDialog = false },
+                            onDismissRequest = { showEditDialog = false },
                             oldTimer = timer,
-                            onSave = { newTimer, oldTimer ->
+                            onSaveRequest = { newTimer, oldTimer ->
                                 if (oldTimer != null) {
                                     timersViewModel.editTimer(oldTimer, newTimer)
                                 }
@@ -378,79 +375,68 @@ fun TimersPage(
         }
     }
 
-    Scaffold(
-        contentWindowInsets = contentWithDrawerWindowInsets(),
-        topBar = {
-            SearchTopAppBar(
-                enabled = timerList.result,
-                textFieldState = timersViewModel.searchFieldState,
-                placeholder = stringResource(R.string.search_timers),
-                content = {
-                    if (filteredTimers != null) {
-                        Content(
-                            list = filteredTimers !!,
-                            paddingValues = PaddingValues(0.dp),
-                            highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
-                                .filter { it.isNotBlank() } else emptyList()
+    Scaffold(contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
+        SearchTopAppBar(
+            enabled = timerBatch.result,
+            textFieldState = timersViewModel.searchFieldState,
+            placeholder = stringResource(R.string.search_timers),
+            content = {
+                if (filteredTimers != null) {
+                    Content(
+                        list = filteredTimers !!,
+                        paddingValues = PaddingValues(0.dp),
+                        highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
+                            .filter { it.isNotBlank() } else emptyList())
+                } else {
+                    SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
+                        timersViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
+                        timersViewModel.updateSearchInput()
+                    }, onTermInsertClick = {
+                        timersViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
+                            it
                         )
-                    } else {
-                        SearchHistory(
-                            searchHistory = searchHistory,
-                            onTermSearchClick = {
-                                timersViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
-                                timersViewModel.updateSearchInput()
-                            },
-                            onTermInsertClick = {
-                                timersViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
-                                    it
-                                )
-                            }
-                        )
-                    }
-                },
-                navigationButton = { searchBarState ->
-                    SearchTopAppBarDrawerNavigationButton(drawerState, searchBarState)
-                },
-                onSearch = {
-                    timersViewModel.updateSearchInput()
-                },
-                actionButtons = {
-                    SearchTopAppBarRemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
+                    })
                 }
-            )
+            },
+            navigationButton = { searchBarState ->
+                SearchTopAppBarDrawerNavigationButton(drawerState, searchBarState)
+            },
+            onSearch = {
+                timersViewModel.updateSearchInput()
+            },
+            actionButtons = {
+                SearchTopAppBarRemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
+            })
 
-        }, floatingActionButton = {
-            AnimatedVisibility(
-                loadingState == LoadingState.LOADED,
-                enter = scaleIn(),
-                exit = scaleOut()
-            ) {
-                Column {
-                    SmallFloatingActionButton(onClick = {
-                        timersViewModel.fetchData()
-                    }, Modifier.align(Alignment.End)) {
-                        Icon(
-                            Icons.Default.Refresh,
-                            contentDescription = stringResource(R.string.refresh_page)
-                        )
-                    }
-                    FloatingActionButton(onClick = { showTimerSetupDialog = true }) {
-                        Icon(
-                            Icons.Default.Add,
-                            contentDescription = stringResource(id = R.string.add_timer)
-                        )
-                    }
+    }, floatingActionButton = {
+        AnimatedVisibility(
+            loadingState == LoadingState.LOADED, enter = scaleIn(), exit = scaleOut()
+        ) {
+            Column {
+                SmallFloatingActionButton(onClick = {
+                    timersViewModel.fetchData()
+                }, Modifier.align(Alignment.End)) {
+                    Icon(
+                        Icons.Default.Refresh,
+                        contentDescription = stringResource(R.string.refresh_page)
+                    )
+                }
+                FloatingActionButton(onClick = { showTimerSetupDialog = true }) {
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = stringResource(id = R.string.add_timer)
+                    )
                 }
             }
         }
+    }
 
     ) { innerPadding ->
-        if (timerList.timers.isNotEmpty()) {
+        if (timerBatch.timers.isNotEmpty()) {
             Content(
-                list = timerList.timers,
-                innerPadding
+                list = timerBatch.timers, innerPadding
             )
-        } else if (timerList.result) {
+        } else if (timerBatch.result) {
             NoResults(
                 Modifier
                     .consumeWindowInsets(innerPadding)
@@ -475,13 +461,12 @@ fun TimersPage(
 
     if (showTimerSetupDialog) {
         TimerSetupDialog(
-            onDismiss = { showTimerSetupDialog = false },
-            onSave = { newTimer, _ ->
+            onDismissRequest = { showTimerSetupDialog = false },
+            onSaveRequest = { newTimer, _ ->
                 timersViewModel.addTimer(newTimer)
                 showTimerSetupDialog = false
             },
             services = services,
         )
-
     }
 }

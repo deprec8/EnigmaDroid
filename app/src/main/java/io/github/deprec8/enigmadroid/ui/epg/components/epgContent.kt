@@ -54,7 +54,7 @@ fun EpgContent(
     paddingValues: PaddingValues,
     showChannelName: Boolean = false,
     highlightedWords: List<String> = emptyList(),
-    onAddTimer: (Event) -> Unit,
+    onAddTimerForEvent: (Event) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -80,7 +80,7 @@ fun EpgContent(
                             event.beginTimestamp
                         )
                     } + if (showChannelName) {
-                        " - " + event.serviceName
+                        " - ${event.serviceName}"
                     } else {
                         ""
                     },
@@ -95,7 +95,7 @@ fun EpgContent(
                                         outlinedIcon = Icons.Outlined.Timer,
                                         filledIcon = Icons.Filled.Timer,
                                         action = {
-                                            onAddTimer(event)
+                                            onAddTimerForEvent(event)
                                         }), MenuItem(
                                         text = stringResource(R.string.add_reminder),
                                         outlinedIcon = Icons.Outlined.AddAlert,

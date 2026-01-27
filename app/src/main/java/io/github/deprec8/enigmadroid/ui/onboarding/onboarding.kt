@@ -53,14 +53,11 @@ fun OnboardingPage(
         bottomBar = {
             BottomAppBar {
                 Row(
-                    Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     OutlinedButton(
                         onClick = { onboardingViewModel.completeOnboarding() },
-                        modifier = Modifier
-                            .padding(16.dp)
+                        modifier = Modifier.padding(16.dp)
                     ) {
                         Text(stringResource(R.string.skip))
                     }
@@ -72,8 +69,7 @@ fun OnboardingPage(
                             }
                         },
                         enabled = onboardingViewModel.isEveryFieldFilled(),
-                        modifier = Modifier
-                            .padding(16.dp)
+                        modifier = Modifier.padding(16.dp)
                     ) {
                         Text(text = stringResource(R.string.finish_setup))
                     }

@@ -50,13 +50,11 @@ class MoviesViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
-    val searchFieldState = TextFieldState()
-
     private val _filteredMovies = MutableStateFlow<List<Movie>?>(null)
     val filteredMovies: StateFlow<List<Movie>?> = _filteredMovies.asStateFlow()
 
-    private val _movies = MutableStateFlow<List<MovieBatch>>(emptyList())
-    val movies: StateFlow<List<MovieBatch>> = _movies.asStateFlow()
+    private val _movieBatches = MutableStateFlow<List<MovieBatch>>(emptyList())
+    val movieBatches: StateFlow<List<MovieBatch>> = _movieBatches.asStateFlow()
 
     private val _loadingState = MutableStateFlow(LoadingState.LOADING)
     val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
@@ -70,6 +68,8 @@ class MoviesViewModel @Inject constructor(
     private val _useSearchHighlighting = MutableStateFlow(true)
     val useSearchHighlighting: StateFlow<Boolean> = _useSearchHighlighting.asStateFlow()
 
+    val searchFieldState = TextFieldState()
+
     private var fetchJob: Job? = null
 
     init {
@@ -79,10 +79,10 @@ class MoviesViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            combine(_movies, _searchInput) { movies, input ->
-                if (input != "" && movies.isNotEmpty()) {
-                    searchHistoryRepository.addToMoviesSearchHistory(input)
-                    FilterUtils.filterMovies(input, movies.flatMap { it.movies })
+            combine(_movieBatches, _searchInput) { movieBatches, searchInput ->
+                if (searchInput.isNotBlank() && movieBatches.isNotEmpty()) {
+                    searchHistoryRepository.addToMoviesSearchHistory(searchInput)
+                    FilterUtils.filterMovies(searchInput, movieBatches.flatMap { it.movies })
                 } else {
                     null
                 }
@@ -102,37 +102,37 @@ class MoviesViewModel @Inject constructor(
         }
     }
 
-    suspend fun updateLoadingState(forceUpdate: Boolean) {
-        loadingRepository.updateLoadingState(forceUpdate)
+    suspend fun updateLoadingState(isForcedUpdate: Boolean) {
+        loadingRepository.updateLoadingState(isForcedUpdate)
     }
 
     fun fetchData() {
         fetchJob?.cancel()
-        _movies.value = emptyList()
+        _movieBatches.value = emptyList()
         fetchJob = viewModelScope.launch {
-            apiRepository.fetchMovieBatches().collect { movies ->
-                _movies.value += movies
+            apiRepository.fetchMovieBatches().collect { movieBatch ->
+                _movieBatches.value += movieBatch
             }
         }
     }
 
-    fun rename(sRef: String, newName: String) {
+    fun rename(serviceReference: String, newName: String) {
         viewModelScope.launch {
-            apiRepository.renameMovie(sRef, newName)
+            apiRepository.renameMovie(serviceReference, newName)
             fetchData()
         }
     }
 
-    fun move(sRef: String, dirname: String) {
+    fun move(serviceReference: String, dirName: String) {
         viewModelScope.launch {
-            apiRepository.moveMovie(sRef, dirname)
+            apiRepository.moveMovie(serviceReference, dirName)
             fetchData()
         }
     }
 
-    fun delete(sRef: String) {
+    fun delete(serviceReference: String) {
         viewModelScope.launch {
-            apiRepository.deleteMovie(sRef)
+            apiRepository.deleteMovie(serviceReference)
             fetchData()
         }
     }
@@ -147,14 +147,14 @@ class MoviesViewModel @Inject constructor(
         _searchInput.value = searchFieldState.text.toString()
     }
 
-    suspend fun buildStreamUrl(sRef: String): String {
-        return apiRepository.buildMovieStreamUrl(sRef)
+    suspend fun buildMovieStreamUrl(serviceReference: String): String {
+        return apiRepository.buildMovieStreamUrl(serviceReference)
     }
 
 
-    fun play(sRef: String) {
+    fun play(serviceReference: String) {
         viewModelScope.launch {
-            apiRepository.playOnDevice(sRef)
+            apiRepository.playOnDevice(serviceReference)
         }
     }
 

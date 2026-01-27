@@ -51,13 +51,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.ui.remoteControl.RemoteControlViewModel
+import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtonType
 
 @Composable
 fun MediaButtons(
-    remoteControlViewModel: RemoteControlViewModel,
-    enabled: Boolean,
-    performHaptic: () -> Unit
+    onButtonClicked: (RemoteControlButtonType) -> Unit, enabled: Boolean
 ) {
 
     Row(
@@ -82,68 +80,58 @@ fun MediaButtons(
             OutlinedButton(
                 border = BorderStroke(
                     width = ButtonDefaults.outlinedButtonBorder().width,
-                    color =
-                        if (enabled) {
-                            MaterialTheme.colorScheme.onSecondaryContainer
-                        } else {
-                            ButtonDefaults.buttonColors().disabledContentColor
-                        },
+                    color = if (enabled) {
+                        MaterialTheme.colorScheme.onSecondaryContainer
+                    } else {
+                        ButtonDefaults.buttonColors().disabledContentColor
+                    },
                 ),
                 onClick = {
-                    remoteControlViewModel.volUP()
-                    performHaptic()
+                    onButtonClicked(RemoteControlButtonType.VOLUME_UP)
                 },
                 shape = MaterialTheme.shapes.extraLarge,
                 contentPadding = PaddingValues(),
                 enabled = enabled,
-                modifier =
-                    Modifier
-                        .weight(1f)
-                        .padding(10.dp)
-                        .fillMaxSize()
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(10.dp)
+                    .fillMaxSize()
             ) {
                 Icon(
-                    Icons.Default.Add,
-                    contentDescription = stringResource(R.string.volume_up)
+                    Icons.Default.Add, contentDescription = stringResource(R.string.volume_up)
                 )
             }
             Text(
-                text = "VOL", textAlign = TextAlign.Center,
-                color = if (! enabled) {
+                text = "VOL", textAlign = TextAlign.Center, color = if (! enabled) {
                     ButtonDefaults.buttonColors().disabledContentColor
                 } else {
                     MaterialTheme.colorScheme.onSecondaryContainer
-                },
-                modifier = Modifier
+                }, modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(10.dp)
             )
             OutlinedButton(
                 border = BorderStroke(
                     width = ButtonDefaults.outlinedButtonBorder().width,
-                    color =
-                        if (enabled) {
-                            MaterialTheme.colorScheme.onSecondaryContainer
-                        } else {
-                            ButtonDefaults.buttonColors().disabledContentColor
-                        },
+                    color = if (enabled) {
+                        MaterialTheme.colorScheme.onSecondaryContainer
+                    } else {
+                        ButtonDefaults.buttonColors().disabledContentColor
+                    },
                 ),
                 onClick = {
-                    remoteControlViewModel.volDown()
-                    performHaptic()
+                    onButtonClicked(RemoteControlButtonType.VOLUME_DOWN)
                 },
                 shape = MaterialTheme.shapes.extraLarge,
                 contentPadding = PaddingValues(),
                 enabled = enabled,
-                modifier =
-                    Modifier
-                        .weight(1f)
-                        .padding(10.dp)
-                        .fillMaxSize()
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(10.dp)
+                    .fillMaxSize()
             ) {
                 Icon(
-                    Icons.Default.Remove,
-                    contentDescription = stringResource(R.string.volume_down)
+                    Icons.Default.Remove, contentDescription = stringResource(R.string.volume_down)
                 )
             }
         }
@@ -154,34 +142,30 @@ fun MediaButtons(
         ) {
             FilledTonalButton(
                 onClick = {
-                    remoteControlViewModel.audio()
-                    performHaptic()
+                    onButtonClicked(RemoteControlButtonType.AUDIO)
                 },
                 shape = MaterialTheme.shapes.extraLarge,
                 contentPadding = PaddingValues(),
                 enabled = enabled,
-                modifier =
-                    Modifier
-                        .padding(8.dp)
-                        .weight(1f)
+                modifier = Modifier
+                    .padding(8.dp)
+                    .weight(1f)
 
-                        .aspectRatio(2f)
+                    .aspectRatio(2f)
             ) {
                 Text(text = "AUDIO", textAlign = TextAlign.Center)
             }
             FilledTonalButton(
                 onClick = {
-                    remoteControlViewModel.volMute()
-                    performHaptic()
+                    onButtonClicked(RemoteControlButtonType.VOLUME_MUTE)
                 },
                 shape = MaterialTheme.shapes.extraLarge,
                 contentPadding = PaddingValues(),
                 enabled = enabled,
-                modifier =
-                    Modifier
-                        .padding(8.dp)
-                        .weight(1f)
-                        .aspectRatio(2f)
+                modifier = Modifier
+                    .padding(8.dp)
+                    .weight(1f)
+                    .aspectRatio(2f)
             ) {
                 Icon(
                     Icons.AutoMirrored.Filled.VolumeOff,
@@ -190,18 +174,15 @@ fun MediaButtons(
             }
             FilledTonalButton(
                 onClick = {
-                    remoteControlViewModel.help()
-                    performHaptic()
+                    onButtonClicked(RemoteControlButtonType.HELP)
                 },
                 shape = MaterialTheme.shapes.extraLarge,
                 contentPadding = PaddingValues(),
                 enabled = enabled,
-                modifier =
-                    Modifier
-                        .padding(8.dp)
-                        .weight(1f)
-
-                        .aspectRatio(2f)
+                modifier = Modifier
+                    .padding(8.dp)
+                    .weight(1f)
+                    .aspectRatio(2f)
             ) {
                 Text(text = "HELP", textAlign = TextAlign.Center)
             }
@@ -223,24 +204,21 @@ fun MediaButtons(
             OutlinedButton(
                 border = BorderStroke(
                     width = ButtonDefaults.outlinedButtonBorder().width,
-                    color =
-                        if (enabled) {
-                            MaterialTheme.colorScheme.onSecondaryContainer
-                        } else {
-                            ButtonDefaults.buttonColors().disabledContentColor
-                        },
+                    color = if (enabled) {
+                        MaterialTheme.colorScheme.onSecondaryContainer
+                    } else {
+                        ButtonDefaults.buttonColors().disabledContentColor
+                    },
                 ),
                 onClick = {
-                    remoteControlViewModel.chUP()
-                    performHaptic()
+                    onButtonClicked(RemoteControlButtonType.NEXT_CHANNEL)
                 },
                 contentPadding = PaddingValues(),
                 enabled = enabled,
-                modifier =
-                    Modifier
-                        .weight(1f)
-                        .padding(10.dp)
-                        .fillMaxSize(),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(10.dp)
+                    .fillMaxSize(),
                 shape = MaterialTheme.shapes.extraLarge,
             ) {
                 Icon(
@@ -249,37 +227,32 @@ fun MediaButtons(
                 )
             }
             Text(
-                text = "CH", textAlign = TextAlign.Center,
-                color = if (! enabled) {
+                text = "CH", textAlign = TextAlign.Center, color = if (! enabled) {
                     ButtonDefaults.buttonColors().disabledContentColor
                 } else {
                     MaterialTheme.colorScheme.onSecondaryContainer
-                },
-                modifier = Modifier
+                }, modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(10.dp)
             )
             OutlinedButton(
                 border = BorderStroke(
                     width = ButtonDefaults.outlinedButtonBorder().width,
-                    color =
-                        if (enabled) {
-                            MaterialTheme.colorScheme.onSecondaryContainer
-                        } else {
-                            ButtonDefaults.buttonColors().disabledContentColor
-                        },
+                    color = if (enabled) {
+                        MaterialTheme.colorScheme.onSecondaryContainer
+                    } else {
+                        ButtonDefaults.buttonColors().disabledContentColor
+                    },
                 ),
                 onClick = {
-                    remoteControlViewModel.chDown()
-                    performHaptic()
+                    onButtonClicked(RemoteControlButtonType.PREVIOUS_CHANNEL)
                 },
                 contentPadding = PaddingValues(),
                 enabled = enabled,
-                modifier =
-                    Modifier
-                        .weight(1f)
-                        .padding(10.dp)
-                        .fillMaxSize(),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(10.dp)
+                    .fillMaxSize(),
                 shape = MaterialTheme.shapes.extraLarge,
             ) {
                 Icon(

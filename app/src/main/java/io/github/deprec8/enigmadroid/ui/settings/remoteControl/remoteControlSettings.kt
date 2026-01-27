@@ -54,35 +54,31 @@ fun RemoteControlSettingsPage(
     onNavigateBack: () -> Unit,
     remoteControlSettingsViewModel: RemoteControlSettingsViewModel = hiltViewModel()
 ) {
+
+    val remoteVibration by remoteControlSettingsViewModel.remoteVibration.collectAsStateWithLifecycle()
+
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val scrollState = rememberScrollState()
-    val remoteVibration by remoteControlSettingsViewModel.remoteVibration.collectAsStateWithLifecycle()
 
     Scaffold(
         contentWindowInsets = contentWithDrawerWindowInsets(),
         topBar = {
-            TopAppBar(
-                windowInsets = topAppBarWithDrawerWindowInsets(),
-                title = {
-                    Text(
-                        text = stringResource(id = R.string.remote_control),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+            TopAppBar(windowInsets = topAppBarWithDrawerWindowInsets(), title = {
+                Text(
+                    text = stringResource(id = R.string.remote_control),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }, scrollBehavior = scrollBehavior, navigationIcon = {
+                IconButton(onClick = { onNavigateBack() }) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.navigate_back)
                     )
-                },
-                scrollBehavior = scrollBehavior,
-                navigationIcon = {
-                    IconButton(onClick = { onNavigateBack() }) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.navigate_back)
-                        )
-                    }
                 }
-            )
+            })
         },
-        modifier = Modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { innerPadding ->
         Column(
             Modifier
@@ -92,22 +88,16 @@ fun RemoteControlSettingsPage(
                 .padding(innerPadding)
         ) {
             remoteVibration?.let { remoteVibration ->
-                ListItem(
-                    headlineContent = {
-                        Text(stringResource(R.string.haptic_feedback))
-                    },
-                    supportingContent = {
-                        Text(stringResource(R.string.vibrate_when_buttons_are_pressed))
-                    },
-                    trailingContent = {
-                        Switch(
-                            checked = remoteVibration,
-                            onCheckedChange = {
-                                remoteControlSettingsViewModel.setRemoteVibration(it)
-                            }
-                        )
-                    }
-                )
+                ListItem(headlineContent = {
+                    Text(stringResource(R.string.haptic_feedback))
+                }, supportingContent = {
+                    Text(stringResource(R.string.vibrate_when_buttons_are_pressed))
+                }, trailingContent = {
+                    Switch(
+                        checked = remoteVibration, onCheckedChange = {
+                            remoteControlSettingsViewModel.setRemoteVibration(it)
+                        })
+                })
             }
         }
     }

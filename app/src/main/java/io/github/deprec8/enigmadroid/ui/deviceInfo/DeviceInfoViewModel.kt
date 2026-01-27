@@ -36,8 +36,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DeviceInfoViewModel @Inject constructor(
-    private val apiRepository: ApiRepository,
-    private val loadingRepository: LoadingRepository
+    private val apiRepository: ApiRepository, private val loadingRepository: LoadingRepository
 ) : ViewModel() {
 
     private val _deviceInfo = MutableStateFlow(DeviceInfo())
@@ -66,6 +65,5 @@ class DeviceInfoViewModel @Inject constructor(
         fetchJob = viewModelScope.launch {
             _deviceInfo.value = apiRepository.fetchDeviceInfo()
         }
-
     }
 }

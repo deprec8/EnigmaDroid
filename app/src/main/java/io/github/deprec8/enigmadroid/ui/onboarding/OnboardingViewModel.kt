@@ -29,6 +29,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.deprec8.enigmadroid.data.DevicesRepository
 import io.github.deprec8.enigmadroid.data.OnboardingRepository
+import io.github.deprec8.enigmadroid.data.objects.DefaultPort
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -43,9 +44,9 @@ class OnboardingViewModel @Inject constructor(
 
     val ipState = TextFieldState("")
 
-    val portState = TextFieldState("80")
+    val portState = TextFieldState(DefaultPort.HTTP)
 
-    val livePortState = TextFieldState("8001")
+    val livePortState = TextFieldState(DefaultPort.LIVE)
 
     var isHttps by mutableStateOf(false)
         private set
@@ -59,10 +60,10 @@ class OnboardingViewModel @Inject constructor(
 
     fun toggleHttps() {
         isHttps = ! isHttps
-        if (portState.text == "80" && isHttps) {
-            portState.setTextAndPlaceCursorAtEnd("443")
-        } else if (portState.text == "443" && ! isHttps) {
-            portState.setTextAndPlaceCursorAtEnd("80")
+        if (portState.text == DefaultPort.HTTP && isHttps) {
+            portState.setTextAndPlaceCursorAtEnd(DefaultPort.HTTPS)
+        } else if (portState.text == DefaultPort.HTTPS && ! isHttps) {
+            portState.setTextAndPlaceCursorAtEnd(DefaultPort.HTTP)
 
         }
     }

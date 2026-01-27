@@ -74,7 +74,7 @@ fun RadioEpgPage(
     drawerState: DrawerState,
     radioEpgViewModel: RadioEpgViewModel = hiltViewModel()
 ) {
-    val epgs by radioEpgViewModel.epgs.collectAsStateWithLifecycle()
+    val eventBatchSet by radioEpgViewModel.eventBatchSet.collectAsStateWithLifecycle()
     val filteredEvents by radioEpgViewModel.filteredEvents.collectAsStateWithLifecycle()
     val searchHistory by radioEpgViewModel.searchHistory.collectAsStateWithLifecycle()
     val useSearchHighlighting by radioEpgViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
@@ -84,14 +84,14 @@ fun RadioEpgPage(
     val currentBouquet by radioEpgViewModel.currentBouquet.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
-    val pagerState = rememberPagerState(pageCount = { epgs.eventBatches.size })
+    val pagerState = rememberPagerState(pageCount = { eventBatchSet.eventBatches.size })
     val selectedTabIndex = remember {
         derivedStateOf {
             pagerState.currentPage.coerceIn(
-                0, (if (epgs.eventBatches.size - 1 < 0) {
+                0, (if (eventBatchSet.eventBatches.size - 1 < 0) {
                     0
                 } else {
-                    epgs.eventBatches.size - 1
+                    eventBatchSet.eventBatches.size - 1
                 })
             )
         }
@@ -123,7 +123,7 @@ fun RadioEpgPage(
         }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = epgs.eventBatches.isNotEmpty() && loadingState == LoadingState.LOADED,
+            enabled = eventBatchSet.eventBatches.isNotEmpty() && loadingState == LoadingState.LOADED,
             textFieldState = radioEpgViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_epg),
             content = {
@@ -134,7 +134,7 @@ fun RadioEpgPage(
                         showChannelName = true,
                         highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
                             .filter { it.isNotBlank() } else emptyList(),
-                        onAddTimer = { radioEpgViewModel.addTimer(it) })
+                        onAddTimerForEvent = { radioEpgViewModel.addTimerForEvent(it) })
                 } else {
                     SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
                         radioEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
@@ -162,17 +162,17 @@ fun RadioEpgPage(
                 radioEpgViewModel.updateSearchInput()
             },
             tabBar = {
-                if (epgs.eventBatches.isNotEmpty()) {
+                if (eventBatchSet.eventBatches.isNotEmpty()) {
                     PrimaryScrollableTabRow(
                         selectedTabIndex = selectedTabIndex.value,
                         divider = { },
                         scrollState = rememberScrollState()
                     ) {
-                        epgs.eventBatches.forEachIndexed { index, epg ->
+                        eventBatchSet.eventBatches.forEachIndexed { index, eventBatch ->
                             Tab(
                                 text = {
                                     Text(
-                                        text = epg.name,
+                                        text = eventBatch.name,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis
                                     )
@@ -191,17 +191,17 @@ fun RadioEpgPage(
     }
 
     ) { innerPadding ->
-        if (epgs.eventBatches.isNotEmpty()) {
+        if (eventBatchSet.eventBatches.isNotEmpty()) {
             HorizontalPager(
                 modifier = Modifier.fillMaxSize(),
                 state = pagerState,
             ) { service ->
                 EpgContent(
-                    events = epgs.eventBatches[service].events,
+                    events = eventBatchSet.eventBatches[service].events,
                     innerPadding,
-                    onAddTimer = { radioEpgViewModel.addTimer(it) })
+                    onAddTimerForEvent = { radioEpgViewModel.addTimerForEvent(it) })
             }
-        } else if (epgs.result) {
+        } else if (eventBatchSet.result) {
             NoResults(
                 Modifier
                     .consumeWindowInsets(innerPadding)

@@ -38,13 +38,13 @@ class DevicesViewModel @Inject constructor(private val devicesRepository: Device
     private val _currentDeviceId = MutableStateFlow<Int?>(null)
     val currentDeviceId: StateFlow<Int?> = _currentDeviceId.asStateFlow()
 
-    private val _allDevices = MutableStateFlow<List<Device>>(emptyList())
-    val allDevices: StateFlow<List<Device>> = _allDevices.asStateFlow()
+    private val _devices = MutableStateFlow<List<Device>>(emptyList())
+    val devices: StateFlow<List<Device>> = _devices.asStateFlow()
 
     init {
         viewModelScope.launch {
             devicesRepository.getAllDevices().collectLatest { allDevices ->
-                _allDevices.value = allDevices
+                _devices.value = allDevices
             }
         }
         viewModelScope.launch {
@@ -54,15 +54,12 @@ class DevicesViewModel @Inject constructor(private val devicesRepository: Device
         }
     }
 
-    fun makeDeviceOWIFURL(device: Device): String {
-        var url = ""
-        url += if (device.isHttps) "https://" else "http://"
-
+    fun buildDeviceOwifUrl(device: Device) = buildString {
+        append(if (device.isHttps) "https://" else "http://")
         if (device.isLogin) {
-            url += "${device.user}:${device.password}@"
+            append("${device.user}:${device.password}@")
         }
-        url += "${device.ip}:${device.port}"
-        return url
+        append("${device.ip}:${device.port}")
     }
 
     fun setCurrentDevice(listId: Int) {
@@ -73,7 +70,7 @@ class DevicesViewModel @Inject constructor(private val devicesRepository: Device
 
     fun deleteDevice(listId: Int) {
         viewModelScope.launch {
-            devicesRepository.deleteDevice(_allDevices.value[listId].id)
+            devicesRepository.deleteDevice(_devices.value[listId].id)
             if (_currentDeviceId.value == listId) {
                 devicesRepository.setCurrentDeviceId(0)
             } else _currentDeviceId.value?.let {
@@ -95,8 +92,7 @@ class DevicesViewModel @Inject constructor(private val devicesRepository: Device
     fun editDevice(oldDevice: Device, newDevice: Device) {
         viewModelScope.launch {
             devicesRepository.editDevice(
-                oldDevice,
-                newDevice
+                oldDevice, newDevice
             )
         }
     }

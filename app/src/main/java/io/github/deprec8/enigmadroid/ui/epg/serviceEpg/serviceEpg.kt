@@ -61,7 +61,7 @@ fun ServiceEpgPage(
     onNavigateBack: () -> Unit,
     serviceEpgViewModel: ServiceEpgViewModel = hiltViewModel()
 ) {
-    val epg by serviceEpgViewModel.epg.collectAsStateWithLifecycle()
+    val eventBatch by serviceEpgViewModel.eventBatch.collectAsStateWithLifecycle()
     val loadingState by serviceEpgViewModel.loadingState.collectAsStateWithLifecycle()
     val filteredEvents by serviceEpgViewModel.filteredEvents.collectAsStateWithLifecycle()
     val useSearchHighlighting by serviceEpgViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
@@ -99,7 +99,7 @@ fun ServiceEpgPage(
         contentWindowInsets = contentWithDrawerWindowInsets(),
         topBar = {
             SearchTopAppBar(
-                enabled = epg.events.isNotEmpty(),
+                enabled = eventBatch.events.isNotEmpty(),
                 textFieldState = serviceEpgViewModel.searchFieldState,
                 placeholder = stringResource(R.string.search_epg_for, sName),
                 content = {
@@ -110,7 +110,7 @@ fun ServiceEpgPage(
                             showChannelName = true,
                             highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
                                 .filter { it.isNotBlank() } else emptyList(),
-                            onAddTimer = { serviceEpgViewModel.addTimer(it) })
+                            onAddTimerForEvent = { serviceEpgViewModel.addTimerForEvent(it) })
                     } else {
                         SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
                             serviceEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
@@ -136,12 +136,12 @@ fun ServiceEpgPage(
                 })
         }
     ) { innerPadding ->
-        if (epg.events.isNotEmpty()) {
+        if (eventBatch.events.isNotEmpty()) {
             EpgContent(
-                events = epg.events,
+                events = eventBatch.events,
                 innerPadding,
-                onAddTimer = { serviceEpgViewModel.addTimer(it) })
-        } else if (epg.result) {
+                onAddTimerForEvent = { serviceEpgViewModel.addTimerForEvent(it) })
+        } else if (eventBatch.result) {
             NoResults(
                 Modifier
                     .consumeWindowInsets(innerPadding)

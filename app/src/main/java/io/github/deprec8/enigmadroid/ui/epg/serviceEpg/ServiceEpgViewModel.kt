@@ -48,8 +48,8 @@ class ServiceEpgViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
-    private val _epg = MutableStateFlow(EventBatch())
-    val epg: StateFlow<EventBatch> = _epg.asStateFlow()
+    private val _eventBatch = MutableStateFlow(EventBatch())
+    val eventBatch: StateFlow<EventBatch> = _eventBatch.asStateFlow()
 
     private val _loadingState = MutableStateFlow(LoadingState.LOADING)
     val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
@@ -77,10 +77,10 @@ class ServiceEpgViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            combine(_epg, _searchInput) { epg, input ->
-                if (input != "" && epg.events.isNotEmpty()) {
-                    searchHistoryRepository.addToTVEpgSearchHistory(input)
-                    FilterUtils.filterEvents(input, epg.events)
+            combine(_eventBatch, _searchInput) { eventBatch, searchInput ->
+                if (searchInput.isNotBlank() && eventBatch.events.isNotEmpty()) {
+                    searchHistoryRepository.addToTVEpgSearchHistory(searchInput)
+                    FilterUtils.filterEvents(searchInput, eventBatch.events)
                 } else {
                     null
                 }
@@ -89,7 +89,7 @@ class ServiceEpgViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            searchHistoryRepository.getTVEpgSearchHistory().collectLatest {
+            searchHistoryRepository.getTvEpgSearchHistory().collectLatest {
                 _searchHistory.value = it
             }
         }
@@ -100,19 +100,19 @@ class ServiceEpgViewModel @Inject constructor(
         }
     }
 
-    suspend fun updateLoadingState(forceUpdate: Boolean) {
-        loadingRepository.updateLoadingState(forceUpdate)
+    suspend fun updateLoadingState(isForcedUpdate: Boolean) {
+        loadingRepository.updateLoadingState(isForcedUpdate)
     }
 
-    fun fetchData(sRef: String) {
+    fun fetchData(serviceReference: String) {
         fetchJob?.cancel()
-        _epg.value = EventBatch()
+        _eventBatch.value = EventBatch()
         fetchJob = viewModelScope.launch {
-            _epg.value = apiRepository.fetchServiceEpgBatch(sRef)
+            _eventBatch.value = apiRepository.fetchServiceEpgBatch(serviceReference)
         }
     }
 
-    fun addTimer(event: Event) {
+    fun addTimerForEvent(event: Event) {
         viewModelScope.launch {
             apiRepository.addTimerForEvent(
                 event.serviceReference, event.id

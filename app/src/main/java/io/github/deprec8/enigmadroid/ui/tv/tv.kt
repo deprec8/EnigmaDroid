@@ -89,27 +89,27 @@ import kotlinx.coroutines.launch
 fun TvPage(
     onNavigateToRemoteControl: () -> Unit,
     onNavigateToServiceEpg: (sRef: String, sName: String) -> Unit,
-    drawerState: DrawerState, tvViewModel: TVViewModel = hiltViewModel()
+    drawerState: DrawerState,
+    tvViewModel: TvViewModel = hiltViewModel()
 ) {
 
-    val context = LocalContext.current
-    val filteredTVEvents by tvViewModel.filteredEvents.collectAsStateWithLifecycle()
-    val allTVEvents by tvViewModel.allEvents.collectAsStateWithLifecycle()
+    val filteredEvents by tvViewModel.filteredEvents.collectAsStateWithLifecycle()
+    val eventBatches by tvViewModel.eventBatches.collectAsStateWithLifecycle()
     val loadingState by tvViewModel.loadingState.collectAsStateWithLifecycle()
     val searchHistory by tvViewModel.searchHistory.collectAsStateWithLifecycle()
     val searchInput by tvViewModel.searchInput.collectAsStateWithLifecycle()
     val useSearchHighlighting by tvViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
 
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val pagerState = rememberPagerState(pageCount = { allTVEvents.size })
+    val pagerState = rememberPagerState(pageCount = { eventBatches.size })
     val selectedTabIndex = remember {
         derivedStateOf {
             pagerState.currentPage.coerceIn(
-                0,
-                (if (allTVEvents.size - 1 < 0) {
+                0, (if (eventBatches.size - 1 < 0) {
                     0
                 } else {
-                    allTVEvents.size - 1
+                    eventBatches.size - 1
                 })
             )
         }
@@ -126,12 +126,12 @@ fun TvPage(
 
     @Composable
     fun Content(
-        list: List<Event>,
+        events: List<Event>,
         paddingValues: PaddingValues,
         showChannelNumbers: Boolean = true,
         highlightedWords: List<String> = emptyList()
     ) {
-        if (list.isNotEmpty()) {
+        if (events.isNotEmpty()) {
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(310.dp),
                 modifier = Modifier
@@ -140,14 +140,14 @@ fun TvPage(
                     .imePadding(),
                 contentPadding = paddingValues
             ) {
-                items(list) { event ->
+                items(events) { event ->
                     ContentListItem(
                         highlightedWords = highlightedWords,
                         headlineText = event.serviceName,
                         leadingContent = if (showChannelNumbers) {
                             {
                                 Text(
-                                    text = "${list.indexOf(event) + 1}.",
+                                    text = "${events.indexOf(event) + 1}.",
                                     textAlign = TextAlign.Center,
                                 )
                             }
@@ -155,7 +155,7 @@ fun TvPage(
                             null
                         },
                         supportingText = event.title,
-                        additionalInfo = TimestampUtils.formatApiTimestampToTime(event.beginTimestamp) + " - " + TimestampUtils.formatApiTimestampToTime(
+                        additionalInfo = "${TimestampUtils.formatApiTimestampToTime(event.beginTimestamp)} - " + TimestampUtils.formatApiTimestampToTime(
                             event.beginTimestamp + event.durationInSeconds
                         ),
                         menuItemGroups = listOf(
@@ -169,40 +169,32 @@ fun TvPage(
                                             scope.launch {
                                                 IntentUtils.playMedia(
                                                     context,
-                                                    tvViewModel.buildStreamUrl(event.serviceReference),
+                                                    tvViewModel.buildLiveStreamUrl(event.serviceReference),
                                                     event.serviceName
                                                 )
                                             }
-                                        }
-                                    ),
-                                    MenuItem(
+                                        }), MenuItem(
                                         text = stringResource(R.string.switch_channel),
                                         outlinedIcon = Icons.Outlined.PlayArrow,
                                         filledIcon = Icons.Filled.PlayArrow,
                                         action = {
-                                            tvViewModel.play(event.serviceReference)
-                                        }
-                                    ),
-                                    MenuItem(
+                                            tvViewModel.playOnDevice(event.serviceReference)
+                                        }), MenuItem(
                                         text = stringResource(R.string.record),
                                         outlinedIcon = Icons.Outlined.Videocam,
                                         filledIcon = Icons.Filled.Videocam,
                                         action = {
-                                            tvViewModel.addTimer(event)
+                                            tvViewModel.addTimerForEvent(event)
 
-                                        }
-                                    ),
-                                    MenuItem(
+                                        }), MenuItem(
                                         text = stringResource(R.string.view_epg),
                                         outlinedIcon = Icons.AutoMirrored.Outlined.Dvr,
                                         filledIcon = Icons.AutoMirrored.Filled.Dvr,
                                         action = {
                                             onNavigateToServiceEpg(
-                                                event.serviceReference,
-                                                event.serviceName
+                                                event.serviceReference, event.serviceName
                                             )
-                                        }
-                                    )
+                                        })
                                 )
                             )
                         ),
@@ -221,100 +213,87 @@ fun TvPage(
         }
     }
 
-    Scaffold(
-        floatingActionButton = {
-            AnimatedVisibility(
-                loadingState == LoadingState.LOADED,
-                enter = scaleIn(),
-                exit = scaleOut()
-            ) {
-                FloatingActionButton(onClick = {
-                    tvViewModel.fetchData()
-                }) {
-                    Icon(
-                        Icons.Default.Refresh,
-                        contentDescription = stringResource(R.string.refresh_page)
-                    )
-                }
+    Scaffold(floatingActionButton = {
+        AnimatedVisibility(
+            loadingState == LoadingState.LOADED, enter = scaleIn(), exit = scaleOut()
+        ) {
+            FloatingActionButton(onClick = {
+                tvViewModel.fetchData()
+            }) {
+                Icon(
+                    Icons.Default.Refresh,
+                    contentDescription = stringResource(R.string.refresh_page)
+                )
             }
-        },
-        contentWindowInsets = contentWithDrawerWindowInsets(),
-        topBar = {
-            SearchTopAppBar(
-                textFieldState = tvViewModel.searchFieldState,
-                enabled = allTVEvents.isNotEmpty(),
-                placeholder = stringResource(R.string.search_events),
-                content = {
-                    if (filteredTVEvents != null) {
-                        Content(
-                            list = filteredTVEvents !!,
-                            paddingValues = PaddingValues(0.dp),
-                            showChannelNumbers = false,
-                            highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
-                                .filter { it.isNotBlank() } else emptyList()
-                        )
-                    } else {
-                        SearchHistory(
-                            searchHistory = searchHistory,
-                            onTermSearchClick = {
-                                tvViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
-                                tvViewModel.updateSearchInput(selectedTabIndex.value)
-                            },
-                            onTermInsertClick = {
-                                tvViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
-                                    it
-                                )
-                            }
-                        )
-                    }
-                },
-                navigationButton = { searchBarState ->
-                    SearchTopAppBarDrawerNavigationButton(drawerState, searchBarState)
-                },
-                actionButtons = {
-                    SearchTopAppBarRemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
-                },
-                onSearch = {
-                    tvViewModel.updateSearchInput(selectedTabIndex.value)
-                },
-                tabBar = {
-                    if (allTVEvents.isNotEmpty()) {
-                        PrimaryScrollableTabRow(
-                            selectedTabIndex = selectedTabIndex.value,
-                            divider = { },
-                            scrollState = rememberScrollState()
-                        ) {
-                            allTVEvents.forEachIndexed { index, eventList ->
-                                Tab(
-                                    text = {
-                                        Text(
-                                            text = eventList.name,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                    },
-                                    onClick = {
-                                        scope.launch {
-                                            pagerState.animateScrollToPage(index)
-                                        }
-                                    },
-                                    selected = index == selectedTabIndex.value,
-                                )
-                            }
-                        }
-                        HorizontalDivider()
-                    }
-                }
-            )
-
         }
-    ) { innerPadding ->
-        if (allTVEvents.isNotEmpty()) {
+    }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
+        SearchTopAppBar(
+            textFieldState = tvViewModel.searchFieldState,
+            enabled = eventBatches.isNotEmpty(),
+            placeholder = stringResource(R.string.search_events),
+            content = {
+                if (filteredEvents != null) {
+                    Content(
+                        events = filteredEvents !!,
+                        paddingValues = PaddingValues(0.dp),
+                        showChannelNumbers = false,
+                        highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
+                            .filter { it.isNotBlank() } else emptyList())
+                } else {
+                    SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
+                        tvViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
+                        tvViewModel.updateSearchInput(selectedTabIndex.value)
+                    }, onTermInsertClick = {
+                        tvViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
+                            it
+                        )
+                    })
+                }
+            },
+            navigationButton = { searchBarState ->
+                SearchTopAppBarDrawerNavigationButton(drawerState, searchBarState)
+            },
+            actionButtons = {
+                SearchTopAppBarRemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
+            },
+            onSearch = {
+                tvViewModel.updateSearchInput(selectedTabIndex.value)
+            },
+            tabBar = {
+                if (eventBatches.isNotEmpty()) {
+                    PrimaryScrollableTabRow(
+                        selectedTabIndex = selectedTabIndex.value,
+                        divider = { },
+                        scrollState = rememberScrollState()
+                    ) {
+                        eventBatches.forEachIndexed { index, eventBatch ->
+                            Tab(
+                                text = {
+                                    Text(
+                                        text = eventBatch.name,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                },
+                                onClick = {
+                                    scope.launch {
+                                        pagerState.animateScrollToPage(index)
+                                    }
+                                },
+                                selected = index == selectedTabIndex.value,
+                            )
+                        }
+                    }
+                    HorizontalDivider()
+                }
+            })
+
+    }) { innerPadding ->
+        if (eventBatches.isNotEmpty()) {
             HorizontalPager(
-                modifier = Modifier.fillMaxSize(),
-                state = pagerState
+                modifier = Modifier.fillMaxSize(), state = pagerState
             ) { index ->
-                Content(list = allTVEvents[index].events, innerPadding)
+                Content(events = eventBatches[index].events, innerPadding)
             }
         } else {
             LoadingScreen(
