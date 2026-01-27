@@ -79,7 +79,7 @@ class ServiceEpgViewModel @Inject constructor(
         viewModelScope.launch {
             combine(_eventBatch, _searchInput) { eventBatch, searchInput ->
                 if (searchInput.isNotBlank() && eventBatch.events.isNotEmpty()) {
-                    searchHistoryRepository.addToTvEpgSearchHistory(searchInput)
+                    searchHistoryRepository.addToServiceEpgSearchHistory(searchInput)
                     FilterUtils.filterEvents(searchInput, eventBatch.events)
                 } else {
                     null
@@ -89,7 +89,7 @@ class ServiceEpgViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            searchHistoryRepository.getTvEpgSearchHistory().collectLatest {
+            searchHistoryRepository.getServiceEpgSearchHistory().collectLatest {
                 _searchHistory.value = it
             }
         }

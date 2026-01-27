@@ -231,4 +231,5 @@
     <string name="open_bouquet_menu">Open bouquet menu</string>
     <string name="current_bouquet">Current bouquet</string>
     <string name="search_epg_for">Search EPG for %1$s</string>
+    <string name="service_epg">Service EPG</string>
 </resources>

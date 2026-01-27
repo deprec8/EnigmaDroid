@@ -71,6 +71,7 @@ fun SearchSettingsPage(
     val timersSearchHistory by searchSettingsViewModel.timersSearchHistory.collectAsStateWithLifecycle()
     val tvEpgSearchHistory by searchSettingsViewModel.tvEpgSearchHistory.collectAsStateWithLifecycle()
     val radioEpgSearchHistory by searchSettingsViewModel.radioEpgSearchHistory.collectAsStateWithLifecycle()
+    val serviceEpgSearchHistory by searchSettingsViewModel.serviceEpgSearchHistory.collectAsStateWithLifecycle()
     val useSearchHistories by searchSettingsViewModel.useSearchHistories.collectAsStateWithLifecycle()
     val useSearchHighlighting by searchSettingsViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
 
@@ -147,11 +148,11 @@ fun SearchSettingsPage(
         var timers by rememberSaveable { mutableStateOf(false) }
         var tvEpg by rememberSaveable { mutableStateOf(false) }
         var radioEpg by rememberSaveable { mutableStateOf(false) }
+        var serviceEpg by rememberSaveable { mutableStateOf(false) }
 
         fun isAnyEnabled(): Boolean {
-            return tvSearchHistory.isNotEmpty() || radioSearchHistory.isNotEmpty() || moviesSearchHistory.isNotEmpty() || timersSearchHistory.isNotEmpty() || tvEpgSearchHistory.isNotEmpty() || radioEpgSearchHistory.isNotEmpty()
+            return tvSearchHistory.isNotEmpty() || radioSearchHistory.isNotEmpty() || moviesSearchHistory.isNotEmpty() || timersSearchHistory.isNotEmpty() || tvEpgSearchHistory.isNotEmpty() || radioEpgSearchHistory.isNotEmpty() || serviceEpgSearchHistory.isNotEmpty()
         }
-
 
         fun setAllEnabled(state: Boolean) {
             if (tvSearchHistory.isNotEmpty()) {
@@ -172,6 +173,9 @@ fun SearchSettingsPage(
             if (radioEpgSearchHistory.isNotEmpty()) {
                 radioEpg = state
             }
+            if (serviceEpgSearchHistory.isNotEmpty()) {
+                serviceEpg = state
+            }
         }
 
         fun getAllEnabled(): Boolean {
@@ -185,6 +189,7 @@ fun SearchSettingsPage(
             if (timersSearchHistory.isNotEmpty()) allEnabled = allEnabled && timers
             if (tvEpgSearchHistory.isNotEmpty()) allEnabled = allEnabled && tvEpg
             if (radioEpgSearchHistory.isNotEmpty()) allEnabled = allEnabled && radioEpg
+            if (serviceEpgSearchHistory.isNotEmpty()) allEnabled = allEnabled && serviceEpg
             return allEnabled
         }
 
@@ -195,10 +200,10 @@ fun SearchSettingsPage(
                 TextButton(
                     onClick = {
                         searchSettingsViewModel.clearSearchHistory(
-                            tv, radio, movies, timers, tvEpg, radioEpg
+                            tv, radio, movies, timers, tvEpg, radioEpg, serviceEpg
                         )
                         showSearchHistoriesDialog = false
-                    }, enabled = tv || radio || movies || timers || tvEpg || radioEpg
+                    }, enabled = tv || radio || movies || timers || tvEpg || radioEpg || serviceEpg
                 ) { Text(stringResource(R.string.clear)) }
             },
             dismissButton = {
@@ -273,6 +278,15 @@ fun SearchSettingsPage(
                                 enabled = radioEpgSearchHistory.isNotEmpty(),
                                 checked = radioEpg,
                                 onCheckedChange = { radioEpg = it })
+                        })
+                    ListItem(
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                        headlineContent = { Text(stringResource(R.string.service_epg)) },
+                        trailingContent = {
+                            Checkbox(
+                                enabled = serviceEpgSearchHistory.isNotEmpty(),
+                                checked = serviceEpg,
+                                onCheckedChange = { serviceEpg = it })
                         })
                 }
             })
