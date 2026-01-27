@@ -213,4 +213,8 @@
     <string name="code">Код: %1$d</string>
     <string name="no_network_available">Сеть недоступна</string>
     <string name="connect_to_a_network">Подключиться к сети</string>
+    <string name="open_bouquet_menu">Открыть меню букета</string>
+    <string name="current_bouquet">Текущий букет</string>
+    <string name="search_epg_for">Искать EPG для %1$s</string>
+    <string name="service_epg">Служба EPG</string>
 </resources>
