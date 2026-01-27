@@ -38,8 +38,9 @@ import io.github.deprec8.enigmadroid.ui.deviceInfo.DeviceInfoPage
 import io.github.deprec8.enigmadroid.ui.epg.radioEpg.RadioEpgPage
 import io.github.deprec8.enigmadroid.ui.epg.serviceEpg.ServiceEpgPage
 import io.github.deprec8.enigmadroid.ui.epg.tvEpg.TvEpgPage
+import io.github.deprec8.enigmadroid.ui.live.radio.RadioPage
+import io.github.deprec8.enigmadroid.ui.live.tv.TvPage
 import io.github.deprec8.enigmadroid.ui.movies.MoviesPage
-import io.github.deprec8.enigmadroid.ui.radio.RadioPage
 import io.github.deprec8.enigmadroid.ui.remoteControl.RemoteControlPage
 import io.github.deprec8.enigmadroid.ui.settings.SettingsPage
 import io.github.deprec8.enigmadroid.ui.settings.about.AboutPage
@@ -49,7 +50,6 @@ import io.github.deprec8.enigmadroid.ui.settings.remoteControl.RemoteControlSett
 import io.github.deprec8.enigmadroid.ui.settings.search.SearchSettingsPage
 import io.github.deprec8.enigmadroid.ui.signal.SignalPage
 import io.github.deprec8.enigmadroid.ui.timers.TimersPage
-import io.github.deprec8.enigmadroid.ui.tv.TvPage
 
 @Composable
 fun NavHost(
