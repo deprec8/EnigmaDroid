@@ -1,0 +1,9 @@
+- Added check for network availability while loading
+- Added search to the service EPG pages
+- Reworked EPG pages with support for bouquet selection
+- Significantly improved EPG loading time
+- Changed multiple icons
+- Changed the layout of signal and current pages on larger screens
+- Fixed wrong loading state after altering devices
+- Synced Crowdin translations
+- Many other fixes and updates
