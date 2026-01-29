@@ -21,6 +21,7 @@ package io.github.deprec8.enigmadroid.ui.current
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,6 +39,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -53,6 +55,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.ui.components.DrawerNavigationButton
@@ -78,6 +81,7 @@ fun CurrentPage(
     val loadingState by currentViewModel.loadingState.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val context = LocalContext.current
     val scrollState = rememberScrollState()
@@ -127,102 +131,233 @@ fun CurrentPage(
                         .verticalScroll(scrollState)
                         .padding(innerPadding)
                 ) {
-                    ListItem(
-                        headlineContent = { Text(text = stringResource(R.string.channel)) },
-                        supportingContent = {
-                            Text(text = currentEventInfo.now.serviceName)
-                        })
-                    ListItem(
-                        headlineContent = { Text(text = stringResource(R.string.provider)) },
-                        supportingContent = {
-                            Text(text = currentEventInfo.now.provider)
-                        })
-                    ListItem(
-                        overlineContent = {
-                            Text(text = stringResource(R.string.now))
-                        },
-                        headlineContent = { Text(text = currentEventInfo.now.title) },
-                        supportingContent = {
-                            Column {
-                                if (currentEventInfo.now.shortDescription.isNotBlank()) {
-                                    Text(
-                                        text = currentEventInfo.now.shortDescription, maxLines = 1
-                                    )
-                                }
-                                Text(
-                                    text = TimestampUtils.formatApiTimestampToTime(
-                                        currentEventInfo.now.beginTimestamp
-                                    ) + " - " + TimestampUtils.formatApiTimestampToTime(
-                                        currentEventInfo.now.beginTimestamp + currentEventInfo.now.durationInSeconds
-                                    ), maxLines = 1
-                                )
-                            }
-                        })
-                    LinearProgressIndicator(
-                        progress = {
-                            if (currentEventInfo.now.durationInSeconds > 0) {
-                                ((currentEventInfo.now.nowTimestamp - currentEventInfo.now.beginTimestamp).toFloat() / currentEventInfo.now.durationInSeconds)
-                            } else {
-                                0f
-                            }
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(
-                                start = 16.dp, end = 16.dp
-                            ),
-                        strokeCap = StrokeCap.Round,
-                    )
-                    Spacer(Modifier.size(8.dp))
-                    ListItem(
-                        overlineContent = {
-                            Text(text = stringResource(R.string.next))
-                        },
-                        headlineContent = { Text(text = currentEventInfo.next.title) },
-                        supportingContent = {
-                            Column {
-                                if (currentEventInfo.next.shortDescription.isNotBlank()) {
-                                    Text(
-                                        text = currentEventInfo.next.shortDescription, maxLines = 1
-                                    )
-                                }
-                                Text(
-                                    text = TimestampUtils.formatApiTimestampToTime(
-                                        currentEventInfo.next.beginTimestamp
-                                    ) + " - " + TimestampUtils.formatApiTimestampToTime(
-                                        currentEventInfo.next.beginTimestamp + currentEventInfo.next.durationInSeconds
-                                    ), maxLines = 1
-                                )
-                            }
-                        })
-                    Spacer(Modifier.size(16.dp))
-                    OutlinedButton(
-                        onClick = {
-                            scope.launch {
-                                IntentUtils.playMedia(
-                                    context,
-                                    currentViewModel.buildLiveStreamUrl(currentEventInfo.now.serviceReference),
-                                    currentEventInfo.now.serviceName
-                                )
-                            }
-                        }, Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
+                    if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) && windowSizeClass.isHeightAtLeastBreakpoint(
+                            WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
+                        )
                     ) {
-                        Text(text = stringResource(R.string.stream_current))
+                        Row {
+                            ListItem(
+                                headlineContent = { Text(text = stringResource(R.string.channel)) },
+                                supportingContent = {
+                                    Text(text = currentEventInfo.now.serviceName)
+                                },
+                                modifier = Modifier.fillMaxWidth(0.5f)
+                            )
+                            ListItem(
+                                headlineContent = { Text(text = stringResource(R.string.provider)) },
+                                supportingContent = {
+                                    Text(text = currentEventInfo.now.provider)
+                                },
+                                modifier = Modifier.fillMaxWidth(1f)
+                            )
+                        }
+                    } else {
+                        ListItem(
+                            headlineContent = { Text(text = stringResource(R.string.channel)) },
+                            supportingContent = {
+                                Text(text = currentEventInfo.now.serviceName)
+                            })
+                        ListItem(
+                            headlineContent = { Text(text = stringResource(R.string.provider)) },
+                            supportingContent = {
+                                Text(text = currentEventInfo.now.provider)
+                            })
+                    }
+
+                    if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) && windowSizeClass.isHeightAtLeastBreakpoint(
+                            WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
+                        )
+                    ) {
+                        Row {
+                            Column(modifier = Modifier.fillMaxWidth(0.5f)) {
+                                ListItem(
+                                    overlineContent = {
+                                        Text(text = stringResource(R.string.now))
+                                    },
+                                    headlineContent = { Text(text = currentEventInfo.now.title) },
+                                    supportingContent = {
+                                        Column {
+                                            if (currentEventInfo.now.shortDescription.isNotBlank()) {
+                                                Text(
+                                                    text = currentEventInfo.now.shortDescription,
+                                                    maxLines = 1
+                                                )
+                                            }
+                                            Text(
+                                                text = TimestampUtils.formatApiTimestampToTime(
+                                                    currentEventInfo.now.beginTimestamp
+                                                ) + " - " + TimestampUtils.formatApiTimestampToTime(
+                                                    currentEventInfo.now.beginTimestamp + currentEventInfo.now.durationInSeconds
+                                                ), maxLines = 1
+                                            )
+                                        }
+                                    })
+                                LinearProgressIndicator(
+                                    progress = {
+                                        if (currentEventInfo.now.durationInSeconds > 0) {
+                                            ((currentEventInfo.now.nowTimestamp - currentEventInfo.now.beginTimestamp).toFloat() / currentEventInfo.now.durationInSeconds)
+                                        } else {
+                                            0f
+                                        }
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(
+                                            start = 16.dp, end = 16.dp
+                                        ),
+                                    strokeCap = StrokeCap.Round,
+                                )
+                            }
+                            ListItem(
+                                overlineContent = {
+                                    Text(text = stringResource(R.string.next))
+                                },
+                                headlineContent = { Text(text = currentEventInfo.next.title) },
+                                supportingContent = {
+                                    Column {
+                                        if (currentEventInfo.next.shortDescription.isNotBlank()) {
+                                            Text(
+                                                text = currentEventInfo.next.shortDescription,
+                                                maxLines = 1
+                                            )
+                                        }
+                                        Text(
+                                            text = TimestampUtils.formatApiTimestampToTime(
+                                                currentEventInfo.next.beginTimestamp
+                                            ) + " - " + TimestampUtils.formatApiTimestampToTime(
+                                                currentEventInfo.next.beginTimestamp + currentEventInfo.next.durationInSeconds
+                                            ), maxLines = 1
+                                        )
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth(1f)
+                            )
+                        }
+                    } else {
+                        ListItem(
+                            overlineContent = {
+                                Text(text = stringResource(R.string.now))
+                            },
+                            headlineContent = { Text(text = currentEventInfo.now.title) },
+                            supportingContent = {
+                                Column {
+                                    if (currentEventInfo.now.shortDescription.isNotBlank()) {
+                                        Text(
+                                            text = currentEventInfo.now.shortDescription,
+                                            maxLines = 1
+                                        )
+                                    }
+                                    Text(
+                                        text = TimestampUtils.formatApiTimestampToTime(
+                                            currentEventInfo.now.beginTimestamp
+                                        ) + " - " + TimestampUtils.formatApiTimestampToTime(
+                                            currentEventInfo.now.beginTimestamp + currentEventInfo.now.durationInSeconds
+                                        ), maxLines = 1
+                                    )
+                                }
+                            })
+                        LinearProgressIndicator(
+                            progress = {
+                                if (currentEventInfo.now.durationInSeconds > 0) {
+                                    ((currentEventInfo.now.nowTimestamp - currentEventInfo.now.beginTimestamp).toFloat() / currentEventInfo.now.durationInSeconds)
+                                } else {
+                                    0f
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(
+                                    start = 16.dp, end = 16.dp
+                                ),
+                            strokeCap = StrokeCap.Round,
+                        )
+                        Spacer(Modifier.size(8.dp))
+                        ListItem(
+                            overlineContent = {
+                                Text(text = stringResource(R.string.next))
+                            },
+                            headlineContent = { Text(text = currentEventInfo.next.title) },
+                            supportingContent = {
+                                Column {
+                                    if (currentEventInfo.next.shortDescription.isNotBlank()) {
+                                        Text(
+                                            text = currentEventInfo.next.shortDescription,
+                                            maxLines = 1
+                                        )
+                                    }
+                                    Text(
+                                        text = TimestampUtils.formatApiTimestampToTime(
+                                            currentEventInfo.next.beginTimestamp
+                                        ) + " - " + TimestampUtils.formatApiTimestampToTime(
+                                            currentEventInfo.next.beginTimestamp + currentEventInfo.next.durationInSeconds
+                                        ), maxLines = 1
+                                    )
+                                }
+                            })
                     }
                     Spacer(Modifier.size(16.dp))
-                    OutlinedButton(
-                        onClick = {
-                            onNavigateToServiceEpg(
-                                currentEventInfo.now.serviceReference,
-                                currentEventInfo.now.serviceName
-                            )
-                        }, Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
+                    if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) && windowSizeClass.isHeightAtLeastBreakpoint(
+                            WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
+                        )
                     ) {
-                        Text(text = stringResource(R.string.view_epg_for_current_channel))
+                        Row {
+                            OutlinedButton(
+                                onClick = {
+                                    scope.launch {
+                                        IntentUtils.playMedia(
+                                            context,
+                                            currentViewModel.buildLiveStreamUrl(currentEventInfo.now.serviceReference),
+                                            currentEventInfo.now.serviceName
+                                        )
+                                    }
+                                }, Modifier
+                                    .fillMaxWidth(0.5f)
+                                    .padding(start = 16.dp)
+                            ) {
+                                Text(text = stringResource(R.string.stream_current))
+                            }
+                            OutlinedButton(
+                                onClick = {
+                                    onNavigateToServiceEpg(
+                                        currentEventInfo.now.serviceReference,
+                                        currentEventInfo.now.serviceName
+                                    )
+                                }, Modifier
+                                    .fillMaxWidth(1f)
+                                    .padding(horizontal = 16.dp)
+                            ) {
+                                Text(text = stringResource(R.string.view_epg_for_current_channel))
+                            }
+                        }
+                    } else {
+                        OutlinedButton(
+                            onClick = {
+                                scope.launch {
+                                    IntentUtils.playMedia(
+                                        context,
+                                        currentViewModel.buildLiveStreamUrl(currentEventInfo.now.serviceReference),
+                                        currentEventInfo.now.serviceName
+                                    )
+                                }
+                            }, Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                        ) {
+                            Text(text = stringResource(R.string.stream_current))
+                        }
+                        Spacer(Modifier.size(16.dp))
+                        OutlinedButton(
+                            onClick = {
+                                onNavigateToServiceEpg(
+                                    currentEventInfo.now.serviceReference,
+                                    currentEventInfo.now.serviceName
+                                )
+                            }, Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                        ) {
+                            Text(text = stringResource(R.string.view_epg_for_current_channel))
+                        }
                     }
                     Spacer(Modifier.size(16.dp))
                 }
