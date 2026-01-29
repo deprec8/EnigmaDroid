@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.components.search
+package io.github.deprec8.enigmadroid.ui.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dialpad
@@ -30,7 +30,7 @@ import io.github.deprec8.enigmadroid.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchTopAppBarRemoteControlActionButton(onNavigateToRemoteControl: () -> Unit) {
+fun RemoteControlActionButton(onNavigateToRemoteControl: () -> Unit) {
     IconButton(onClick = { onNavigateToRemoteControl() }) {
         Icon(
             Icons.Default.Dialpad,

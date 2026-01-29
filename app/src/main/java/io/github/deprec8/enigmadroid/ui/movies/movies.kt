@@ -75,12 +75,12 @@ import io.github.deprec8.enigmadroid.model.menu.MenuItemGroup
 import io.github.deprec8.enigmadroid.ui.components.FloatingRefreshButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
+import io.github.deprec8.enigmadroid.ui.components.RemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.components.content.ContentListItem
 import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarDrawerNavigationButton
-import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarRemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.movies.components.DeleteMovieDialog
 import io.github.deprec8.enigmadroid.ui.movies.components.MoveMovieDialog
 import io.github.deprec8.enigmadroid.ui.movies.components.RenameMovieDialog
@@ -280,7 +280,7 @@ fun MoviesPage(
                 SearchTopAppBarDrawerNavigationButton(drawerState, searchBarState)
             },
             actionButtons = {
-                SearchTopAppBarRemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
+                RemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
             },
             onSearch = {
                 moviesViewModel.updateSearchInput()

@@ -27,7 +27,6 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Dialpad
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -58,6 +57,7 @@ import io.github.deprec8.enigmadroid.model.api.device.DeviceInfo
 import io.github.deprec8.enigmadroid.ui.components.FloatingRefreshButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
+import io.github.deprec8.enigmadroid.ui.components.RemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.insets.topAppBarWithDrawerWindowInsets
 import kotlinx.coroutines.launch
@@ -112,12 +112,7 @@ fun DeviceInfoPage(
                     }
                 }
             }, actions = {
-                IconButton(onClick = { onNavigateToRemoteControl() }) {
-                    Icon(
-                        Icons.Default.Dialpad,
-                        contentDescription = stringResource(R.string.open_remote_control)
-                    )
-                }
+                RemoteControlActionButton { onNavigateToRemoteControl() }
             })
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),

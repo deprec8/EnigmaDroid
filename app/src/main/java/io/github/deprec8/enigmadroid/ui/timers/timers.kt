@@ -79,12 +79,12 @@ import io.github.deprec8.enigmadroid.model.menu.MenuItem
 import io.github.deprec8.enigmadroid.model.menu.MenuItemGroup
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
+import io.github.deprec8.enigmadroid.ui.components.RemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.components.content.ContentListItem
 import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarDrawerNavigationButton
-import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarRemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.timers.components.DeleteTimerDialog
 import io.github.deprec8.enigmadroid.ui.timers.components.TimerLogDialog
 import io.github.deprec8.enigmadroid.ui.timers.components.TimerSetupDialog
@@ -348,7 +348,7 @@ fun TimersPage(
                 timersViewModel.updateSearchInput()
             },
             actionButtons = {
-                SearchTopAppBarRemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
+                RemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
             })
 
     }, floatingActionButton = {

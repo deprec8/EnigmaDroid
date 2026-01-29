@@ -52,11 +52,11 @@ import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.ui.components.FloatingRefreshButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
+import io.github.deprec8.enigmadroid.ui.components.RemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarDrawerNavigationButton
-import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarRemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.epg.components.BouquetMenu
 import io.github.deprec8.enigmadroid.ui.epg.components.EpgContent
 import kotlinx.coroutines.launch
@@ -137,7 +137,7 @@ fun TvEpgPage(
                         bouquets,
                         currentBouquet
                     ) { bouquetReference -> tvEpgViewModel.setCurrentBouquet(bouquetReference) }
-                    SearchTopAppBarRemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
+                    RemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
                 }
             },
             onSearch = {

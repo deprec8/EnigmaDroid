@@ -30,7 +30,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Dialpad
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -64,6 +63,7 @@ import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.ui.components.FloatingRefreshButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
+import io.github.deprec8.enigmadroid.ui.components.RemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.insets.topAppBarWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.utils.IntentUtils
@@ -129,12 +129,7 @@ fun CurrentPage(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { onNavigateToRemoteControl() }) {
-                        Icon(
-                            Icons.Default.Dialpad,
-                            contentDescription = stringResource(R.string.open_remote_control)
-                        )
-                    }
+                    RemoteControlActionButton { onNavigateToRemoteControl() }
                 })
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
