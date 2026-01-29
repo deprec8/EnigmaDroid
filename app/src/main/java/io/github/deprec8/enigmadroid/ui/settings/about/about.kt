@@ -30,8 +30,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
-import androidx.compose.material.icons.outlined.Book
 import androidx.compose.material.icons.outlined.Code
+import androidx.compose.material.icons.outlined.CollectionsBookmark
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.Person
@@ -187,7 +187,12 @@ fun AboutPage(
                         )
                     )
                 },
-                leadingContent = { Icon(Icons.Outlined.Book, contentDescription = null) },
+                leadingContent = {
+                    Icon(
+                        Icons.Outlined.CollectionsBookmark,
+                        contentDescription = null
+                    )
+                },
                 modifier = Modifier.clickable { onNavigateToLibraries() })
         }
     }

@@ -41,26 +41,26 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Dvr
 import androidx.compose.material.icons.automirrored.filled.LibraryBooks
+import androidx.compose.material.icons.automirrored.filled.PlaylistPlay
 import androidx.compose.material.icons.automirrored.outlined.Dvr
 import androidx.compose.material.icons.automirrored.outlined.LibraryBooks
+import androidx.compose.material.icons.automirrored.outlined.PlaylistPlay
+import androidx.compose.material.icons.filled.DeveloperBoard
 import androidx.compose.material.icons.filled.LiveTv
 import androidx.compose.material.icons.filled.Movie
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Radio
 import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material.icons.filled.Tv
 import androidx.compose.material.icons.filled.Web
+import androidx.compose.material.icons.outlined.DeveloperBoard
 import androidx.compose.material.icons.outlined.LiveTv
 import androidx.compose.material.icons.outlined.Movie
-import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.Radio
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Speed
 import androidx.compose.material.icons.outlined.Timer
-import androidx.compose.material.icons.outlined.Tv
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.HorizontalDivider
@@ -129,8 +129,8 @@ fun NavDrawerContent(
                 DrawerPage(
                     stringResource(R.string.current),
                     MainPages.Current,
-                    Icons.Outlined.PlayArrow,
-                    Icons.Filled.PlayArrow
+                    Icons.AutoMirrored.Outlined.PlaylistPlay,
+                    Icons.AutoMirrored.Filled.PlaylistPlay
                 ),
                 DrawerPage(
                     stringResource(R.string.movies),
@@ -164,8 +164,8 @@ fun NavDrawerContent(
                 DrawerPage(
                     stringResource(R.string.deviceinfo),
                     MainPages.DeviceInfo,
-                    Icons.Outlined.Tv,
-                    Icons.Filled.Tv
+                    Icons.Outlined.DeveloperBoard,
+                    Icons.Filled.DeveloperBoard
                 ),
                 DrawerPage(
                     stringResource(R.string.signal),

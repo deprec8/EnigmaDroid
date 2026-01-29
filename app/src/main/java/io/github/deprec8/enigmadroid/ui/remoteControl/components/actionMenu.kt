@@ -21,10 +21,11 @@ package io.github.deprec8.enigmadroid.ui.remoteControl.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.PowerSettingsNew
-import androidx.compose.material.icons.filled.ScreenshotMonitor
 import androidx.compose.material.icons.outlined.PowerSettingsNew
+import androidx.compose.material.icons.outlined.ResetTv
 import androidx.compose.material.icons.outlined.RestartAlt
+import androidx.compose.material.icons.outlined.ScreenshotMonitor
+import androidx.compose.material.icons.outlined.SettingsPower
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -67,7 +68,7 @@ fun ActionMenu(
                 onFetchScreenshot()
             }, leadingIcon = {
                 Icon(
-                    Icons.Default.ScreenshotMonitor, contentDescription = null
+                    Icons.Outlined.ScreenshotMonitor, contentDescription = null
                 )
             })
             HorizontalDivider()
@@ -85,7 +86,7 @@ fun ActionMenu(
                 )
             }, leadingIcon = {
                 Icon(
-                    Icons.Default.PowerSettingsNew, contentDescription = null
+                    Icons.Outlined.SettingsPower, contentDescription = null
                 )
             })
             DropdownMenuItem(text = {
@@ -117,7 +118,7 @@ fun ActionMenu(
                 )
             }, leadingIcon = {
                 Icon(
-                    Icons.Outlined.RestartAlt, contentDescription = null
+                    Icons.Outlined.ResetTv, contentDescription = null
                 )
             })
             DropdownMenuItem(text = {

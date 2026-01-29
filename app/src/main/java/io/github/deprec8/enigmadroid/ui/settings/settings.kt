@@ -28,10 +28,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
-import androidx.compose.material.icons.outlined.Devices
+import androidx.compose.material.icons.automirrored.outlined.ManageSearch
+import androidx.compose.material.icons.outlined.ConnectedTv
 import androidx.compose.material.icons.outlined.Dialpad
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -92,7 +92,7 @@ fun SettingsPage(
                     Text(stringResource(R.string.manage_your_devices_and_connect_to_them))
                 },
                 leadingContent = {
-                    Icon(Icons.Outlined.Devices, contentDescription = null)
+                    Icon(Icons.Outlined.ConnectedTv, contentDescription = null)
                 },
                 modifier = Modifier.clickable(onClick = {
                     onNavigateToSettingsPage(SettingsPages.Devices)
@@ -107,7 +107,7 @@ fun SettingsPage(
                     Text(stringResource(R.string.manage_search_settings_and_histories))
                 },
                 leadingContent = {
-                    Icon(Icons.Outlined.Search, contentDescription = null)
+                    Icon(Icons.AutoMirrored.Outlined.ManageSearch, contentDescription = null)
                 },
                 modifier = Modifier.clickable(onClick = {
                     onNavigateToSettingsPage(SettingsPages.Search)
