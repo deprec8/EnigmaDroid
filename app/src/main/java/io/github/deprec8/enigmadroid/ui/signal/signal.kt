@@ -29,13 +29,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -57,9 +53,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
+import io.github.deprec8.enigmadroid.ui.components.DrawerNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.FloatingRefreshButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
@@ -81,7 +77,7 @@ fun SignalPage(
     val loadingState by signalViewModel.loadingState.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+    currentWindowAdaptiveInfo().windowSizeClass
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val scrollState = rememberScrollState()
 
@@ -103,17 +99,7 @@ fun SignalPage(
                 title = { Text(text = stringResource(R.string.signal)) },
                 scrollBehavior = scrollBehavior,
                 navigationIcon = {
-                    if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || ! windowSizeClass.isHeightAtLeastBreakpoint(
-                            WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
-                        )
-                    ) {
-                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Icon(
-                                Icons.Default.Menu,
-                                contentDescription = stringResource(id = R.string.open_menu)
-                            )
-                        }
-                    }
+                    DrawerNavigationButton(drawerState)
                 },
                 actions = {
                     RemoteControlActionButton { onNavigateToRemoteControl() }

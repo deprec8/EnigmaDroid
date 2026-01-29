@@ -26,19 +26,14 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -50,10 +45,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.model.api.device.DeviceInfo
+import io.github.deprec8.enigmadroid.ui.components.DrawerNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.FloatingRefreshButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
@@ -74,7 +69,6 @@ fun DeviceInfoPage(
     val deviceInfo by deviceInfoViewModel.deviceInfo.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     LaunchedEffect(Unit) {
@@ -100,17 +94,7 @@ fun DeviceInfoPage(
                     overflow = TextOverflow.Ellipsis
                 )
             }, scrollBehavior = scrollBehavior, navigationIcon = {
-                if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || ! windowSizeClass.isHeightAtLeastBreakpoint(
-                        WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
-                    )
-                ) {
-                    IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                        Icon(
-                            Icons.Default.Menu,
-                            contentDescription = stringResource(R.string.open_menu)
-                        )
-                    }
-                }
+                DrawerNavigationButton(drawerState)
             }, actions = {
                 RemoteControlActionButton { onNavigateToRemoteControl() }
             })

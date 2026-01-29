@@ -28,7 +28,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.Devices
 import androidx.compose.material.icons.outlined.Dialpad
 import androidx.compose.material.icons.outlined.Info
@@ -36,25 +35,21 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.model.navigation.SettingsPages
+import io.github.deprec8.enigmadroid.ui.components.DrawerNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.insets.topAppBarWithDrawerWindowInsets
-import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,9 +58,6 @@ fun SettingsPage(
     drawerState: DrawerState,
     onNavigateToSettingsPage: (SettingsPages) -> Unit,
 ) {
-
-    val scope = rememberCoroutineScope()
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val scrollState = rememberScrollState()
 
@@ -78,17 +70,7 @@ fun SettingsPage(
                     overflow = TextOverflow.Ellipsis
                 )
             }, scrollBehavior = scrollBehavior, navigationIcon = {
-                if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || ! windowSizeClass.isHeightAtLeastBreakpoint(
-                        WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
-                    )
-                ) {
-                    IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                        Icon(
-                            Icons.Default.Menu,
-                            contentDescription = stringResource(id = R.string.open_menu)
-                        )
-                    }
-                }
+                DrawerNavigationButton(drawerState)
             })
         },
         contentWindowInsets = contentWithDrawerWindowInsets(),
