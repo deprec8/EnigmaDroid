@@ -22,6 +22,7 @@ package io.github.deprec8.enigmadroid.ui.signal
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -53,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.ui.components.DrawerNavigationButton
@@ -77,7 +79,7 @@ fun SignalPage(
     val loadingState by signalViewModel.loadingState.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
-    currentWindowAdaptiveInfo().windowSizeClass
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val scrollState = rememberScrollState()
 
@@ -116,55 +118,114 @@ fun SignalPage(
                         .padding(innerPadding),
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .padding(20.dp)
-                            .fillMaxWidth()
+                    if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) && windowSizeClass.isHeightAtLeastBreakpoint(
+                            WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
+                        )
                     ) {
-                        CircularProgressIndicator(
-                            progress = { 1f },
-                            modifier = Modifier.size(300.dp),
-                            strokeCap = StrokeCap.Round,
-                            color = MaterialTheme.colorScheme.surfaceContainer
-                        )
-                        CircularProgressIndicator(
-                            strokeWidth = 10.dp, progress = {
-                                if (signalInfo.agc.isNotBlank()) {
-                                    signalInfo.agc.toFloat() / 100
-                                } else {
-                                    0f
-                                }
-                            }, modifier = Modifier.size(300.dp), strokeCap = StrokeCap.Round
-                        )
-                        Text(
-                            modifier = Modifier.align(Alignment.Center),
-                            textAlign = TextAlign.Center,
-                            text = "${signalInfo.agc}%",
-                            fontSize = 40.sp
-                        )
+                        Row {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier
+                                    .padding(20.dp)
+                                    .fillMaxWidth(0.5f)
+                            ) {
+                                CircularProgressIndicator(
+                                    progress = { 1f },
+                                    modifier = Modifier.size(300.dp),
+                                    strokeCap = StrokeCap.Round,
+                                    color = MaterialTheme.colorScheme.surfaceContainer
+                                )
+                                CircularProgressIndicator(
+                                    strokeWidth = 10.dp, progress = {
+                                        if (signalInfo.agc.isNotBlank()) {
+                                            signalInfo.agc.toFloat() / 100
+                                        } else {
+                                            0f
+                                        }
+                                    }, modifier = Modifier.size(300.dp), strokeCap = StrokeCap.Round
+                                )
+                                Text(
+                                    modifier = Modifier.align(Alignment.Center),
+                                    textAlign = TextAlign.Center,
+                                    text = "${signalInfo.agc}%",
+                                    fontSize = 40.sp
+                                )
+                            }
+                            Column(Modifier.fillMaxWidth(1f)) {
+                                ListItem(
+                                    headlineContent = { Text(text = stringResource(R.string.tunertype)) },
+                                    supportingContent = {
+                                        Text(
+                                            text = signalInfo.tunerType
+                                        )
+                                    })
+                                ListItem(
+                                    headlineContent = { Text(text = stringResource(R.string.tunernumber)) },
+                                    supportingContent = {
+                                        Text(
+                                            text = signalInfo.tunerNumber
+                                        )
+                                    })
+                                ListItem(
+                                    headlineContent = { Text(text = stringResource(R.string.snr)) },
+                                    supportingContent = {
+                                        Text(
+                                            text = "${signalInfo.snr}%",
+                                        )
+                                    })
+                            }
+                        }
+                    } else {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .padding(20.dp)
+                                .fillMaxWidth()
+                        ) {
+                            CircularProgressIndicator(
+                                progress = { 1f },
+                                modifier = Modifier.size(300.dp),
+                                strokeCap = StrokeCap.Round,
+                                color = MaterialTheme.colorScheme.surfaceContainer
+                            )
+                            CircularProgressIndicator(
+                                strokeWidth = 10.dp, progress = {
+                                    if (signalInfo.agc.isNotBlank()) {
+                                        signalInfo.agc.toFloat() / 100
+                                    } else {
+                                        0f
+                                    }
+                                }, modifier = Modifier.size(300.dp), strokeCap = StrokeCap.Round
+                            )
+                            Text(
+                                modifier = Modifier.align(Alignment.Center),
+                                textAlign = TextAlign.Center,
+                                text = "${signalInfo.agc}%",
+                                fontSize = 40.sp
+                            )
+                        }
+                        ListItem(
+                            headlineContent = { Text(text = stringResource(R.string.tunertype)) },
+                            supportingContent = {
+                                Text(
+                                    text = signalInfo.tunerType
+                                )
+                            })
+                        ListItem(
+                            headlineContent = { Text(text = stringResource(R.string.tunernumber)) },
+                            supportingContent = {
+                                Text(
+                                    text = signalInfo.tunerNumber
+                                )
+                            })
+                        ListItem(
+                            headlineContent = { Text(text = stringResource(R.string.snr)) },
+                            supportingContent = {
+                                Text(
+                                    text = "${signalInfo.snr}%",
+                                )
+                            })
                     }
-                    ListItem(
-                        headlineContent = { Text(text = stringResource(R.string.tunertype)) },
-                        supportingContent = {
-                            Text(
-                                text = signalInfo.tunerType
-                            )
-                        })
-                    ListItem(
-                        headlineContent = { Text(text = stringResource(R.string.tunernumber)) },
-                        supportingContent = {
-                            Text(
-                                text = signalInfo.tunerNumber
-                            )
-                        })
-                    ListItem(
-                        headlineContent = { Text(text = stringResource(R.string.snr)) },
-                        supportingContent = {
-                            Text(
-                                text = "${signalInfo.snr}%",
-                            )
-                        })
                 }
             }
             "true"  -> {
