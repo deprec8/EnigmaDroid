@@ -37,14 +37,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.mikepenz.aboutlibraries.ui.compose.android.produceLibraries
+import com.mikepenz.aboutlibraries.Libs
+import com.mikepenz.aboutlibraries.util.withContext
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.insets.topAppBarWithDrawerWindowInsets
@@ -56,7 +56,11 @@ fun LibrariesPage(
     onNavigateBack: () -> Unit
 ) {
     val context = LocalContext.current
-    val libraries by produceLibraries()
+    val libraries = try {
+        Libs.Builder().withContext(context).build().libraries
+    } catch (_: Exception) {
+        null
+    }
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     Scaffold(
@@ -86,7 +90,7 @@ fun LibrariesPage(
             columns = GridCells.Adaptive(350.dp),
             contentPadding = innerPadding
         ) {
-            items(libraries?.libraries ?: emptyList()) { library ->
+            items(libraries ?: emptyList()) { library ->
                 ListItem(modifier = Modifier.clickable {
                     if (library.website != null) {
                         IntentUtils.openUrl(context, library.website !!)

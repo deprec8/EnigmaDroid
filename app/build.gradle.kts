@@ -114,7 +114,6 @@ dependencies {
 
     //Libraries
     implementation(libs.mikepenz.aboutlibraries.core)
-    implementation(libs.mikepenz.aboutlibraries.compose.m3)
 
     // Compose
     implementation(platform(libs.androidx.compose.bom))
