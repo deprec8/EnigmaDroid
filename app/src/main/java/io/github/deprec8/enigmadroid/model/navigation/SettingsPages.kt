@@ -19,10 +19,11 @@
 
 package io.github.deprec8.enigmadroid.model.navigation
 
+import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed class SettingsPages : Page {
+sealed class SettingsPages : NavKey {
 
     @Serializable
     data object About : SettingsPages()

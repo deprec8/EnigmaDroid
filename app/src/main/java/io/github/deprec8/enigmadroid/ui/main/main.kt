@@ -34,12 +34,15 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.compose.rememberNavController
 import androidx.window.core.layout.WindowSizeClass
+import io.github.deprec8.enigmadroid.model.navigation.MainPages
+import io.github.deprec8.enigmadroid.ui.components.navigation.Navigator
+import io.github.deprec8.enigmadroid.ui.components.navigation.rememberNavigationState
 import io.github.deprec8.enigmadroid.ui.onboarding.OnboardingPage
 import kotlinx.coroutines.launch
 
@@ -52,7 +55,22 @@ fun MainPage(
     val loadingState by mainViewModel.loadingState.collectAsStateWithLifecycle()
     val isOnboardingNeeded by mainViewModel.isOnboardingNeeded.collectAsStateWithLifecycle()
 
-    val navHostController = rememberNavController()
+    val navigationState = rememberNavigationState(
+        startRoute = MainPages.Tv, topLevelRoutes = setOf(
+            MainPages.Tv,
+            MainPages.Radio,
+            MainPages.Current,
+            MainPages.Movies,
+            MainPages.Timers,
+            MainPages.TvEpg,
+            MainPages.RadioEpg,
+            MainPages.DeviceInfo,
+            MainPages.Signal,
+            MainPages.Settings
+        )
+    )
+
+    val navigator = remember { Navigator(navigationState) }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     val scope = rememberCoroutineScope()
@@ -89,7 +107,8 @@ fun MainPage(
                     ) {
                         NavDrawerContent(
                             currentDevice = currentDevice,
-                            navHostController = navHostController,
+                            navigator = navigator,
+                            navigationState = navigationState,
                             drawerState = drawerState,
                             updateDeviceStatus = {
                                 scope.launch {
@@ -104,8 +123,8 @@ fun MainPage(
                     }
                 }, drawerState = drawerState
             ) {
-                NavHost(
-                    navHostController, drawerState
+                NavigationDisplay(
+                    navigator, navigationState, drawerState
                 )
             }
         } else {
@@ -126,7 +145,8 @@ fun MainPage(
                     ) {
                         NavDrawerContent(
                             currentDevice = currentDevice,
-                            navHostController = navHostController,
+                            navigator = navigator,
+                            navigationState = navigationState,
                             drawerState = drawerState,
                             updateDeviceStatus = {
                                 scope.launch {
@@ -140,8 +160,8 @@ fun MainPage(
                         )
                     }
                 }) {
-                NavHost(
-                    navHostController, drawerState
+                NavigationDisplay(
+                    navigator, navigationState, drawerState
                 )
             }
         }

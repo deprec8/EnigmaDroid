@@ -100,6 +100,7 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
 
     // Serialization
+    implementation(libs.jetbrains.kotlinx.serialization.core)
     implementation(libs.jetbrains.kotlinx.serialization.json)
 
     // Material
@@ -108,9 +109,11 @@ dependencies {
 
     // Lifecycle
     implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
 
     // Navigation
-    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.navigation3.runtime)
 
     //Libraries
     implementation(libs.mikepenz.aboutlibraries.core)

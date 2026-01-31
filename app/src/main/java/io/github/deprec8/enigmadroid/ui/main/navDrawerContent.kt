@@ -72,7 +72,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -80,16 +79,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavDestination.Companion.hasRoute
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.model.drawer.DrawerPage
 import io.github.deprec8.enigmadroid.model.drawer.DrawerPageGroup
 import io.github.deprec8.enigmadroid.model.navigation.MainPages
+import io.github.deprec8.enigmadroid.ui.components.navigation.NavigationState
+import io.github.deprec8.enigmadroid.ui.components.navigation.Navigator
 import io.github.deprec8.enigmadroid.utils.IntentUtils
 import kotlinx.coroutines.launch
 import kotlin.reflect.KSuspendFunction0
@@ -100,84 +97,71 @@ fun NavDrawerContent(
     loadingState: LoadingState,
     buildOwifUrl: KSuspendFunction0<String>,
     updateDeviceStatus: () -> Unit,
-    navHostController: NavHostController,
+    navigator: Navigator,
+    navigationState: NavigationState,
     drawerState: DrawerState
 ) {
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val navBackStackEntry by navHostController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
     val scrollState = rememberScrollState()
 
     val drawerPageGroups = listOf(
         DrawerPageGroup(
-            stringResource(R.string.content),
-            listOf(
+            stringResource(R.string.content), listOf(
                 DrawerPage(
                     stringResource(R.string.tv),
                     MainPages.Tv,
                     Icons.Outlined.LiveTv,
                     Icons.Filled.LiveTv
-                ),
-                DrawerPage(
+                ), DrawerPage(
                     stringResource(R.string.radio),
                     MainPages.Radio,
                     Icons.Outlined.Radio,
                     Icons.Filled.Radio
-                ),
-                DrawerPage(
+                ), DrawerPage(
                     stringResource(R.string.current),
                     MainPages.Current,
                     Icons.AutoMirrored.Outlined.PlaylistPlay,
                     Icons.AutoMirrored.Filled.PlaylistPlay
-                ),
-                DrawerPage(
+                ), DrawerPage(
                     stringResource(R.string.movies),
                     MainPages.Movies,
                     Icons.Outlined.Movie,
                     Icons.Filled.Movie
-                ),
-                DrawerPage(
+                ), DrawerPage(
                     stringResource(R.string.timers),
                     MainPages.Timers,
                     Icons.Outlined.Timer,
                     Icons.Filled.Timer
-                ),
-                DrawerPage(
+                ), DrawerPage(
                     stringResource(R.string.tv_epg),
                     MainPages.TvEpg,
                     Icons.AutoMirrored.Outlined.Dvr,
                     Icons.AutoMirrored.Filled.Dvr,
-                ),
-                DrawerPage(
+                ), DrawerPage(
                     stringResource(R.string.radio_epg),
                     MainPages.RadioEpg,
                     Icons.AutoMirrored.Outlined.LibraryBooks,
                     Icons.AutoMirrored.Filled.LibraryBooks,
                 )
             )
-        ),
-        DrawerPageGroup(
-            stringResource(R.string.device),
-            listOf(
+        ), DrawerPageGroup(
+            stringResource(R.string.device), listOf(
                 DrawerPage(
                     stringResource(R.string.deviceinfo),
                     MainPages.DeviceInfo,
                     Icons.Outlined.DeveloperBoard,
                     Icons.Filled.DeveloperBoard
-                ),
-                DrawerPage(
+                ), DrawerPage(
                     stringResource(R.string.signal),
                     MainPages.Signal,
                     Icons.Outlined.Speed,
                     Icons.Filled.Speed
                 )
             )
-        ),
-        DrawerPageGroup(
-            stringResource(R.string.settings),
-            listOf(
+        ), DrawerPageGroup(
+            stringResource(R.string.settings), listOf(
                 DrawerPage(
                     stringResource(R.string.settings),
                     MainPages.Settings,
@@ -212,15 +196,12 @@ fun NavDrawerContent(
             trailingContent = {
                 AnimatedContent(loadingState, label = "", transitionSpec = {
                     scaleIn(
-                        initialScale = 0f,
-                        animationSpec = spring(
+                        initialScale = 0f, animationSpec = spring(
                             dampingRatio = Spring.DampingRatioMediumBouncy,
                             stiffness = Spring.StiffnessLow
                         )
-                    ) + fadeIn() togetherWith
-                            scaleOut(targetScale = 0f) + fadeOut()
-                })
-                {
+                    ) + fadeIn() togetherWith scaleOut(targetScale = 0f) + fadeOut()
+                }) {
                     when (it) {
                         LoadingState.LOADED  -> {
                             IconButton(onClick = {
@@ -257,34 +238,39 @@ fun NavDrawerContent(
                     label = "",
                     transitionSpec = { fadeIn() togetherWith fadeOut() }) {
                     when (it) {
-                        LoadingState.LOADED              -> {
+                        LoadingState.LOADED               -> {
                             Text(
                                 stringResource(R.string.connected),
-                                maxLines = 1, overflow = TextOverflow.Ellipsis
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
-                        LoadingState.DEVICE_NOT_ONLINE   -> {
+                        LoadingState.DEVICE_NOT_ONLINE    -> {
                             Text(
                                 stringResource(id = R.string.device_not_connected),
-                                maxLines = 1, overflow = TextOverflow.Ellipsis
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
-                        LoadingState.NO_DEVICE_AVAILABLE -> {
+                        LoadingState.NO_DEVICE_AVAILABLE  -> {
                             Text(
                                 stringResource(R.string.add_a_device_to_connect_to),
-                                maxLines = 1, overflow = TextOverflow.Ellipsis
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
-                        LoadingState.LOADING             -> {
+                        LoadingState.LOADING              -> {
                             Text(
                                 stringResource(R.string.searching_for_device),
-                                maxLines = 1, overflow = TextOverflow.Ellipsis
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                         LoadingState.NO_NETWORK_AVAILABLE -> {
                             Text(
                                 stringResource(R.string.connect_to_a_network),
-                                maxLines = 1, overflow = TextOverflow.Ellipsis
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                     }
@@ -311,25 +297,15 @@ fun NavDrawerContent(
             )
             group.pages.forEach { drawerPage ->
                 NavigationDrawerItem(
-                    label = { Text(text = drawerPage.name) },
-                    icon = {
-                        when (currentDestination?.hierarchy?.any {
-                            it.hasRoute(
-                                drawerPage.route::class
-                            )
-                        }) {
+                    label = { Text(text = drawerPage.name) }, icon = {
+                        when (navigationState.topLevelRoute == drawerPage.navKey) {
                             true -> Icon(drawerPage.selectedIcon, contentDescription = null)
                             else -> Icon(drawerPage.icon, contentDescription = null)
                         }
-                    },
-                    selected = currentDestination?.hierarchy?.any { it.hasRoute(drawerPage.route::class) } == true,
-                    onClick = {
-                        if (currentDestination?.hierarchy?.any { it.hasRoute(drawerPage.route::class) } == false) {
-                            navHostController.navigate(drawerPage.route)
-                        }
+                    }, selected = navigationState.topLevelRoute == drawerPage.navKey, onClick = {
+                        navigator.navigate(drawerPage.navKey)
                         closeNavDrawer()
-                    },
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+                    }, modifier = Modifier.padding(start = 16.dp, end = 16.dp)
                 )
             }
         }
