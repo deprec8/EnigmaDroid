@@ -185,9 +185,13 @@ fun AboutPage(
                 },
                 supportingContent = {
                     Text(
-                        text = stringResource(
-                            R.string.libraries, libraries?.size ?: "0"
-                        )
+                        text = if (libraries != null) {
+                            stringResource(
+                                R.string.libraries, libraries.size
+                            )
+                        } else {
+                            stringResource(R.string.error_loading_libraries)
+                        }
                     )
                 },
                 leadingContent = {

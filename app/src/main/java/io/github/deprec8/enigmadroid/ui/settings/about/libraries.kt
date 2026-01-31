@@ -20,8 +20,11 @@
 package io.github.deprec8.enigmadroid.ui.settings.about
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -37,10 +40,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.mikepenz.aboutlibraries.Libs
@@ -83,35 +88,50 @@ fun LibrariesPage(
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { innerPadding ->
-        LazyVerticalGrid(
-            modifier = Modifier
-                .fillMaxSize()
-                .consumeWindowInsets(innerPadding),
-            columns = GridCells.Adaptive(350.dp),
-            contentPadding = innerPadding
-        ) {
-            items(libraries ?: emptyList()) { library ->
-                ListItem(modifier = Modifier.clickable {
-                    if (library.website != null) {
-                        IntentUtils.openUrl(context, library.website !!)
-                    }
-                }, trailingContent = {
-                    Icon(Icons.Outlined.Link, contentDescription = null)
-                }, overlineContent = {
-                    Text(
-                        text = "${library.licenses.first().name} - " + if ((library.artifactVersion?.length
-                                ?: 0) > 15
-                        ) {
-                            "${library.artifactVersion?.substring(0, 10) ?: ""}…"
-                        } else {
-                            library.artifactVersion ?: ""
+        if (libraries != null) {
+            LazyVerticalGrid(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .consumeWindowInsets(innerPadding),
+                columns = GridCells.Adaptive(350.dp),
+                contentPadding = innerPadding
+            ) {
+                items(libraries) { library ->
+                    ListItem(modifier = Modifier.clickable {
+                        if (library.website != null) {
+                            IntentUtils.openUrl(context, library.website !!)
                         }
-                    )
-                }, headlineContent = { Text(text = library.name) }, supportingContent = {
-                    Text(
-                        text = library.developers.firstOrNull()?.name ?: ""
-                    )
-                })
+                    }, trailingContent = {
+                        Icon(Icons.Outlined.Link, contentDescription = null)
+                    }, overlineContent = {
+                        Text(
+                            text = "${library.licenses.first().name} - " + if ((library.artifactVersion?.length
+                                    ?: 0) > 15
+                            ) {
+                                "${library.artifactVersion?.substring(0, 10) ?: ""}…"
+                            } else {
+                                library.artifactVersion ?: ""
+                            }
+                        )
+                    }, headlineContent = { Text(text = library.name) }, supportingContent = {
+                        Text(
+                            text = library.developers.firstOrNull()?.name ?: ""
+                        )
+                    })
+                }
+            }
+        } else {
+            Box(
+                modifier = Modifier
+                    .consumeWindowInsets(innerPadding)
+                    .padding(innerPadding)
+                    .fillMaxSize()
+                    .imePadding(), contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.error_loading_libraries),
+                    textAlign = TextAlign.Center
+                )
             }
         }
     }
