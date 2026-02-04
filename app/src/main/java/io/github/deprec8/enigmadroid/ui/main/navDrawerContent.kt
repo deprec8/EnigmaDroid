@@ -112,72 +112,60 @@ fun NavDrawerContent(
 
     val drawerPageGroups = listOf(
         DrawerPageGroup(
-            stringResource(R.string.content),
-            listOf(
+            stringResource(R.string.content), listOf(
                 DrawerPage(
                     stringResource(R.string.tv),
                     MainPages.Tv,
                     Icons.Outlined.LiveTv,
                     Icons.Filled.LiveTv
-                ),
-                DrawerPage(
+                ), DrawerPage(
                     stringResource(R.string.radio),
                     MainPages.Radio,
                     Icons.Outlined.Radio,
                     Icons.Filled.Radio
-                ),
-                DrawerPage(
+                ), DrawerPage(
                     stringResource(R.string.current),
                     MainPages.Current,
                     Icons.AutoMirrored.Outlined.PlaylistPlay,
                     Icons.AutoMirrored.Filled.PlaylistPlay
-                ),
-                DrawerPage(
+                ), DrawerPage(
                     stringResource(R.string.movies),
                     MainPages.Movies,
                     Icons.Outlined.Movie,
                     Icons.Filled.Movie
-                ),
-                DrawerPage(
+                ), DrawerPage(
                     stringResource(R.string.timers),
                     MainPages.Timers,
                     Icons.Outlined.Timer,
                     Icons.Filled.Timer
-                ),
-                DrawerPage(
+                ), DrawerPage(
                     stringResource(R.string.tv_epg),
                     MainPages.TvEpg,
                     Icons.AutoMirrored.Outlined.Dvr,
                     Icons.AutoMirrored.Filled.Dvr,
-                ),
-                DrawerPage(
+                ), DrawerPage(
                     stringResource(R.string.radio_epg),
                     MainPages.RadioEpg,
                     Icons.AutoMirrored.Outlined.LibraryBooks,
                     Icons.AutoMirrored.Filled.LibraryBooks,
                 )
             )
-        ),
-        DrawerPageGroup(
-            stringResource(R.string.device),
-            listOf(
+        ), DrawerPageGroup(
+            stringResource(R.string.device), listOf(
                 DrawerPage(
                     stringResource(R.string.deviceinfo),
                     MainPages.DeviceInfo,
                     Icons.Outlined.DeveloperBoard,
                     Icons.Filled.DeveloperBoard
-                ),
-                DrawerPage(
+                ), DrawerPage(
                     stringResource(R.string.signal),
                     MainPages.Signal,
                     Icons.Outlined.Speed,
                     Icons.Filled.Speed
                 )
             )
-        ),
-        DrawerPageGroup(
-            stringResource(R.string.settings),
-            listOf(
+        ), DrawerPageGroup(
+            stringResource(R.string.settings), listOf(
                 DrawerPage(
                     stringResource(R.string.settings),
                     MainPages.Settings,
@@ -212,17 +200,14 @@ fun NavDrawerContent(
             trailingContent = {
                 AnimatedContent(loadingState, label = "", transitionSpec = {
                     scaleIn(
-                        initialScale = 0f,
-                        animationSpec = spring(
+                        initialScale = 0f, animationSpec = spring(
                             dampingRatio = Spring.DampingRatioMediumBouncy,
                             stiffness = Spring.StiffnessLow
                         )
-                    ) + fadeIn() togetherWith
-                            scaleOut(targetScale = 0f) + fadeOut()
-                })
-                {
+                    ) + fadeIn() togetherWith scaleOut(targetScale = 0f) + fadeOut()
+                }) {
                     when (it) {
-                        LoadingState.LOADED  -> {
+                        LoadingState.LOADED                                                                                                                       -> {
                             IconButton(onClick = {
                                 scope.launch {
                                     IntentUtils.openOwif(context, buildOwifUrl())
@@ -234,7 +219,7 @@ fun NavDrawerContent(
                                 )
                             }
                         }
-                        LoadingState.NO_DEVICE_AVAILABLE, LoadingState.DEVICE_NOT_ONLINE, LoadingState.NO_NETWORK_AVAILABLE -> {
+                        LoadingState.NO_DEVICE_AVAILABLE, LoadingState.DEVICE_NOT_ONLINE, LoadingState.NO_NETWORK_AVAILABLE, LoadingState.INVALID_DEVICE_RESPONSE -> {
                             IconButton(onClick = updateDeviceStatus) {
                                 Icon(
                                     Icons.Default.RestartAlt,
@@ -242,7 +227,7 @@ fun NavDrawerContent(
                                 )
                             }
                         }
-                        LoadingState.LOADING -> {
+                        LoadingState.LOADING                                                                                                                      -> {
                             IconButton(onClick = {}, enabled = false) {
                                 CircularProgressIndicator(Modifier.size(24.dp))
                             }
@@ -257,34 +242,46 @@ fun NavDrawerContent(
                     label = "",
                     transitionSpec = { fadeIn() togetherWith fadeOut() }) {
                     when (it) {
-                        LoadingState.LOADED              -> {
+                        LoadingState.LOADED                  -> {
                             Text(
                                 stringResource(R.string.connected),
-                                maxLines = 1, overflow = TextOverflow.Ellipsis
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
-                        LoadingState.DEVICE_NOT_ONLINE   -> {
+                        LoadingState.DEVICE_NOT_ONLINE       -> {
                             Text(
                                 stringResource(id = R.string.device_not_connected),
-                                maxLines = 1, overflow = TextOverflow.Ellipsis
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
-                        LoadingState.NO_DEVICE_AVAILABLE -> {
+                        LoadingState.NO_DEVICE_AVAILABLE     -> {
                             Text(
                                 stringResource(R.string.add_a_device_to_connect_to),
-                                maxLines = 1, overflow = TextOverflow.Ellipsis
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
-                        LoadingState.LOADING             -> {
+                        LoadingState.LOADING                 -> {
                             Text(
                                 stringResource(R.string.searching_for_device),
-                                maxLines = 1, overflow = TextOverflow.Ellipsis
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
-                        LoadingState.NO_NETWORK_AVAILABLE -> {
+                        LoadingState.NO_NETWORK_AVAILABLE    -> {
                             Text(
                                 stringResource(R.string.connect_to_a_network),
-                                maxLines = 1, overflow = TextOverflow.Ellipsis
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                        LoadingState.INVALID_DEVICE_RESPONSE -> {
+                            Text(
+                                stringResource(id = R.string.invalid_device_response),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                     }
