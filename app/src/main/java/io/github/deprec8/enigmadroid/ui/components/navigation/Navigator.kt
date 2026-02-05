@@ -17,14 +17,29 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.model.drawer
+package io.github.deprec8.enigmadroid.ui.components.navigation
 
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation3.runtime.NavKey
 
-data class DrawerPage(
-    val name: String,
-    val navKey: NavKey,
-    val icon: ImageVector,
-    val selectedIcon: ImageVector
-)
+class Navigator(val state: NavigationState) {
+
+    fun navigate(route: NavKey) {
+        if (route in state.backStacks.keys) {
+            state.topLevelRoute = route
+        } else {
+            state.backStacks[state.topLevelRoute]?.add(route)
+        }
+    }
+
+    fun goBack() {
+        val currentStack = state.backStacks[state.topLevelRoute]
+            ?: error("Stack for ${state.topLevelRoute} not found")
+        val currentRoute = currentStack.last()
+
+        if (currentRoute == state.topLevelRoute) {
+            state.topLevelRoute = state.startRoute
+        } else {
+            currentStack.removeLastOrNull()
+        }
+    }
+}
