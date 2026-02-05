@@ -31,6 +31,7 @@ import io.github.deprec8.enigmadroid.data.objects.PreferenceKey
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.data.source.local.devices.DeviceDatabase
 import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
+import io.github.deprec8.enigmadroid.model.api.Bouquet
 import io.github.deprec8.enigmadroid.model.api.BouquetBatch
 import io.github.deprec8.enigmadroid.model.api.SignalInfo
 import io.github.deprec8.enigmadroid.model.api.current.CurrentInfo
@@ -243,29 +244,33 @@ class ApiRepository @Inject constructor(
     fun fetchEventBatches(apiType: ApiType): Flow<EventBatch> = flow {
         try {
             fetchBouquets(apiType).forEach { bouquet ->
-                val newBouquetReference = bouquet[0].replace("\\\"", "\"")
+                val newBouquetReference = bouquet.reference.replace("\\\"", "\"")
                 val eventBatch = json.decodeFromString(
                     EventBatch.serializer(),
                     networkDataSource.fetchApi("epgnow?bRef=$newBouquetReference")
                 )
-                emit(eventBatch.copy(name = bouquet[1]))
+                emit(eventBatch.copy(name = bouquet.name))
             }
         } catch (_: Exception) {
             emitAll(emptyList<EventBatch>().asFlow())
         }
     }
 
-    suspend fun fetchBouquets(apiType: ApiType): List<List<String>> {
+    suspend fun fetchBouquets(apiType: ApiType): List<Bouquet> {
         return try {
-            val bouquets = mutableListOf<List<String>>()
+            val bouquets = mutableListOf<Bouquet>()
             json.decodeFromString(
                 BouquetBatch.serializer(),
                 networkDataSource.fetchApi("bouquets?stype=${if (apiType == ApiType.TV) "tv" else "radio"}")
             ).bouquets.forEach { bouquet ->
-                bouquets.add(bouquet)
+                bouquets.add(
+                    Bouquet(
+                        reference = bouquet[0], name = bouquet[1]
+                    )
+                )
             }
             bouquets.add(
-                listOf(
+                Bouquet(
                     if (apiType == ApiType.TV) {
                         "1:7:1:0:0:0:0:0:0:0:(type%20==%201)%20||%20(type%20==%2017)%20||%20(type%20==%20195)%20||%20(type%20==%2025)%20ORDER%20BY%20name"
                     } else {
@@ -284,7 +289,11 @@ class ApiRepository @Inject constructor(
                     networkDataSource.fetchApi("epgnow?bRef=1:7:2:0:0:0:0:0:0:0:(type%20==%202)%20FROM%20PROVIDERS%20ORDER%20BY%20name")
                 ).events
             }.forEach { provider ->
-                bouquets.add(listOf(provider.serviceReference, provider.serviceName))
+                bouquets.add(
+                    Bouquet(
+                        provider.serviceReference, provider.serviceName
+                    )
+                )
             }
             bouquets
         } catch (_: Exception) {
@@ -301,9 +310,7 @@ class ApiRepository @Inject constructor(
             json.decodeFromString(
                 DeviceInfo.serializer(), networkDataSource.fetchApi("deviceinfo")
             )
-
         } catch (_: Exception) {
-
             DeviceInfo()
         }
     }
@@ -314,7 +321,6 @@ class ApiRepository @Inject constructor(
                 SignalInfo.serializer(), networkDataSource.fetchApi("tunersignal")
             )
         } catch (_: Exception) {
-
             SignalInfo()
         }
     }

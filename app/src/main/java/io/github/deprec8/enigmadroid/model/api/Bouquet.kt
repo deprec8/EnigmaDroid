@@ -17,15 +17,9 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.model.api.events
+package io.github.deprec8.enigmadroid.model.api
 
-import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-
-@Serializable
-data class EventBatch(
-    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("bouquetName") val name: String = "N/A",
-    @SerialName("events") val events: List<Event> = emptyList(),
-    @SerialName("result") val result: Boolean = false
+data class Bouquet(
+    val reference: String,
+    val name: String
 )

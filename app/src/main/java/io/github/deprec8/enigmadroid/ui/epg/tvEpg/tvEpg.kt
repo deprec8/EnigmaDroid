@@ -70,7 +70,7 @@ fun TvEpgPage(
 ) {
     val eventBatchSet by tvEpgViewModel.eventBatchSet.collectAsStateWithLifecycle()
     val bouquets by tvEpgViewModel.bouquets.collectAsStateWithLifecycle()
-    val currentBouquet by tvEpgViewModel.currentBouquet.collectAsStateWithLifecycle()
+    val currentBouquetReference by tvEpgViewModel.currentBouquetReference.collectAsStateWithLifecycle()
     val filteredEvents by tvEpgViewModel.filteredEvents.collectAsStateWithLifecycle()
     val searchHistory by tvEpgViewModel.searchHistory.collectAsStateWithLifecycle()
     val useSearchHighlighting by tvEpgViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
@@ -135,7 +135,7 @@ fun TvEpgPage(
                 Row {
                     BouquetMenu(
                         bouquets,
-                        currentBouquet,
+                        currentBouquetReference,
                         loadingState
                     ) { bouquetReference -> tvEpgViewModel.setCurrentBouquet(bouquetReference) }
                     RemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })

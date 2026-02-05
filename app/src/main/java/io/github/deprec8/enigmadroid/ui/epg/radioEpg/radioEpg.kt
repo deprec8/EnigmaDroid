@@ -75,7 +75,7 @@ fun RadioEpgPage(
     val searchInput by radioEpgViewModel.searchInput.collectAsStateWithLifecycle()
     val loadingState by radioEpgViewModel.loadingState.collectAsStateWithLifecycle()
     val bouquets by radioEpgViewModel.bouquets.collectAsStateWithLifecycle()
-    val currentBouquet by radioEpgViewModel.currentBouquet.collectAsStateWithLifecycle()
+    val currentBouquetReference by radioEpgViewModel.currentBouquetReference.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { eventBatchSet.eventBatches.size })
@@ -136,7 +136,7 @@ fun RadioEpgPage(
                 Row {
                     BouquetMenu(
                         bouquets,
-                        currentBouquet,
+                        currentBouquetReference,
                         loadingState
                     ) { bouquetReference -> radioEpgViewModel.setCurrentBouquet(bouquetReference) }
                     RemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })

@@ -35,11 +35,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
+import io.github.deprec8.enigmadroid.model.api.Bouquet
 
 @Composable
 fun BouquetMenu(
-    bouquets: List<List<String>>,
-    currentBouquet: String,
+    bouquets: List<Bouquet>,
+    currentBouquetReference: String,
     loadingState: LoadingState,
     onBouquetChange: (bouquetReference: String) -> Unit
 ) {
@@ -54,11 +55,11 @@ fun BouquetMenu(
         DropdownMenu(
             expanded = showMenu, onDismissRequest = { showMenu = false }) {
             bouquets.forEach { bouquet ->
-                DropdownMenuItem(text = { Text(bouquet[1]) }, onClick = {
-                    onBouquetChange(bouquet[0])
+                DropdownMenuItem(text = { Text(bouquet.name) }, onClick = {
+                    onBouquetChange(bouquet.reference)
                     showMenu = false
                 }, leadingIcon = {
-                    if (currentBouquet == bouquet[0]) {
+                    if (currentBouquetReference == bouquet.reference) {
                         Icon(
                             Icons.Filled.Check,
                             contentDescription = stringResource(R.string.current_bouquet)

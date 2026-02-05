@@ -29,6 +29,7 @@ import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.data.SettingsRepository
 import io.github.deprec8.enigmadroid.data.enums.ApiType
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
+import io.github.deprec8.enigmadroid.model.api.Bouquet
 import io.github.deprec8.enigmadroid.model.api.events.Event
 import io.github.deprec8.enigmadroid.model.api.events.EventBatchSet
 import io.github.deprec8.enigmadroid.utils.FilterUtils
@@ -67,11 +68,11 @@ class TvEpgViewModel @Inject constructor(
     private val _useSearchHighlighting = MutableStateFlow(true)
     val useSearchHighlighting: StateFlow<Boolean> = _useSearchHighlighting.asStateFlow()
 
-    private val _currentBouquet = MutableStateFlow("")
-    val currentBouquet: StateFlow<String> = _currentBouquet.asStateFlow()
+    private val _currentBouquetReference = MutableStateFlow("")
+    val currentBouquetReference: StateFlow<String> = _currentBouquetReference.asStateFlow()
 
-    private val _bouquets = MutableStateFlow<List<List<String>>>(emptyList())
-    val bouquets: StateFlow<List<List<String>>> = _bouquets.asStateFlow()
+    private val _bouquets = MutableStateFlow<List<Bouquet>>(emptyList())
+    val bouquets: StateFlow<List<Bouquet>> = _bouquets.asStateFlow()
 
     val searchFieldState = TextFieldState()
 
@@ -119,12 +120,13 @@ class TvEpgViewModel @Inject constructor(
         fetchJob = viewModelScope.launch {
             _bouquets.value = apiRepository.fetchBouquets(ApiType.TV)
             if (_bouquets.value.isNotEmpty()) {
-                if (_currentBouquet.value.isBlank()) {
-                    _currentBouquet.value = _bouquets.value[0][0]
-                } else if (_bouquets.value.find { it[0] == _currentBouquet.value } == null) {
-                    _currentBouquet.value = _bouquets.value[0][0]
+                if (_currentBouquetReference.value.isBlank()) {
+                    _currentBouquetReference.value = _bouquets.value[0].reference
+                } else if (_bouquets.value.find { it.reference == _currentBouquetReference.value } == null) {
+                    _currentBouquetReference.value = _bouquets.value[0].reference
                 }
-                _epgBatchSet.value = apiRepository.fetchEpgEventBatchSet(_currentBouquet.value)
+                _epgBatchSet.value =
+                    apiRepository.fetchEpgEventBatchSet(_currentBouquetReference.value)
             }
         }
     }
@@ -138,7 +140,7 @@ class TvEpgViewModel @Inject constructor(
     }
 
     fun setCurrentBouquet(bouquetReference: String) {
-        _currentBouquet.value = bouquetReference
+        _currentBouquetReference.value = bouquetReference
         fetchData()
     }
 
