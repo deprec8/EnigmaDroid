@@ -31,18 +31,20 @@ import io.github.deprec8.enigmadroid.data.objects.PreferenceKey
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.data.source.local.devices.DeviceDatabase
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.engine.cio.endpoint
+import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpHeaders
+import io.ktor.utils.io.ClosedByteChannelException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import okhttp3.ConnectionPool
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -68,60 +70,65 @@ class NetworkDataSource @Inject constructor(
         }
     }
 
-    private suspend fun updateLoadingState() {
-        val currentLoadingState = dataStore.data.map { preferences ->
-            LoadingState.entries[preferences[loadingStateKey] ?: 3]
-        }.first()
-
-        if (currentLoadingState != LoadingState.LOADING) {
-            dataStore.edit { preferences ->
-                preferences[loadingStateKey] = LoadingState.LOADING.id
-            }
-        }
-
-        if (deviceDatabase.deviceDao().getAll().firstOrNull().isNullOrEmpty().not()) {
-            if (isNetworkAvailable()) {
+    private suspend fun updateLoadingState(exception: Exception) {
+        when (exception) {
+            is ClosedByteChannelException -> {
                 dataStore.edit { preferences ->
-                    preferences[loadingStateKey] = LoadingState.DEVICE_NOT_ONLINE.id
-                }
-            } else {
-                dataStore.edit { preferences ->
-                    preferences[loadingStateKey] = LoadingState.NO_NETWORK_AVAILABLE.id
+                    preferences[loadingStateKey] = LoadingState.INVALID_DEVICE_RESPONSE.id
                 }
             }
-        } else {
-            dataStore.edit { preferences ->
-                preferences[loadingStateKey] = LoadingState.NO_DEVICE_AVAILABLE.id
+            else                          -> {
+                val currentLoadingState = dataStore.data.map { preferences ->
+                    LoadingState.entries[preferences[loadingStateKey] ?: 3]
+                }.first()
+
+                if (currentLoadingState != LoadingState.LOADING) {
+                    dataStore.edit { preferences ->
+                        preferences[loadingStateKey] = LoadingState.LOADING.id
+                    }
+                }
+
+                if (deviceDatabase.deviceDao().getAll().firstOrNull().isNullOrEmpty().not()) {
+                    if (isNetworkAvailable()) {
+                        dataStore.edit { preferences ->
+                            preferences[loadingStateKey] = LoadingState.DEVICE_NOT_ONLINE.id
+                        }
+                    } else {
+                        dataStore.edit { preferences ->
+                            preferences[loadingStateKey] = LoadingState.NO_NETWORK_AVAILABLE.id
+                        }
+                    }
+                } else {
+                    dataStore.edit { preferences ->
+                        preferences[loadingStateKey] = LoadingState.NO_DEVICE_AVAILABLE.id
+                    }
+                }
             }
         }
     }
 
-    private val client = HttpClient(CIO) {
+    private val client = HttpClient(OkHttp) {
         install(HttpTimeout) {
-            requestTimeoutMillis = 30000
-            connectTimeoutMillis = 15000
+            requestTimeoutMillis = 20000
+            connectTimeoutMillis = 8000
+            socketTimeoutMillis = 20000
         }
         engine {
-            maxConnectionsCount = 100
-            endpoint {
-                keepAliveTime = 5000
-                connectTimeout = 15000
-                socketTimeout = 30000
+            config {
+                connectionPool(ConnectionPool(5, 1, TimeUnit.MINUTES))
             }
         }
     }
 
-    private val checkClient = HttpClient(CIO) {
+    private val checkClient = HttpClient(OkHttp) {
         install(HttpTimeout) {
-            requestTimeoutMillis = 5000
-            connectTimeoutMillis = 5000
+            requestTimeoutMillis = 3000
+            connectTimeoutMillis = 3000
+            socketTimeoutMillis = 3000
         }
         engine {
-            maxConnectionsCount = 30
-            endpoint {
-                keepAliveTime = 5000
-                connectTimeout = 5000
-                socketTimeout = 5000
+            config {
+                connectionPool(ConnectionPool(5, 1, TimeUnit.MINUTES))
             }
         }
     }
@@ -162,33 +169,42 @@ class NetworkDataSource @Inject constructor(
         return activeNetwork != null
     }
 
-    suspend fun isDeviceOnline(): Boolean = safeApiCall {
-        checkClient.get(buildUrl("currenttime"))
+    suspend fun isDeviceOnline(): Boolean = try {
+        checkClient.get(buildUrl("currenttime")) {
+            header(HttpHeaders.Connection, "close")
+        }
         true
-    } == true
-
-    suspend fun postApi(endpoint: String) = safeApiCall {
-        client.get(buildUrl(endpoint))
+    } catch (e: Exception) {
+        updateLoadingState(e)
+        false
     }
 
-    suspend fun postApi(button: RemoteControlButtonType) = safeApiCall {
-        client.get(buildUrl(button))
+    suspend fun postApi(endpoint: String) {
+        try {
+            client.get(buildUrl(endpoint)) {
+                header(HttpHeaders.Connection, "close")
+            }
+        } catch (e: Exception) {
+            updateLoadingState(e)
+        }
     }
 
-    suspend fun fetchApi(endpoint: String): String = safeApiCall {
+    suspend fun postApi(button: RemoteControlButtonType) {
+        try {
+            client.get(buildUrl(button)) {
+                header(HttpHeaders.Connection, "close")
+            }
+        } catch (e: Exception) {
+            updateLoadingState(e)
+        }
+    }
+
+    suspend fun fetchApi(endpoint: String): String = try {
         client.get(buildUrl(endpoint)) {
             header(HttpHeaders.Connection, "close")
         }.bodyAsText()
-    } ?: ""
-
-    private suspend inline fun <T> safeApiCall(
-        crossinline block: suspend () -> T
-    ): T? = withContext(Dispatchers.IO) {
-        try {
-            block()
-        } catch (_: Exception) {
-            updateLoadingState()
-            null
-        }
+    } catch (e: Exception) {
+        updateLoadingState(e)
+        ""
     }
 }

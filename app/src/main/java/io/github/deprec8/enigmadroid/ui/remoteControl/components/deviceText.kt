@@ -70,7 +70,7 @@ fun DeviceText(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                LoadingState.NO_DEVICE_AVAILABLE, LoadingState.DEVICE_NOT_ONLINE, LoadingState.NO_NETWORK_AVAILABLE -> IconButton(
+                LoadingState.NO_DEVICE_AVAILABLE, LoadingState.DEVICE_NOT_ONLINE, LoadingState.NO_NETWORK_AVAILABLE, LoadingState.INVALID_DEVICE_RESPONSE -> IconButton(
                     onClick = { onUpdateLoadingState() },
                     modifier = Modifier
                         .padding(12.dp)

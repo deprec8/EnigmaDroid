@@ -232,4 +232,5 @@
     <string name="search_epg_for">Search EPG for %1$s</string>
     <string name="service_epg">Service EPG</string>
     <string name="error_loading_libraries">Error loading libraries</string>
+    <string name="invalid_device_response">Invalid device response</string>
 </resources>

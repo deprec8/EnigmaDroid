@@ -203,7 +203,7 @@ fun NavDrawerContent(
                     ) + fadeIn() togetherWith scaleOut(targetScale = 0f) + fadeOut()
                 }) {
                     when (it) {
-                        LoadingState.LOADED  -> {
+                        LoadingState.LOADED                                                                                                                       -> {
                             IconButton(onClick = {
                                 scope.launch {
                                     IntentUtils.openOwif(context, buildOwifUrl())
@@ -215,7 +215,7 @@ fun NavDrawerContent(
                                 )
                             }
                         }
-                        LoadingState.NO_DEVICE_AVAILABLE, LoadingState.DEVICE_NOT_ONLINE, LoadingState.NO_NETWORK_AVAILABLE -> {
+                        LoadingState.NO_DEVICE_AVAILABLE, LoadingState.DEVICE_NOT_ONLINE, LoadingState.NO_NETWORK_AVAILABLE, LoadingState.INVALID_DEVICE_RESPONSE -> {
                             IconButton(onClick = updateDeviceStatus) {
                                 Icon(
                                     Icons.Default.RestartAlt,
@@ -223,7 +223,7 @@ fun NavDrawerContent(
                                 )
                             }
                         }
-                        LoadingState.LOADING -> {
+                        LoadingState.LOADING                                                                                                                      -> {
                             IconButton(onClick = {}, enabled = false) {
                                 CircularProgressIndicator(Modifier.size(24.dp))
                             }
@@ -238,37 +238,44 @@ fun NavDrawerContent(
                     label = "",
                     transitionSpec = { fadeIn() togetherWith fadeOut() }) {
                     when (it) {
-                        LoadingState.LOADED               -> {
+                        LoadingState.LOADED                  -> {
                             Text(
                                 stringResource(R.string.connected),
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
                         }
-                        LoadingState.DEVICE_NOT_ONLINE    -> {
+                        LoadingState.DEVICE_NOT_ONLINE       -> {
                             Text(
                                 stringResource(id = R.string.device_not_connected),
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
                         }
-                        LoadingState.NO_DEVICE_AVAILABLE  -> {
+                        LoadingState.NO_DEVICE_AVAILABLE     -> {
                             Text(
                                 stringResource(R.string.add_a_device_to_connect_to),
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
                         }
-                        LoadingState.LOADING              -> {
+                        LoadingState.LOADING                 -> {
                             Text(
                                 stringResource(R.string.searching_for_device),
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
                         }
-                        LoadingState.NO_NETWORK_AVAILABLE -> {
+                        LoadingState.NO_NETWORK_AVAILABLE    -> {
                             Text(
                                 stringResource(R.string.connect_to_a_network),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                        LoadingState.INVALID_DEVICE_RESPONSE -> {
+                            Text(
+                                stringResource(id = R.string.invalid_device_response),
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )

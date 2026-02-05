@@ -24,5 +24,6 @@ enum class LoadingState(val id: Int) {
     NO_DEVICE_AVAILABLE(1),
     DEVICE_NOT_ONLINE(2),
     LOADED(3),
-    NO_NETWORK_AVAILABLE(4)
+    NO_NETWORK_AVAILABLE(4),
+    INVALID_DEVICE_RESPONSE(5)
 }
