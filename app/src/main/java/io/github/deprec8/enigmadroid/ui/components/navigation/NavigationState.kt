@@ -40,13 +40,16 @@ import androidx.savedstate.compose.serialization.serializers.MutableStateSeriali
 
 @Composable
 fun rememberNavigationState(
-    startRoute: NavKey, topLevelRoutes: Set<NavKey>
+    startRoute: NavKey, topLevelRoutes: Set<NavKey>, topLevelDeepLinkRoute: NavKey? = null
 ): NavigationState {
 
     val topLevelRoute = rememberSerializable(
-        startRoute, topLevelRoutes, serializer = MutableStateSerializer(NavKeySerializer())
+        startRoute,
+        topLevelRoutes,
+        topLevelDeepLinkRoute,
+        serializer = MutableStateSerializer(NavKeySerializer())
     ) {
-        mutableStateOf(startRoute)
+        mutableStateOf(topLevelDeepLinkRoute ?: startRoute)
     }
 
     val backStacks = topLevelRoutes.associateWith { key -> rememberNavBackStack(key) }

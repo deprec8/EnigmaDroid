@@ -48,7 +48,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun MainPage(
-    mainViewModel: MainViewModel = hiltViewModel(),
+    isRemoteControlDeepLink: Boolean, mainViewModel: MainViewModel = hiltViewModel(),
 ) {
 
     val currentDevice by mainViewModel.currentDevice.collectAsStateWithLifecycle()
@@ -68,7 +68,11 @@ fun MainPage(
             MainPages.Signal,
             MainPages.Settings,
             MainPages.RemoteControl
-        )
+        ), topLevelDeepLinkRoute = if (isRemoteControlDeepLink) {
+            MainPages.RemoteControl
+        } else {
+            null
+        }
     )
 
     val navigator = remember { Navigator(navigationState) }

@@ -19,10 +19,14 @@
 
 package io.github.deprec8.enigmadroid
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,32 +43,46 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var devicesRepository: DevicesRepository
 
+    var isRemoteControlDeepLink by mutableStateOf(false)
+    var isIntentBeingHandled by mutableStateOf(true)
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
+        installSplashScreen().setKeepOnScreenCondition {
+            isIntentBeingHandled
+        }
+        handleIntent(intent)
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        handleIntent()
         setContent {
             EnigmaDroidTheme {
-                MainPage()
+                MainPage(isRemoteControlDeepLink)
             }
         }
     }
 
-    fun handleIntent() {
-        lifecycleScope.launch {
-            intent?.let {
-                when (it.action) {
-                    "io.github.deprec8.enigmadroid.OPEN_WITH_DEVICE" -> {
-                        val deviceId = it.getIntExtra("device_id", - 1)
-                        if (deviceId != - 1 && deviceId != devicesRepository.getCurrentDeviceId()
-                                .first()
-                        ) {
-                            devicesRepository.setCurrentDeviceId(deviceId)
-                        }
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent?) = lifecycleScope.launch {
+        intent ?: return@launch
+
+        when (intent.action) {
+            "io.github.deprec8.enigmadroid.OPEN_WITH_DEVICE" -> {
+                val deviceId = intent.getIntExtra("device_id", - 1)
+                if (deviceId != - 1) {
+                    val current = devicesRepository.getCurrentDeviceId().first()
+                    if (deviceId != current) {
+                        devicesRepository.setCurrentDeviceId(deviceId)
                     }
                 }
             }
+            Intent.ACTION_VIEW                               -> {
+                isRemoteControlDeepLink = intent.data?.toString() == "enigmadroid://remotecontrol"
+            }
         }
+        isIntentBeingHandled = false
     }
 }
