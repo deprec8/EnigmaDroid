@@ -66,7 +66,8 @@ fun MainPage(
             MainPages.RadioEpg,
             MainPages.DeviceInfo,
             MainPages.Signal,
-            MainPages.Settings
+            MainPages.Settings,
+            MainPages.RemoteControl
         )
     )
 
