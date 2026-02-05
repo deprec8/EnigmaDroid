@@ -102,7 +102,7 @@ fun DeviceInfoPage(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
 
         ) { innerPadding ->
-        if (deviceInfo != DeviceInfo()) {
+        if (deviceInfo != DeviceInfo() && loadingState == LoadingState.LOADED) {
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(310.dp),
                 modifier = Modifier
@@ -207,7 +207,7 @@ fun DeviceInfoPage(
                         })
                 }
             }
-        } else if (deviceInfo.result) {
+        } else if (deviceInfo.result && loadingState == LoadingState.LOADED) {
             NoResults(
                 Modifier
                     .padding(innerPadding)

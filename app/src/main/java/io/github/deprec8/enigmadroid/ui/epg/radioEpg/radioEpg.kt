@@ -136,7 +136,8 @@ fun RadioEpgPage(
                 Row {
                     BouquetMenu(
                         bouquets,
-                        currentBouquet
+                        currentBouquet,
+                        loadingState
                     ) { bouquetReference -> radioEpgViewModel.setCurrentBouquet(bouquetReference) }
                     RemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
                 }
@@ -145,7 +146,7 @@ fun RadioEpgPage(
                 radioEpgViewModel.updateSearchInput()
             },
             tabBar = {
-                if (eventBatchSet.eventBatches.isNotEmpty()) {
+                if (eventBatchSet.eventBatches.isNotEmpty() && loadingState == LoadingState.LOADED) {
                     PrimaryScrollableTabRow(
                         selectedTabIndex = selectedTabIndex.value,
                         divider = { },
@@ -174,7 +175,7 @@ fun RadioEpgPage(
     }
 
     ) { innerPadding ->
-        if (eventBatchSet.eventBatches.isNotEmpty()) {
+        if (eventBatchSet.eventBatches.isNotEmpty() && loadingState == LoadingState.LOADED) {
             HorizontalPager(
                 modifier = Modifier.fillMaxSize(),
                 state = pagerState,
@@ -184,7 +185,7 @@ fun RadioEpgPage(
                     innerPadding,
                     onAddTimerForEvent = { radioEpgViewModel.addTimerForEvent(it) })
             }
-        } else if (eventBatchSet.result) {
+        } else if (eventBatchSet.result && loadingState == LoadingState.LOADED) {
             NoResults(
                 Modifier
                     .consumeWindowInsets(innerPadding)

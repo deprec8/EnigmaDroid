@@ -102,7 +102,7 @@ fun RadioPage(
         FloatingRefreshButton(loadingState) { radioViewModel.fetchData() }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = eventBatches.isNotEmpty(),
+            enabled = eventBatches.isNotEmpty() && loadingState == LoadingState.LOADED,
             textFieldState = radioViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_events),
             content = {
@@ -148,7 +148,7 @@ fun RadioPage(
                 radioViewModel.updateSearchInput(selectedTabIndex.value)
             },
             tabBar = {
-                if (eventBatches.isNotEmpty()) {
+                if (eventBatches.isNotEmpty() && loadingState == LoadingState.LOADED) {
                     PrimaryScrollableTabRow(
                         selectedTabIndex = selectedTabIndex.value,
                         divider = { },
@@ -179,7 +179,7 @@ fun RadioPage(
     }
 
     ) { innerPadding ->
-        if (eventBatches.isNotEmpty()) {
+        if (eventBatches.isNotEmpty() && loadingState == LoadingState.LOADED) {
             HorizontalPager(
                 modifier = Modifier.fillMaxSize(),
                 state = pagerState,

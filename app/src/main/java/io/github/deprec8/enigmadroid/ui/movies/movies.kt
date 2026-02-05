@@ -255,7 +255,7 @@ fun MoviesPage(
         FloatingRefreshButton(loadingState) { moviesViewModel.fetchData() }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = movieBatches.isNotEmpty(),
+            enabled = movieBatches.isNotEmpty() && loadingState == LoadingState.LOADED,
             textFieldState = moviesViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_movies),
             content = {
@@ -286,7 +286,7 @@ fun MoviesPage(
                 moviesViewModel.updateSearchInput()
             },
             tabBar = {
-                if (movieBatches.isNotEmpty()) {
+                if (movieBatches.isNotEmpty() && loadingState == LoadingState.LOADED) {
                     PrimaryScrollableTabRow(
                         selectedTabIndex = selectedTabIndex.value,
                         divider = { },
@@ -316,7 +316,7 @@ fun MoviesPage(
     }
 
     ) { innerPadding ->
-        if (movieBatches.isNotEmpty()) {
+        if (movieBatches.isNotEmpty() && loadingState == LoadingState.LOADED) {
             HorizontalPager(
                 modifier = Modifier.fillMaxSize(),
                 state = pagerState,

@@ -105,7 +105,7 @@ fun TvEpgPage(
         FloatingRefreshButton(loadingState) { tvEpgViewModel.fetchData() }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = eventBatchSet.eventBatches.isNotEmpty(),
+            enabled = eventBatchSet.eventBatches.isNotEmpty() && loadingState == LoadingState.LOADED,
             textFieldState = tvEpgViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_epg),
             content = {
@@ -135,7 +135,8 @@ fun TvEpgPage(
                 Row {
                     BouquetMenu(
                         bouquets,
-                        currentBouquet
+                        currentBouquet,
+                        loadingState
                     ) { bouquetReference -> tvEpgViewModel.setCurrentBouquet(bouquetReference) }
                     RemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
                 }
@@ -144,7 +145,7 @@ fun TvEpgPage(
                 tvEpgViewModel.updateSearchInput()
             },
             tabBar = {
-                if (eventBatchSet.eventBatches.isNotEmpty()) {
+                if (eventBatchSet.eventBatches.isNotEmpty() && loadingState == LoadingState.LOADED) {
                     PrimaryScrollableTabRow(
                         selectedTabIndex = selectedTabIndex.value,
                         divider = { },
@@ -172,7 +173,7 @@ fun TvEpgPage(
     }
 
     ) { innerPadding ->
-        if (eventBatchSet.eventBatches.isNotEmpty()) {
+        if (eventBatchSet.eventBatches.isNotEmpty() && loadingState == LoadingState.LOADED) {
             HorizontalPager(
                 modifier = Modifier.fillMaxSize(),
                 state = pagerState,
@@ -182,7 +183,7 @@ fun TvEpgPage(
                     innerPadding,
                     onAddTimerForEvent = { tvEpgViewModel.addTimerForEvent(it) })
             }
-        } else if (eventBatchSet.result) {
+        } else if (eventBatchSet.result && loadingState == LoadingState.LOADED) {
             NoResults(
                 Modifier
                     .consumeWindowInsets(innerPadding)

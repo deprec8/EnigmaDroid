@@ -83,7 +83,7 @@ fun ServiceEpgPage(
         contentWindowInsets = contentWithDrawerWindowInsets(),
         topBar = {
             SearchTopAppBar(
-                enabled = eventBatch.events.isNotEmpty(),
+                enabled = eventBatch.events.isNotEmpty() && loadingState == LoadingState.LOADED,
                 textFieldState = serviceEpgViewModel.searchFieldState,
                 placeholder = stringResource(R.string.search_epg_for, serviceName),
                 content = {
@@ -120,12 +120,12 @@ fun ServiceEpgPage(
                 })
         }
     ) { innerPadding ->
-        if (eventBatch.events.isNotEmpty()) {
+        if (eventBatch.events.isNotEmpty() && loadingState == LoadingState.LOADED) {
             EpgContent(
                 events = eventBatch.events,
                 innerPadding,
                 onAddTimerForEvent = { serviceEpgViewModel.addTimerForEvent(it) })
-        } else if (eventBatch.result) {
+        } else if (eventBatch.result && loadingState == LoadingState.LOADED) {
             NoResults(
                 Modifier
                     .consumeWindowInsets(innerPadding)

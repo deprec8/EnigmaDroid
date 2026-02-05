@@ -123,7 +123,7 @@ fun CurrentPage(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { innerPadding ->
         when (currentEventInfo.info.result) {
-            true -> {
+            true if loadingState == LoadingState.LOADED  -> {
                 Column(
                     Modifier
                         .fillMaxSize()
@@ -362,10 +362,12 @@ fun CurrentPage(
                     Spacer(Modifier.size(16.dp))
                 }
             }
-            false -> {
+            false if loadingState == LoadingState.LOADED -> {
                 Box(
                     modifier = Modifier
-                        .consumeWindowInsets(innerPadding)
+                        .consumeWindowInsets(
+                            innerPadding
+                        )
                         .fillMaxSize()
                         .padding(innerPadding), contentAlignment = Alignment.Center
                 ) {

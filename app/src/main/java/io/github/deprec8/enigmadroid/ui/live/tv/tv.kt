@@ -102,7 +102,7 @@ fun TvPage(
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
             textFieldState = tvViewModel.searchFieldState,
-            enabled = eventBatches.isNotEmpty(),
+            enabled = eventBatches.isNotEmpty() && loadingState == LoadingState.LOADED,
             placeholder = stringResource(R.string.search_events),
             content = {
                 if (filteredEvents != null) {
@@ -147,7 +147,7 @@ fun TvPage(
                 tvViewModel.updateSearchInput(selectedTabIndex.value)
             },
             tabBar = {
-                if (eventBatches.isNotEmpty()) {
+                if (eventBatches.isNotEmpty() && loadingState == LoadingState.LOADED) {
                     PrimaryScrollableTabRow(
                         selectedTabIndex = selectedTabIndex.value,
                         divider = { },
@@ -176,7 +176,7 @@ fun TvPage(
             })
 
     }) { innerPadding ->
-        if (eventBatches.isNotEmpty()) {
+        if (eventBatches.isNotEmpty() && loadingState == LoadingState.LOADED) {
             HorizontalPager(
                 modifier = Modifier.fillMaxSize(), state = pagerState
             ) { index ->

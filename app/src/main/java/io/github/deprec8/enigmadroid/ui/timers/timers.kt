@@ -320,7 +320,7 @@ fun TimersPage(
 
     Scaffold(contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = timerBatch.result,
+            enabled = timerBatch.result && loadingState == LoadingState.LOADED,
             textFieldState = timersViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_timers),
             content = {
@@ -375,11 +375,11 @@ fun TimersPage(
     }
 
     ) { innerPadding ->
-        if (timerBatch.timers.isNotEmpty()) {
+        if (timerBatch.timers.isNotEmpty() && loadingState == LoadingState.LOADED) {
             Content(
                 timers = timerBatch.timers, innerPadding
             )
-        } else if (timerBatch.result) {
+        } else if (timerBatch.result && loadingState == LoadingState.LOADED) {
             NoResults(
                 Modifier
                     .consumeWindowInsets(innerPadding)

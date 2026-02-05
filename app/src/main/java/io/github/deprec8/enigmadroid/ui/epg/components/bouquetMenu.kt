@@ -34,18 +34,20 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import io.github.deprec8.enigmadroid.R
+import io.github.deprec8.enigmadroid.data.enums.LoadingState
 
 @Composable
 fun BouquetMenu(
     bouquets: List<List<String>>,
     currentBouquet: String,
+    loadingState: LoadingState,
     onBouquetChange: (bouquetReference: String) -> Unit
 ) {
     var showMenu by rememberSaveable { mutableStateOf(false) }
 
     IconButton(onClick = {
         showMenu = true
-    }, enabled = bouquets.isNotEmpty()) {
+    }, enabled = bouquets.isNotEmpty() && loadingState == LoadingState.LOADED) {
         Icon(
             Icons.Default.MoreVert, contentDescription = stringResource(R.string.open_bouquet_menu)
         )

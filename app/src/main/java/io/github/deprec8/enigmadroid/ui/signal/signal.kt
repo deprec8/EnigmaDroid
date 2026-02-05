@@ -109,7 +109,7 @@ fun SignalPage(
         }, modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { innerPadding ->
         when (signalInfo.inStandby) {
-            "false" -> {
+            "false" if loadingState == LoadingState.LOADED -> {
                 Column(
                     Modifier
                         .fillMaxSize()
