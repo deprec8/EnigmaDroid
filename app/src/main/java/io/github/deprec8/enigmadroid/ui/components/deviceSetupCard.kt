@@ -81,10 +81,7 @@ fun DeviceSetupCard(
     Column(
         modifier = modifier
     ) {
-        if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) && windowSizeClass.isHeightAtLeastBreakpoint(
-                WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
-            )
-        ) {
+        if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)) {
             Row {
                 OutlinedTextField(
                     state = nameState,

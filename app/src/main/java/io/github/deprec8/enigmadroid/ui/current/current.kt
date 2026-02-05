@@ -123,7 +123,7 @@ fun CurrentPage(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { innerPadding ->
         when (currentEventInfo.info.result) {
-            true if loadingState == LoadingState.LOADED  -> {
+            true if loadingState == LoadingState.LOADED -> {
                 Column(
                     Modifier
                         .fillMaxSize()
@@ -131,10 +131,7 @@ fun CurrentPage(
                         .verticalScroll(scrollState)
                         .padding(innerPadding)
                 ) {
-                    if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) && windowSizeClass.isHeightAtLeastBreakpoint(
-                            WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
-                        )
-                    ) {
+                    if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)) {
                         Row {
                             ListItem(
                                 headlineContent = { Text(text = stringResource(R.string.channel)) },
@@ -164,10 +161,7 @@ fun CurrentPage(
                             })
                     }
 
-                    if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) && windowSizeClass.isHeightAtLeastBreakpoint(
-                            WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
-                        )
-                    ) {
+                    if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)) {
                         Row {
                             Column(modifier = Modifier.fillMaxWidth(0.5f)) {
                                 ListItem(
@@ -296,10 +290,7 @@ fun CurrentPage(
                             })
                     }
                     Spacer(Modifier.size(16.dp))
-                    if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) && windowSizeClass.isHeightAtLeastBreakpoint(
-                            WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
-                        )
-                    ) {
+                    if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)) {
                         Row {
                             OutlinedButton(
                                 onClick = {
