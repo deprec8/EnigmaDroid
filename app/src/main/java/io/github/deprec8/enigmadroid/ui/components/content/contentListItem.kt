@@ -206,7 +206,8 @@ fun ContentListItem(
                 longDescription = longDescription,
                 menuItemGroups = menuItemGroups,
                 editMenuItemGroup = editMenuItemGroup,
-                highlightedWords = highlightedWords
+                highlightedWords = highlightedWords,
+                onHideBottomSheet = { showBottomSheet = false }
             )
         }
     }

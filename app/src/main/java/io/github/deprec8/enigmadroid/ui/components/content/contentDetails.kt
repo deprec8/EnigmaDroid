@@ -71,7 +71,8 @@ fun ContentDetails(
     shortDescription: String,
     longDescription: String,
     editMenuItemGroup: MenuItemGroup? = null,
-    highlightedWords: List<String> = emptyList()
+    highlightedWords: List<String> = emptyList(),
+    onHideBottomSheet: () -> Unit
 ) {
 
     var showDropDownMenu by rememberSaveable { mutableStateOf(false) }
@@ -126,6 +127,7 @@ fun ContentDetails(
                                 editMenuItemGroup.menuItems.forEach { menuItem ->
                                     DropdownMenuItem(onClick = {
                                         showDropDownMenu = false
+                                        onHideBottomSheet()
                                         menuItem.action()
                                     }, text = {
                                         Text(
@@ -188,6 +190,7 @@ fun ContentDetails(
                                     )
                                 },
                                 onClick = {
+                                    onHideBottomSheet()
                                     menuItem.action()
                                 },
                             )
@@ -205,6 +208,7 @@ fun ContentDetails(
                                     )
                                 },
                                 onClick = {
+                                    onHideBottomSheet()
                                     menuItem.action()
                                 },
                             )
