@@ -217,6 +217,6 @@
     <string name="current_bouquet">Derzeitiges Bouquet</string>
     <string name="search_epg_for">EPG für %1$s durchsuchen</string>
     <string name="service_epg">Service EPG</string>
-    <string name="error_loading_libraries">Error loading libraries</string>
-    <string name="invalid_device_response">Invalid device response</string>
+    <string name="error_loading_libraries">Fehler beim Laden der Bibliotheken</string>
+    <string name="invalid_device_response">Ungültige Geräteantwort</string>
 </resources>
