@@ -1,0 +1,5 @@
+- Added error message for invalid device responses
+- Improved data fetching by migrating to the OkHttp engine
+- Improved adaptive ui layouts
+- Synced Crowdin translations
+- Various other fixes and updates
