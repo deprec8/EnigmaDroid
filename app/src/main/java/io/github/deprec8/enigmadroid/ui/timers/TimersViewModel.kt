@@ -126,6 +126,13 @@ class TimersViewModel @Inject constructor(
         }
     }
 
+    fun toggleTimerStatus(timer: Timer) {
+        viewModelScope.launch {
+            apiRepository.toggleTimerStatus(timer)
+            fetchData()
+        }
+    }
+
     fun updateSearchInput() {
         _searchInput.value = searchFieldState.text.toString()
     }

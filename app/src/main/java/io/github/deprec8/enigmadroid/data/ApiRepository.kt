@@ -341,6 +341,10 @@ class ApiRepository @Inject constructor(
         networkDataSource.postApi("timerdelete?sRef=${timer.serviceReference}&begin=${timer.beginTimestamp}&end=${timer.endTimestamp}")
     }
 
+    suspend fun toggleTimerStatus(timer: Timer) {
+        networkDataSource.postApi("timertogglestatus?sRef=${timer.serviceReference}&begin=${timer.beginTimestamp}&end=${timer.endTimestamp}")
+    }
+
     suspend fun fetchTimerBatch(): TimerBatch {
         return try {
             json.decodeFromString(
