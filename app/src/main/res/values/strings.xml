@@ -233,4 +233,6 @@
     <string name="service_epg">Service EPG</string>
     <string name="error_loading_libraries">Error loading libraries</string>
     <string name="invalid_device_response">Invalid device response</string>
+    <string name="enable">Enable</string>
+    <string name="disable">Disable</string>
 </resources>

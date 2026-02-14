@@ -42,6 +42,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material.icons.filled.TimerOff
 import androidx.compose.material.icons.outlined.Checklist
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Done
@@ -268,6 +270,23 @@ fun TimersPage(
                             emptyList()
                         } + listOf(
                             MenuItemGroup(
+                                listOf(
+                                    MenuItem(
+                                        text = if (timer.disabled == 1) {
+                                            stringResource(R.string.enable)
+                                        } else {
+                                            stringResource(R.string.disable)
+                                        }, outlinedIcon = if (timer.disabled == 1) {
+                                            Icons.Outlined.Timer
+                                        } else {
+                                            Icons.Outlined.TimerOff
+                                        }, filledIcon = if (timer.disabled == 1) {
+                                            Icons.Filled.Timer
+                                        } else {
+                                            Icons.Filled.TimerOff
+                                        }, action = { timersViewModel.toggleTimerStatus(timer) })
+                                )
+                            ), MenuItemGroup(
                                 listOf(
                                     MenuItem(
                                         text = stringResource(R.string.edit),
