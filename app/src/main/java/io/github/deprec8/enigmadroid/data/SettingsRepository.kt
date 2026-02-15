@@ -34,6 +34,8 @@ class SettingsRepository @Inject constructor(private val dataStore: DataStore<Pr
         booleanPreferencesKey(PreferenceKey.REMOTE_CONTROL_VIBRATION)
     private val useSearchHighlightingKey =
         booleanPreferencesKey(PreferenceKey.USE_SEARCH_HIGHLIGHTING)
+    private val useBuiltInMediaPlayerKey =
+        booleanPreferencesKey(PreferenceKey.USE_BUILT_IN_MEDIA_PLAYER)
 
     fun getRemoteControlVibration(): Flow<Boolean> = dataStore.data.map { preferences ->
         preferences[remoteControlVibrationKey] ?: true
@@ -52,6 +54,16 @@ class SettingsRepository @Inject constructor(private val dataStore: DataStore<Pr
     suspend fun setUseSearchHighlighting(value: Boolean) {
         dataStore.edit { preferences ->
             preferences[useSearchHighlightingKey] = value
+        }
+    }
+
+    fun getUseBuiltInMediaPlayer(): Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[useBuiltInMediaPlayerKey] ?: false
+    }
+
+    suspend fun setUseBuiltInMediaPlayer(value: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[useBuiltInMediaPlayerKey] = value
         }
     }
 }

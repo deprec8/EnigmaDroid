@@ -34,4 +34,5 @@ object PreferenceKey {
     const val USE_SEARCH_HISTORY = "save_search_history"
     const val USE_SEARCH_HIGHLIGHTING = "use_search_highlighting"
     const val SERVICE_EPG_SEARCH_HISTORY = "service_epg_search_history"
+    const val USE_BUILT_IN_MEDIA_PLAYER = "use_built_in_media_player"
 }
