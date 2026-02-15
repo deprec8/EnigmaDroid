@@ -138,6 +138,12 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
 
+    // Media
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.exoplayer.hls)
+    implementation(libs.androidx.media3.ui.compose.material3)
+    implementation(libs.androidx.media3.session)
+
     // Other
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)

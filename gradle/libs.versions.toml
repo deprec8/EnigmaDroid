@@ -8,6 +8,7 @@ hilt = "2.59.1"
 hiltViewmodel = "1.3.0"
 kotlin = "2.3.10"
 ktor = "3.4.0"
+media3 = "1.9.2"
 re2j = "1.8"
 room = "2.8.4"
 lifecycle = "2.10.0"
@@ -21,6 +22,10 @@ kotlinxSerialization = "1.10.0"
 
 [libraries]
 mikepenz-aboutlibraries-core = { module = "com.mikepenz:aboutlibraries-core", version.ref = "aboutlibraries" }
+androidx-media3-exoplayer-hls = { module = "androidx.media3:media3-exoplayer-hls", version.ref = "media3" }
+androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3" }
+androidx-media3-ui-compose-material3 = { module = "androidx.media3:media3-ui-compose-material3", version.ref = "media3" }
+androidx-media3-session = { module = "androidx.media3:media3-session", version.ref = "media3" }
 androidx-browser = { module = "androidx.browser:browser", version.ref = "browser" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
