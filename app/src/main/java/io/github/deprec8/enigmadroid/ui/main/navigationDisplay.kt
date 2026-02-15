@@ -50,6 +50,7 @@ import io.github.deprec8.enigmadroid.ui.settings.about.LibrariesPage
 import io.github.deprec8.enigmadroid.ui.settings.devices.DevicesPage
 import io.github.deprec8.enigmadroid.ui.settings.remoteControl.RemoteControlSettingsPage
 import io.github.deprec8.enigmadroid.ui.settings.search.SearchSettingsPage
+import io.github.deprec8.enigmadroid.ui.settings.stream.StreamSettingsPage
 import io.github.deprec8.enigmadroid.ui.signal.SignalPage
 import io.github.deprec8.enigmadroid.ui.timers.TimersPage
 
@@ -170,6 +171,12 @@ fun NavigationDisplay(
         }
         entry<SettingsPages.Search> {
             SearchSettingsPage(
+                onNavigateBack = {
+                    navigator.goBack()
+                })
+        }
+        entry<SettingsPages.Stream> {
+            StreamSettingsPage(
                 onNavigateBack = {
                     navigator.goBack()
                 })

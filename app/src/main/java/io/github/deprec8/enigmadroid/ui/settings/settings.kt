@@ -129,6 +129,21 @@ fun SettingsPage(
                 })
             )
             ListItem(
+                headlineContent = { Text(stringResource(R.string.streaming)) },
+                trailingContent = {
+                    Icon(Icons.AutoMirrored.Filled.ArrowRight, contentDescription = null)
+                },
+                supportingContent = {
+                    Text(stringResource(R.string.configure_streaming_settings))
+                },
+                leadingContent = {
+                    Icon(Icons.Outlined.ConnectedTv, contentDescription = null)
+                },
+                modifier = Modifier.clickable(onClick = {
+                    onNavigateToSettingsPage(SettingsPages.Stream)
+                })
+            )
+            ListItem(
                 headlineContent = { Text(stringResource(R.string.about)) }, trailingContent = {
                     Icon(Icons.AutoMirrored.Filled.ArrowRight, contentDescription = null)
                 }, supportingContent = {

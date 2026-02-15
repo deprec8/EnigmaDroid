@@ -235,4 +235,10 @@
     <string name="invalid_device_response">Invalid device response</string>
     <string name="enable">Enable</string>
     <string name="disable">Disable</string>
+    <string name="configure_streaming_settings">Configure streaming settings</string>
+    <string name="media_player">Media player</string>
+    <string name="change_the_media_player_used_for_streaming_the_built_in_player_is_currently_experimental_and_may_not_work_as_expected">Change the media player used for streaming.  The built-in player is currently experimental and may not work as expected. Additionally, it is currently only available for movie streaming.</string>
+    <string name="built_in">Built-in</string>
+    <string name="external">External</string>
+    <string name="streaming">Streaming</string>
 </resources>

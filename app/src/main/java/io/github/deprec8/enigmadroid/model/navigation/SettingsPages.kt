@@ -40,4 +40,7 @@ sealed class SettingsPages : NavKey {
     @Serializable
     data object Search : SettingsPages()
 
+    @Serializable
+    data object Stream : SettingsPages()
+
 }
