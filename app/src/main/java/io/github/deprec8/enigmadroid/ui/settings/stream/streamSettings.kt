@@ -94,7 +94,7 @@ fun StreamSettingsPage(
                 ListItem(headlineContent = {
                     Text(stringResource(R.string.media_player))
                 }, supportingContent = {
-                    Text(stringResource(R.string.change_the_media_player_used_for_streaming_the_built_in_player_is_currently_experimental_and_may_not_work_as_expected))
+                    Text(stringResource(R.string.change_the_media_player_used_for_streaming))
                 })
                 SingleChoiceSegmentedButtonRow(
                     Modifier
