@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.stream.components
+package io.github.deprec8.enigmadroid.ui.stream.components.utils
 
 import android.content.Context
 import android.content.ContextWrapper

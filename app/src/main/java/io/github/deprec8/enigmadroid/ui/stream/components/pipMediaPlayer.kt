@@ -42,6 +42,7 @@ import androidx.media3.ui.compose.PlayerSurface
 import androidx.media3.ui.compose.modifiers.resizeWithContentScale
 import androidx.media3.ui.compose.state.PresentationState
 import androidx.media3.ui.compose.state.rememberPresentationState
+import io.github.deprec8.enigmadroid.ui.stream.components.utils.findActivity
 
 @OptIn(UnstableApi::class)
 @Composable
