@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.stream.movie
+package io.github.deprec8.enigmadroid
 
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
