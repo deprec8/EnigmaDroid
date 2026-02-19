@@ -51,7 +51,7 @@ enum class RemoteControlButtonType(val id: Int) {
     RADIO(385),
     TEXT(388),
     RECORD(167),
-    EPG(358),
+    EPG(365),
     ONE(2),
     TWO(3),
     THREE(4),
