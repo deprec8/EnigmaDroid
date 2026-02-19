@@ -19,10 +19,13 @@
 
 package io.github.deprec8.enigmadroid.model.api.movies
 
+import android.os.Parcelable
 import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
+import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@Parcelize
 @Serializable
 data class Movie(
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("description") val shortDescription: String = "N/A",
@@ -35,4 +38,4 @@ data class Movie(
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("begintime") val begin: String = "N/A",
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("descriptionExtended") val longDescription: String = "N/A",
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("filesize_readable") val filesizeReadable: String = "N/A"
-)
+) : Parcelable

@@ -25,4 +25,5 @@ plugins {
     alias(libs.plugins.mikepenz.aboutlibraries) apply false
     alias(libs.plugins.jetbrains.kotlin.serialization) apply false
     alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.jetbrains.kotlin.parcelize) apply false
 }
