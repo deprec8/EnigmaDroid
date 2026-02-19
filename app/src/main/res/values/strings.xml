@@ -242,4 +242,7 @@
     <string name="external">External</string>
     <string name="streaming">Streaming</string>
     <string name="current_playback_speed">Current playback speed</string>
+    <string name="show_playlist">Show playlist</string>
+    <string name="current_media_item">Current media item</string>
+    <string name="playlist">Playlist</string>
 </resources>
