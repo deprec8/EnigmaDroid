@@ -29,7 +29,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.FeaturedPlayList
+import androidx.compose.material.icons.automirrored.outlined.FeaturedPlayList
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -67,7 +67,7 @@ fun PlaylistButton(player: Player, onBlockUiHiding: (isBlocking: Boolean) -> Uni
             onBlockUiHiding(true)
         }) {
         Icon(
-            imageVector = Icons.AutoMirrored.Filled.FeaturedPlayList,
+            imageVector = Icons.AutoMirrored.Outlined.FeaturedPlayList,
             contentDescription = stringResource(R.string.show_playlist),
             tint = Color.White
         )
