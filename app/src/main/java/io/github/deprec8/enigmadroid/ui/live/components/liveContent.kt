@@ -26,7 +26,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Dvr
 import androidx.compose.material.icons.automirrored.outlined.Dvr
@@ -77,14 +77,14 @@ fun LiveContent(
                 .imePadding(),
             contentPadding = paddingValues
         ) {
-            items(events) { event ->
+            itemsIndexed(events) { index, event ->
                 ContentListItem(
                     highlightedWords = highlightedWords,
                     headlineText = event.serviceName,
                     leadingContent = if (showChannelNumbers) {
                         {
                             Text(
-                                text = "${events.indexOf(event) + 1}.",
+                                text = "${index + 1}.",
                                 textAlign = TextAlign.Center,
                             )
                         }
