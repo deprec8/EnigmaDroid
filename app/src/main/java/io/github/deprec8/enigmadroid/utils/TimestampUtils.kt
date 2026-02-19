@@ -19,6 +19,7 @@
 
 package io.github.deprec8.enigmadroid.utils
 
+import androidx.media3.common.C
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -103,5 +104,20 @@ object TimestampUtils {
         val calendar = Calendar.getInstance(TimeZone.getDefault())
         calendar.timeInMillis = millis
         return calendar.get(Calendar.MINUTE)
+    }
+
+    fun getTimeString(timeMs: Long): String {
+        if (timeMs == C.TIME_UNSET || timeMs < 0) return "00:00"
+
+        val totalSeconds = timeMs / 1000
+        val seconds = (totalSeconds % 60).toInt()
+        val minutes = ((totalSeconds / 60) % 60).toInt()
+        val hours = (totalSeconds / 3600).toInt()
+
+        return if (hours > 0) {
+            "%d:%02d:%02d".format(hours, minutes, seconds)
+        } else {
+            "%02d:%02d".format(minutes, seconds)
+        }
     }
 }
