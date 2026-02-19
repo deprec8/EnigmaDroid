@@ -241,4 +241,5 @@
     <string name="built_in">Built-in</string>
     <string name="external">External</string>
     <string name="streaming">Streaming</string>
+    <string name="current_playback_speed">Current playback speed</string>
 </resources>
