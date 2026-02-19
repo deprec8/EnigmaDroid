@@ -68,6 +68,9 @@ class MoviesViewModel @Inject constructor(
     private val _useSearchHighlighting = MutableStateFlow(true)
     val useSearchHighlighting: StateFlow<Boolean> = _useSearchHighlighting.asStateFlow()
 
+    private val _useBuiltInMediaPlayer = MutableStateFlow(false)
+    val useBuiltInMediaPlayer: StateFlow<Boolean> = _useBuiltInMediaPlayer.asStateFlow()
+
     val searchFieldState = TextFieldState()
 
     private var fetchJob: Job? = null
@@ -98,6 +101,11 @@ class MoviesViewModel @Inject constructor(
         viewModelScope.launch {
             settingsRepository.getUseSearchHighlighting().collectLatest {
                 _useSearchHighlighting.value = it
+            }
+        }
+        viewModelScope.launch {
+            settingsRepository.getUseBuiltInMediaPlayer().collectLatest {
+                _useBuiltInMediaPlayer.value = it
             }
         }
     }
