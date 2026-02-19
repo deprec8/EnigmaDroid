@@ -40,7 +40,7 @@
     <string name="storage">Хранилище</string>
     <string name="free">бесплатно</string>
     <string name="about">О программе</string>
-    <string name="ip_address">IP-адрес</string>
+    <string name="ip_address_hostname">IP-адрес</string>
     <string name="port">Порт</string>
     <string name="login">Вход</string>
     <string name="username">Имя пользователя</string>

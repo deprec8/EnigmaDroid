@@ -41,7 +41,7 @@
     <string name="storage">Storage</string>
     <string name="free">free</string>
     <string name="about">About</string>
-    <string name="ip_address">IP Address</string>
+    <string name="ip_address_hostname">IP Address or Hostname</string>
     <string name="port">Port</string>
     <string name="https" translatable="false">HTTPS</string>
     <string name="login">Login</string>

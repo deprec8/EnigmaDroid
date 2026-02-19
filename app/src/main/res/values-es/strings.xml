@@ -40,7 +40,7 @@
     <string name="storage">Almacenamiento</string>
     <string name="free">libre</string>
     <string name="about">Acerca de</string>
-    <string name="ip_address">Dirección IP</string>
+    <string name="ip_address_hostname">Dirección IP</string>
     <string name="port">Puerto</string>
     <string name="login">Iniciar sesión</string>
     <string name="username">Nombre de usuario</string>

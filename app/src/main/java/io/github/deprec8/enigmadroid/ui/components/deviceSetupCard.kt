@@ -124,11 +124,11 @@ fun DeviceSetupCard(
                     state = ipState,
                     lineLimits = TextFieldLineLimits.SingleLine,
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number, imeAction = ImeAction.Next
+                        keyboardType = KeyboardType.Text, imeAction = ImeAction.Next
                     ),
                     label = {
                         Text(
-                            text = stringResource(R.string.ip_address),
+                            text = stringResource(R.string.ip_address_hostname),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -280,11 +280,11 @@ fun DeviceSetupCard(
                 state = ipState,
                 lineLimits = TextFieldLineLimits.SingleLine,
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number, imeAction = ImeAction.Next
+                    keyboardType = KeyboardType.Text, imeAction = ImeAction.Next
                 ),
                 label = {
                     Text(
-                        text = stringResource(R.string.ip_address),
+                        text = stringResource(R.string.ip_address_hostname),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -370,8 +370,6 @@ fun DeviceSetupCard(
                     }, modifier = Modifier.padding(start = 8.dp)
                 )
             }
-
-
             Spacer(modifier = Modifier.size(8.dp))
             OutlinedTextField(
                 enabled = isLogin,
@@ -393,7 +391,6 @@ fun DeviceSetupCard(
                         contentType = ContentType.Username
                     })
             Spacer(modifier = Modifier.size(8.dp))
-
             OutlinedSecureTextField(
                 state = passwordState, enabled = isLogin, trailingIcon = {
                     IconButton(

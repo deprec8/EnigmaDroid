@@ -40,7 +40,7 @@
     <string name="storage">Speicher</string>
     <string name="free">frei</string>
     <string name="about">Über</string>
-    <string name="ip_address">IP Adresse</string>
+    <string name="ip_address_hostname">IP Adresse</string>
     <string name="port">Port</string>
     <string name="login">Login</string>
     <string name="username">Benutzername</string>
