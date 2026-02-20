@@ -40,7 +40,7 @@
     <string name="storage">Хранилище</string>
     <string name="free">бесплатно</string>
     <string name="about">О программе</string>
-    <string name="ip_address_hostname">IP-адрес</string>
+    <string name="ip_address_hostname">IP-адрес или имя хоста</string>
     <string name="port">Порт</string>
     <string name="login">Вход</string>
     <string name="username">Имя пользователя</string>
@@ -219,4 +219,6 @@
     <string name="service_epg">Служба EPG</string>
     <string name="error_loading_libraries">Ошибка загрузки библиотек</string>
     <string name="invalid_device_response">Неправильный ответ на устройство</string>
+    <string name="enable">Включить</string>
+    <string name="disable">Не отображать</string>
 </resources>
