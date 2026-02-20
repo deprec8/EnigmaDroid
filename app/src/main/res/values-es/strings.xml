@@ -40,7 +40,7 @@
     <string name="storage">Almacenamiento</string>
     <string name="free">libre</string>
     <string name="about">Acerca de</string>
-    <string name="ip_address_hostname">Dirección IP</string>
+    <string name="ip_address_hostname">Dirección IP o dispositivo</string>
     <string name="port">Puerto</string>
     <string name="login">Iniciar sesión</string>
     <string name="username">Nombre de usuario</string>
@@ -219,4 +219,6 @@
     <string name="service_epg">Servicio EPG</string>
     <string name="error_loading_libraries">Error al cargar las librerías</string>
     <string name="invalid_device_response">Respuesta de dispositivo inválida</string>
+    <string name="enable">Habilitar</string>
+    <string name="disable">Deshabilitar</string>
 </resources>
