@@ -25,6 +25,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.ApiType
+import io.github.deprec8.enigmadroid.data.enums.EventType
 import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtonType
 import io.github.deprec8.enigmadroid.data.enums.RemoteControlPowerButtonType
 import io.github.deprec8.enigmadroid.data.objects.PreferenceKey
@@ -127,6 +128,21 @@ class ApiRepository @Inject constructor(
                 append("${device.ip}:${device.port}/file?file=${file.replace(" ", "%20")}")
             }
         } ?: ""
+    }
+
+    private fun shouldBeNumbered(type: EventType): Boolean {
+        return when (type) {
+            EventType.INVISIBLE, EventType.GROUP, EventType.DIRECTORY -> false
+            EventType.CHANNEL                                         -> true
+            EventType.MARKER                                          -> false
+            EventType.NUMBERED_MARKER                                 -> true
+        }
+    }
+
+    private fun String.toEventType(): EventType {
+        val flag = split(":").getOrNull(1)?.toIntOrNull() ?: return EventType.CHANNEL
+
+        return EventType.entries.firstOrNull { it.flag == flag } ?: EventType.CHANNEL
     }
 
     suspend fun fetchCurrentInfo(): CurrentInfo {
