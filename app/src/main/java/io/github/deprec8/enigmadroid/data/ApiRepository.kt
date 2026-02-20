@@ -261,11 +261,29 @@ class ApiRepository @Inject constructor(
         try {
             fetchBouquets(apiType).forEach { bouquet ->
                 val newBouquetReference = bouquet.reference.replace("\\\"", "\"")
-                val eventBatch = json.decodeFromString(
+                val rawBatch = json.decodeFromString(
                     EventBatch.serializer(),
                     networkDataSource.fetchApi("epgnow?bRef=$newBouquetReference")
                 )
-                emit(eventBatch.copy(name = bouquet.name))
+
+                var counter = 1
+
+                val uiEvents = rawBatch.events.map { event ->
+                    val type = event.serviceReference.toEventType()
+
+                    val displayIndex =
+                        if (shouldBeNumbered(type)) counter ++ else null
+
+                    event.copy(
+                        displayIndex = displayIndex, type = type
+                    )
+                }
+
+                emit(
+                    rawBatch.copy(
+                        name = bouquet.name, events = uiEvents
+                    )
+                )
             }
         } catch (_: Exception) {
             emitAll(emptyList<EventBatch>().asFlow())
