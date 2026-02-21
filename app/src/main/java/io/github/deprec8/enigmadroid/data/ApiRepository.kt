@@ -130,12 +130,10 @@ class ApiRepository @Inject constructor(
         } ?: ""
     }
 
-    private fun shouldBeNumbered(type: EventType): Boolean {
-        return when (type) {
-            EventType.INVISIBLE, EventType.GROUP, EventType.DIRECTORY -> false
-            EventType.CHANNEL                                         -> true
-            EventType.MARKER                                          -> false
-            EventType.NUMBERED_MARKER                                 -> true
+    private fun EventType.shouldBeNumbered(): Boolean {
+        return when (this) {
+            EventType.CHANNEL, EventType.NUMBERED_MARKER, EventType.INVISIBLE_NUMBERED_MARKER -> true
+            EventType.INVISIBLE, EventType.GROUP, EventType.DIRECTORY, EventType.MARKER       -> false
         }
     }
 
@@ -271,8 +269,7 @@ class ApiRepository @Inject constructor(
                 val uiEvents = rawBatch.events.map { event ->
                     val type = event.serviceReference.toEventType()
 
-                    val displayIndex =
-                        if (shouldBeNumbered(type)) counter ++ else null
+                    val displayIndex = if (type.shouldBeNumbered()) counter ++ else null
 
                     event.copy(
                         displayIndex = displayIndex, type = type

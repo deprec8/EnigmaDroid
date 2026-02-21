@@ -97,7 +97,7 @@ fun LiveContent(
                 }
             }) { event ->
                 when (event.type) {
-                    EventType.CHANNEL                              -> {
+                    EventType.CHANNEL                                                                   -> {
                         ContentListItem(highlightedWords = highlightedWords,
                             headlineText = event.serviceName,
                             leadingContent = if (showChannelNumbers) {
@@ -158,37 +158,39 @@ fun LiveContent(
                             longDescription = event.longDescription
                         )
                     }
-                    EventType.MARKER                               -> {
+                    EventType.MARKER                                                                    -> {
                         Column {
                             ListItem(headlineContent = {
                                 Text(event.serviceName)
                             }, leadingContent = {
-                                Icon(Icons.Outlined.Bookmark, null)
+                                Icon(Icons.Outlined.Bookmark, stringResource(R.string.marker))
                             })
                             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
                         }
                     }
-                    EventType.DIRECTORY                            -> {
+                    EventType.DIRECTORY                                                                 -> {
                         Column {
                             ListItem(headlineContent = {
                                 Text(event.serviceName)
                             }, leadingContent = {
-                                Icon(Icons.Outlined.Folder, null)
+                                Icon(Icons.Outlined.Folder, stringResource(R.string.directory))
                             })
                             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
                         }
                     }
-                    EventType.GROUP                                -> {
+                    EventType.GROUP                                                                     -> {
                         Column {
                             ListItem(headlineContent = {
                                 Text(event.serviceName)
                             }, leadingContent = {
-                                Icon(Icons.Outlined.AutoAwesomeMosaic, null)
+                                Icon(
+                                    Icons.Outlined.AutoAwesomeMosaic, stringResource(R.string.group)
+                                )
                             })
                             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
                         }
                     }
-                    EventType.INVISIBLE, EventType.NUMBERED_MARKER -> {}
+                    EventType.INVISIBLE, EventType.NUMBERED_MARKER, EventType.INVISIBLE_NUMBERED_MARKER -> {}
                 }
 
             }

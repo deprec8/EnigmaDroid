@@ -235,4 +235,7 @@
     <string name="invalid_device_response">Invalid device response</string>
     <string name="enable">Enable</string>
     <string name="disable">Disable</string>
+    <string name="marker">Marker</string>
+    <string name="directory">Directory</string>
+    <string name="group">Group</string>
 </resources>
