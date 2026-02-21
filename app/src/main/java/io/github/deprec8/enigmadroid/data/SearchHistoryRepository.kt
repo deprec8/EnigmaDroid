@@ -29,7 +29,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class SearchHistoryRepository @Inject constructor(private val dataStore: DataStore<Preferences>) {
 
     private val tvSearchHistoryKey = stringSetPreferencesKey(PreferenceKey.TV_SEARCH_HISTORY)

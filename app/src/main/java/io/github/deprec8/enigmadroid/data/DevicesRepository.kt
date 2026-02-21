@@ -44,7 +44,7 @@ class DevicesRepository @Inject constructor(
     private val currentDeviceKey = intPreferencesKey(PreferenceKey.CURRENT_DEVICE)
     private val loadingStateKey = intPreferencesKey(PreferenceKey.LOADING_STATE)
 
-    suspend fun updateLoadingState() {
+    private suspend fun updateLoadingState() {
         dataStore.edit { preferences ->
             preferences[loadingStateKey] = LoadingState.LOADING.id
         }

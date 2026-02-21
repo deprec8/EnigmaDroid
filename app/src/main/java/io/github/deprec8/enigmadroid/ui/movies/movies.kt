@@ -116,6 +116,9 @@ fun MoviesPage(
             )
         }
     }
+    val highlightedWords = remember(searchInput) {
+        searchInput.split(" ").filter { it.isNotBlank() }
+    }
 
     LaunchedEffect(Unit) {
         moviesViewModel.updateLoadingState(false)
@@ -263,8 +266,12 @@ fun MoviesPage(
                     Content(
                         movies = filteredMovies !!,
                         paddingValues = PaddingValues(0.dp),
-                        highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
-                            .filter { it.isNotBlank() } else emptyList())
+                        highlightedWords = if (useSearchHighlighting) {
+                            highlightedWords
+                        } else {
+                            emptyList()
+                        }
+                    )
                 } else {
                     SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
                         moviesViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)

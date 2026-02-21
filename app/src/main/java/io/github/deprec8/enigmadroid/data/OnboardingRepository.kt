@@ -33,7 +33,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class OnboardingRepository @Inject constructor(
     private val dataStore: DataStore<Preferences>,
     private val deviceDatabase: DeviceDatabase,
@@ -43,14 +45,16 @@ class OnboardingRepository @Inject constructor(
     private val onboardingKey = booleanPreferencesKey(PreferenceKey.ONBOARDING_NEEDED)
     private val loadingStateKey = intPreferencesKey(PreferenceKey.LOADING_STATE)
 
-    val isOnboardingNeeded: Flow<Boolean> = dataStore.data.map { preferences ->
-        if (preferences.contains(onboardingKey)) {
-            preferences[onboardingKey] != false
-        } else {
-            dataStore.edit { settings ->
-                settings[onboardingKey] = true
+    suspend fun getOnboardingNeeded(): Flow<Boolean> {
+        return dataStore.data.map { preferences ->
+            if (preferences.contains(onboardingKey)) {
+                preferences[onboardingKey] != false
+            } else {
+                dataStore.edit { settings ->
+                    settings[onboardingKey] = true
+                }
+                true
             }
-            true
         }
     }
 

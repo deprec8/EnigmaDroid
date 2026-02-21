@@ -42,11 +42,12 @@ fun SearchTopAppBarDrawerNavigationButton(
 ) {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     val scope = rememberCoroutineScope()
-
-    if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || ! windowSizeClass.isHeightAtLeastBreakpoint(
+    val isSmallScreenLayout =
+        ! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || ! windowSizeClass.isHeightAtLeastBreakpoint(
             WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
         )
-    ) {
+
+    if (isSmallScreenLayout) {
         IconButton(onClick = { scope.launch { drawerState.open() } }) {
             Icon(
                 Icons.Default.Menu, contentDescription = stringResource(id = R.string.open_menu)

@@ -64,6 +64,10 @@ fun AdaptiveDialog(
     var showCancelDialog by rememberSaveable { mutableStateOf(false) }
     val fullScrollState = rememberScrollState()
     val dialogScrollState = rememberScrollState()
+    val isSmallScreenLayout =
+        ! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || ! windowSizeClass.isHeightAtLeastBreakpoint(
+            WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
+        )
 
     if (showCancelDialog) {
         AlertDialog(onDismissRequest = { showCancelDialog = false }, dismissButton = {
@@ -84,17 +88,14 @@ fun AdaptiveDialog(
         })
     }
 
-    if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || ! windowSizeClass.isHeightAtLeastBreakpoint(
-            WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
-        )
-    ) {
+    if (isSmallScreenLayout) {
         Dialog(
             properties = DialogProperties(
                 usePlatformDefaultWidth = false, decorFitsSystemWindows = false
             ),
             onDismissRequest = {
                 showCancelDialog = true
-            },
+            }
         ) {
             Scaffold(
                 containerColor = if (fullScrollState.maxValue == 0) {

@@ -37,6 +37,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
@@ -44,6 +45,7 @@ import io.github.deprec8.enigmadroid.model.navigation.MainPages
 import io.github.deprec8.enigmadroid.ui.components.navigation.Navigator
 import io.github.deprec8.enigmadroid.ui.components.navigation.rememberNavigationState
 import io.github.deprec8.enigmadroid.ui.onboarding.OnboardingPage
+import io.github.deprec8.enigmadroid.utils.IntentUtils
 import kotlinx.coroutines.launch
 
 @Composable
@@ -74,55 +76,61 @@ fun MainPage(
             null
         }
     )
-
     val navigator = remember { Navigator(navigationState) }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     val scope = rememberCoroutineScope()
-
-    LaunchedEffect(
-        windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) && windowSizeClass.isHeightAtLeastBreakpoint(
+    val context = LocalContext.current
+    val isSmallScreenLayout =
+        ! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || ! windowSizeClass.isHeightAtLeastBreakpoint(
             WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
         )
+    val windowInsetModifier = Modifier
+        .consumeWindowInsets(
+            WindowInsets.safeDrawing.only(
+                WindowInsetsSides.Vertical
+            )
+        )
+        .consumeWindowInsets(
+            WindowInsets.safeDrawing.only(
+                WindowInsetsSides.Start
+            )
+        )
+
+    LaunchedEffect(
+        ! isSmallScreenLayout
     ) {
-        drawerState.close()
+        if (! isSmallScreenLayout) {
+            drawerState.close()
+        }
     }
 
     if (isOnboardingNeeded) {
         OnboardingPage()
     } else {
-        if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || ! windowSizeClass.isHeightAtLeastBreakpoint(
-                WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
-            )
-        ) {
+        if (isSmallScreenLayout) {
             ModalNavigationDrawer(
                 drawerContent = {
                     ModalDrawerSheet(
-                        drawerState = drawerState, modifier = Modifier
-                            .consumeWindowInsets(
-                                WindowInsets.safeDrawing.only(
-                                    WindowInsetsSides.Vertical
-                                )
-                            )
-                            .consumeWindowInsets(
-                                WindowInsets.safeDrawing.only(
-                                    WindowInsetsSides.Start
-                                )
-                            )
+                        drawerState = drawerState, modifier = windowInsetModifier
                     ) {
                         NavDrawerContent(
                             currentDevice = currentDevice,
-                            navigator = navigator,
+                            onNavigate = { navigator.navigate(it) },
                             navigationState = navigationState,
                             drawerState = drawerState,
-                            updateDeviceStatus = {
+                            onUpdateDeviceStatus = {
                                 scope.launch {
                                     mainViewModel.updateLoadingState(
                                         true
                                     )
                                 }
                             },
-                            buildOwifUrl = mainViewModel::buildOwifUrl,
+                            onOpenOwif = {
+                                scope.launch {
+                                    IntentUtils.openOwif(context, mainViewModel.buildOwifUrl())
+                                }
+                            },
                             loadingState = loadingState
                         )
                     }
@@ -136,31 +144,25 @@ fun MainPage(
             PermanentNavigationDrawer(
                 drawerContent = {
                     PermanentDrawerSheet(
-                        Modifier
-                            .consumeWindowInsets(
-                                WindowInsets.safeDrawing.only(
-                                    WindowInsetsSides.Vertical
-                                )
-                            )
-                            .consumeWindowInsets(
-                                WindowInsets.safeDrawing.only(
-                                    WindowInsetsSides.Start
-                                )
-                            )
+                        windowInsetModifier
                     ) {
                         NavDrawerContent(
                             currentDevice = currentDevice,
-                            navigator = navigator,
+                            onNavigate = { navigator.navigate(it) },
                             navigationState = navigationState,
                             drawerState = drawerState,
-                            updateDeviceStatus = {
+                            onUpdateDeviceStatus = {
                                 scope.launch {
                                     mainViewModel.updateLoadingState(
                                         true
                                     )
                                 }
                             },
-                            buildOwifUrl = mainViewModel::buildOwifUrl,
+                            onOpenOwif = {
+                                scope.launch {
+                                    IntentUtils.openOwif(context, mainViewModel.buildOwifUrl())
+                                }
+                            },
                             loadingState = loadingState
                         )
                     }

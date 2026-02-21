@@ -90,6 +90,9 @@ fun TvEpgPage(
             )
         }
     }
+    val highlightedWords = remember(searchInput) {
+        searchInput.split(" ").filter { it.isNotBlank() }
+    }
 
     LaunchedEffect(Unit) {
         tvEpgViewModel.updateLoadingState(false)
@@ -114,8 +117,11 @@ fun TvEpgPage(
                         events = filteredEvents !!,
                         paddingValues = PaddingValues(0.dp),
                         showChannelName = true,
-                        highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
-                            .filter { it.isNotBlank() } else emptyList(),
+                        highlightedWords = if (useSearchHighlighting) {
+                            highlightedWords
+                        } else {
+                            emptyList()
+                        },
                         onAddTimerForEvent = { tvEpgViewModel.addTimerForEvent(it) })
                 } else {
                     SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
@@ -134,9 +140,7 @@ fun TvEpgPage(
             actionButtons = {
                 Row {
                     BouquetMenu(
-                        bouquets,
-                        currentBouquetReference,
-                        loadingState
+                        bouquets, currentBouquetReference, loadingState
                     ) { bouquetReference -> tvEpgViewModel.setCurrentBouquet(bouquetReference) }
                     RemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
                 }

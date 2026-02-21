@@ -30,11 +30,13 @@ import dagger.hilt.components.SingletonComponent
 import io.github.deprec8.enigmadroid.data.ApiRepository
 import io.github.deprec8.enigmadroid.data.source.local.devices.DeviceDatabase
 import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
+import jakarta.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object ApiRepositoryModule {
 
+    @Singleton
     @Provides
     fun provideApiRepository(
         @ApplicationContext context: Context,

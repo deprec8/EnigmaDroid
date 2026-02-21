@@ -29,11 +29,13 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.github.deprec8.enigmadroid.data.DownloadRepository
 import io.github.deprec8.enigmadroid.data.source.local.devices.DeviceDatabase
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object DownloadRepositoryModule {
 
+    @Singleton
     @Provides
     fun provideDownloadRepository(
         @ApplicationContext context: Context,

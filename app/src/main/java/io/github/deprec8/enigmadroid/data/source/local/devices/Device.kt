@@ -25,12 +25,12 @@ import androidx.room.PrimaryKey
 @Entity
 data class Device(
     @PrimaryKey(autoGenerate = true) val id: Int,
-    var name: String = "",
-    var ip: String = "",
-    var isHttps: Boolean = false,
-    var isLogin: Boolean = false,
-    var user: String = "",
-    var password: String = "",
-    var port: String = "",
-    var livePort: String = "",
+    val name: String = "",
+    val ip: String = "",
+    val isHttps: Boolean = false,
+    val isLogin: Boolean = false,
+    val user: String = "",
+    val password: String = "",
+    val port: String = "",
+    val livePort: String = "",
 )

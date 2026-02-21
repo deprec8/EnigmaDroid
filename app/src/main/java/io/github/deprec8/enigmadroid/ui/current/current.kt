@@ -85,6 +85,8 @@ fun CurrentPage(
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val context = LocalContext.current
     val scrollState = rememberScrollState()
+    val isExpandedScreenLayout =
+        windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)
 
 
     LaunchedEffect(Unit) {
@@ -131,7 +133,7 @@ fun CurrentPage(
                         .verticalScroll(scrollState)
                         .padding(innerPadding)
                 ) {
-                    if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)) {
+                    if (isExpandedScreenLayout) {
                         Row {
                             ListItem(
                                 headlineContent = { Text(text = stringResource(R.string.channel)) },
@@ -161,7 +163,7 @@ fun CurrentPage(
                             })
                     }
 
-                    if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)) {
+                    if (isExpandedScreenLayout) {
                         Row {
                             Column(modifier = Modifier.fillMaxWidth(0.5f)) {
                                 ListItem(

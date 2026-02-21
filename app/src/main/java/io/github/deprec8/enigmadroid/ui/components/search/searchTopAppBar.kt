@@ -72,58 +72,11 @@ fun SearchTopAppBar(
 
     val searchBarState = rememberSearchBarState()
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-    val scope = rememberCoroutineScope()
 
-    val inputField = @Composable {
-        SearchBarDefaults.InputField(
-            searchBarState = searchBarState,
-            colors = SearchBarDefaults.inputFieldColors(
-                disabledLeadingIconColor = TextFieldDefaults.colors().unfocusedLeadingIconColor,
-                disabledTrailingIconColor = TextFieldDefaults.colors().unfocusedTrailingIconColor
-            ),
-            enabled = enabled,
-            textFieldState = textFieldState,
-            onSearch = { onSearch() },
-            placeholder = {
-                Text(
-                    text = placeholder, maxLines = 1, overflow = TextOverflow.Ellipsis
-                )
-            },
-            leadingIcon = {
-                if (searchBarState.currentValue == SearchBarValue.Expanded) {
-                    IconButton(onClick = {
-                        scope.launch {
-                            searchBarState.animateToCollapsed()
-                        }
-                    }) {
-                        Icon(
-                            Icons.AutoMirrored.Default.ArrowBack,
-                            contentDescription = stringResource(
-                                R.string.close_search
-                            )
-                        )
-                    }
-                } else {
-                    navigationButton(searchBarState)
-                }
-            },
-            trailingIcon = {
-                if (searchBarState.currentValue == SearchBarValue.Expanded) {
-                    IconButton(onClick = {
-                        textFieldState.setTextAndPlaceCursorAtEnd("")
-                    }, enabled = textFieldState.text.isNotEmpty()) {
-                        Icon(
-                            Icons.Default.Clear,
-                            contentDescription = stringResource(R.string.clear_search)
-                        )
-                    }
-                } else {
-                    if (actionButtons != null) {
-                        actionButtons()
-                    }
-                }
-            })
-    }
+    val isSmallScreenLayout =
+        ! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || ! windowSizeClass.isHeightAtLeastBreakpoint(
+            WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
+        )
 
     Surface {
         Column(
@@ -133,26 +86,33 @@ fun SearchTopAppBar(
         ) {
             SearchBar(
                 searchBarState,
-                modifier = if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || ! windowSizeClass.isHeightAtLeastBreakpoint(
-                        WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
+                modifier = Modifier
+                    .padding(top = 8.dp, start = 16.dp, end = 16.dp)
+                    .then(if (! isSmallScreenLayout) Modifier.align(Alignment.End) else Modifier.fillMaxWidth()),
+                inputField = {
+                    SearchTopAppBarInputField(
+                        searchBarState = searchBarState,
+                        enabled = enabled,
+                        textFieldState = textFieldState,
+                        onSearch = onSearch,
+                        placeholder = placeholder,
+                        navigationButton = navigationButton,
+                        actionButtons = actionButtons
                     )
-                ) Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp, start = 16.dp, end = 16.dp)
-                else Modifier
-                    .padding(top = 8.dp, start = 16.dp, end = 16.dp)
-                    .align(
-                        Alignment.End
-                    ),
-                inputField = inputField
-            )
-            if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || ! windowSizeClass.isHeightAtLeastBreakpoint(
-                    WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
-                )
-            ) {
+                })
+            if (isSmallScreenLayout) {
                 ExpandedFullScreenSearchBar(
-                    state = searchBarState, inputField = inputField
-                ) {
+                    state = searchBarState, inputField = {
+                        SearchTopAppBarInputField(
+                            searchBarState = searchBarState,
+                            enabled = enabled,
+                            textFieldState = textFieldState,
+                            onSearch = onSearch,
+                            placeholder = placeholder,
+                            navigationButton = navigationButton,
+                            actionButtons = actionButtons
+                        )
+                    }) {
                     if (content != null && enabled) {
                         content()
                     } else {
@@ -161,8 +121,17 @@ fun SearchTopAppBar(
                 }
             } else {
                 ExpandedDockedSearchBar(
-                    state = searchBarState, inputField
-                ) {
+                    state = searchBarState, {
+                        SearchTopAppBarInputField(
+                            searchBarState = searchBarState,
+                            enabled = enabled,
+                            textFieldState = textFieldState,
+                            onSearch = onSearch,
+                            placeholder = placeholder,
+                            navigationButton = navigationButton,
+                            actionButtons = actionButtons
+                        )
+                    }) {
                     if (content != null && enabled) {
                         content()
                     } else {
@@ -179,4 +148,65 @@ fun SearchTopAppBar(
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SearchTopAppBarInputField(
+    searchBarState: SearchBarState,
+    enabled: Boolean,
+    textFieldState: TextFieldState,
+    onSearch: () -> Unit,
+    placeholder: String,
+    navigationButton: @Composable ((searchBarState: SearchBarState) -> Unit),
+    actionButtons: @Composable (() -> Unit)? = null
+) {
+    val isExpanded = searchBarState.currentValue == SearchBarValue.Expanded
+    val scope = rememberCoroutineScope()
+
+    SearchBarDefaults.InputField(
+        searchBarState = searchBarState,
+        colors = SearchBarDefaults.inputFieldColors(
+            disabledLeadingIconColor = TextFieldDefaults.colors().unfocusedLeadingIconColor,
+            disabledTrailingIconColor = TextFieldDefaults.colors().unfocusedTrailingIconColor
+        ),
+        enabled = enabled,
+        textFieldState = textFieldState,
+        onSearch = { onSearch() },
+        placeholder = {
+            Text(
+                text = placeholder, maxLines = 1, overflow = TextOverflow.Ellipsis
+            )
+        },
+        leadingIcon = {
+            if (isExpanded) {
+                IconButton(onClick = {
+                    scope.launch {
+                        searchBarState.animateToCollapsed()
+                    }
+                }) {
+                    Icon(
+                        Icons.AutoMirrored.Default.ArrowBack, contentDescription = stringResource(
+                            R.string.close_search
+                        )
+                    )
+                }
+            } else {
+                navigationButton(searchBarState)
+            }
+        },
+        trailingIcon = {
+            if (isExpanded) {
+                IconButton(onClick = {
+                    textFieldState.setTextAndPlaceCursorAtEnd("")
+                }, enabled = textFieldState.text.isNotEmpty()) {
+                    Icon(
+                        Icons.Default.Clear,
+                        contentDescription = stringResource(R.string.clear_search)
+                    )
+                }
+            } else {
+                actionButtons?.invoke()
+            }
+        })
 }

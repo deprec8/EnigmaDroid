@@ -32,6 +32,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -65,6 +66,9 @@ fun ServiceEpgPage(
     val searchInput by serviceEpgViewModel.searchInput.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
+    val highlightedWords = remember(searchInput) {
+        searchInput.split(" ").filter { it.isNotBlank() }
+    }
 
     LaunchedEffect(Unit) {
         serviceEpgViewModel.updateLoadingState(false)
@@ -76,50 +80,49 @@ fun ServiceEpgPage(
         }
     }
 
-    Scaffold(
-        floatingActionButton = {
-            FloatingRefreshButton(loadingState) { serviceEpgViewModel.fetchData(serviceReference) }
-        },
-        contentWindowInsets = contentWithDrawerWindowInsets(),
-        topBar = {
-            SearchTopAppBar(
-                enabled = eventBatch.events.isNotEmpty() && loadingState == LoadingState.LOADED,
-                textFieldState = serviceEpgViewModel.searchFieldState,
-                placeholder = stringResource(R.string.search_epg_for, serviceName),
-                content = {
-                    if (filteredEvents != null) {
-                        EpgContent(
-                            events = filteredEvents !!,
-                            paddingValues = PaddingValues(0.dp),
-                            showChannelName = true,
-                            highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
-                                .filter { it.isNotBlank() } else emptyList(),
-                            onAddTimerForEvent = { serviceEpgViewModel.addTimerForEvent(it) })
-                    } else {
-                        SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
-                            serviceEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
-                            serviceEpgViewModel.updateSearchInput()
-                        }, onTermInsertClick = {
-                            serviceEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
-                                it
-                            )
-                        })
-                    }
-                },
-                navigationButton = {
-                    IconButton(
-                        onClick = { onNavigateBack() }) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.navigate_back)
+    Scaffold(floatingActionButton = {
+        FloatingRefreshButton(loadingState) { serviceEpgViewModel.fetchData(serviceReference) }
+    }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
+        SearchTopAppBar(
+            enabled = eventBatch.events.isNotEmpty() && loadingState == LoadingState.LOADED,
+            textFieldState = serviceEpgViewModel.searchFieldState,
+            placeholder = stringResource(R.string.search_epg_for, serviceName),
+            content = {
+                if (filteredEvents != null) {
+                    EpgContent(
+                        events = filteredEvents !!,
+                        paddingValues = PaddingValues(0.dp),
+                        showChannelName = true,
+                        highlightedWords = if (useSearchHighlighting) {
+                            highlightedWords
+                        } else {
+                            emptyList()
+                        },
+                        onAddTimerForEvent = { serviceEpgViewModel.addTimerForEvent(it) })
+                } else {
+                    SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
+                        serviceEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
+                        serviceEpgViewModel.updateSearchInput()
+                    }, onTermInsertClick = {
+                        serviceEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
+                            it
                         )
-                    }
-                },
-                onSearch = {
-                    serviceEpgViewModel.updateSearchInput()
-                })
-        }
-    ) { innerPadding ->
+                    })
+                }
+            },
+            navigationButton = {
+                IconButton(
+                    onClick = { onNavigateBack() }) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.navigate_back)
+                    )
+                }
+            },
+            onSearch = {
+                serviceEpgViewModel.updateSearchInput()
+            })
+    }) { innerPadding ->
         if (eventBatch.events.isNotEmpty() && loadingState == LoadingState.LOADED) {
             EpgContent(
                 events = eventBatch.events,

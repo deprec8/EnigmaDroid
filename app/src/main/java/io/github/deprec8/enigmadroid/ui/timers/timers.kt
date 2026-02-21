@@ -63,6 +63,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -112,6 +113,9 @@ fun TimersPage(
     val scope = rememberCoroutineScope()
     var showTimerSetupDialog by rememberSaveable {
         mutableStateOf(false)
+    }
+    val highlightedWords = remember(searchInput) {
+        searchInput.split(" ").filter { it.isNotBlank() }
     }
 
     LaunchedEffect(Unit) {
@@ -347,8 +351,12 @@ fun TimersPage(
                     Content(
                         timers = filteredTimers !!,
                         paddingValues = PaddingValues(0.dp),
-                        highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
-                            .filter { it.isNotBlank() } else emptyList())
+                        highlightedWords = if (useSearchHighlighting) {
+                            highlightedWords
+                        } else {
+                            emptyList()
+                        }
+                    )
                 } else {
                     SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
                         timersViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)

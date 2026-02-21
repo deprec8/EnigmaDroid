@@ -90,6 +90,9 @@ fun RadioEpgPage(
             )
         }
     }
+    val highlightedWords = remember(searchInput) {
+        searchInput.split(" ").filter { it.isNotBlank() }
+    }
 
 
     LaunchedEffect(Unit) {
@@ -115,8 +118,11 @@ fun RadioEpgPage(
                         events = filteredEvents !!,
                         paddingValues = PaddingValues(0.dp),
                         showChannelName = true,
-                        highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
-                            .filter { it.isNotBlank() } else emptyList(),
+                        highlightedWords = if (useSearchHighlighting) {
+                            highlightedWords
+                        } else {
+                            emptyList()
+                        },
                         onAddTimerForEvent = { radioEpgViewModel.addTimerForEvent(it) })
                 } else {
                     SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
@@ -135,9 +141,7 @@ fun RadioEpgPage(
             actionButtons = {
                 Row {
                     BouquetMenu(
-                        bouquets,
-                        currentBouquetReference,
-                        loadingState
+                        bouquets, currentBouquetReference, loadingState
                     ) { bouquetReference -> radioEpgViewModel.setCurrentBouquet(bouquetReference) }
                     RemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
                 }

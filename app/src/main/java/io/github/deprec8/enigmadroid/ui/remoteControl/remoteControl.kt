@@ -91,6 +91,10 @@ fun RemoteControlPage(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val view = LocalView.current
+    val isSmallScreenLayout =
+        ! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) || (windowSizeClass.isHeightAtLeastBreakpoint(
+            WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
+        ) && ! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND))
 
     LaunchedEffect(Unit) {
         remoteControlViewModel.updateLoadingState(false)
@@ -151,10 +155,7 @@ fun RemoteControlPage(
                 .verticalScroll(scrollState)
                 .padding(innerPadding)
         ) {
-            if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) || (windowSizeClass.isHeightAtLeastBreakpoint(
-                    WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
-                ) && ! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND))
-            ) {
+            if (isSmallScreenLayout) {
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,

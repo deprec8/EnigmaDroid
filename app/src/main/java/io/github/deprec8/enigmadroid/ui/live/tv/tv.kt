@@ -87,6 +87,9 @@ fun TvPage(
             )
         }
     }
+    val highlightedWords = remember(searchInput) {
+        searchInput.split(" ").filter { it.isNotBlank() }
+    }
 
     LaunchedEffect(Unit) {
         tvViewModel.updateLoadingState(false)
@@ -110,8 +113,11 @@ fun TvPage(
                         events = filteredEvents !!,
                         paddingValues = PaddingValues(0.dp),
                         showChannelNumbers = false,
-                        highlightedWords = if (useSearchHighlighting) searchInput.split(" ")
-                            .filter { it.isNotBlank() } else emptyList(),
+                        highlightedWords = if (useSearchHighlighting) {
+                            highlightedWords
+                        } else {
+                            emptyList()
+                        },
                         onNavigateToServiceEpg = { serviceReference, serviceName ->
                             onNavigateToServiceEpg(
                                 serviceReference, serviceName

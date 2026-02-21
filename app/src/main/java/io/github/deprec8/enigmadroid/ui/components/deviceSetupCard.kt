@@ -77,11 +77,13 @@ fun DeviceSetupCard(
 
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
+    val isExpandedScreenLayout =
+        windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)
 
     Column(
         modifier = modifier
     ) {
-        if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)) {
+        if (isExpandedScreenLayout) {
             Row {
                 OutlinedTextField(
                     state = nameState,

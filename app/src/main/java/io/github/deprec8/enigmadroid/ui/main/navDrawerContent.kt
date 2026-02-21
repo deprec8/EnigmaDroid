@@ -75,10 +75,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation3.runtime.NavKey
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
@@ -86,23 +86,18 @@ import io.github.deprec8.enigmadroid.model.drawer.DrawerPage
 import io.github.deprec8.enigmadroid.model.drawer.DrawerPageGroup
 import io.github.deprec8.enigmadroid.model.navigation.MainPages
 import io.github.deprec8.enigmadroid.ui.components.navigation.NavigationState
-import io.github.deprec8.enigmadroid.ui.components.navigation.Navigator
-import io.github.deprec8.enigmadroid.utils.IntentUtils
 import kotlinx.coroutines.launch
-import kotlin.reflect.KSuspendFunction0
 
 @Composable
 fun NavDrawerContent(
     currentDevice: Device?,
     loadingState: LoadingState,
-    buildOwifUrl: KSuspendFunction0<String>,
-    updateDeviceStatus: () -> Unit,
-    navigator: Navigator,
+    onOpenOwif: () -> Unit,
+    onUpdateDeviceStatus: () -> Unit,
+    onNavigate: (navKey: NavKey) -> Unit,
     navigationState: NavigationState,
     drawerState: DrawerState
 ) {
-
-    val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
 
@@ -187,107 +182,11 @@ fun NavDrawerContent(
             .padding(WindowInsets.safeDrawing.only(WindowInsetsSides.Start).asPaddingValues())
             .imePadding()
     ) {
-        ListItem(
-            headlineContent = {
-                Text(
-                    text = currentDevice?.name ?: stringResource(R.string.no_device_available),
-                )
-            },
-            trailingContent = {
-                AnimatedContent(loadingState, label = "", transitionSpec = {
-                    scaleIn(
-                        initialScale = 0f, animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioMediumBouncy,
-                            stiffness = Spring.StiffnessLow
-                        )
-                    ) + fadeIn() togetherWith scaleOut(targetScale = 0f) + fadeOut()
-                }) {
-                    when (it) {
-                        LoadingState.LOADED                                                                                                                       -> {
-                            IconButton(onClick = {
-                                scope.launch {
-                                    IntentUtils.openOwif(context, buildOwifUrl())
-                                }
-                            }) {
-                                Icon(
-                                    Icons.Default.Web,
-                                    contentDescription = stringResource(R.string.open_openwebif),
-                                )
-                            }
-                        }
-                        LoadingState.NO_DEVICE_AVAILABLE, LoadingState.DEVICE_NOT_ONLINE, LoadingState.NO_NETWORK_AVAILABLE, LoadingState.INVALID_DEVICE_RESPONSE -> {
-                            IconButton(onClick = updateDeviceStatus) {
-                                Icon(
-                                    Icons.Default.RestartAlt,
-                                    contentDescription = stringResource(R.string.retry),
-                                )
-                            }
-                        }
-                        LoadingState.LOADING                                                                                                                      -> {
-                            IconButton(onClick = {}, enabled = false) {
-                                CircularProgressIndicator(Modifier.size(24.dp))
-                            }
-                        }
-                    }
-
-                }
-            },
-            supportingContent = {
-                AnimatedContent(
-                    loadingState,
-                    label = "",
-                    transitionSpec = { fadeIn() togetherWith fadeOut() }) {
-                    when (it) {
-                        LoadingState.LOADED                  -> {
-                            Text(
-                                stringResource(R.string.connected),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                        LoadingState.DEVICE_NOT_ONLINE       -> {
-                            Text(
-                                stringResource(id = R.string.device_not_connected),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                        LoadingState.NO_DEVICE_AVAILABLE     -> {
-                            Text(
-                                stringResource(R.string.add_a_device_to_connect_to),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                        LoadingState.LOADING                 -> {
-                            Text(
-                                stringResource(R.string.searching_for_device),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                        LoadingState.NO_NETWORK_AVAILABLE    -> {
-                            Text(
-                                stringResource(R.string.connect_to_a_network),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                        LoadingState.INVALID_DEVICE_RESPONSE -> {
-                            Text(
-                                stringResource(id = R.string.invalid_device_response),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                    }
-                }
-            },
-            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-            modifier = Modifier.padding(
-                horizontal = 12.dp
-            )
-        )
+        DeviceItem(
+            currentDevice = currentDevice,
+            loadingState = loadingState,
+            onOpenOwif = { onOpenOwif() },
+            onUpdateDeviceStatus = { onUpdateDeviceStatus() })
 
         drawerPageGroups.forEachIndexed { index, group ->
             HorizontalDivider(
@@ -303,18 +202,139 @@ fun NavDrawerContent(
                 style = MaterialTheme.typography.titleSmall
             )
             group.pages.forEach { drawerPage ->
-                NavigationDrawerItem(
-                    label = { Text(text = drawerPage.name) }, icon = {
-                        when (navigationState.topLevelRoute == drawerPage.navKey) {
-                            true -> Icon(drawerPage.selectedIcon, contentDescription = null)
-                            else -> Icon(drawerPage.icon, contentDescription = null)
-                        }
-                    }, selected = navigationState.topLevelRoute == drawerPage.navKey, onClick = {
-                        navigator.navigate(drawerPage.navKey)
+                DrawerItem(
+                    drawerPage,
+                    isSelected = navigationState.topLevelRoute == drawerPage.navKey,
+                    onNavigate = {
+                        onNavigate(drawerPage.navKey)
                         closeNavDrawer()
-                    }, modifier = Modifier.padding(start = 16.dp, end = 16.dp)
-                )
+                    })
             }
         }
     }
+}
+
+@Composable
+fun DrawerItem(
+    drawerPage: DrawerPage, isSelected: Boolean, onNavigate: (navKey: NavKey) -> Unit
+) {
+    NavigationDrawerItem(
+        label = { Text(text = drawerPage.name) }, icon = {
+            if (isSelected) {
+                Icon(drawerPage.selectedIcon, contentDescription = null)
+            } else {
+                Icon(drawerPage.icon, contentDescription = null)
+            }
+        }, selected = isSelected, onClick = {
+            onNavigate(drawerPage.navKey)
+        }, modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+    )
+}
+
+@Composable
+fun DeviceItem(
+    currentDevice: Device?,
+    loadingState: LoadingState,
+    onOpenOwif: () -> Unit,
+    onUpdateDeviceStatus: () -> Unit
+) {
+    ListItem(
+        headlineContent = {
+            Text(
+                text = currentDevice?.name ?: stringResource(R.string.no_device_available),
+            )
+        },
+        trailingContent = {
+            AnimatedContent(loadingState, label = "", transitionSpec = {
+                scaleIn(
+                    initialScale = 0f, animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessLow
+                    )
+                ) + fadeIn() togetherWith scaleOut(targetScale = 0f) + fadeOut()
+            }) {
+                when (it) {
+                    LoadingState.LOADED                                                                                                                       -> {
+                        IconButton(onClick = {
+                            onOpenOwif()
+                        }) {
+                            Icon(
+                                Icons.Default.Web,
+                                contentDescription = stringResource(R.string.open_openwebif),
+                            )
+                        }
+                    }
+                    LoadingState.NO_DEVICE_AVAILABLE, LoadingState.DEVICE_NOT_ONLINE, LoadingState.NO_NETWORK_AVAILABLE, LoadingState.INVALID_DEVICE_RESPONSE -> {
+                        IconButton(onClick = { onUpdateDeviceStatus() }) {
+                            Icon(
+                                Icons.Default.RestartAlt,
+                                contentDescription = stringResource(R.string.retry),
+                            )
+                        }
+                    }
+                    LoadingState.LOADING                                                                                                                      -> {
+                        IconButton(onClick = {}, enabled = false) {
+                            CircularProgressIndicator(Modifier.size(24.dp))
+                        }
+                    }
+                }
+
+            }
+        },
+        supportingContent = {
+            AnimatedContent(
+                loadingState,
+                label = "",
+                transitionSpec = { fadeIn() togetherWith fadeOut() }) {
+                when (it) {
+                    LoadingState.LOADED                  -> {
+                        Text(
+                            stringResource(R.string.connected),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                    LoadingState.DEVICE_NOT_ONLINE       -> {
+                        Text(
+                            stringResource(id = R.string.device_not_connected),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                    LoadingState.NO_DEVICE_AVAILABLE     -> {
+                        Text(
+                            stringResource(R.string.add_a_device_to_connect_to),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                    LoadingState.LOADING                 -> {
+                        Text(
+                            stringResource(R.string.searching_for_device),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                    LoadingState.NO_NETWORK_AVAILABLE    -> {
+                        Text(
+                            stringResource(R.string.connect_to_a_network),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                    LoadingState.INVALID_DEVICE_RESPONSE -> {
+                        Text(
+                            stringResource(id = R.string.invalid_device_response),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
+            }
+        },
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+        modifier = Modifier.padding(
+            horizontal = 12.dp
+        )
+    )
 }

@@ -42,6 +42,10 @@ fun RenameMovieDialog(
     var input by rememberSaveable {
         mutableStateOf(movie.eventName)
     }
+    val isEnabled = rememberSaveable(input, movie.eventName) {
+        input != movie.eventName && ! input.isBlank()
+    }
+
     AlertDialog(onDismissRequest = {
         onDismissRequest()
     }, title = { Text(text = stringResource(R.string.rename_movie)) }, icon = {
@@ -58,7 +62,7 @@ fun RenameMovieDialog(
         TextButton(
             onClick = {
                 onConfirmRequest(input)
-            }, enabled = input != movie.eventName && ! input.isBlank()
+            }, enabled = isEnabled
         ) { Text(stringResource(R.string.confirm)) }
     }, dismissButton = {
         TextButton(onClick = {

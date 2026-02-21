@@ -56,7 +56,7 @@ class DownloadRepository(
         }
     }
 
-    suspend fun buildMovieDownloadUrl(
+    private suspend fun buildMovieDownloadUrl(
         file: String,
     ): String = withContext(Dispatchers.Default) {
         getCurrentDevice()?.let { device ->
@@ -71,7 +71,7 @@ class DownloadRepository(
         }
     } ?: ""
 
-    suspend fun buildScreenshotUrl(): String = withContext(Dispatchers.Default) {
+    private suspend fun buildScreenshotUrl(): String = withContext(Dispatchers.Default) {
         getCurrentDevice()?.let { device ->
             buildString {
                 append(if (device.isHttps) "https://" else "http://")

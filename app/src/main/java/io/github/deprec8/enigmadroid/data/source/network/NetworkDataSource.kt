@@ -46,9 +46,7 @@ import kotlinx.coroutines.withContext
 import okhttp3.ConnectionPool
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
 class NetworkDataSource @Inject constructor(
     private val dataStore: DataStore<Preferences>,
     private val deviceDatabase: DeviceDatabase,

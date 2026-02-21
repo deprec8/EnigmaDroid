@@ -22,6 +22,7 @@ package io.github.deprec8.enigmadroid.ui.components.search
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -36,29 +37,34 @@ fun HighlightedText(
     overflow: TextOverflow = TextOverflow.Clip,
     highlightedWords: List<String>
 ) {
-    val annotatedString = if (highlightedWords.isNotEmpty()) {
-        buildAnnotatedString {
-            var index = 0
-            val regex = highlightedWords.joinToString("|", "(", ")") { Regex.escape(it) }
-                .toRegex(RegexOption.IGNORE_CASE)
-            regex.findAll(text).forEach { matchResult ->
-                val start = matchResult.range.first
-                val end = matchResult.range.last + 1
-                if (index < start) append(text.substring(index, start))
-                withStyle(
-                    SpanStyle(
-                        color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold
-                    )
-                ) {
-                    append(text.substring(start, end))
+    val highlightColor = MaterialTheme.colorScheme.primary
+
+    val annotatedString = remember(text, highlightedWords) {
+        if (highlightedWords.isNotEmpty()) {
+            buildAnnotatedString {
+                var index = 0
+                val regex = highlightedWords.joinToString("|", "(", ")") { Regex.escape(it) }
+                    .toRegex(RegexOption.IGNORE_CASE)
+                regex.findAll(text).forEach { matchResult ->
+                    val start = matchResult.range.first
+                    val end = matchResult.range.last + 1
+                    if (index < start) append(text.substring(index, start))
+                    withStyle(
+                        SpanStyle(
+                            color = highlightColor, fontWeight = FontWeight.Bold
+                        )
+                    ) {
+                        append(text.substring(start, end))
+                    }
+                    index = end
                 }
-                index = end
+                if (index < text.length) append(text.substring(index))
             }
-            if (index < text.length) append(text.substring(index))
+        } else {
+            AnnotatedString(text)
         }
-    } else {
-        AnnotatedString(text)
     }
+
     Text(
         text = annotatedString, maxLines = maxLines, overflow = overflow
     )

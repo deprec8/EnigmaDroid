@@ -59,7 +59,7 @@ class MainViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            onboardingRepository.isOnboardingNeeded.collectLatest { needed ->
+            onboardingRepository.getOnboardingNeeded().collectLatest { needed ->
                 _isOnboardingNeeded.value = needed
             }
         }
