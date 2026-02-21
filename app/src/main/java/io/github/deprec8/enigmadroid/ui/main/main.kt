@@ -68,9 +68,8 @@ fun MainPage(
             MainPages.RadioEpg,
             MainPages.DeviceInfo,
             MainPages.Signal,
-            MainPages.Settings,
-            MainPages.RemoteControl
-        ), topLevelDeepLinkRoute = if (isRemoteControlDeepLink) {
+            MainPages.Settings
+        ), deepLinkRoute = if (isRemoteControlDeepLink) {
             MainPages.RemoteControl
         } else {
             null
