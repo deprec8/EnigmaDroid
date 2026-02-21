@@ -25,6 +25,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.ApiType
+import io.github.deprec8.enigmadroid.data.enums.EventType
 import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtonType
 import io.github.deprec8.enigmadroid.data.enums.RemoteControlPowerButtonType
 import io.github.deprec8.enigmadroid.data.objects.PreferenceKey
@@ -127,6 +128,19 @@ class ApiRepository @Inject constructor(
                 append("${device.ip}:${device.port}/file?file=${file.replace(" ", "%20")}")
             }
         } ?: ""
+    }
+
+    private fun EventType.shouldBeNumbered(): Boolean {
+        return when (this) {
+            EventType.CHANNEL, EventType.NUMBERED_MARKER, EventType.INVISIBLE_NUMBERED_MARKER -> true
+            EventType.INVISIBLE, EventType.GROUP, EventType.DIRECTORY, EventType.MARKER       -> false
+        }
+    }
+
+    private fun String.toEventType(): EventType {
+        val flag = split(":").getOrNull(1)?.toIntOrNull() ?: return EventType.CHANNEL
+
+        return EventType.entries.firstOrNull { it.flag == flag } ?: EventType.CHANNEL
     }
 
     suspend fun fetchCurrentInfo(): CurrentInfo {
@@ -245,11 +259,28 @@ class ApiRepository @Inject constructor(
         try {
             fetchBouquets(apiType).forEach { bouquet ->
                 val newBouquetReference = bouquet.reference.replace("\\\"", "\"")
-                val eventBatch = json.decodeFromString(
+                val rawBatch = json.decodeFromString(
                     EventBatch.serializer(),
                     networkDataSource.fetchApi("epgnow?bRef=$newBouquetReference")
                 )
-                emit(eventBatch.copy(name = bouquet.name))
+
+                var counter = 1
+
+                val uiEvents = rawBatch.events.map { event ->
+                    val type = event.serviceReference.toEventType()
+
+                    val displayIndex = if (type.shouldBeNumbered()) counter ++ else null
+
+                    event.copy(
+                        displayIndex = displayIndex, type = type
+                    )
+                }
+
+                emit(
+                    rawBatch.copy(
+                        name = bouquet.name, events = uiEvents
+                    )
+                )
             }
         } catch (_: Exception) {
             emitAll(emptyList<EventBatch>().asFlow())
