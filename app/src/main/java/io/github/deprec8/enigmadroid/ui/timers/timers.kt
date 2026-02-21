@@ -22,41 +22,18 @@ package io.github.deprec8.enigmadroid.ui.timers
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material.icons.filled.TimerOff
-import androidx.compose.material.icons.outlined.Checklist
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Done
-import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.QuestionMark
-import androidx.compose.material.icons.outlined.Timer
-import androidx.compose.material.icons.outlined.TimerOff
-import androidx.compose.material.icons.outlined.Videocam
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.runtime.Composable
@@ -69,29 +46,21 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.data.enums.TimerState
-import io.github.deprec8.enigmadroid.model.api.timers.Timer
-import io.github.deprec8.enigmadroid.model.menu.MenuItem
-import io.github.deprec8.enigmadroid.model.menu.MenuItemGroup
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.RemoteControlActionButton
-import io.github.deprec8.enigmadroid.ui.components.content.ContentListItem
 import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarDrawerNavigationButton
-import io.github.deprec8.enigmadroid.ui.timers.components.DeleteTimerDialog
-import io.github.deprec8.enigmadroid.ui.timers.components.TimerLogDialog
 import io.github.deprec8.enigmadroid.ui.timers.components.TimerSetupDialog
-import io.github.deprec8.enigmadroid.utils.TimestampUtils
+import io.github.deprec8.enigmadroid.ui.timers.components.TimersContent
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -128,219 +97,6 @@ fun TimersPage(
         }
     }
 
-    @Composable
-    fun getTimerState(timer: Timer): String {
-        return when (timer.state + timer.disabled) {
-            TimerState.WAITING.id  -> stringResource(R.string.waiting)
-            TimerState.PREPARED.id -> stringResource(R.string.prepared)
-            TimerState.RUNNING.id  -> stringResource(R.string.running)
-            TimerState.ENDED.id    -> stringResource(R.string.ended)
-            TimerState.DISABLED.id -> stringResource(R.string.disabled)
-            else                   -> {
-                stringResource(R.string.unknown)
-            }
-        }
-    }
-
-    @Composable
-    fun Content(
-        timers: List<Timer>,
-        paddingValues: PaddingValues,
-        highlightedWords: List<String> = emptyList()
-    ) {
-        if (timers.isNotEmpty()) {
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(310.dp),
-                contentPadding = paddingValues,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .consumeWindowInsets(paddingValues)
-                    .imePadding()
-
-            ) {
-                items(timers) { timer ->
-                    var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
-                    var showEditDialog by rememberSaveable { mutableStateOf(false) }
-                    var showLogDialog by rememberSaveable { mutableStateOf(false) }
-
-                    ContentListItem(
-                        highlightedWords = highlightedWords,
-                        headlineText = timer.title,
-                        overlineText = "${timer.serviceName} - ${getTimerState(timer)}",
-                        leadingContent = {
-                            when (timer.state + timer.disabled) {
-                                TimerState.WAITING.id  -> Box(
-                                    modifier = Modifier
-                                        .size(40.dp)
-                                        .clip(MaterialTheme.shapes.medium)
-                                        .background(MaterialTheme.colorScheme.secondary),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.Timer,
-                                        contentDescription = stringResource(R.string.waiting),
-                                        tint = MaterialTheme.colorScheme.onSecondary
-                                    )
-                                }
-                                TimerState.PREPARED.id -> Box(
-                                    modifier = Modifier
-                                        .size(40.dp)
-                                        .clip(MaterialTheme.shapes.medium)
-                                        .background(MaterialTheme.colorScheme.secondary),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.Checklist,
-                                        contentDescription = stringResource(R.string.prepared),
-                                        tint = MaterialTheme.colorScheme.onSecondary
-                                    )
-                                }
-                                TimerState.RUNNING.id  -> Box(
-                                    modifier = Modifier
-                                        .size(40.dp)
-                                        .clip(MaterialTheme.shapes.medium)
-                                        .background(MaterialTheme.colorScheme.primary),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.Videocam,
-                                        contentDescription = stringResource(R.string.running),
-                                        tint = MaterialTheme.colorScheme.onPrimary
-                                    )
-                                }
-                                TimerState.ENDED.id    -> Box(
-                                    modifier = Modifier
-                                        .size(40.dp)
-                                        .clip(MaterialTheme.shapes.medium)
-                                        .background(MaterialTheme.colorScheme.tertiary),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.Done,
-                                        contentDescription = stringResource(R.string.ended),
-                                        tint = MaterialTheme.colorScheme.onTertiary
-                                    )
-                                }
-                                TimerState.DISABLED.id -> Box(
-                                    modifier = Modifier
-                                        .size(40.dp)
-                                        .clip(MaterialTheme.shapes.medium)
-                                        .background(MaterialTheme.colorScheme.tertiary),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.TimerOff,
-                                        contentDescription = stringResource(R.string.disabled),
-                                        tint = MaterialTheme.colorScheme.onTertiary
-                                    )
-                                }
-                                else                   -> {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(40.dp)
-                                            .clip(MaterialTheme.shapes.medium)
-                                            .background(MaterialTheme.colorScheme.error),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Outlined.QuestionMark,
-                                            contentDescription = stringResource(R.string.unknown),
-                                            tint = MaterialTheme.colorScheme.onError
-                                        )
-                                    }
-                                }
-                            }
-                        },
-                        supportingText = TimestampUtils.formatApiTimestampToDate(timer.beginTimestamp) + " " + TimestampUtils.formatApiTimestampToTime(
-                            timer.beginTimestamp
-                        ) + " - " + TimestampUtils.formatApiTimestampToDate(timer.beginTimestamp) + " " + TimestampUtils.formatApiTimestampToTime(
-                            timer.endTimestamp
-                        ),
-                        shortDescription = timer.shortDescription,
-                        longDescription = timer.descriptionextended,
-                        menuItemGroups = if (timer.logEntries.isNotEmpty()) {
-                            listOf(
-                                MenuItemGroup(
-                                    listOf(
-                                        MenuItem(
-                                            text = stringResource(R.string.view_log),
-                                            outlinedIcon = Icons.AutoMirrored.Outlined.List,
-                                            filledIcon = Icons.AutoMirrored.Filled.List,
-                                            action = { showLogDialog = true }),
-                                    )
-                                )
-                            )
-                        } else {
-                            emptyList()
-                        } + listOf(
-                            MenuItemGroup(
-                                listOf(
-                                    MenuItem(
-                                        text = if (timer.disabled == 1) {
-                                            stringResource(R.string.enable)
-                                        } else {
-                                            stringResource(R.string.disable)
-                                        }, outlinedIcon = if (timer.disabled == 1) {
-                                            Icons.Outlined.Timer
-                                        } else {
-                                            Icons.Outlined.TimerOff
-                                        }, filledIcon = if (timer.disabled == 1) {
-                                            Icons.Filled.Timer
-                                        } else {
-                                            Icons.Filled.TimerOff
-                                        }, action = { timersViewModel.toggleTimerStatus(timer) })
-                                )
-                            ), MenuItemGroup(
-                                listOf(
-                                    MenuItem(
-                                        text = stringResource(R.string.edit),
-                                        outlinedIcon = Icons.Outlined.Edit,
-                                        filledIcon = Icons.Filled.Edit,
-                                        action = { showEditDialog = true }), MenuItem(
-                                        text = stringResource(R.string.delete),
-                                        outlinedIcon = Icons.Outlined.Delete,
-                                        filledIcon = Icons.Filled.Delete,
-                                        action = { showDeleteDialog = true })
-                                )
-                            )
-                        )
-                    )
-
-                    if (showLogDialog) {
-                        TimerLogDialog(timer) { showLogDialog = false }
-                    }
-
-                    if (showDeleteDialog) {
-                        DeleteTimerDialog({ showDeleteDialog = false }, {
-                            timersViewModel.deleteTimer(timer)
-                            showDeleteDialog = false
-                        })
-                    }
-                    if (showEditDialog) {
-                        TimerSetupDialog(
-                            onDismissRequest = { showEditDialog = false },
-                            oldTimer = timer,
-                            onSaveRequest = { newTimer, oldTimer ->
-                                if (oldTimer != null) {
-                                    timersViewModel.editTimer(oldTimer, newTimer)
-                                }
-                                showEditDialog = false
-                            },
-                            services = services,
-                        )
-                    }
-
-                }
-            }
-        } else {
-            NoResults(
-                Modifier
-                    .consumeWindowInsets(paddingValues)
-                    .padding(paddingValues)
-            )
-        }
-    }
-
     Scaffold(contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
             enabled = timerBatch.result && loadingState == LoadingState.LOADED,
@@ -348,14 +104,24 @@ fun TimersPage(
             placeholder = stringResource(R.string.search_timers),
             content = {
                 if (filteredTimers != null) {
-                    Content(
+                    TimersContent(
                         timers = filteredTimers !!,
                         paddingValues = PaddingValues(0.dp),
                         highlightedWords = if (useSearchHighlighting) {
                             highlightedWords
                         } else {
                             emptyList()
-                        }
+                        },
+                        onToggleTimerStatus = {
+                            timersViewModel.toggleTimerStatus(it)
+                        },
+                        onEditTimer = { oldTimer, newTimer ->
+                            timersViewModel.editTimer(oldTimer, newTimer)
+                        },
+                        onDeleteTimer = {
+                            timersViewModel.deleteTimer(it)
+                        },
+                        services = services
                     )
                 } else {
                     SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
@@ -403,8 +169,19 @@ fun TimersPage(
 
     ) { innerPadding ->
         if (timerBatch.timers.isNotEmpty() && loadingState == LoadingState.LOADED) {
-            Content(
-                timers = timerBatch.timers, innerPadding
+            TimersContent(
+                timers = timerBatch.timers,
+                paddingValues = innerPadding,
+                onToggleTimerStatus = {
+                    timersViewModel.toggleTimerStatus(it)
+                },
+                onEditTimer = { oldTimer, newTimer ->
+                    timersViewModel.editTimer(oldTimer, newTimer)
+                },
+                onDeleteTimer = {
+                    timersViewModel.deleteTimer(it)
+                },
+                services = services
             )
         } else if (timerBatch.result && loadingState == LoadingState.LOADED) {
             NoResults(

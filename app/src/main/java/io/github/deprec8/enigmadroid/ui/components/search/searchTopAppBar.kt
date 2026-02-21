@@ -26,36 +26,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.ExpandedDockedSearchBar
 import androidx.compose.material3.ExpandedFullScreenSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.SearchBar
-import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SearchBarState
-import androidx.compose.material3.SearchBarValue
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
-import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.insets.topAppBarWithDrawerWindowInsets
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -148,65 +133,4 @@ fun SearchTopAppBar(
             }
         }
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun SearchTopAppBarInputField(
-    searchBarState: SearchBarState,
-    enabled: Boolean,
-    textFieldState: TextFieldState,
-    onSearch: () -> Unit,
-    placeholder: String,
-    navigationButton: @Composable ((searchBarState: SearchBarState) -> Unit),
-    actionButtons: @Composable (() -> Unit)? = null
-) {
-    val isExpanded = searchBarState.currentValue == SearchBarValue.Expanded
-    val scope = rememberCoroutineScope()
-
-    SearchBarDefaults.InputField(
-        searchBarState = searchBarState,
-        colors = SearchBarDefaults.inputFieldColors(
-            disabledLeadingIconColor = TextFieldDefaults.colors().unfocusedLeadingIconColor,
-            disabledTrailingIconColor = TextFieldDefaults.colors().unfocusedTrailingIconColor
-        ),
-        enabled = enabled,
-        textFieldState = textFieldState,
-        onSearch = { onSearch() },
-        placeholder = {
-            Text(
-                text = placeholder, maxLines = 1, overflow = TextOverflow.Ellipsis
-            )
-        },
-        leadingIcon = {
-            if (isExpanded) {
-                IconButton(onClick = {
-                    scope.launch {
-                        searchBarState.animateToCollapsed()
-                    }
-                }) {
-                    Icon(
-                        Icons.AutoMirrored.Default.ArrowBack, contentDescription = stringResource(
-                            R.string.close_search
-                        )
-                    )
-                }
-            } else {
-                navigationButton(searchBarState)
-            }
-        },
-        trailingIcon = {
-            if (isExpanded) {
-                IconButton(onClick = {
-                    textFieldState.setTextAndPlaceCursorAtEnd("")
-                }, enabled = textFieldState.text.isNotEmpty()) {
-                    Icon(
-                        Icons.Default.Clear,
-                        contentDescription = stringResource(R.string.clear_search)
-                    )
-                }
-            } else {
-                actionButtons?.invoke()
-            }
-        })
 }

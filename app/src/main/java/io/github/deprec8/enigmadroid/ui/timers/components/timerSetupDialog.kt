@@ -41,6 +41,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -64,6 +65,7 @@ import androidx.compose.material3.TimePickerDialog
 import androidx.compose.material3.TimePickerDialogDefaults
 import androidx.compose.material3.TimePickerDialogDefaults.MinHeightForTimePicker
 import androidx.compose.material3.TimePickerDisplayMode
+import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
@@ -184,20 +186,16 @@ fun TimerSetupDialog(
         onDispose { reset() }
     }
 
-
     AdaptiveDialog(
         onDismissRequest = {
             onDismissRequest()
-        },
-        title = if (oldTimer == null) {
+        }, title = if (oldTimer == null) {
             stringResource(R.string.add_timer)
         } else {
             stringResource(R.string.edit_timer)
-        },
-        actionButton = {
+        }, actionButton = {
             TextButton(
-                enabled = isEverythingValid(),
-                onClick = {
+                enabled = isEverythingValid(), onClick = {
                     onSaveRequest(
                         Timer(
                             serviceReference = serviceReference,
@@ -221,16 +219,12 @@ fun TimerSetupDialog(
                     }
                 )
             }
-        },
-        content = { isContentScrollable ->
+        }, content = { isContentScrollable ->
             Column {
                 ExposedDropdownMenuBox(
-                    expanded = showServicesMenu,
-                    onExpandedChange = {
+                    expanded = showServicesMenu, onExpandedChange = {
                         showServicesMenu = it
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
+                    }, modifier = Modifier.fillMaxWidth()
                 ) {
                     OutlinedTextField(
                         value = if (serviceReference == "") {
@@ -238,8 +232,7 @@ fun TimerSetupDialog(
                         } else {
                             services
                                 .flatMap { it.services.flatMap { service -> service.subservices } }
-                                .find { it.serviceReference == serviceReference }?.serviceName
-                                ?: ""
+                                .find { it.serviceReference == serviceReference }?.serviceName ?: ""
                         },
                         onValueChange = { },
                         singleLine = true,
@@ -264,19 +257,15 @@ fun TimerSetupDialog(
                         if (services.isNotEmpty()) {
                             services.forEach { subservice ->
                                 subservice.services.first().subservices.forEachIndexed { index, service ->
-                                    DropdownMenuItem(
-                                        leadingIcon = {
-                                            Text(
-                                                text = "${index + 1}.",
-                                                textAlign = TextAlign.Center,
-                                            )
-                                        },
-                                        text = { Text(text = service.serviceName) },
-                                        onClick = {
-                                            serviceReference = service.serviceReference
-                                            showServicesMenu = false
-                                        }
-                                    )
+                                    DropdownMenuItem(leadingIcon = {
+                                        Text(
+                                            text = "${index + 1}.",
+                                            textAlign = TextAlign.Center,
+                                        )
+                                    }, text = { Text(text = service.serviceName) }, onClick = {
+                                        serviceReference = service.serviceReference
+                                        showServicesMenu = false
+                                    })
                                 }
                                 if (subservice != services.last()) {
                                     HorizontalDivider()
@@ -297,8 +286,7 @@ fun TimerSetupDialog(
                     state = titleState,
                     lineLimits = TextFieldLineLimits.SingleLine,
                     label = { Text(text = stringResource(R.string.title)) },
-                    modifier = Modifier
-                        .fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Next
                     )
@@ -308,8 +296,7 @@ fun TimerSetupDialog(
                     state = shortDescriptionState,
                     lineLimits = TextFieldLineLimits.SingleLine,
                     label = { Text(text = stringResource(R.string.description)) },
-                    modifier = Modifier
-                        .fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Done
                     )
@@ -365,93 +352,74 @@ fun TimerSetupDialog(
                 }
                 Spacer(Modifier.size(8.dp))
                 Row(
-                    Modifier
-                        .horizontalScroll(toggleScrollState)
+                    Modifier.horizontalScroll(toggleScrollState)
                 ) {
-                    FilterChip(
-                        selected = disabled == 0, onClick =
-                            {
-                                disabled = if (disabled == 0) {
-                                    1
-                                } else {
-                                    0
-                                }
-                            }, label = {
-                            Text(
-                                text = stringResource(R.string.enabled)
-                            )
-                        }, leadingIcon = {
-                            AnimatedVisibility(disabled == 0) {
-                                Icon(
-                                    Icons.Default.Check,
-                                    contentDescription = null,
-                                    Modifier.size(
-                                        FilterChipDefaults.IconSize
-                                    )
+                    FilterChip(selected = disabled == 0, onClick = {
+                        disabled = if (disabled == 0) {
+                            1
+                        } else {
+                            0
+                        }
+                    }, label = {
+                        Text(
+                            text = stringResource(R.string.enabled)
+                        )
+                    }, leadingIcon = {
+                        AnimatedVisibility(disabled == 0) {
+                            Icon(
+                                Icons.Default.Check, contentDescription = null, Modifier.size(
+                                    FilterChipDefaults.IconSize
                                 )
-                            }
-                        })
+                            )
+                        }
+                    })
                     FilterChip(
-                        selected = justPlay == 1,
-                        onClick = {
+                        selected = justPlay == 1, onClick = {
                             justPlay = if (justPlay == 0) {
                                 1
                             } else {
                                 0
                             }
-                        },
-                        label = {
+                        }, label = {
                             Text(
                                 text = stringResource(R.string.justplay)
                             )
-                        },
-                        leadingIcon = {
+                        }, leadingIcon = {
                             AnimatedVisibility(justPlay == 1) {
                                 Icon(
-                                    Icons.Default.Check,
-                                    contentDescription = null,
-                                    Modifier.size(
+                                    Icons.Default.Check, contentDescription = null, Modifier.size(
                                         FilterChipDefaults.IconSize
                                     )
                                 )
                             }
-                        },
-                        modifier = Modifier.padding(start = 8.dp)
+                        }, modifier = Modifier.padding(start = 8.dp)
                     )
                     FilterChip(
-                        selected = alwaysZap == 1,
-                        onClick = {
+                        selected = alwaysZap == 1, onClick = {
                             alwaysZap = if (alwaysZap == 0) {
                                 1
                             } else {
                                 0
                             }
-                        },
-                        label = {
+                        }, label = {
                             Text(
                                 text = stringResource(R.string.switch_channel)
                             )
-                        },
-                        leadingIcon = {
+                        }, leadingIcon = {
                             AnimatedVisibility(alwaysZap == 1) {
                                 Icon(
-                                    Icons.Default.Check,
-                                    contentDescription = null,
-                                    Modifier.size(
+                                    Icons.Default.Check, contentDescription = null, Modifier.size(
                                         FilterChipDefaults.IconSize
                                     )
                                 )
                             }
-                        },
-                        modifier = Modifier.padding(start = 8.dp)
+                        }, modifier = Modifier.padding(start = 8.dp)
                     )
                 }
                 ExposedDropdownMenuBox(
-                    expanded = showAftereventMenu,
-                    onExpandedChange = {
+                    expanded = showAftereventMenu, onExpandedChange = {
                         showAftereventMenu = it
-                    },
-                    modifier = Modifier
+                    }, modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)
                 ) {
@@ -528,161 +496,124 @@ fun TimerSetupDialog(
                 }
 
                 if (showBeginDatePicker) {
-                    val dateScrollState = rememberScrollState()
-                    DatePickerDialog(onDismissRequest = {
+                    DatePickerDialog(beginDateState, onDismissRequest = {
                         showBeginDatePicker = false
-                    }, confirmButton = {
-                        TextButton(onClick = {
-                            beginTimestamp = TimestampUtils.combineDateTime(
-                                beginTimestamp,
-                                beginDateState.selectedDateMillis
-                                    ?: beginTimestamp
-                            )
-                            showBeginDatePicker = false
-                        }) { Text(stringResource(R.string.ok)) }
-
-                    }, dismissButton = {
-                        TextButton(
-                            onClick = {
-                                showBeginDatePicker = false
-                            },
-                        ) { Text(stringResource(R.string.cancel)) }
-                    }) {
-                        DatePicker(
-                            modifier = Modifier.verticalScroll(dateScrollState),
-                            state = beginDateState,
+                    }, onSaveRequest = {
+                        beginTimestamp = TimestampUtils.combineDateTime(
+                            beginTimestamp, beginDateState.selectedDateMillis ?: beginTimestamp
                         )
-                    }
+                        showBeginDatePicker = false
+                    })
                 }
 
                 if (showEndDatePicker) {
-                    val dateScrollState = rememberScrollState()
-                    DatePickerDialog(onDismissRequest = {
+                    DatePickerDialog(endDateState, onDismissRequest = {
                         showEndDatePicker = false
-                    }, confirmButton = {
-                        TextButton(onClick = {
-                            endTimestamp = TimestampUtils.combineDateTime(
-                                endTimestamp,
-                                endDateState.selectedDateMillis
-                                    ?: endTimestamp
-                            )
-                            showEndDatePicker = false
-                        }) { Text(stringResource(R.string.ok)) }
-
-                    }, dismissButton = {
-                        TextButton(
-                            onClick = {
-                                showEndDatePicker = false
-                            },
-                        ) { Text(stringResource(R.string.cancel)) }
-                    }) {
-                        DatePicker(
-                            modifier = Modifier.verticalScroll(dateScrollState),
-                            state = endDateState,
+                    }, onSaveRequest = {
+                        endTimestamp = TimestampUtils.combineDateTime(
+                            endTimestamp, endDateState.selectedDateMillis ?: endTimestamp
                         )
-                    }
+                        showEndDatePicker = false
+                    })
                 }
 
                 if (showBeginTimePicker) {
-                    var displayMode by remember { mutableStateOf(TimePickerDisplayMode.Picker) }
                     TimePickerDialog(
+                        state = beginTimeState,
                         onDismissRequest = { showBeginTimePicker = false },
-                        title = { TimePickerDialogDefaults.Title(displayMode = displayMode) },
-                        confirmButton = {
-                            TextButton(onClick = {
-                                beginTimestamp = TimestampUtils.combineTimeDate(
-                                    beginTimestamp,
-                                    TimestampUtils.getMillisFromTimeString(
-                                        beginTimeState.hour.toString() + ":" + beginTimeState.minute.toString()
-                                    )
+                        onSaveRequest = {
+                            beginTimestamp = TimestampUtils.combineTimeDate(
+                                beginTimestamp, TimestampUtils.getMillisFromTimeString(
+                                    beginTimeState.hour.toString() + ":" + beginTimeState.minute.toString()
                                 )
-                                showBeginTimePicker = false
-                            }) {
-                                Text(stringResource(R.string.ok))
-                            }
-                        },
-                        dismissButton = {
-                            TextButton(onClick = { showBeginTimePicker = false }) {
-                                Text(stringResource(R.string.cancel))
-                            }
-                        },
-                        modeToggleButton = {
-                            if (LocalWindowInfo.current.containerSize.height.dp > MinHeightForTimePicker) {
-                                TimePickerDialogDefaults.DisplayModeToggle(
-                                    onDisplayModeChange = {
-                                        displayMode =
-                                            if (displayMode == TimePickerDisplayMode.Picker) {
-                                                TimePickerDisplayMode.Input
-                                            } else {
-                                                TimePickerDisplayMode.Picker
-                                            }
-                                    },
-                                    displayMode = displayMode,
-                                )
-                            }
-                        }
-                    ) {
-                        if (
-                            displayMode == TimePickerDisplayMode.Picker &&
-                            LocalWindowInfo.current.containerSize.height.dp > MinHeightForTimePicker
-                        ) {
-                            TimePicker(state = beginTimeState)
-                        } else {
-                            TimeInput(state = beginTimeState)
-                        }
-                    }
+                            )
+                            showBeginTimePicker = false
+                        })
                 }
 
                 if (showEndTimePicker) {
-                    var displayMode by remember { mutableStateOf(TimePickerDisplayMode.Picker) }
                     TimePickerDialog(
+                        state = endTimeState,
                         onDismissRequest = { showEndTimePicker = false },
-                        title = { TimePickerDialogDefaults.Title(displayMode = displayMode) },
-                        confirmButton = {
-                            TextButton(onClick = {
-                                endTimestamp = TimestampUtils.combineTimeDate(
-                                    endTimestamp,
-                                    TimestampUtils.getMillisFromTimeString(
-                                        endTimeState.hour.toString() + ":" + endTimeState.minute.toString()
-                                    )
+                        onSaveRequest = {
+                            endTimestamp = TimestampUtils.combineTimeDate(
+                                endTimestamp, TimestampUtils.getMillisFromTimeString(
+                                    endTimeState.hour.toString() + ":" + endTimeState.minute.toString()
                                 )
-                                showEndTimePicker = false
-                            }) {
-                                Text(stringResource(R.string.ok))
-                            }
-                        },
-                        dismissButton = {
-                            TextButton(onClick = { showEndTimePicker = false }) {
-                                Text(stringResource(R.string.cancel))
-                            }
-                        },
-                        modeToggleButton = {
-                            if (LocalWindowInfo.current.containerSize.height.dp > MinHeightForTimePicker) {
-                                TimePickerDialogDefaults.DisplayModeToggle(
-                                    onDisplayModeChange = {
-                                        displayMode =
-                                            if (displayMode == TimePickerDisplayMode.Picker) {
-                                                TimePickerDisplayMode.Input
-                                            } else {
-                                                TimePickerDisplayMode.Picker
-                                            }
-                                    },
-                                    displayMode = displayMode,
-                                )
-                            }
-                        }
-                    ) {
-                        if (
-                            displayMode == TimePickerDisplayMode.Picker &&
-                            LocalWindowInfo.current.containerSize.height.dp > MinHeightForTimePicker
-                        ) {
-                            TimePicker(state = endTimeState)
-                        } else {
-                            TimeInput(state = endTimeState)
-                        }
-                    }
+                            )
+                            showEndTimePicker = false
+                        })
                 }
             }
+        })
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TimePickerDialog(
+    state: TimePickerState, onDismissRequest: () -> Unit, onSaveRequest: () -> Unit
+) {
+    var displayMode by remember { mutableStateOf(TimePickerDisplayMode.Picker) }
+
+    TimePickerDialog(
+        onDismissRequest = { onDismissRequest() },
+        title = { TimePickerDialogDefaults.Title(displayMode = displayMode) },
+        confirmButton = {
+            TextButton(onClick = {
+                onSaveRequest()
+            }) {
+                Text(stringResource(R.string.ok))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = { onDismissRequest() }) {
+                Text(stringResource(R.string.cancel))
+            }
+        },
+        modeToggleButton = {
+            if (LocalWindowInfo.current.containerSize.height.dp > MinHeightForTimePicker) {
+                TimePickerDialogDefaults.DisplayModeToggle(
+                    onDisplayModeChange = {
+                        displayMode = if (displayMode == TimePickerDisplayMode.Picker) {
+                            TimePickerDisplayMode.Input
+                        } else {
+                            TimePickerDisplayMode.Picker
+                        }
+                    },
+                    displayMode = displayMode,
+                )
+            }
+        }) {
+        if (displayMode == TimePickerDisplayMode.Picker && LocalWindowInfo.current.containerSize.height.dp > MinHeightForTimePicker) {
+            TimePicker(state = state)
+        } else {
+            TimeInput(state = state)
         }
-    )
+    }
+}
+
+@Composable
+private fun DatePickerDialog(
+    state: DatePickerState, onDismissRequest: () -> Unit, onSaveRequest: () -> Unit
+) {
+    val dateScrollState = rememberScrollState()
+    DatePickerDialog(onDismissRequest = {
+        onDismissRequest()
+    }, confirmButton = {
+        TextButton(onClick = {
+            onSaveRequest()
+        }) { Text(stringResource(R.string.ok)) }
+
+    }, dismissButton = {
+        TextButton(
+            onClick = {
+                onDismissRequest()
+            },
+        ) { Text(stringResource(R.string.cancel)) }
+    }) {
+        DatePicker(
+            modifier = Modifier.verticalScroll(dateScrollState),
+            state = state,
+        )
+    }
 }

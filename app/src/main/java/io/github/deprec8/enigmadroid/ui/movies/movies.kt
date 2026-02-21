@@ -22,28 +22,11 @@ package io.github.deprec8.enigmadroid.ui.movies
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.DriveFileMove
-import androidx.compose.material.icons.automirrored.outlined.DriveFileMove
-import androidx.compose.material.icons.filled.Cast
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Download
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.outlined.Cast
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Download
-import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -55,11 +38,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -69,21 +49,14 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.model.api.movies.Movie
-import io.github.deprec8.enigmadroid.model.menu.MenuItem
-import io.github.deprec8.enigmadroid.model.menu.MenuItemGroup
 import io.github.deprec8.enigmadroid.ui.components.FloatingRefreshButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
-import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.RemoteControlActionButton
-import io.github.deprec8.enigmadroid.ui.components.content.ContentListItem
 import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarDrawerNavigationButton
-import io.github.deprec8.enigmadroid.ui.movies.components.DeleteMovieDialog
-import io.github.deprec8.enigmadroid.ui.movies.components.MoveMovieDialog
-import io.github.deprec8.enigmadroid.ui.movies.components.RenameMovieDialog
+import io.github.deprec8.enigmadroid.ui.movies.components.MoviesContent
 import io.github.deprec8.enigmadroid.utils.IntentUtils
 import kotlinx.coroutines.launch
 
@@ -130,130 +103,6 @@ fun MoviesPage(
         }
     }
 
-    @Composable
-    fun Content(
-        movies: List<Movie>,
-        paddingValues: PaddingValues,
-        highlightedWords: List<String> = emptyList()
-    ) {
-        if (movies.isNotEmpty()) {
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(310.dp),
-                Modifier
-                    .fillMaxSize()
-                    .consumeWindowInsets(paddingValues)
-                    .imePadding(),
-                contentPadding = paddingValues
-            ) {
-                items(movies) { movie ->
-                    var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
-                    var showRenameDialog by rememberSaveable { mutableStateOf(false) }
-                    var showMoveDialog by rememberSaveable { mutableStateOf(false) }
-
-                    ContentListItem(
-                        highlightedWords = highlightedWords,
-                        headlineText = movie.eventName,
-                        overlineText = movie.serviceName.ifBlank {
-                            null
-                        },
-                        supportingText = "${movie.begin} / ${movie.length} / ${movie.filesizeReadable}",
-                        shortDescription = movie.shortDescription,
-                        longDescription = movie.longDescription,
-                        menuItemGroups = listOf(
-                            MenuItemGroup(
-                                listOf(
-                                    MenuItem(
-                                        text = stringResource(R.string.stream),
-                                        outlinedIcon = Icons.Outlined.Cast,
-                                        filledIcon = Icons.Filled.Cast,
-                                        action = {
-                                            scope.launch {
-                                                IntentUtils.playMedia(
-                                                    context,
-                                                    moviesViewModel.buildMovieStreamUrl(movie.fileName),
-                                                    movie.eventName
-                                                )
-                                            }
-                                        }), MenuItem(
-                                        text = stringResource(R.string.switch_channel),
-                                        outlinedIcon = Icons.Outlined.PlayArrow,
-                                        filledIcon = Icons.Filled.PlayArrow,
-                                        action = {
-                                            moviesViewModel.playOnDevice(movie.serviceReference)
-                                        })
-                                )
-                            ),
-                            MenuItemGroup(
-                                listOf(
-                                    MenuItem(
-                                        text = stringResource(R.string.download),
-                                        outlinedIcon = Icons.Outlined.Download,
-                                        filledIcon = Icons.Filled.Download,
-                                        action = {
-                                            moviesViewModel.downloadMovie(movie)
-                                        })
-                                )
-                            ),
-                        ),
-                        editMenuItemGroup = MenuItemGroup(
-                            listOf(
-                                MenuItem(
-                                    text = stringResource(R.string.rename),
-                                    outlinedIcon = Icons.Outlined.Edit,
-                                    filledIcon = Icons.Filled.Edit,
-                                    action = { showRenameDialog = true }), MenuItem(
-                                    text = stringResource(R.string.move),
-                                    outlinedIcon = Icons.AutoMirrored.Outlined.DriveFileMove,
-                                    filledIcon = Icons.AutoMirrored.Filled.DriveFileMove,
-                                    action = { showMoveDialog = true }), MenuItem(
-                                    text = stringResource(R.string.delete),
-                                    outlinedIcon = Icons.Outlined.Delete,
-                                    filledIcon = Icons.Filled.Delete,
-                                    action = { showDeleteDialog = true })
-                            )
-                        )
-                    )
-
-                    if (showDeleteDialog) {
-                        DeleteMovieDialog(
-                            onDismissRequest = { showDeleteDialog = false },
-                            onConfirmRequest = {
-                                showDeleteDialog = false
-                                moviesViewModel.delete(movie.serviceReference)
-                            })
-                    }
-
-                    if (showRenameDialog) {
-                        RenameMovieDialog(
-                            movie,
-                            onDismissRequest = { showRenameDialog = false },
-                            onConfirmRequest = { input ->
-                                showRenameDialog = false
-                                moviesViewModel.rename(
-                                    movie.serviceReference, input
-                                )
-                            })
-                    }
-
-                    if (showMoveDialog) {
-                        MoveMovieDialog(
-                            onDismissRequest = { showMoveDialog = false },
-                            onConfirmRequest = {
-                                showMoveDialog = false
-                                moviesViewModel.move(movie.serviceReference, it)
-                            })
-                    }
-                }
-            }
-        } else {
-            NoResults(
-                Modifier
-                    .consumeWindowInsets(paddingValues)
-                    .padding(paddingValues)
-            )
-        }
-    }
-
     Scaffold(floatingActionButton = {
         FloatingRefreshButton(loadingState) { moviesViewModel.fetchData() }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
@@ -263,15 +112,36 @@ fun MoviesPage(
             placeholder = stringResource(R.string.search_movies),
             content = {
                 if (filteredMovies != null) {
-                    Content(
+                    MoviesContent(
                         movies = filteredMovies !!,
                         paddingValues = PaddingValues(0.dp),
                         highlightedWords = if (useSearchHighlighting) {
                             highlightedWords
                         } else {
                             emptyList()
-                        }
-                    )
+                        },
+                        onStreamMovie = { movie ->
+                            scope.launch {
+                                IntentUtils.playMedia(
+                                    context,
+                                    moviesViewModel.buildMovieStreamUrl(movie.fileName),
+                                    movie.eventName
+                                )
+                            }
+                        },
+                        onPlayMovieOnDevice = { movie -> moviesViewModel.playOnDevice(movie.serviceReference) },
+                        onDeleteMovie = { movie -> moviesViewModel.delete(movie.serviceReference) },
+                        onRenameMovie = { movie, newName ->
+                            moviesViewModel.rename(
+                                movie.serviceReference, newName
+                            )
+                        },
+                        onMoveMovie = { movie, newLocation ->
+                            moviesViewModel.move(
+                                movie.serviceReference, newLocation
+                            )
+                        },
+                        onDownloadMovie = { movie -> moviesViewModel.downloadMovie(movie) })
                 } else {
                     SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
                         moviesViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
@@ -328,7 +198,31 @@ fun MoviesPage(
                 modifier = Modifier.fillMaxSize(),
                 state = pagerState,
             ) { index ->
-                Content(movies = movieBatches[index].movies, innerPadding)
+                MoviesContent(
+                    movies = movieBatches[index].movies,
+                    paddingValues = innerPadding,
+                    onStreamMovie = { movie ->
+                        scope.launch {
+                            IntentUtils.playMedia(
+                                context,
+                                moviesViewModel.buildMovieStreamUrl(movie.fileName),
+                                movie.eventName
+                            )
+                        }
+                    },
+                    onPlayMovieOnDevice = { movie -> moviesViewModel.playOnDevice(movie.serviceReference) },
+                    onDeleteMovie = { movie -> moviesViewModel.delete(movie.serviceReference) },
+                    onRenameMovie = { movie, newName ->
+                        moviesViewModel.rename(
+                            movie.serviceReference, newName
+                        )
+                    },
+                    onMoveMovie = { movie, newLocation ->
+                        moviesViewModel.move(
+                            movie.serviceReference, newLocation
+                        )
+                    },
+                    onDownloadMovie = { movie -> moviesViewModel.downloadMovie(movie) })
             }
         } else {
             LoadingScreen(
