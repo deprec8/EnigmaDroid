@@ -156,7 +156,7 @@
     <string name="service">Servizio</string>
     <string name="open_search">Apri ricerca</string>
     <string name="no_browser_found">Nessun browser trovato.</string>
-    <string name="no_calender_found">Nessun calendario trovato.</string>
+    <string name="no_calendar_found">Nessun calendario trovato.</string>
     <string name="no_media_player_found">Nessun lettore multimediale trovato.</string>
     <string name="download">Scarica</string>
     <string name="downloading">Scaricamento %1$s</string>

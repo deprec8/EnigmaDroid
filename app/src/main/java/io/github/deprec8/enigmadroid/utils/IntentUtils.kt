@@ -77,7 +77,7 @@ object IntentUtils {
                 } else {
                     Toast.makeText(
                         context,
-                        R.string.no_calender_found, Toast.LENGTH_SHORT
+                        R.string.no_calendar_found, Toast.LENGTH_SHORT
                     ).show()
                 }
             }
@@ -106,7 +106,7 @@ object IntentUtils {
             } else {
                 Toast.makeText(
                     context,
-                    R.string.no_calender_found, Toast.LENGTH_SHORT
+                    R.string.no_calendar_found, Toast.LENGTH_SHORT
                 ).show()
             }
         }

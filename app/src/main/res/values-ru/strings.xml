@@ -156,7 +156,7 @@
     <string name="service">Сервис</string>
     <string name="open_search">Открыть поиск</string>
     <string name="no_browser_found">Обозреватель не найден.</string>
-    <string name="no_calender_found">Календарь не найден.</string>
+    <string name="no_calendar_found">Календарь не найден.</string>
     <string name="no_media_player_found">Видеоплейер не найден.</string>
     <string name="download">Скачать</string>
     <string name="downloading">Скачивание %1$s</string>

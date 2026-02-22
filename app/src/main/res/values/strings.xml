@@ -165,7 +165,7 @@
     <string name="service">Service</string>
     <string name="open_search">Open search</string>
     <string name="no_browser_found">No browser found.</string>
-    <string name="no_calender_found">No calendar found.</string>
+    <string name="no_calendar_found">No calendar found.</string>
     <string name="no_media_player_found">No media player found.</string>
     <string name="download">Download</string>
     <string name="downloading">Downloading %1$s</string>
