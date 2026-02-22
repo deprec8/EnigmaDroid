@@ -32,17 +32,15 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -51,7 +49,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -78,8 +76,7 @@ fun ContentDetails(
     var showDropDownMenu by rememberSaveable { mutableStateOf(false) }
 
     Column {
-        ElevatedCard(
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+        OutlinedCard(
             modifier = Modifier.padding(start = 16.dp, end = 16.dp)
         ) {
             ListItem(
@@ -152,14 +149,13 @@ fun ContentDetails(
                 } else {
                     null
                 },
-                colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.primaryContainer))
+                colors = ListItemDefaults.colors(containerColor = Color.Transparent))
             if (progress != null) {
                 LinearProgressIndicator(
                     progress = { progress },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
-                    strokeCap = StrokeCap.Round
+                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
                 )
             }
         }

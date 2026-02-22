@@ -102,65 +102,65 @@ fun TimersContent(
                                 modifier = Modifier
                                     .size(40.dp)
                                     .clip(MaterialTheme.shapes.medium)
-                                    .background(MaterialTheme.colorScheme.secondary),
+                                    .background(MaterialTheme.colorScheme.tertiaryContainer),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     imageVector = Icons.Outlined.Timer,
                                     contentDescription = stringResource(R.string.waiting),
-                                    tint = MaterialTheme.colorScheme.onSecondary
+                                    tint = MaterialTheme.colorScheme.onTertiaryContainer
                                 )
                             }
                             TimerState.PREPARED.id -> Box(
                                 modifier = Modifier
                                     .size(40.dp)
                                     .clip(MaterialTheme.shapes.medium)
-                                    .background(MaterialTheme.colorScheme.secondary),
+                                    .background(MaterialTheme.colorScheme.tertiaryContainer),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     imageVector = Icons.Outlined.Checklist,
                                     contentDescription = stringResource(R.string.prepared),
-                                    tint = MaterialTheme.colorScheme.onSecondary
+                                    tint = MaterialTheme.colorScheme.onTertiaryContainer
                                 )
                             }
                             TimerState.RUNNING.id  -> Box(
                                 modifier = Modifier
                                     .size(40.dp)
                                     .clip(MaterialTheme.shapes.medium)
-                                    .background(MaterialTheme.colorScheme.primary),
+                                    .background(MaterialTheme.colorScheme.primaryContainer),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     imageVector = Icons.Outlined.Videocam,
                                     contentDescription = stringResource(R.string.running),
-                                    tint = MaterialTheme.colorScheme.onPrimary
+                                    tint = MaterialTheme.colorScheme.onPrimaryContainer
                                 )
                             }
                             TimerState.ENDED.id    -> Box(
                                 modifier = Modifier
                                     .size(40.dp)
                                     .clip(MaterialTheme.shapes.medium)
-                                    .background(MaterialTheme.colorScheme.tertiary),
+                                    .background(MaterialTheme.colorScheme.secondaryContainer),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     imageVector = Icons.Outlined.Done,
                                     contentDescription = stringResource(R.string.ended),
-                                    tint = MaterialTheme.colorScheme.onTertiary
+                                    tint = MaterialTheme.colorScheme.onSecondaryContainer
                                 )
                             }
                             TimerState.DISABLED.id -> Box(
                                 modifier = Modifier
                                     .size(40.dp)
                                     .clip(MaterialTheme.shapes.medium)
-                                    .background(MaterialTheme.colorScheme.tertiary),
+                                    .background(MaterialTheme.colorScheme.secondaryContainer),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     imageVector = Icons.Outlined.TimerOff,
                                     contentDescription = stringResource(R.string.disabled),
-                                    tint = MaterialTheme.colorScheme.onTertiary
+                                    tint = MaterialTheme.colorScheme.onSecondaryContainer
                                 )
                             }
                             else                   -> {
@@ -168,13 +168,13 @@ fun TimersContent(
                                     modifier = Modifier
                                         .size(40.dp)
                                         .clip(MaterialTheme.shapes.medium)
-                                        .background(MaterialTheme.colorScheme.error),
+                                        .background(MaterialTheme.colorScheme.errorContainer),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
                                         imageVector = Icons.Outlined.QuestionMark,
                                         contentDescription = stringResource(R.string.unknown),
-                                        tint = MaterialTheme.colorScheme.onError
+                                        tint = MaterialTheme.colorScheme.onErrorContainer
                                     )
                                 }
                             }

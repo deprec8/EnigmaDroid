@@ -32,6 +32,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.OutlinedButton
@@ -294,7 +295,7 @@ fun CurrentPage(
                     Spacer(Modifier.size(16.dp))
                     if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)) {
                         Row {
-                            OutlinedButton(
+                            FilledTonalButton(
                                 onClick = {
                                     scope.launch {
                                         IntentUtils.playMedia(
@@ -323,7 +324,7 @@ fun CurrentPage(
                             }
                         }
                     } else {
-                        OutlinedButton(
+                        FilledTonalButton(
                             onClick = {
                                 scope.launch {
                                     IntentUtils.playMedia(

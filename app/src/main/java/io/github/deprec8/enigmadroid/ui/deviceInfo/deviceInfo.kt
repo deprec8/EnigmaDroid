@@ -19,6 +19,7 @@
 
 package io.github.deprec8.enigmadroid.ui.deviceInfo
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -26,10 +27,16 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Apps
+import androidx.compose.material.icons.outlined.SettingsEthernet
+import androidx.compose.material.icons.outlined.SimCard
+import androidx.compose.material.icons.outlined.Storage
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -111,11 +118,16 @@ fun DeviceInfoPage(
                 contentPadding = innerPadding
             ) {
                 item(span = { GridItemSpan(maxLineSpan) }) {
-                    Text(
-                        text = stringResource(R.string.general),
-                        modifier = Modifier.padding(16.dp),
-                        style = MaterialTheme.typography.titleSmall
-                    )
+                    Column {
+                        ListItem(headlineContent = {
+                            Text(stringResource(R.string.general))
+                        }, leadingContent = {
+                            Icon(
+                                Icons.Outlined.Apps, null
+                            )
+                        })
+                        HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+                    }
                 }
                 item {
                     ListItem(
@@ -161,11 +173,16 @@ fun DeviceInfoPage(
                         supportingContent = { Text(text = deviceInfo.webifVersion) })
                 }
                 item(span = { GridItemSpan(maxLineSpan) }) {
-                    Text(
-                        text = stringResource(id = R.string.tuner),
-                        modifier = Modifier.padding(16.dp),
-                        style = MaterialTheme.typography.titleSmall
-                    )
+                    Column {
+                        ListItem(headlineContent = {
+                            Text(stringResource(R.string.tuner))
+                        }, leadingContent = {
+                            Icon(
+                                Icons.Outlined.SimCard, null
+                            )
+                        })
+                        HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+                    }
                 }
                 items(deviceInfo.tuners) { tuner ->
                     ListItem(headlineContent = { Text(text = tuner.name) }, supportingContent = {
@@ -175,11 +192,16 @@ fun DeviceInfoPage(
                     })
                 }
                 item(span = { GridItemSpan(maxLineSpan) }) {
-                    Text(
-                        text = stringResource(id = R.string.network),
-                        modifier = Modifier.padding(16.dp),
-                        style = MaterialTheme.typography.titleSmall
-                    )
+                    Column {
+                        ListItem(headlineContent = {
+                            Text(stringResource(R.string.network))
+                        }, leadingContent = {
+                            Icon(
+                                Icons.Outlined.SettingsEthernet, null
+                            )
+                        })
+                        HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+                    }
                 }
                 items(deviceInfo.interfaces) { iface ->
                     ListItem(headlineContent = { Text(text = iface.name) }, supportingContent = {
@@ -189,11 +211,16 @@ fun DeviceInfoPage(
                     })
                 }
                 item(span = { GridItemSpan(maxLineSpan) }) {
-                    Text(
-                        text = stringResource(R.string.storage),
-                        modifier = Modifier.padding(16.dp),
-                        style = MaterialTheme.typography.titleSmall
-                    )
+                    Column {
+                        ListItem(headlineContent = {
+                            Text(stringResource(R.string.storage))
+                        }, leadingContent = {
+                            Icon(
+                                Icons.Outlined.Storage, null
+                            )
+                        })
+                        HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+                    }
                 }
                 items(deviceInfo.hdds) { hdd ->
                     ListItem(
