@@ -165,14 +165,14 @@
     <string name="service">Service</string>
     <string name="open_search">Open search</string>
     <string name="no_browser_found">No browser found.</string>
-    <string name="no_calender_found">No calender found.</string>
+    <string name="no_calender_found">No calendar found.</string>
     <string name="no_media_player_found">No media player found.</string>
     <string name="download">Download</string>
     <string name="downloading">Downloading %1$s</string>
     <string name="fetching_screenshot">Fetching screenshot</string>
     <string name="refresh_page">Refresh page</string>
     <string name="app_issue" translatable="false">github.com/deprec8/EnigmaDroid/issues</string>
-    <string name="issue_tracker">Issue tracker</string>
+    <string name="issue_tracker">Issue Tracker</string>
     <string name="app_issue_url" translatable="false">https://github.com/deprec8/EnigmaDroid/issues</string>
     <string name="ok">OK</string>
     <string name="begin_date">Begin date</string>
