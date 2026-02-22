@@ -32,6 +32,7 @@ import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
 import io.github.deprec8.enigmadroid.model.navigation.MainPages
 import io.github.deprec8.enigmadroid.model.navigation.SettingsPages
+import io.github.deprec8.enigmadroid.ui.components.DialogSystemUiHelper
 import io.github.deprec8.enigmadroid.ui.components.navigation.NavigationState
 import io.github.deprec8.enigmadroid.ui.components.navigation.Navigator
 import io.github.deprec8.enigmadroid.ui.components.navigation.toEntries
@@ -183,6 +184,7 @@ fun NavigationDisplay(
                 )
             ),
         ) {
+            DialogSystemUiHelper()
             RemoteControlPage(onNavigateBack = {
                 navigator.goBack()
             })
