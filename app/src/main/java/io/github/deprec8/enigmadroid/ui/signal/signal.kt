@@ -225,25 +225,24 @@ fun SignalPage(
                     }
                 }
             }
-            "true"                                         -> {
-                if (loadingState == LoadingState.LOADED) {
-                    NoResults(
-                        Modifier
-                            .consumeWindowInsets(innerPadding)
-                            .padding(innerPadding)
-                    )
-                } else {
-                    LoadingScreen(
-                        Modifier
-                            .consumeWindowInsets(innerPadding)
-                            .padding(innerPadding),
-                        loadingState = loadingState,
-                        onUpdateLoadingState = {
-                            scope.launch {
-                                signalViewModel.updateLoadingState(false)
-                            }
-                        })
-                }
+            "true" if (loadingState == LoadingState.LOADED) -> {
+                NoResults(
+                    Modifier
+                        .consumeWindowInsets(innerPadding)
+                        .padding(innerPadding)
+                )
+            }
+            else -> {
+                LoadingScreen(
+                    Modifier
+                        .consumeWindowInsets(innerPadding)
+                        .padding(innerPadding),
+                    loadingState = loadingState,
+                    onUpdateLoadingState = {
+                        scope.launch {
+                            signalViewModel.updateLoadingState(false)
+                        }
+                    })
             }
         }
     }
