@@ -33,10 +33,9 @@ data class Event(
     @SerialName("sref") val serviceReference: String = "",
     @SerialName("id") val id: Int = 0,
     @SerialName("duration_sec") val durationInSeconds: Long = 0L,
-    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("shortdesc") val shortDescription: String = "N/A",
-    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("genre") val genre: String = "N/A",
-    @SerialName("genreid") val genreId: Int = 0,
-    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("longdesc") val longDescription: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("shortdesc") val shortDescription: String = "",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("genre") val genre: String = "",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("longdesc") val longDescription: String = "",
     val displayIndex: Int? = null,
     val type: EntryType = EntryType.CHANNEL
 )
