@@ -155,7 +155,8 @@ fun LiveContent(
                             ),
                             progress = ((event.nowTimestamp - event.beginTimestamp).toFloat() / event.durationInSeconds),
                             shortDescription = event.shortDescription,
-                            longDescription = event.longDescription
+                            longDescription = event.longDescription,
+                            genre = event.genre
                         )
                     }
                     EventType.MARKER                                                                    -> {

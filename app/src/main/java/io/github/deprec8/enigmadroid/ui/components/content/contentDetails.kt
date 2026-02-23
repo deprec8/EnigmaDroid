@@ -70,7 +70,8 @@ fun ContentDetails(
     longDescription: String,
     editMenuItemGroup: MenuItemGroup? = null,
     highlightedWords: List<String> = emptyList(),
-    onHideBottomSheet: () -> Unit
+    onHideBottomSheet: () -> Unit,
+    genre: String? = null,
 ) {
 
     var showDropDownMenu by rememberSaveable { mutableStateOf(false) }
@@ -84,9 +85,7 @@ fun ContentDetails(
                     HighlightedText(
                         text = headlineText, highlightedWords = highlightedWords
                     )
-                },
-                leadingContent = leadingContent,
-                overlineContent = if (overlineText != null) {
+                }, leadingContent = leadingContent, overlineContent = if (overlineText != null) {
                     {
                         HighlightedText(
                             text = overlineText,
@@ -97,8 +96,7 @@ fun ContentDetails(
                     }
                 } else {
                     null
-                },
-                supportingContent = {
+                }, supportingContent = {
                     Column {
                         HighlightedText(
                             text = supportingText, highlightedWords = highlightedWords
@@ -109,8 +107,7 @@ fun ContentDetails(
                             )
                         }
                     }
-                },
-                trailingContent = if (editMenuItemGroup != null) {
+                }, trailingContent = if (editMenuItemGroup != null) {
                     {
                         OutlinedIconButton(onClick = { showDropDownMenu = true }) {
                             Icon(
@@ -148,8 +145,7 @@ fun ContentDetails(
                     }
                 } else {
                     null
-                },
-                colors = ListItemDefaults.colors(containerColor = Color.Transparent))
+                }, colors = ListItemDefaults.colors(containerColor = Color.Transparent))
             if (progress != null) {
                 LinearProgressIndicator(
                     progress = { progress },
@@ -215,29 +211,41 @@ fun ContentDetails(
             }
         }
 
-        if (shortDescription.isNotEmpty() || longDescription.isNotEmpty()) {
+        if (shortDescription.isNotBlank() || longDescription.isNotBlank() || ! genre.isNullOrBlank()) {
             Spacer(modifier = Modifier.size(16.dp))
             SelectionContainer {
                 LazyColumn(
                     contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    if (shortDescription.isNotEmpty()) {
+                    if (shortDescription.isNotBlank()) {
                         item {
                             HighlightedText(
                                 text = shortDescription, highlightedWords = highlightedWords
                             )
                         }
                     }
-                    if (shortDescription.isNotEmpty() && longDescription.isNotEmpty()) {
+                    if (shortDescription.isNotBlank() && longDescription.isNotBlank()) {
                         item {
                             HorizontalDivider()
                         }
                     }
-                    if (longDescription.isNotEmpty()) {
+                    if (longDescription.isNotBlank()) {
                         item {
                             HighlightedText(
                                 text = longDescription, highlightedWords = highlightedWords
+                            )
+                        }
+                    }
+                    if ((shortDescription.isNotBlank() || longDescription.isNotBlank()) && ! genre.isNullOrBlank()) {
+                        item {
+                            HorizontalDivider()
+                        }
+                    }
+                    if (! genre.isNullOrBlank()) {
+                        item {
+                            HighlightedText(
+                                text = genre, highlightedWords = highlightedWords
                             )
                         }
                     }

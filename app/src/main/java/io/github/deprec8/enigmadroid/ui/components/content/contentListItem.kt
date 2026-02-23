@@ -65,7 +65,8 @@ fun ContentListItem(
     shortDescription: String,
     longDescription: String,
     editMenuItemGroup: MenuItemGroup? = null,
-    highlightedWords: List<String> = emptyList()
+    highlightedWords: List<String> = emptyList(),
+    genre: String? = null,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showBottomSheet by rememberSaveable { mutableStateOf(false) }
@@ -207,7 +208,8 @@ fun ContentListItem(
                 menuItemGroups = menuItemGroups,
                 editMenuItemGroup = editMenuItemGroup,
                 highlightedWords = highlightedWords,
-                onHideBottomSheet = { showBottomSheet = false }
+                onHideBottomSheet = { showBottomSheet = false },
+                genre = genre
             )
         }
     }

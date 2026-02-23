@@ -113,7 +113,10 @@ fun EpgContent(
                     },
                     progress = if (event.beginTimestamp * 1000 <= System.currentTimeMillis()) {
                         ((event.nowTimestamp - event.beginTimestamp).toFloat() / event.durationInSeconds)
-                    } else null
+                    } else {
+                        null
+                    },
+                    genre = event.genre
                 )
             }
         }
