@@ -25,9 +25,10 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.ApiType
-import io.github.deprec8.enigmadroid.data.enums.EventType
+import io.github.deprec8.enigmadroid.data.enums.EntryType
 import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtonType
 import io.github.deprec8.enigmadroid.data.enums.RemoteControlPowerButtonType
+import io.github.deprec8.enigmadroid.data.objects.DefaultBouquet
 import io.github.deprec8.enigmadroid.data.objects.PreferenceKey
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.data.source.local.devices.DeviceDatabase
@@ -130,17 +131,17 @@ class ApiRepository @Inject constructor(
         } ?: ""
     }
 
-    private fun EventType.shouldBeNumbered(): Boolean {
+    private fun EntryType.shouldBeNumbered(): Boolean {
         return when (this) {
-            EventType.CHANNEL, EventType.NUMBERED_MARKER, EventType.INVISIBLE_NUMBERED_MARKER -> true
-            EventType.INVISIBLE, EventType.GROUP, EventType.DIRECTORY, EventType.MARKER       -> false
+            EntryType.CHANNEL, EntryType.NUMBERED_MARKER, EntryType.INVISIBLE_NUMBERED_MARKER -> true
+            else                                                                              -> false
         }
     }
 
-    private fun String.toEventType(): EventType {
-        val flag = split(":").getOrNull(1)?.toIntOrNull() ?: return EventType.CHANNEL
+    private fun String.toEntryType(): EntryType {
+        val flag = split(":").getOrNull(1)?.toIntOrNull() ?: return EntryType.CHANNEL
 
-        return EventType.entries.firstOrNull { it.flag == flag } ?: EventType.CHANNEL
+        return EntryType.entries.firstOrNull { it.flag == flag } ?: EntryType.CHANNEL
     }
 
     suspend fun fetchCurrentInfo(): CurrentInfo {
@@ -267,7 +268,7 @@ class ApiRepository @Inject constructor(
                 var counter = 1
 
                 val uiEvents = rawBatch.events.map { event ->
-                    val type = event.serviceReference.toEventType()
+                    val type = event.serviceReference.toEntryType()
 
                     val displayIndex = if (type.shouldBeNumbered()) counter ++ else null
 
@@ -294,37 +295,41 @@ class ApiRepository @Inject constructor(
                 BouquetBatch.serializer(),
                 networkDataSource.fetchApi("bouquets?stype=${if (apiType == ApiType.TV) "tv" else "radio"}")
             ).bouquets.forEach { bouquet ->
-                bouquets.add(
-                    Bouquet(
-                        reference = bouquet[0], name = bouquet[1]
+                if (bouquet[0].toEntryType() != EntryType.INVISIBLE_DIRECTORY) {
+                    bouquets.add(
+                        Bouquet(
+                            reference = bouquet[0], name = bouquet[1]
+                        )
                     )
-                )
+                }
             }
             bouquets.add(
                 Bouquet(
                     if (apiType == ApiType.TV) {
-                        "1:7:1:0:0:0:0:0:0:0:(type%20==%201)%20||%20(type%20==%2017)%20||%20(type%20==%20195)%20||%20(type%20==%2025)%20ORDER%20BY%20name"
+                        DefaultBouquet.ALL_SERVICES_TV
                     } else {
-                        "1:7:2:0:0:0:0:0:0:0:(type%20==%202)%20ORDER%20BY%20name"
+                        DefaultBouquet.ALL_SERVICES_RADIO
                     }, context.getString(R.string.all_services)
                 )
             )
             if (apiType == ApiType.TV) {
                 json.decodeFromString(
                     EventBatch.serializer(),
-                    networkDataSource.fetchApi("epgnow?bRef=1:7:1:0:0:0:0:0:0:0:(type%20==%201)%20||%20(type%20==%2017)%20||%20(type%20==%20195)%20||%20(type%20==%2025)%20FROM%20PROVIDERS%20ORDER%20BY%20name")
+                    networkDataSource.fetchApi("epgnow?bRef=${DefaultBouquet.ALL_PROVIDERS_TV}")
                 ).events
             } else {
                 json.decodeFromString(
                     EventBatch.serializer(),
-                    networkDataSource.fetchApi("epgnow?bRef=1:7:2:0:0:0:0:0:0:0:(type%20==%202)%20FROM%20PROVIDERS%20ORDER%20BY%20name")
+                    networkDataSource.fetchApi("epgnow?bRef=${DefaultBouquet.ALL_PROVIDERS_RADIO}")
                 ).events
             }.forEach { provider ->
-                bouquets.add(
-                    Bouquet(
-                        provider.serviceReference, provider.serviceName
+                if (provider.serviceReference.toEntryType() != EntryType.INVISIBLE_DIRECTORY) {
+                    bouquets.add(
+                        Bouquet(
+                            provider.serviceReference, provider.serviceName
+                        )
                     )
-                )
+                }
             }
             bouquets
         } catch (_: Exception) {

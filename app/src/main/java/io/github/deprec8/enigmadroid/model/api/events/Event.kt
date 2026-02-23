@@ -19,7 +19,7 @@
 
 package io.github.deprec8.enigmadroid.model.api.events
 
-import io.github.deprec8.enigmadroid.data.enums.EventType
+import io.github.deprec8.enigmadroid.data.enums.EntryType
 import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -38,5 +38,5 @@ data class Event(
     @SerialName("genreid") val genreId: Int = 0,
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("longdesc") val longDescription: String = "N/A",
     val displayIndex: Int? = null,
-    val type: EventType = EventType.CHANNEL
+    val type: EntryType = EntryType.CHANNEL
 )

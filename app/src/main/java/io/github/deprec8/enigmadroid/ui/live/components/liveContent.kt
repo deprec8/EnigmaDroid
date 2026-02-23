@@ -53,7 +53,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.data.enums.EventType
+import io.github.deprec8.enigmadroid.data.enums.EntryType
 import io.github.deprec8.enigmadroid.model.api.events.Event
 import io.github.deprec8.enigmadroid.model.menu.MenuItem
 import io.github.deprec8.enigmadroid.model.menu.MenuItemGroup
@@ -88,7 +88,7 @@ fun LiveContent(
         ) {
             items(events, span = { event ->
                 when (event.type) {
-                    EventType.CHANNEL -> GridItemSpan(
+                    EntryType.CHANNEL -> GridItemSpan(
                         1
                     )
                     else              -> GridItemSpan(
@@ -97,7 +97,7 @@ fun LiveContent(
                 }
             }) { event ->
                 when (event.type) {
-                    EventType.CHANNEL                                                                   -> {
+                    EntryType.CHANNEL   -> {
                         ContentListItem(highlightedWords = highlightedWords,
                             headlineText = event.serviceName,
                             leadingContent = if (showChannelNumbers) {
@@ -159,7 +159,7 @@ fun LiveContent(
                             genre = event.genre
                         )
                     }
-                    EventType.MARKER                                                                    -> {
+                    EntryType.MARKER    -> {
                         Column {
                             ListItem(headlineContent = {
                                 Text(event.serviceName)
@@ -169,7 +169,7 @@ fun LiveContent(
                             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
                         }
                     }
-                    EventType.DIRECTORY                                                                 -> {
+                    EntryType.DIRECTORY -> {
                         Column {
                             ListItem(headlineContent = {
                                 Text(event.serviceName)
@@ -179,7 +179,7 @@ fun LiveContent(
                             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
                         }
                     }
-                    EventType.GROUP                                                                     -> {
+                    EntryType.GROUP     -> {
                         Column {
                             ListItem(headlineContent = {
                                 Text(event.serviceName)
@@ -191,7 +191,7 @@ fun LiveContent(
                             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
                         }
                     }
-                    EventType.INVISIBLE, EventType.NUMBERED_MARKER, EventType.INVISIBLE_NUMBERED_MARKER -> {}
+                    else                -> {}
                 }
 
             }

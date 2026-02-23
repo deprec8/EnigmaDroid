@@ -19,12 +19,13 @@
 
 package io.github.deprec8.enigmadroid.data.enums
 
-enum class EventType(val flag: Int) {
+enum class EntryType(val flag: Int) {
     CHANNEL(0),
     MARKER(64),
     NUMBERED_MARKER(320),
     DIRECTORY(7),
     GROUP(128),
     INVISIBLE(512),
-    INVISIBLE_NUMBERED_MARKER(832)
+    INVISIBLE_NUMBERED_MARKER(832),
+    INVISIBLE_DIRECTORY(519)
 }
