@@ -239,13 +239,21 @@ class ApiRepository @Inject constructor(
 
     suspend fun fetchServiceBatchSet(): ServiceBatchSet {
         return try {
-            val serviceBatchSet = json.decodeFromString(
+            val tvServiceBatchSet = json.decodeFromString(
                 ServiceBatchSet.serializer(), networkDataSource.fetchApi("getallservices")
             )
 
+            val radioServiceBatchSet = json.decodeFromString(
+                ServiceBatchSet.serializer(),
+                networkDataSource.fetchApi("getallservices?type=radio")
+            )
+
+            val rawServiceBatches =
+                tvServiceBatchSet.serviceBatches + radioServiceBatchSet.serviceBatches
+
             val uiServiceBatches = mutableListOf<ServiceBatch>()
 
-            serviceBatchSet.serviceBatches.forEach { serviceBatch ->
+            rawServiceBatches.forEach { serviceBatch ->
                 var counter = 1
 
                 val uiServices = serviceBatch.services.map { service ->
@@ -263,8 +271,9 @@ class ApiRepository @Inject constructor(
                     )
                 )
             }
-            serviceBatchSet.copy(
-                serviceBatches = uiServiceBatches
+            ServiceBatchSet(
+                serviceBatches = uiServiceBatches,
+                result = tvServiceBatchSet.result || radioServiceBatchSet.result
             )
         } catch (_: Exception) {
             ServiceBatchSet()
