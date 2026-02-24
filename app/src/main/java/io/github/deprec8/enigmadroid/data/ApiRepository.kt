@@ -46,6 +46,7 @@ import io.github.deprec8.enigmadroid.model.api.movies.bookmarks.BookmarkBatch
 import io.github.deprec8.enigmadroid.model.api.timers.Timer
 import io.github.deprec8.enigmadroid.model.api.timers.TimerBatch
 import io.github.deprec8.enigmadroid.model.api.timers.services.ServiceBatch
+import io.github.deprec8.enigmadroid.model.api.timers.services.ServiceBatchSet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
@@ -236,23 +237,37 @@ class ApiRepository @Inject constructor(
         networkDataSource.postApi("moviedelete?sRef=$serviceReference")
     }
 
-    suspend fun fetchTimerServiceBatches(): List<ServiceBatch> {
+    suspend fun fetchServiceBatchSet(): ServiceBatchSet {
         return try {
-            val serviceBatches = mutableListOf<ServiceBatch>()
-            json.decodeFromString(
-                BouquetBatch.serializer(), networkDataSource.fetchApi("bouquets?stype=tv")
-            ).bouquets.forEach { bouquet ->
-                val newBouquetReference = bouquet[0].replace("\\\"", "\"")
-                serviceBatches.add(
-                    json.decodeFromString(
-                        ServiceBatch.serializer(),
-                        networkDataSource.fetchApi("getallservices?sRef=$newBouquetReference")
+            val serviceBatchSet = json.decodeFromString(
+                ServiceBatchSet.serializer(), networkDataSource.fetchApi("getallservices")
+            )
+
+            val uiServiceBatches = mutableListOf<ServiceBatch>()
+
+            serviceBatchSet.serviceBatches.forEach { serviceBatch ->
+                var counter = 1
+
+                val uiServices = serviceBatch.services.map { service ->
+                    val type = service.serviceReference.toEntryType()
+                    val displayIndex = if (type.shouldBeNumbered()) counter ++ else null
+
+                    service.copy(
+                        displayIndex = displayIndex, type = type
+                    )
+                }
+
+                uiServiceBatches.add(
+                    serviceBatch.copy(
+                        services = uiServices
                     )
                 )
             }
-            serviceBatches
+            serviceBatchSet.copy(
+                serviceBatches = uiServiceBatches
+            )
         } catch (_: Exception) {
-            emptyList()
+            ServiceBatchSet()
         }
     }
 
