@@ -246,7 +246,9 @@ fun TimerSetupDialog(
                             text = serviceBatchSet.serviceBatches.flatMap { it.services }
                                 .firstOrNull {
                                     it.serviceReference == serviceReference
-                                }?.serviceName ?: stringResource(R.string.no_service_selected)
+                                }?.serviceName ?: serviceReference.ifBlank {
+                                stringResource(R.string.no_service_selected)
+                            }
                         )
                     },
                     modifier = Modifier
@@ -594,7 +596,7 @@ private fun ServicePickerDialog(
                                     colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                                 )
                             }
-                            EntryType.MARKER -> {
+                            EntryType.MARKER  -> {
                                 Column {
                                     ListItem(
                                         headlineContent = {
@@ -628,7 +630,7 @@ private fun ServicePickerDialog(
                                     HorizontalDivider(Modifier.padding(horizontal = 16.dp))
                                 }
                             }
-                            EntryType.GROUP -> {
+                            EntryType.GROUP   -> {
                                 Column {
                                     ListItem(
                                         headlineContent = {
@@ -645,7 +647,7 @@ private fun ServicePickerDialog(
                                     HorizontalDivider(Modifier.padding(horizontal = 16.dp))
                                 }
                             }
-                            else -> {}
+                            else              -> {}
                         }
                     }
                 }

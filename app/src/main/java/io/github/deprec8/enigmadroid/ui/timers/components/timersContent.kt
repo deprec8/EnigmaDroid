@@ -95,7 +95,15 @@ fun TimersContent(
                 ContentListItem(
                     highlightedWords = highlightedWords,
                     headlineText = timer.title,
-                    overlineText = "${timer.serviceName} - ${timer.getState()}",
+                    overlineText = "${timer.serviceName} - ${timer.getState()}${
+                        if (timer.cancelled) {
+                            " - " + stringResource(
+                                R.string.cancelled
+                            )
+                        } else {
+                            ""
+                        }
+                    }",
                     leadingContent = {
                         when (timer.state + timer.disabled) {
                             TimerState.WAITING.id  -> Box(
