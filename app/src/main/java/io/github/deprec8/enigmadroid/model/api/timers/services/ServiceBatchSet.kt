@@ -23,6 +23,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class SubserviceBatch(
-    @SerialName("subservices") val subservices: List<Service> = emptyList()
+data class ServiceBatchSet(
+    @SerialName("services") val serviceBatches: List<ServiceBatch> = emptyList(),
+    @SerialName("result") val result: Boolean = false
 )

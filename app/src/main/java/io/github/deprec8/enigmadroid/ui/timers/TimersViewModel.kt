@@ -30,7 +30,7 @@ import io.github.deprec8.enigmadroid.data.SettingsRepository
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.model.api.timers.Timer
 import io.github.deprec8.enigmadroid.model.api.timers.TimerBatch
-import io.github.deprec8.enigmadroid.model.api.timers.services.ServiceBatch
+import io.github.deprec8.enigmadroid.model.api.timers.services.ServiceBatchSet
 import io.github.deprec8.enigmadroid.utils.FilterUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -58,8 +58,8 @@ class TimersViewModel @Inject constructor(
     private val _loadingState = MutableStateFlow(LoadingState.LOADING)
     val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
 
-    private val _services = MutableStateFlow<List<ServiceBatch>>(emptyList())
-    val services: StateFlow<List<ServiceBatch>> = _services.asStateFlow()
+    private val _serviceBatchSet = MutableStateFlow(ServiceBatchSet())
+    val serviceBatchSet: StateFlow<ServiceBatchSet> = _serviceBatchSet.asStateFlow()
 
     private val _searchHistory = MutableStateFlow<List<String>>(emptyList())
     val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()
@@ -111,13 +111,12 @@ class TimersViewModel @Inject constructor(
     fun fetchData() {
         fetchJob?.cancel()
         _timerBatch.value = TimerBatch()
-        _services.value = emptyList()
+        _serviceBatchSet.value = ServiceBatchSet()
         fetchJob = viewModelScope.launch {
             _timerBatch.value = apiRepository.fetchTimerBatch()
-            _services.value = apiRepository.fetchTimerServiceBatches()
+            _serviceBatchSet.value = apiRepository.fetchServiceBatchSet()
         }
     }
-
 
     fun deleteTimer(timer: Timer) {
         viewModelScope.launch {

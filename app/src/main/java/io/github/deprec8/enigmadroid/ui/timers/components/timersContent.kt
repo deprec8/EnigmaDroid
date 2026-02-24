@@ -60,7 +60,7 @@ import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.TimerState
 import io.github.deprec8.enigmadroid.model.api.timers.Timer
-import io.github.deprec8.enigmadroid.model.api.timers.services.ServiceBatch
+import io.github.deprec8.enigmadroid.model.api.timers.services.ServiceBatchSet
 import io.github.deprec8.enigmadroid.model.menu.MenuItem
 import io.github.deprec8.enigmadroid.model.menu.MenuItemGroup
 import io.github.deprec8.enigmadroid.ui.components.NoResults
@@ -75,7 +75,7 @@ fun TimersContent(
     onToggleTimerStatus: (Timer) -> Unit,
     onEditTimer: (Timer, Timer) -> Unit,
     onDeleteTimer: (Timer) -> Unit,
-    services: List<ServiceBatch>
+    serviceBatchSet: ServiceBatchSet
 ) {
     if (timers.isNotEmpty()) {
         LazyVerticalGrid(
@@ -95,7 +95,15 @@ fun TimersContent(
                 ContentListItem(
                     highlightedWords = highlightedWords,
                     headlineText = timer.title,
-                    overlineText = "${timer.serviceName} - ${timer.getState()}",
+                    overlineText = "${timer.serviceName} - ${timer.getState()}${
+                        if (timer.cancelled) {
+                            " - " + stringResource(
+                                R.string.cancelled
+                            )
+                        } else {
+                            ""
+                        }
+                    }",
                     leadingContent = {
                         when (timer.state + timer.disabled) {
                             TimerState.WAITING.id  -> Box(
@@ -232,7 +240,8 @@ fun TimersContent(
                                     action = { showDeleteDialog = true })
                             )
                         )
-                    )
+                    ),
+                    additionalDescription = timer.directoryName
                 )
 
                 if (showLogDialog) {
@@ -255,10 +264,9 @@ fun TimersContent(
                             }
                             showEditDialog = false
                         },
-                        services = services,
+                        serviceBatchSet = serviceBatchSet,
                     )
                 }
-
             }
         }
     } else {

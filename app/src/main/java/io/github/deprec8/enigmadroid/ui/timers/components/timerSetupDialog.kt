@@ -20,9 +20,14 @@
 package io.github.deprec8.enigmadroid.ui.timers.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -30,6 +35,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldLineLimits
@@ -38,7 +45,12 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.outlined.AutoAwesomeMosaic
+import androidx.compose.material.icons.outlined.Bookmark
+import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerState
@@ -51,11 +63,12 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -78,6 +91,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalWindowInfo
@@ -86,8 +100,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
+import io.github.deprec8.enigmadroid.data.enums.EntryType
 import io.github.deprec8.enigmadroid.model.api.timers.Timer
+import io.github.deprec8.enigmadroid.model.api.timers.services.Service
 import io.github.deprec8.enigmadroid.model.api.timers.services.ServiceBatch
+import io.github.deprec8.enigmadroid.model.api.timers.services.ServiceBatchSet
 import io.github.deprec8.enigmadroid.ui.components.AdaptiveDialog
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
 
@@ -97,7 +114,7 @@ fun TimerSetupDialog(
     oldTimer: Timer? = null,
     onDismissRequest: () -> Unit,
     onSaveRequest: (newTimer: Timer, oldTimer: Timer?) -> Unit,
-    services: List<ServiceBatch>,
+    serviceBatchSet: ServiceBatchSet,
 ) {
     val titleState = rememberTextFieldState("")
     val shortDescriptionState = rememberTextFieldState("")
@@ -112,11 +129,11 @@ fun TimerSetupDialog(
     var alwaysZap by rememberSaveable { mutableIntStateOf(0) }
 
     var showAftereventMenu by rememberSaveable { mutableStateOf(false) }
-    var showServicesMenu by rememberSaveable { mutableStateOf(false) }
     var showBeginDatePicker by rememberSaveable { mutableStateOf(false) }
     var showEndDatePicker by rememberSaveable { mutableStateOf(false) }
     var showBeginTimePicker by rememberSaveable { mutableStateOf(false) }
     var showEndTimePicker by rememberSaveable { mutableStateOf(false) }
+    var showServicePicker by rememberSaveable { mutableStateOf(false) }
 
     val beginTimeState = rememberTimePickerState()
     val endTimeState = rememberTimePickerState()
@@ -221,66 +238,22 @@ fun TimerSetupDialog(
             }
         }, content = { isContentScrollable ->
             Column {
-                ExposedDropdownMenuBox(
-                    expanded = showServicesMenu, onExpandedChange = {
-                        showServicesMenu = it
-                    }, modifier = Modifier.fillMaxWidth()
-                ) {
-                    OutlinedTextField(
-                        value = if (serviceReference == "") {
-                            ""
-                        } else {
-                            services
-                                .flatMap { it.services.flatMap { service -> service.subservices } }
-                                .find { it.serviceReference == serviceReference }?.serviceName ?: ""
-                        },
-                        onValueChange = { },
-                        singleLine = true,
-                        readOnly = true,
-                        label = { Text(stringResource(R.string.service)) },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = showServicesMenu) },
-                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-                        modifier = Modifier
-                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable, true)
-                            .fillMaxWidth()
-                    )
-                    ExposedDropdownMenu(
-                        expanded = showServicesMenu,
-                        scrollState = rememberScrollState(),
-                        onDismissRequest = { showServicesMenu = false },
-                        containerColor = if (isContentScrollable) {
-                            MaterialTheme.colorScheme.surfaceContainerHigh
-                        } else {
-                            MenuDefaults.containerColor
-                        }
-                    ) {
-                        if (services.isNotEmpty()) {
-                            services.forEach { subservice ->
-                                subservice.services.first().subservices.forEachIndexed { index, service ->
-                                    DropdownMenuItem(leadingIcon = {
-                                        Text(
-                                            text = "${index + 1}.",
-                                            textAlign = TextAlign.Center,
-                                        )
-                                    }, text = { Text(text = service.serviceName) }, onClick = {
-                                        serviceReference = service.serviceReference
-                                        showServicesMenu = false
-                                    })
-                                }
-                                if (subservice != services.last()) {
-                                    HorizontalDivider()
-                                }
+                ListItem(
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    headlineContent = { Text(text = stringResource(R.string.service)) },
+                    supportingContent = {
+                        Text(
+                            text = serviceBatchSet.serviceBatches.flatMap { it.services }
+                                .firstOrNull {
+                                    it.serviceReference == serviceReference
+                                }?.serviceName ?: serviceReference.ifBlank {
+                                stringResource(R.string.no_service_selected)
                             }
-                        } else {
-                            LinearProgressIndicator(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 16.dp, horizontal = 8.dp)
-                            )
-                        }
-                    }
-
-                }
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { showServicePicker = true })
                 Spacer(Modifier.size(8.dp))
                 OutlinedTextField(
                     state = titleState,
@@ -495,6 +468,17 @@ fun TimerSetupDialog(
                     }
                 }
 
+                if (showServicePicker) {
+                    ServicePickerDialog(
+                        serviceBatchSet = serviceBatchSet,
+                        onDismissRequest = { showServicePicker = false },
+                        onServiceClicked = {
+                            serviceReference = it.serviceReference
+                        },
+                        currentServiceReference = serviceReference
+                    )
+                }
+
                 if (showBeginDatePicker) {
                     DatePickerDialog(beginDateState, onDismissRequest = {
                         showBeginDatePicker = false
@@ -546,6 +530,165 @@ fun TimerSetupDialog(
                 }
             }
         })
+}
+
+@Composable
+private fun ServicePickerDialog(
+    serviceBatchSet: ServiceBatchSet,
+    currentServiceReference: String? = null,
+    onDismissRequest: () -> Unit,
+    onServiceClicked: (service: Service) -> Unit
+) {
+    var currentServiceBatch by rememberSaveable {
+        mutableStateOf<ServiceBatch?>(null)
+    }
+
+    AlertDialog(onDismissRequest = {
+        onDismissRequest()
+    }, text = {
+        if (currentServiceBatch != null) {
+            Column {
+                OutlinedCard {
+                    ListItem(
+                        headlineContent = { Text(currentServiceBatch?.name ?: "") },
+                        leadingContent = {
+                            IconButton(onClick = {
+                                currentServiceBatch = null
+                            }) {
+                                Icon(
+                                    Icons.AutoMirrored.Outlined.ArrowBack,
+                                    stringResource(R.string.navigate_back)
+                                )
+                            }
+                        },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                    )
+                }
+                LazyColumn {
+                    items(currentServiceBatch?.services ?: emptyList()) { service ->
+                        when (service.type) {
+                            EntryType.CHANNEL -> {
+                                ListItem(
+                                    headlineContent = {
+                                        Text(service.serviceName)
+                                    },
+                                    leadingContent = {
+                                        Text(
+                                            text = "${service.displayIndex}.",
+                                            textAlign = TextAlign.Center,
+                                        )
+                                    },
+                                    modifier = Modifier.clickable {
+                                        onServiceClicked(service)
+                                    },
+                                    trailingContent = {
+                                        AnimatedVisibility(
+                                            visible = currentServiceReference == service.serviceReference,
+                                            enter = expandIn(expandFrom = Alignment.Center) + fadeIn(),
+                                            exit = shrinkOut(shrinkTowards = Alignment.Center) + fadeOut()
+                                        ) {
+                                            Icon(
+                                                Icons.Default.Check,
+                                                contentDescription = stringResource(R.string.current_service)
+                                            )
+                                        }
+                                    },
+                                    colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                                )
+                            }
+                            EntryType.MARKER  -> {
+                                Column {
+                                    ListItem(
+                                        headlineContent = {
+                                            Text(service.serviceName)
+                                        },
+                                        leadingContent = {
+                                            Icon(
+                                                Icons.Outlined.Bookmark,
+                                                stringResource(R.string.marker)
+                                            )
+                                        },
+                                        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                                    )
+                                    HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+                                }
+                            }
+                            EntryType.DIRECTORY -> {
+                                Column {
+                                    ListItem(
+                                        headlineContent = {
+                                            Text(service.serviceName)
+                                        },
+                                        leadingContent = {
+                                            Icon(
+                                                Icons.Outlined.Folder,
+                                                stringResource(R.string.directory)
+                                            )
+                                        },
+                                        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                                    )
+                                    HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+                                }
+                            }
+                            EntryType.GROUP   -> {
+                                Column {
+                                    ListItem(
+                                        headlineContent = {
+                                            Text(service.serviceName)
+                                        },
+                                        leadingContent = {
+                                            Icon(
+                                                Icons.Outlined.AutoAwesomeMosaic,
+                                                stringResource(R.string.group)
+                                            )
+                                        },
+                                        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                                    )
+                                    HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+                                }
+                            }
+                            else              -> {}
+                        }
+                    }
+                }
+            }
+        } else if (serviceBatchSet.result) {
+            LazyColumn {
+                items(serviceBatchSet.serviceBatches) { serviceBatch ->
+                    ListItem(
+                        headlineContent = {
+                            Text(serviceBatch.name)
+                        },
+                        modifier = Modifier.clickable { currentServiceBatch = serviceBatch },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                        leadingContent = {
+                            Icon(
+                                Icons.Outlined.Folder, stringResource(R.string.directory)
+                            )
+                        })
+                }
+            }
+        } else {
+            Box(
+                contentAlignment = Alignment.Center, modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(32.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.no_results),
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+    }, confirmButton = {
+        TextButton(onClick = { onDismissRequest() }) {
+            Text(stringResource(R.string.close))
+        }
+    }, title = {
+        Text(
+            stringResource(R.string.choose_service)
+        )
+    })
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
