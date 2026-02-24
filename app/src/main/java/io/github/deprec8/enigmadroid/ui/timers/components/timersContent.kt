@@ -232,7 +232,8 @@ fun TimersContent(
                                     action = { showDeleteDialog = true })
                             )
                         )
-                    )
+                    ),
+                    additionalDescription = timer.directoryName
                 )
 
                 if (showLogDialog) {

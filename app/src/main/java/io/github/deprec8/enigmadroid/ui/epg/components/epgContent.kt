@@ -116,7 +116,7 @@ fun EpgContent(
                     } else {
                         null
                     },
-                    genre = event.genre
+                    additionalDescription = event.genre
                 )
             }
         }

@@ -71,7 +71,7 @@ fun ContentDetails(
     editMenuItemGroup: MenuItemGroup? = null,
     highlightedWords: List<String> = emptyList(),
     onHideBottomSheet: () -> Unit,
-    genre: String? = null,
+    additionalDescription: String? = null,
 ) {
 
     var showDropDownMenu by rememberSaveable { mutableStateOf(false) }
@@ -211,7 +211,7 @@ fun ContentDetails(
             }
         }
 
-        if (shortDescription.isNotBlank() || longDescription.isNotBlank() || ! genre.isNullOrBlank()) {
+        if (shortDescription.isNotBlank() || longDescription.isNotBlank() || ! additionalDescription.isNullOrBlank()) {
             Spacer(modifier = Modifier.size(16.dp))
             SelectionContainer {
                 LazyColumn(
@@ -237,15 +237,15 @@ fun ContentDetails(
                             )
                         }
                     }
-                    if ((shortDescription.isNotBlank() || longDescription.isNotBlank()) && ! genre.isNullOrBlank()) {
+                    if ((shortDescription.isNotBlank() || longDescription.isNotBlank()) && ! additionalDescription.isNullOrBlank()) {
                         item {
                             HorizontalDivider()
                         }
                     }
-                    if (! genre.isNullOrBlank()) {
+                    if (! additionalDescription.isNullOrBlank()) {
                         item {
                             HighlightedText(
-                                text = genre, highlightedWords = highlightedWords
+                                text = additionalDescription, highlightedWords = highlightedWords
                             )
                         }
                     }
