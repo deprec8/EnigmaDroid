@@ -73,7 +73,7 @@ fun TimersPage(
 
     val filteredTimers by timersViewModel.filteredTimers.collectAsStateWithLifecycle()
     val timerBatch by timersViewModel.timerBatch.collectAsStateWithLifecycle()
-    val services by timersViewModel.services.collectAsStateWithLifecycle()
+    val serviceBatchSet by timersViewModel.serviceBatchSet.collectAsStateWithLifecycle()
     val searchHistory by timersViewModel.searchHistory.collectAsStateWithLifecycle()
     val loadingState by timersViewModel.loadingState.collectAsStateWithLifecycle()
     val searchInput by timersViewModel.searchInput.collectAsStateWithLifecycle()
@@ -121,7 +121,7 @@ fun TimersPage(
                         onDeleteTimer = {
                             timersViewModel.deleteTimer(it)
                         },
-                        services = services
+                        serviceBatchSet = serviceBatchSet
                     )
                 } else {
                     SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
@@ -181,7 +181,7 @@ fun TimersPage(
                 onDeleteTimer = {
                     timersViewModel.deleteTimer(it)
                 },
-                services = services
+                serviceBatchSet = serviceBatchSet
             )
         } else if (timerBatch.result && loadingState == LoadingState.LOADED) {
             NoResults(
@@ -213,7 +213,7 @@ fun TimersPage(
                 timersViewModel.addTimer(newTimer)
                 showTimerSetupDialog = false
             },
-            services = services,
+            serviceBatchSet = serviceBatchSet,
         )
     }
 }
