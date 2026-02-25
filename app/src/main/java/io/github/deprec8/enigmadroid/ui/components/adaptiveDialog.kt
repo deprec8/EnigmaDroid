@@ -21,6 +21,7 @@ package io.github.deprec8.enigmadroid.ui.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -133,6 +134,7 @@ fun AdaptiveDialog(
                         .verticalScroll(fullScrollState)
                         .padding(innerPadding)
                         .padding(top = 24.dp, start = 24.dp, end = 24.dp, bottom = 24.dp)
+                        .imePadding()
                 ) {
                     content(fullScrollState.maxValue != 0)
                 }
