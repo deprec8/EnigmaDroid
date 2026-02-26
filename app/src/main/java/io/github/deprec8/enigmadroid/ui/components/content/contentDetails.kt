@@ -30,10 +30,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
@@ -41,7 +42,6 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -109,11 +109,10 @@ fun ContentDetails(
                     }
                 }, trailingContent = if (editMenuItemGroup != null) {
                     {
-                        OutlinedIconButton(onClick = { showDropDownMenu = true }) {
+                        FilledTonalIconButton(onClick = { showDropDownMenu = true }) {
                             Icon(
-                                Icons.Default.MoreVert, contentDescription = stringResource(
-                                    R.string.open_action_menu
-                                )
+                                Icons.Filled.EditNote,
+                                contentDescription = stringResource(R.string.open_editing_menu)
                             )
                             DropdownMenu(
                                 expanded = showDropDownMenu,
@@ -132,12 +131,9 @@ fun ContentDetails(
                                     }, leadingIcon = {
                                         Icon(
                                             menuItem.outlinedIcon,
-                                            contentDescription = stringResource(
-                                                R.string.open_action_menu
-                                            )
+                                            contentDescription = null
                                         )
                                     }
-
                                     )
                                 }
                             }
@@ -190,7 +186,8 @@ fun ContentDetails(
                                 modifier = Modifier.weight(1f),
                                 content = {
                                     Icon(
-                                        imageVector = menuItem.filledIcon, contentDescription = null
+                                        imageVector = menuItem.outlinedIcon,
+                                        contentDescription = null
                                     )
                                     Spacer(Modifier.size(12.dp))
                                     Text(
@@ -205,7 +202,6 @@ fun ContentDetails(
                                 },
                             )
                         }
-
                     }
                 }
             }

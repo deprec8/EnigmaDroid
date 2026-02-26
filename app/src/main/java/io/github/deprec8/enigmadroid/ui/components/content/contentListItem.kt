@@ -44,7 +44,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -116,7 +115,7 @@ fun ContentListItem(
                 }
             },
             trailingContent = {
-                if (! menuItemGroups.isNullOrEmpty()) {
+                if (! menuItemGroups.isNullOrEmpty() || editMenuItemGroup != null) {
                     IconButton(onClick = { showDropDownMenu = true }) {
                         Icon(
                             Icons.Default.MoreVert, contentDescription = stringResource(
@@ -126,34 +125,33 @@ fun ContentListItem(
                         DropdownMenu(
                             expanded = showDropDownMenu,
                             onDismissRequest = { showDropDownMenu = false }) {
-                            menuItemGroups.forEachIndexed { index, menuSection ->
-                                if (index != 0) {
-                                    HorizontalDivider()
-                                }
-                                menuSection.menuItems.forEach { menuItem ->
-                                    DropdownMenuItem(onClick = {
-                                        showDropDownMenu = false
-                                        menuItem.action()
-                                    }, text = {
-                                        Text(
-                                            text = menuItem.text,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                    }, leadingIcon = {
-                                        Icon(
-                                            menuItem.outlinedIcon,
-                                            contentDescription = stringResource(
-                                                R.string.open_action_menu
-                                            )
-                                        )
+                            if (! menuItemGroups.isNullOrEmpty()) {
+                                menuItemGroups.forEachIndexed { index, menuSection ->
+                                    if (index != 0) {
+                                        HorizontalDivider()
                                     }
-
-                                    )
+                                    menuSection.menuItems.forEach { menuItem ->
+                                        DropdownMenuItem(onClick = {
+                                            showDropDownMenu = false
+                                            menuItem.action()
+                                        }, text = {
+                                            Text(
+                                                text = menuItem.text,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
+                                            )
+                                        }, leadingIcon = {
+                                            Icon(
+                                                menuItem.outlinedIcon, contentDescription = null
+                                            )
+                                        })
+                                    }
                                 }
                             }
                             if (editMenuItemGroup != null) {
-                                HorizontalDivider()
+                                if (! menuItemGroups.isNullOrEmpty()) {
+                                    HorizontalDivider()
+                                }
                                 editMenuItemGroup.menuItems.forEach { menuItem ->
                                     DropdownMenuItem(onClick = {
                                         showDropDownMenu = false
@@ -166,14 +164,9 @@ fun ContentListItem(
                                         )
                                     }, leadingIcon = {
                                         Icon(
-                                            menuItem.outlinedIcon,
-                                            contentDescription = stringResource(
-                                                R.string.open_action_menu
-                                            )
+                                            menuItem.outlinedIcon, contentDescription = null
                                         )
-                                    }
-
-                                    )
+                                    })
                                 }
                             }
                         }
@@ -187,8 +180,7 @@ fun ContentListItem(
                 progress = { progress },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
-                strokeCap = StrokeCap.Round
+                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
             )
         }
     }

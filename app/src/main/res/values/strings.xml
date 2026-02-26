@@ -242,4 +242,5 @@
     <string name="choose_service">Choose service</string>
     <string name="no_service_selected">No service selected</string>
     <string name="cancelled">Cancelled</string>
+    <string name="open_editing_menu">Open editing menu</string>
 </resources>
