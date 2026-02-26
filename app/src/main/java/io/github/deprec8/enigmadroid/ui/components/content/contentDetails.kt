@@ -31,16 +31,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EditNote
-import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -163,45 +162,25 @@ fun ContentDetails(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     menuSection.menuItems.forEach { menuItem ->
-                        when (menuItem.text) {
-                            stringResource(R.string.stream), stringResource(R.string.view_log) -> Button(
-                                modifier = Modifier.weight(1f),
-                                content = {
-                                    Icon(
-                                        imageVector = menuItem.filledIcon, contentDescription = null
-                                    )
-                                    Spacer(Modifier.size(12.dp))
-                                    Text(
-                                        text = menuItem.text,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                },
-                                onClick = {
-                                    onHideBottomSheet()
-                                    menuItem.action()
-                                },
-                            )
-                            else                                                               -> OutlinedButton(
-                                modifier = Modifier.weight(1f),
-                                content = {
-                                    Icon(
-                                        imageVector = menuItem.filledIcon,
-                                        contentDescription = null
-                                    )
-                                    Spacer(Modifier.size(12.dp))
-                                    Text(
-                                        text = menuItem.text,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                },
-                                onClick = {
-                                    onHideBottomSheet()
-                                    menuItem.action()
-                                },
-                            )
-                        }
+                        FilledTonalButton(
+                            modifier = Modifier.weight(1f),
+                            content = {
+                                Icon(
+                                    imageVector = menuItem.filledIcon,
+                                    contentDescription = null
+                                )
+                                Spacer(Modifier.size(12.dp))
+                                Text(
+                                    text = menuItem.text,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            },
+                            onClick = {
+                                onHideBottomSheet()
+                                menuItem.action()
+                            },
+                        )
                     }
                 }
             }

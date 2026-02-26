@@ -45,6 +45,7 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.AutoAwesomeMosaic
@@ -665,6 +666,8 @@ private fun ServicePickerDialog(
                             Icon(
                                 Icons.Outlined.Folder, stringResource(R.string.directory)
                             )
+                        }, trailingContent = {
+                            Icon(Icons.AutoMirrored.Filled.ArrowRight, contentDescription = null)
                         })
                 }
             }

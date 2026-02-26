@@ -34,7 +34,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -46,7 +45,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -127,19 +125,13 @@ fun SignalPage(
                                     .fillMaxWidth(0.5f)
                             ) {
                                 CircularProgressIndicator(
-                                    progress = { 1f },
-                                    modifier = Modifier.size(300.dp),
-                                    strokeCap = StrokeCap.Round,
-                                    color = MaterialTheme.colorScheme.surfaceContainer
-                                )
-                                CircularProgressIndicator(
                                     strokeWidth = 10.dp, progress = {
                                         if (signalInfo.agc.isNotBlank()) {
                                             signalInfo.agc.toFloat() / 100
                                         } else {
                                             0f
                                         }
-                                    }, modifier = Modifier.size(300.dp), strokeCap = StrokeCap.Round
+                                    }, modifier = Modifier.size(300.dp)
                                 )
                                 Text(
                                     modifier = Modifier.align(Alignment.Center),
@@ -180,19 +172,13 @@ fun SignalPage(
                                 .fillMaxWidth()
                         ) {
                             CircularProgressIndicator(
-                                progress = { 1f },
-                                modifier = Modifier.size(300.dp),
-                                strokeCap = StrokeCap.Round,
-                                color = MaterialTheme.colorScheme.surfaceContainer
-                            )
-                            CircularProgressIndicator(
                                 strokeWidth = 10.dp, progress = {
                                     if (signalInfo.agc.isNotBlank()) {
                                         signalInfo.agc.toFloat() / 100
                                     } else {
                                         0f
                                     }
-                                }, modifier = Modifier.size(300.dp), strokeCap = StrokeCap.Round
+                                }, modifier = Modifier.size(300.dp)
                             )
                             Text(
                                 modifier = Modifier.align(Alignment.Center),
