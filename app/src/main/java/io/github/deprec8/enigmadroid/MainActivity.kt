@@ -50,9 +50,9 @@ class MainActivity : ComponentActivity() {
         installSplashScreen().setKeepOnScreenCondition {
             isIntentBeingHandled
         }
-        handleIntent(intent)
-        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        handleIntent(intent)
         setContent {
             EnigmaDroidTheme {
                 MainPage(isRemoteControlDeepLink)
