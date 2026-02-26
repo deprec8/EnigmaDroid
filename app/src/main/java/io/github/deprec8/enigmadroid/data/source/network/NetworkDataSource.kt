@@ -37,6 +37,7 @@ import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpHeaders
+import io.ktor.utils.io.CancellationException
 import io.ktor.utils.io.ClosedByteChannelException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -173,7 +174,11 @@ class NetworkDataSource @Inject constructor(
         }
         true
     } catch (e: Exception) {
-        updateLoadingState(e)
+        if (e is CancellationException) {
+            throw e
+        } else {
+            updateLoadingState(e)
+        }
         false
     }
 
@@ -183,7 +188,11 @@ class NetworkDataSource @Inject constructor(
                 header(HttpHeaders.Connection, "close")
             }
         } catch (e: Exception) {
-            updateLoadingState(e)
+            if (e is CancellationException) {
+                throw e
+            } else {
+                updateLoadingState(e)
+            }
         }
     }
 
@@ -193,7 +202,11 @@ class NetworkDataSource @Inject constructor(
                 header(HttpHeaders.Connection, "close")
             }
         } catch (e: Exception) {
-            updateLoadingState(e)
+            if (e is CancellationException) {
+                throw e
+            } else {
+                updateLoadingState(e)
+            }
         }
     }
 
@@ -202,7 +215,11 @@ class NetworkDataSource @Inject constructor(
             header(HttpHeaders.Connection, "close")
         }.bodyAsText()
     } catch (e: Exception) {
-        updateLoadingState(e)
+        if (e is CancellationException) {
+            throw e
+        } else {
+            updateLoadingState(e)
+        }
         ""
     }
 }

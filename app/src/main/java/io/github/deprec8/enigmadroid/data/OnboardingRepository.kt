@@ -41,20 +41,12 @@ class OnboardingRepository @Inject constructor(
     private val deviceDatabase: DeviceDatabase,
     private val networkDataSource: NetworkDataSource
 ) {
-
     private val onboardingKey = booleanPreferencesKey(PreferenceKey.ONBOARDING_NEEDED)
     private val loadingStateKey = intPreferencesKey(PreferenceKey.LOADING_STATE)
 
-    suspend fun getOnboardingNeeded(): Flow<Boolean> {
+    fun getOnboardingNeeded(): Flow<Boolean> {
         return dataStore.data.map { preferences ->
-            if (preferences.contains(onboardingKey)) {
-                preferences[onboardingKey] != false
-            } else {
-                dataStore.edit { settings ->
-                    settings[onboardingKey] = true
-                }
-                true
-            }
+            preferences[onboardingKey] ?: true
         }
     }
 

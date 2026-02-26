@@ -49,10 +49,10 @@ import io.github.deprec8.enigmadroid.model.api.timers.services.ServiceBatch
 import io.github.deprec8.enigmadroid.model.api.timers.services.ServiceBatchSet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -146,83 +146,87 @@ class ApiRepository @Inject constructor(
     }
 
     suspend fun fetchCurrentInfo(): CurrentInfo {
-        return try {
-            json.decodeFromString(
-                CurrentInfo.serializer(), networkDataSource.fetchApi("getcurrent")
-            )
-        } catch (_: Exception) {
+        val rawJson = networkDataSource.fetchApi("getcurrent")
 
-            CurrentInfo()
+        return withContext(Dispatchers.Default) {
+            runCatching {
+                json.decodeFromString(
+                    CurrentInfo.serializer(), rawJson
+                )
+            }.getOrDefault(CurrentInfo())
         }
     }
 
     suspend fun fetchEpgEventBatchSet(bouquetReference: String): EventBatchSet {
-        return try {
-            val epgEventBatch = json.decodeFromString(
-                EventBatch.serializer(), networkDataSource.fetchApi(
-                    "epgmulti?bRef=${
-                        bouquetReference.replace(
-                            "\\\"", "\""
-                        )
-                    }&endTime=10080"
+        val rawJson = networkDataSource.fetchApi(
+            "epgmulti?bRef=${
+                bouquetReference.replace(
+                    "\\\"", "\""
                 )
-            )
+            }&endTime=10080"
+        )
 
-            EventBatchSet(eventBatches = epgEventBatch.events.groupBy { it.serviceName }
-                .map { (serviceName, events) ->
-                    EventBatch(
-                        name = serviceName, events = events
-                    )
-                }, result = epgEventBatch.result)
+        return withContext(Dispatchers.Default) {
+            runCatching {
+                val epgEventBatch = json.decodeFromString(
+                    EventBatch.serializer(), rawJson
+                )
 
-        } catch (_: Exception) {
-            EventBatchSet()
+                EventBatchSet(eventBatches = epgEventBatch.events.groupBy { it.serviceName }
+                    .map { (serviceName, events) ->
+                        EventBatch(
+                            name = serviceName, events = events
+                        )
+                    }, result = epgEventBatch.result)
+
+            }.getOrDefault(EventBatchSet())
         }
     }
 
     suspend fun fetchServiceEpgBatch(serviceReference: String): EventBatch {
-        return try {
-            json.decodeFromString(
-                EventBatch.serializer(),
-                networkDataSource.fetchApi("epgservice?sRef=${serviceReference}&endTime=10080")
-            )
-        } catch (_: Exception) {
-            EventBatch()
+        val rawJson =
+            networkDataSource.fetchApi("epgservice?sRef=${serviceReference}&endTime=10080")
+
+        return withContext(Dispatchers.Default) {
+            runCatching {
+                json.decodeFromString(
+                    EventBatch.serializer(), rawJson
+                )
+            }.getOrDefault(EventBatch())
         }
     }
 
     fun fetchMovieBatches(): Flow<MovieBatch> = flow {
-        try {
-            val bookmarks = mutableListOf<Bookmark>()
-            val movies = json.decodeFromString(
-                BookmarkBatch.serializer(), networkDataSource.fetchApi("movielist")
+        val bookmarks = mutableListOf<Bookmark>()
+        val rawBookmarkJson = networkDataSource.fetchApi("movielist")
+        val movies = json.decodeFromString(
+            BookmarkBatch.serializer(), rawBookmarkJson
+        )
+        bookmarks.add(
+            Bookmark(
+                directory = movies.directory, displayName = "/"
             )
+        )
+        movies.bookmarks.forEach {
             bookmarks.add(
                 Bookmark(
-                    directory = movies.directory, displayName = "/"
+                    directory = bookmarks[0].directory + it, displayName = "/$it"
                 )
             )
-            movies.bookmarks.forEach {
-                bookmarks.add(
-                    Bookmark(
-                        directory = bookmarks[0].directory + it, displayName = "/$it"
-                    )
-                )
-            }
-            bookmarks.forEach { bookmark ->
-                val movieBatch = json.decodeFromString(
-                    MovieBatch.serializer(), networkDataSource.fetchApi(
-                        "movielist?dirname=${
-                            bookmark.directory
-                        }"
-                    )
-                )
-                emit(movieBatch.copy(bookmark = bookmark))
-            }
-        } catch (_: Exception) {
-
-            emitAll(emptyList<MovieBatch>().asFlow())
         }
+        bookmarks.forEach { bookmark ->
+            val rawJson = networkDataSource.fetchApi(
+                "movielist?dirname=${
+                    bookmark.directory
+                }"
+            )
+            val movieBatch = json.decodeFromString(
+                MovieBatch.serializer(), rawJson
+            )
+            emit(movieBatch.copy(bookmark = bookmark))
+        }
+    }.flowOn(Dispatchers.Default).catch {
+        emit(MovieBatch())
     }
 
     suspend fun renameMovie(serviceReference: String, newName: String) {
@@ -238,126 +242,130 @@ class ApiRepository @Inject constructor(
     }
 
     suspend fun fetchServiceBatchSet(): ServiceBatchSet {
-        return try {
-            val tvServiceBatchSet = json.decodeFromString(
-                ServiceBatchSet.serializer(), networkDataSource.fetchApi("getallservices")
-            )
+        val rawTvJson = networkDataSource.fetchApi("getallservices")
+        val rawRadioJson = networkDataSource.fetchApi("getallservices?type=radio")
 
-            val radioServiceBatchSet = json.decodeFromString(
-                ServiceBatchSet.serializer(),
-                networkDataSource.fetchApi("getallservices?type=radio")
-            )
+        return withContext(Dispatchers.Default) {
+            runCatching {
+                val tvServiceBatchSet = json.decodeFromString(
+                    ServiceBatchSet.serializer(), rawTvJson
+                )
 
-            val rawServiceBatches =
-                tvServiceBatchSet.serviceBatches + radioServiceBatchSet.serviceBatches
+                val radioServiceBatchSet = json.decodeFromString(
+                    ServiceBatchSet.serializer(), rawRadioJson
+                )
 
-            val uiServiceBatches = mutableListOf<ServiceBatch>()
+                val rawServiceBatches =
+                    tvServiceBatchSet.serviceBatches + radioServiceBatchSet.serviceBatches
 
-            rawServiceBatches.forEach { serviceBatch ->
-                var counter = 1
+                val uiServiceBatches = mutableListOf<ServiceBatch>()
 
-                val uiServices = serviceBatch.services.map { service ->
-                    val type = service.serviceReference.toEntryType()
-                    val displayIndex = if (type.shouldBeNumbered()) counter ++ else null
+                rawServiceBatches.forEach { serviceBatch ->
+                    var counter = 1
 
-                    service.copy(
-                        displayIndex = displayIndex, type = type
+                    val uiServices = serviceBatch.services.map { service ->
+                        val type = service.serviceReference.toEntryType()
+                        val displayIndex = if (type.shouldBeNumbered()) counter ++ else null
+
+                        service.copy(
+                            displayIndex = displayIndex, type = type
+                        )
+                    }
+
+                    uiServiceBatches.add(
+                        serviceBatch.copy(
+                            services = uiServices
+                        )
                     )
                 }
-
-                uiServiceBatches.add(
-                    serviceBatch.copy(
-                        services = uiServices
-                    )
+                ServiceBatchSet(
+                    serviceBatches = uiServiceBatches,
+                    result = tvServiceBatchSet.result || radioServiceBatchSet.result
                 )
-            }
-            ServiceBatchSet(
-                serviceBatches = uiServiceBatches,
-                result = tvServiceBatchSet.result || radioServiceBatchSet.result
-            )
-        } catch (_: Exception) {
-            ServiceBatchSet()
+            }.getOrDefault(ServiceBatchSet())
         }
     }
 
     fun fetchEventBatches(apiType: ApiType): Flow<EventBatch> = flow {
-        try {
-            fetchBouquets(apiType).forEach { bouquet ->
-                val newBouquetReference = bouquet.reference.replace("\\\"", "\"")
-                val rawBatch = json.decodeFromString(
-                    EventBatch.serializer(),
-                    networkDataSource.fetchApi("epgnow?bRef=$newBouquetReference")
-                )
+        fetchBouquets(apiType).forEach { bouquet ->
+            val newBouquetReference = bouquet.reference.replace("\\\"", "\"")
 
-                var counter = 1
+            val rawJson = networkDataSource.fetchApi("epgnow?bRef=$newBouquetReference")
 
-                val uiEvents = rawBatch.events.map { event ->
-                    val type = event.serviceReference.toEntryType()
+            val rawBatch = json.decodeFromString(
+                EventBatch.serializer(), rawJson
+            )
 
-                    val displayIndex = if (type.shouldBeNumbered()) counter ++ else null
+            var counter = 1
 
-                    event.copy(
-                        displayIndex = displayIndex, type = type
-                    )
-                }
+            val uiEvents = rawBatch.events.map { event ->
+                val type = event.serviceReference.toEntryType()
 
-                emit(
-                    rawBatch.copy(
-                        name = bouquet.name, events = uiEvents
-                    )
+                val displayIndex = if (type.shouldBeNumbered()) counter ++ else null
+
+                event.copy(
+                    displayIndex = displayIndex, type = type
                 )
             }
-        } catch (_: Exception) {
-            emitAll(emptyList<EventBatch>().asFlow())
+
+            emit(
+                rawBatch.copy(
+                    name = bouquet.name, events = uiEvents
+                )
+            )
         }
+
+    }.flowOn(Dispatchers.Default).catch {
+        emit(EventBatch())
     }
 
     suspend fun fetchBouquets(apiType: ApiType): List<Bouquet> {
-        return try {
-            val bouquets = mutableListOf<Bouquet>()
-            json.decodeFromString(
-                BouquetBatch.serializer(),
-                networkDataSource.fetchApi("bouquets?stype=${if (apiType == ApiType.TV) "tv" else "radio"}")
-            ).bouquets.forEach { bouquet ->
-                if (bouquet[0].toEntryType() != EntryType.INVISIBLE_DIRECTORY) {
-                    bouquets.add(
-                        Bouquet(
-                            reference = bouquet[0], name = bouquet[1]
-                        )
-                    )
-                }
-            }
-            bouquets.add(
-                Bouquet(
-                    if (apiType == ApiType.TV) {
-                        DefaultBouquet.ALL_SERVICES_TV
-                    } else {
-                        DefaultBouquet.ALL_SERVICES_RADIO
-                    }, context.getString(R.string.all_services)
-                )
-            )
+        val rawUserJson =
+            networkDataSource.fetchApi("bouquets?stype=${if (apiType == ApiType.TV) "tv" else "radio"}")
+        val rawProviderJson = networkDataSource.fetchApi(
             if (apiType == ApiType.TV) {
-                json.decodeFromString(
-                    EventBatch.serializer(),
-                    networkDataSource.fetchApi("epgnow?bRef=${DefaultBouquet.ALL_PROVIDERS_TV}")
-                ).events
+                "epgnow?bRef=${DefaultBouquet.ALL_PROVIDERS_TV}"
             } else {
-                json.decodeFromString(
-                    EventBatch.serializer(),
-                    networkDataSource.fetchApi("epgnow?bRef=${DefaultBouquet.ALL_PROVIDERS_RADIO}")
-                ).events
-            }.forEach { provider ->
-                if (provider.serviceReference.toEntryType() != EntryType.INVISIBLE_DIRECTORY) {
-                    bouquets.add(
-                        Bouquet(
-                            provider.serviceReference, provider.serviceName
-                        )
-                    )
-                }
+                "epgnow?bRef=${DefaultBouquet.ALL_PROVIDERS_RADIO}"
             }
-            bouquets
-        } catch (_: Exception) {
-            emptyList()
+        )
+
+        return withContext(Dispatchers.Default) {
+            runCatching {
+                val bouquets = mutableListOf<Bouquet>()
+                json.decodeFromString(
+                    BouquetBatch.serializer(), rawUserJson
+                ).bouquets.forEach { bouquet ->
+                    if (bouquet[0].toEntryType() != EntryType.INVISIBLE_DIRECTORY) {
+                        bouquets.add(
+                            Bouquet(
+                                reference = bouquet[0], name = bouquet[1]
+                            )
+                        )
+                    }
+                }
+                bouquets.add(
+                    Bouquet(
+                        if (apiType == ApiType.TV) {
+                            DefaultBouquet.ALL_SERVICES_TV
+                        } else {
+                            DefaultBouquet.ALL_SERVICES_RADIO
+                        }, context.getString(R.string.all_services)
+                    )
+                )
+                json.decodeFromString(
+                    EventBatch.serializer(), rawProviderJson
+                ).events.forEach { provider ->
+                    if (provider.serviceReference.toEntryType() != EntryType.INVISIBLE_DIRECTORY) {
+                        bouquets.add(
+                            Bouquet(
+                                provider.serviceReference, provider.serviceName
+                            )
+                        )
+                    }
+                }
+                bouquets
+            }.getOrDefault(emptyList())
         }
     }
 
@@ -366,22 +374,26 @@ class ApiRepository @Inject constructor(
     }
 
     suspend fun fetchDeviceInfo(): DeviceInfo {
-        return try {
-            json.decodeFromString(
-                DeviceInfo.serializer(), networkDataSource.fetchApi("deviceinfo")
-            )
-        } catch (_: Exception) {
-            DeviceInfo()
+        val rawJson = networkDataSource.fetchApi("deviceinfo")
+
+        return withContext(Dispatchers.Default) {
+            runCatching {
+                json.decodeFromString(
+                    DeviceInfo.serializer(), rawJson
+                )
+            }.getOrDefault(DeviceInfo())
         }
     }
 
     suspend fun fetchSignalInfo(): SignalInfo {
-        return try {
-            json.decodeFromString(
-                SignalInfo.serializer(), networkDataSource.fetchApi("tunersignal")
-            )
-        } catch (_: Exception) {
-            SignalInfo()
+        val rawJson = networkDataSource.fetchApi("tunersignal")
+
+        return withContext(Dispatchers.Default) {
+            runCatching {
+                json.decodeFromString(
+                    SignalInfo.serializer(), rawJson
+                )
+            }.getOrDefault(SignalInfo())
         }
     }
 
@@ -406,12 +418,14 @@ class ApiRepository @Inject constructor(
     }
 
     suspend fun fetchTimerBatch(): TimerBatch {
-        return try {
-            json.decodeFromString(
-                TimerBatch.serializer(), networkDataSource.fetchApi("timerlist")
-            )
-        } catch (_: Exception) {
-            TimerBatch()
+        val rawJson = networkDataSource.fetchApi("timerlist")
+
+        return withContext(Dispatchers.Default) {
+            runCatching {
+                json.decodeFromString(
+                    TimerBatch.serializer(), rawJson
+                )
+            }.getOrDefault(TimerBatch())
         }
     }
 
