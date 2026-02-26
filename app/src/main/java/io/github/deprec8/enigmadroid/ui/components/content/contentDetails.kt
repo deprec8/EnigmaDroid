@@ -186,7 +186,7 @@ fun ContentDetails(
                                 modifier = Modifier.weight(1f),
                                 content = {
                                     Icon(
-                                        imageVector = menuItem.outlinedIcon,
+                                        imageVector = menuItem.filledIcon,
                                         contentDescription = null
                                     )
                                     Spacer(Modifier.size(12.dp))

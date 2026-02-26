@@ -209,39 +209,34 @@ fun TimersContent(
                         )
                     } else {
                         emptyList()
-                    } + listOf(
-                        MenuItemGroup(
-                            listOf(
-                                MenuItem(
-                                    text = if (timer.disabled == 1) {
-                                        stringResource(R.string.enable)
-                                    } else {
-                                        stringResource(R.string.disable)
-                                    }, outlinedIcon = if (timer.disabled == 1) {
-                                        Icons.Outlined.Timer
-                                    } else {
-                                        Icons.Outlined.TimerOff
-                                    }, filledIcon = if (timer.disabled == 1) {
-                                        Icons.Filled.Timer
-                                    } else {
-                                        Icons.Filled.TimerOff
-                                    }, action = { onToggleTimerStatus(timer) })
-                            )
-                        ), MenuItemGroup(
-                            listOf(
-                                MenuItem(
-                                    text = stringResource(R.string.edit),
-                                    outlinedIcon = Icons.Outlined.Edit,
-                                    filledIcon = Icons.Filled.Edit,
-                                    action = { showEditDialog = true }), MenuItem(
-                                    text = stringResource(R.string.delete),
-                                    outlinedIcon = Icons.Outlined.Delete,
-                                    filledIcon = Icons.Filled.Delete,
-                                    action = { showDeleteDialog = true })
-                            )
+                    },
+                    additionalDescription = timer.directoryName,
+                    editMenuItemGroup = MenuItemGroup(
+                        listOf(
+                            MenuItem(
+                                text = if (timer.disabled == 1) {
+                                    stringResource(R.string.enable)
+                                } else {
+                                    stringResource(R.string.disable)
+                                }, outlinedIcon = if (timer.disabled == 1) {
+                                    Icons.Outlined.Timer
+                                } else {
+                                    Icons.Outlined.TimerOff
+                                }, filledIcon = if (timer.disabled == 1) {
+                                    Icons.Filled.Timer
+                                } else {
+                                    Icons.Filled.TimerOff
+                                }, action = { onToggleTimerStatus(timer) }), MenuItem(
+                                text = stringResource(R.string.edit),
+                                outlinedIcon = Icons.Outlined.Edit,
+                                filledIcon = Icons.Filled.Edit,
+                                action = { showEditDialog = true }), MenuItem(
+                                text = stringResource(R.string.delete),
+                                outlinedIcon = Icons.Outlined.Delete,
+                                filledIcon = Icons.Filled.Delete,
+                                action = { showDeleteDialog = true })
                         )
-                    ),
-                    additionalDescription = timer.directoryName
+                    )
                 )
 
                 if (showLogDialog) {
