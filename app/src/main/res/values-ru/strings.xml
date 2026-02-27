@@ -221,4 +221,12 @@
     <string name="invalid_device_response">Неправильный ответ на устройство</string>
     <string name="enable">Включить</string>
     <string name="disable">Не отображать</string>
+    <string name="marker">Маркер</string>
+    <string name="directory">Директория</string>
+    <string name="group">Группа</string>
+    <string name="current_service">Текущий сервис</string>
+    <string name="choose_service">Выберите услугу</string>
+    <string name="no_service_selected">Сервис не выбран</string>
+    <string name="cancelled">Отменено</string>
+    <string name="open_editing_menu">Открыть меню редактирования</string>
 </resources>
