@@ -92,7 +92,7 @@ fun LiveContent(
                         1
                     )
                     else              -> GridItemSpan(
-                        maxCurrentLineSpan
+                        maxLineSpan
                     )
                 }
             }) { event ->
