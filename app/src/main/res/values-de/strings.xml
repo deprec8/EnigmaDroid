@@ -221,4 +221,12 @@
     <string name="invalid_device_response">Ungültige Geräteantwort</string>
     <string name="enable">Aktivieren</string>
     <string name="disable">Deaktivieren</string>
+    <string name="marker">Marker</string>
+    <string name="directory">Verzeichnis</string>
+    <string name="group">Gruppe</string>
+    <string name="current_service">Aktueller Service</string>
+    <string name="choose_service">Service auswählen</string>
+    <string name="no_service_selected">Kein Service ausgewählt</string>
+    <string name="cancelled">Abgebrochen</string>
+    <string name="open_editing_menu">Bearbeitungsmenü öffnen</string>
 </resources>
