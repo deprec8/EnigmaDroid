@@ -221,4 +221,12 @@
     <string name="invalid_device_response">Réponse de l\'appareil non valide</string>
     <string name="enable">Activer</string>
     <string name="disable">Désactiver</string>
+    <string name="marker">Marqueur</string>
+    <string name="directory">Tout l\'annuaire</string>
+    <string name="group">Groupe</string>
+    <string name="current_service">Service actuel</string>
+    <string name="choose_service">Choisir un service</string>
+    <string name="no_service_selected">Aucun service sélectionné</string>
+    <string name="cancelled">Annulé</string>
+    <string name="open_editing_menu">Ouvrir le menu d\'édition</string>
 </resources>
