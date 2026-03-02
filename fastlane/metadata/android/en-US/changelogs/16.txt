@@ -1,0 +1,12 @@
+- Added a toggle for timer status
+- Added the ability to use hostnames instead of ip addresses
+- Added support for Enigma2 service flags
+- Added text to display genre or directory name on content items
+- Improved the service picker dialog while editing a timer
+- Improved the visuals of multiple elements
+- Improved the overall stability and performance
+- Fixed the EPG button in the remote control
+- Fixed the deeplink behavior of the remote control
+- Fixed multiple issues with fullscreen dialogs
+- Synced Crowdin translations
+- Multiple other fixes and updates
