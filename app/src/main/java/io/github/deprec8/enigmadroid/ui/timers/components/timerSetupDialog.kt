@@ -40,9 +40,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldLineLimits
-import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
@@ -83,8 +81,6 @@ import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
@@ -117,17 +113,25 @@ fun TimerSetupDialog(
     onSaveRequest: (newTimer: Timer, oldTimer: Timer?) -> Unit,
     serviceBatchSet: ServiceBatchSet,
 ) {
-    val titleState = rememberTextFieldState("")
-    val shortDescriptionState = rememberTextFieldState("")
+    val titleState = rememberTextFieldState(oldTimer?.title ?: "")
+    val shortDescriptionState = rememberTextFieldState(oldTimer?.shortDescription ?: "")
 
-    var disabled by rememberSaveable { mutableIntStateOf(0) }
-    var justPlay by rememberSaveable { mutableIntStateOf(0) }
-    var beginTimestamp by rememberSaveable { mutableLongStateOf(0L) }
-    var endTimestamp by rememberSaveable { mutableLongStateOf(0L) }
-    var afterevent by rememberSaveable { mutableIntStateOf(3) }
-    var serviceReference by rememberSaveable { mutableStateOf("") }
-    var repeated by rememberSaveable { mutableIntStateOf(0) }
-    var alwaysZap by rememberSaveable { mutableIntStateOf(0) }
+    var disabled by rememberSaveable { mutableIntStateOf(oldTimer?.disabled ?: 0) }
+    var justPlay by rememberSaveable { mutableIntStateOf(oldTimer?.justPlay ?: 0) }
+    var beginTimestamp by rememberSaveable {
+        mutableLongStateOf(
+            oldTimer?.beginTimestamp?.times(1000) ?: System.currentTimeMillis()
+        )
+    }
+    var endTimestamp by rememberSaveable {
+        mutableLongStateOf(
+            oldTimer?.endTimestamp?.times(1000) ?: (System.currentTimeMillis() + 3600000)
+        )
+    }
+    var afterevent by rememberSaveable { mutableIntStateOf(oldTimer?.afterEvent ?: 3) }
+    var serviceReference by rememberSaveable { mutableStateOf(oldTimer?.serviceReference ?: "") }
+    var repeated by rememberSaveable { mutableIntStateOf(oldTimer?.repeated ?: 0) }
+    var alwaysZap by rememberSaveable { mutableIntStateOf(oldTimer?.alwaysZap ?: 0) }
 
     var showAftereventMenu by rememberSaveable { mutableStateOf(false) }
     var showBeginDatePicker by rememberSaveable { mutableStateOf(false) }
@@ -136,10 +140,16 @@ fun TimerSetupDialog(
     var showEndTimePicker by rememberSaveable { mutableStateOf(false) }
     var showServicePicker by rememberSaveable { mutableStateOf(false) }
 
-    val beginTimeState = rememberTimePickerState()
-    val endTimeState = rememberTimePickerState()
-    val beginDateState = rememberDatePickerState()
-    val endDateState = rememberDatePickerState()
+    val beginTimeState = rememberTimePickerState(
+        initialHour = TimestampUtils.millisToHourInt(beginTimestamp),
+        initialMinute = TimestampUtils.millisToMinuteInt(beginTimestamp)
+    )
+    val endTimeState = rememberTimePickerState(
+        initialHour = TimestampUtils.millisToHourInt(endTimestamp),
+        initialMinute = TimestampUtils.millisToMinuteInt(endTimestamp)
+    )
+    val beginDateState = rememberDatePickerState(initialSelectedDateMillis = beginTimestamp)
+    val endDateState = rememberDatePickerState(initialSelectedDateMillis = endTimestamp)
 
     val toggleScrollState = rememberScrollState()
 
@@ -153,55 +163,12 @@ fun TimerSetupDialog(
         Pair(0b1000000, R.string.sunday)
     )
 
-    LaunchedEffect(Unit) {
-        if (oldTimer != null) {
-            titleState.setTextAndPlaceCursorAtEnd(oldTimer.title)
-            serviceReference = oldTimer.serviceReference
-            shortDescriptionState.setTextAndPlaceCursorAtEnd(oldTimer.shortDescription)
-            disabled = oldTimer.disabled
-            justPlay = oldTimer.justPlay
-            beginTimestamp = oldTimer.beginTimestamp * 1000
-            endTimestamp = oldTimer.endTimestamp * 1000
-            afterevent = oldTimer.afterEvent
-            repeated = oldTimer.repeated
-            alwaysZap = oldTimer.alwaysZap
-        } else {
-            beginTimestamp = System.currentTimeMillis()
-            endTimestamp = System.currentTimeMillis() + 3600000
-        }
-
-        beginTimeState.hour = TimestampUtils.millisToHourInt(beginTimestamp)
-        beginTimeState.minute = TimestampUtils.millisToMinuteInt(beginTimestamp)
-        endTimeState.hour = TimestampUtils.millisToHourInt(endTimestamp)
-        endTimeState.minute = TimestampUtils.millisToMinuteInt(endTimestamp)
-        beginDateState.selectedDateMillis = beginTimestamp
-        endDateState.selectedDateMillis = endTimestamp
-    }
-
-    fun reset() {
-        titleState.clearText()
-        serviceReference = ""
-        shortDescriptionState.clearText()
-        disabled = 0
-        justPlay = 0
-        beginTimestamp = 0L
-        endTimestamp = 0L
-        afterevent = 0
-        repeated = 0
-        alwaysZap = 0
-    }
-
     fun isEverythingValid(): Boolean {
         return if (oldTimer == null) {
-            titleState.text.toString() != "" && serviceReference != "" && beginTimestamp / 1000 < endTimestamp / 1000
+            titleState.text.isNotBlank() && serviceReference.isNotBlank() && beginTimestamp < endTimestamp
         } else {
-            titleState.text.toString() != "" && serviceReference != "" && beginTimestamp < endTimestamp && (oldTimer.serviceReference != serviceReference || oldTimer.title != titleState.text.toString() || oldTimer.shortDescription != shortDescriptionState.text.toString() || oldTimer.disabled != disabled || oldTimer.justPlay != justPlay || oldTimer.beginTimestamp != beginTimestamp / 1000 || oldTimer.endTimestamp != endTimestamp / 1000 || oldTimer.afterEvent != afterevent || oldTimer.repeated != repeated || oldTimer.alwaysZap != alwaysZap)
+            titleState.text.isNotBlank() && serviceReference.isNotBlank() && beginTimestamp < endTimestamp && (oldTimer.serviceReference != serviceReference || oldTimer.title != titleState.text || oldTimer.shortDescription != shortDescriptionState.text || oldTimer.disabled != disabled || oldTimer.justPlay != justPlay || oldTimer.beginTimestamp != (beginTimestamp / 1000) || oldTimer.endTimestamp != (endTimestamp / 1000) || oldTimer.afterEvent != afterevent || oldTimer.repeated != repeated || oldTimer.alwaysZap != alwaysZap)
         }
-
-    }
-
-    DisposableEffect(Unit) {
-        onDispose { reset() }
     }
 
     AdaptiveDialog(
@@ -243,14 +210,12 @@ fun TimerSetupDialog(
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                     headlineContent = { Text(text = stringResource(R.string.service)) },
                     supportingContent = {
-                        Text(
-                            text = serviceBatchSet.serviceBatches.flatMap { it.services }
-                                .firstOrNull {
-                                    it.serviceReference == serviceReference
-                                }?.serviceName ?: serviceReference.ifBlank {
-                                stringResource(R.string.no_service_selected)
-                            }
-                        )
+                        Text(text = serviceBatchSet.serviceBatches.flatMap { it.services }
+                            .firstOrNull {
+                                it.serviceReference == serviceReference
+                            }?.serviceName ?: serviceReference.ifBlank {
+                            stringResource(R.string.no_service_selected)
+                        })
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -666,20 +631,21 @@ private fun ServicePickerDialog(
                             Icon(
                                 Icons.Outlined.Folder, stringResource(R.string.directory)
                             )
-                        }, trailingContent = {
+                        },
+                        trailingContent = {
                             Icon(Icons.AutoMirrored.Filled.ArrowRight, contentDescription = null)
                         })
                 }
             }
         } else {
             Box(
-                contentAlignment = Alignment.Center, modifier = Modifier
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
                     .fillMaxWidth()
                     .padding(32.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.no_results),
-                    textAlign = TextAlign.Center
+                    text = stringResource(R.string.no_results), textAlign = TextAlign.Center
                 )
             }
         }

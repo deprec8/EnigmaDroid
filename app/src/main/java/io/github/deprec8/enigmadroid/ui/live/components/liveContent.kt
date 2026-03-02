@@ -51,6 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.EntryType
@@ -98,7 +99,8 @@ fun LiveContent(
             }) { event ->
                 when (event.type) {
                     EntryType.CHANNEL   -> {
-                        ContentListItem(highlightedWords = highlightedWords,
+                        ContentListItem(
+                            highlightedWords = highlightedWords,
                             headlineText = event.serviceName,
                             leadingContent = if (showChannelNumbers) {
                                 {
@@ -117,7 +119,8 @@ fun LiveContent(
                             menuItemGroups = listOf(
                                 MenuItemGroup(
                                     listOf(
-                                        MenuItem(text = stringResource(R.string.stream),
+                                        MenuItem(
+                                            text = stringResource(R.string.stream),
                                             outlinedIcon = Icons.Outlined.Cast,
                                             filledIcon = Icons.Filled.Cast,
                                             action = {
@@ -129,20 +132,23 @@ fun LiveContent(
                                                     )
                                                 }
                                             }),
-                                        MenuItem(text = stringResource(R.string.switch_channel),
+                                        MenuItem(
+                                            text = stringResource(R.string.switch_channel),
                                             outlinedIcon = Icons.Outlined.PlayArrow,
                                             filledIcon = Icons.Filled.PlayArrow,
                                             action = {
                                                 onPlayOnDevice(event.serviceReference)
                                             }),
-                                        MenuItem(text = stringResource(R.string.record),
+                                        MenuItem(
+                                            text = stringResource(R.string.record),
                                             outlinedIcon = Icons.Outlined.Videocam,
                                             filledIcon = Icons.Filled.Videocam,
                                             action = {
                                                 onAddTimerForEvent(event)
 
                                             }),
-                                        MenuItem(text = stringResource(R.string.view_epg),
+                                        MenuItem(
+                                            text = stringResource(R.string.view_epg),
                                             outlinedIcon = Icons.AutoMirrored.Outlined.Dvr,
                                             filledIcon = Icons.AutoMirrored.Filled.Dvr,
                                             action = {
@@ -162,7 +168,11 @@ fun LiveContent(
                     EntryType.MARKER    -> {
                         Column {
                             ListItem(headlineContent = {
-                                Text(event.serviceName)
+                                Text(
+                                    event.serviceName,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
                             }, leadingContent = {
                                 Icon(Icons.Outlined.Bookmark, stringResource(R.string.marker))
                             })
@@ -172,7 +182,11 @@ fun LiveContent(
                     EntryType.DIRECTORY -> {
                         Column {
                             ListItem(headlineContent = {
-                                Text(event.serviceName)
+                                Text(
+                                    event.serviceName,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
                             }, leadingContent = {
                                 Icon(Icons.Outlined.Folder, stringResource(R.string.directory))
                             })
@@ -182,7 +196,11 @@ fun LiveContent(
                     EntryType.GROUP     -> {
                         Column {
                             ListItem(headlineContent = {
-                                Text(event.serviceName)
+                                Text(
+                                    event.serviceName,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
                             }, leadingContent = {
                                 Icon(
                                     Icons.Outlined.AutoAwesomeMosaic, stringResource(R.string.group)

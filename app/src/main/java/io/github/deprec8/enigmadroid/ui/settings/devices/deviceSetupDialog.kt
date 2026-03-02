@@ -25,7 +25,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -45,31 +44,15 @@ fun DeviceSetupDialog(
     onDismissRequest: () -> Unit,
     onSave: (newDevice: Device, oldDevice: Device?) -> Unit
 ) {
-    var isHttps by rememberSaveable { mutableStateOf(false) }
-    var isLogin by rememberSaveable { mutableStateOf(false) }
+    var isHttps by rememberSaveable { mutableStateOf(oldDevice?.isHttps == true) }
+    var isLogin by rememberSaveable { mutableStateOf(oldDevice?.isLogin == true) }
 
-    val nameState = rememberTextFieldState("")
-    val ipState = rememberTextFieldState("")
-    val portState = rememberTextFieldState(DefaultPort.HTTP)
-    val livePortState = rememberTextFieldState(DefaultPort.LIVE)
-    val userState = rememberTextFieldState("")
-    val passwordState = rememberTextFieldState("")
-
-    fun setDeviceData() {
-        nameState.setTextAndPlaceCursorAtEnd(oldDevice?.name ?: "")
-        ipState.setTextAndPlaceCursorAtEnd(oldDevice?.ip ?: "")
-        portState.setTextAndPlaceCursorAtEnd(oldDevice?.port ?: DefaultPort.HTTP)
-        livePortState.setTextAndPlaceCursorAtEnd(oldDevice?.livePort ?: DefaultPort.LIVE)
-        userState.setTextAndPlaceCursorAtEnd(oldDevice?.user ?: "")
-        passwordState.setTextAndPlaceCursorAtEnd(oldDevice?.password ?: "")
-
-        isHttps = oldDevice?.isHttps == true
-        isLogin = oldDevice?.isLogin == true
-    }
-
-    LaunchedEffect(Unit) {
-        setDeviceData()
-    }
+    val nameState = rememberTextFieldState(oldDevice?.name ?: "")
+    val ipState = rememberTextFieldState(oldDevice?.ip ?: "")
+    val portState = rememberTextFieldState(oldDevice?.port ?: DefaultPort.HTTP)
+    val livePortState = rememberTextFieldState(oldDevice?.livePort ?: DefaultPort.LIVE)
+    val userState = rememberTextFieldState(oldDevice?.user ?: "")
+    val passwordState = rememberTextFieldState(oldDevice?.password ?: "")
 
     fun isSaveReady(): Boolean {
         return if (Device(

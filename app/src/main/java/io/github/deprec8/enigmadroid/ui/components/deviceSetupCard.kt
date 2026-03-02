@@ -103,26 +103,6 @@ fun DeviceSetupCard(
                         .fillMaxWidth(0.5f)
                 )
                 OutlinedTextField(
-                    state = portState,
-                    lineLimits = TextFieldLineLimits.SingleLine,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number, imeAction = ImeAction.Next
-                    ),
-                    label = {
-                        Text(
-                            text = stringResource(R.string.port),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    },
-                    modifier = Modifier
-                        .padding(start = 8.dp)
-                        .fillMaxWidth(1f)
-                )
-            }
-            Spacer(modifier = Modifier.size(8.dp))
-            Row {
-                OutlinedTextField(
                     state = ipState,
                     lineLimits = TextFieldLineLimits.SingleLine,
                     keyboardOptions = KeyboardOptions(
@@ -136,70 +116,22 @@ fun DeviceSetupCard(
                         )
                     },
                     modifier = Modifier
-                        .padding(end = 8.dp)
-                        .fillMaxWidth(0.5f)
-                )
-                OutlinedTextField(
-                    state = livePortState,
-                    lineLimits = TextFieldLineLimits.SingleLine,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number, imeAction = if (! isLogin) {
-                            ImeAction.Done
-                        } else {
-                            ImeAction.Next
-                        }
-                    ),
-                    label = {
-                        Text(
-                            text = stringResource(R.string.live_port),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    },
-                    modifier = Modifier
                         .padding(start = 8.dp)
                         .fillMaxWidth(1f)
                 )
             }
             Spacer(modifier = Modifier.size(8.dp))
-            Row {
-                FilterChip(selected = isHttps, onClick = onHttpsChange, label = {
-                    Text(
-                        text = stringResource(R.string.https),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }, leadingIcon = {
-                    AnimatedVisibility(isHttps) {
-                        Icon(
-                            Icons.Default.Check, contentDescription = null, Modifier.size(
-                                FilterChipDefaults.IconSize
-                            )
-                        )
-                    }
+            FormPortSettings(
+                portState = portState, livePortState = livePortState, isLogin = isLogin
+            )
+            FormAdditionalSettings(
+                isHttps = isHttps,
+                isLogin = isLogin,
+                onHttpsChange = { onHttpsChange() },
+                onLoginChange = {
+                    passwordVisible = false
+                    onLoginChange()
                 })
-                FilterChip(
-                    selected = isLogin, onClick = {
-                        passwordVisible = false
-                        onLoginChange()
-                    }, label = {
-                        Text(
-                            text = stringResource(R.string.login),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }, leadingIcon = {
-                        AnimatedVisibility(isLogin) {
-                            Icon(
-                                Icons.Default.Check, contentDescription = null, Modifier.size(
-                                    FilterChipDefaults.IconSize
-                                )
-                            )
-                        }
-                    }, modifier = Modifier.padding(start = 8.dp)
-                )
-            }
-            Spacer(modifier = Modifier.size(8.dp))
             Row {
                 OutlinedTextField(
                     enabled = isLogin,
@@ -216,11 +148,11 @@ fun DeviceSetupCard(
                         )
                     },
                     modifier = Modifier
-                        .padding(end = 8.dp)
                         .fillMaxWidth(0.5f)
                         .semantics {
                             contentType = ContentType.Username
                         })
+                Spacer(Modifier.size(16.dp))
                 OutlinedSecureTextField(
                     state = passwordState, enabled = isLogin, trailingIcon = {
                         IconButton(
@@ -254,7 +186,6 @@ fun DeviceSetupCard(
                             overflow = TextOverflow.Ellipsis
                         )
                     }, modifier = Modifier
-                        .padding(start = 8.dp)
                         .fillMaxWidth(1f)
                         .semantics {
                             contentType = ContentType.Password
@@ -294,85 +225,17 @@ fun DeviceSetupCard(
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.size(8.dp))
-            Row {
-                OutlinedTextField(
-                    state = portState,
-                    lineLimits = TextFieldLineLimits.SingleLine,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number, imeAction = ImeAction.Next
-                    ),
-                    label = {
-                        Text(
-                            text = stringResource(R.string.port),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    },
-                    modifier = Modifier
-                        .padding(end = 8.dp)
-                        .fillMaxWidth(0.5f)
-                )
-                OutlinedTextField(
-                    state = livePortState,
-                    lineLimits = TextFieldLineLimits.SingleLine,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number, imeAction = if (! isLogin) {
-                            ImeAction.Done
-                        } else {
-                            ImeAction.Next
-                        }
-                    ),
-                    label = {
-                        Text(
-                            text = stringResource(R.string.live_port),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    },
-                    modifier = Modifier
-                        .padding(start = 8.dp)
-                        .fillMaxWidth(1f)
-                )
-            }
-            Spacer(modifier = Modifier.size(8.dp))
-            Row {
-                FilterChip(selected = isHttps, onClick = onHttpsChange, label = {
-                    Text(
-                        text = stringResource(R.string.https),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }, leadingIcon = {
-                    AnimatedVisibility(isHttps) {
-                        Icon(
-                            Icons.Default.Check, contentDescription = null, Modifier.size(
-                                FilterChipDefaults.IconSize
-                            )
-                        )
-                    }
+            FormPortSettings(
+                portState = portState, livePortState = livePortState, isLogin = isLogin
+            )
+            FormAdditionalSettings(
+                isHttps = isHttps,
+                isLogin = isLogin,
+                onHttpsChange = { onHttpsChange() },
+                onLoginChange = {
+                    passwordVisible = false
+                    onLoginChange()
                 })
-                FilterChip(
-                    selected = isLogin, onClick = {
-                        passwordVisible = false
-                        onLoginChange()
-                    }, label = {
-                        Text(
-                            text = stringResource(R.string.login),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }, leadingIcon = {
-                        AnimatedVisibility(isLogin) {
-                            Icon(
-                                Icons.Default.Check, contentDescription = null, Modifier.size(
-                                    FilterChipDefaults.IconSize
-                                )
-                            )
-                        }
-                    }, modifier = Modifier.padding(start = 8.dp)
-                )
-            }
-            Spacer(modifier = Modifier.size(8.dp))
             OutlinedTextField(
                 enabled = isLogin,
                 state = userState,
@@ -399,7 +262,7 @@ fun DeviceSetupCard(
                         onClick = { passwordVisible = ! passwordVisible }, enabled = isLogin
                     ) {
                         when (passwordVisible) {
-                            true  -> {
+                            true -> {
                                 Icon(
                                     Icons.Default.VisibilityOff,
                                     contentDescription = stringResource(R.string.toggle_password_visibility)
@@ -431,5 +294,96 @@ fun DeviceSetupCard(
                         contentType = ContentType.Password
                     })
         }
+    }
+}
+
+@Composable
+private fun FormAdditionalSettings(
+    isHttps: Boolean,
+    isLogin: Boolean,
+    onHttpsChange: () -> Unit,
+    onLoginChange: () -> Unit,
+) {
+    Column {
+        Spacer(modifier = Modifier.size(8.dp))
+        Row {
+            FilterChip(selected = isHttps, onClick = onHttpsChange, label = {
+                Text(
+                    text = stringResource(R.string.https),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }, leadingIcon = {
+                AnimatedVisibility(isHttps) {
+                    Icon(
+                        Icons.Default.Check, contentDescription = null, Modifier.size(
+                            FilterChipDefaults.IconSize
+                        )
+                    )
+                }
+            })
+            Spacer(Modifier.size(8.dp))
+            FilterChip(selected = isLogin, onClick = {
+                onLoginChange()
+            }, label = {
+                Text(
+                    text = stringResource(R.string.login),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }, leadingIcon = {
+                AnimatedVisibility(isLogin) {
+                    Icon(
+                        Icons.Default.Check, contentDescription = null, Modifier.size(
+                            FilterChipDefaults.IconSize
+                        )
+                    )
+                }
+            })
+        }
+        Spacer(modifier = Modifier.size(8.dp))
+    }
+}
+
+@Composable
+private fun FormPortSettings(
+    portState: TextFieldState, livePortState: TextFieldState, isLogin: Boolean
+) {
+    Row {
+        OutlinedTextField(
+            state = portState,
+            lineLimits = TextFieldLineLimits.SingleLine,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number, imeAction = ImeAction.Next
+            ),
+            label = {
+                Text(
+                    text = stringResource(R.string.port),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            },
+            modifier = Modifier.fillMaxWidth(0.5f)
+        )
+        Spacer(Modifier.size(16.dp))
+        OutlinedTextField(
+            state = livePortState,
+            lineLimits = TextFieldLineLimits.SingleLine,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number, imeAction = if (! isLogin) {
+                    ImeAction.Done
+                } else {
+                    ImeAction.Next
+                }
+            ),
+            label = {
+                Text(
+                    text = stringResource(R.string.live_port),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            },
+            modifier = Modifier.fillMaxWidth(1f)
+        )
     }
 }

@@ -34,7 +34,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -90,7 +90,7 @@ fun LoadingScreen(
                                 .align(Alignment.CenterHorizontally)
                                 .padding(16.dp)
                         )
-                        OutlinedButton(
+                        FilledTonalButton(
                             onClick = { onUpdateLoadingState(true) },
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
@@ -109,7 +109,7 @@ fun LoadingScreen(
                                 .align(Alignment.CenterHorizontally)
                                 .padding(16.dp),
                         )
-                        OutlinedButton(
+                        FilledTonalButton(
                             onClick = { onUpdateLoadingState(true) },
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
@@ -145,7 +145,7 @@ fun LoadingScreen(
                                 .align(Alignment.CenterHorizontally)
                                 .padding(16.dp),
                         )
-                        OutlinedButton(
+                        FilledTonalButton(
                             onClick = { onUpdateLoadingState(true) },
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
@@ -164,7 +164,7 @@ fun LoadingScreen(
                                 .align(Alignment.CenterHorizontally)
                                 .padding(16.dp)
                         )
-                        OutlinedButton(
+                        FilledTonalButton(
                             onClick = { onUpdateLoadingState(true) },
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
