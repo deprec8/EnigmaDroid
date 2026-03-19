@@ -12,20 +12,34 @@ Everywhere in your home, **EnigmaDroid** gives you full access to your receiverâ
 
 ## Features
 
-- **Live TV Streaming**: Watch live broadcasts from your Enigma2 box on your device using a compatible video player.
-- **Playback Recordings**: Browse and play your saved shows and movies with a compatible video player.
 - **Channel & Bouquet List**: Quickly navigate your full channel lineup and favorite bouquets.
-- **Remote Control**: Full on-screen remote with keypad.
 - **Timer Management**: Add, remove or edit timers and scheduled recordings.
-- **EPG Support**: View Electronic Program Guide data with detailed show info.
-- **Search & Filter**: Find channels or programs with built-in search on every page.
-- **Multi-box Support**: Connect to multiple receivers and switch between them with ease.
+- **Stream Recordings**: Browse and play your saved shows and movies.
+- **EPG Support**: View Electronic Program Guide data with detailed show info for every bouquet.
+- **Remote Control**: Full on-screen remote control with keypad.
+- **Live TV Streaming**: Watch live broadcasts from your Enigma2 box on your device using a
+  compatible video player.
+- **Search & Filter**: Find channels or programs with built-in search functionality on every page.
+- **Multi-Box Support**: Connect to multiple receivers and switch between them with ease.
 
 ## Streaming
 
-EnigmaDroid currently only supports external media players for streaming live content and movies.
+**EnigmaDroid** currently uses external media players for streaming live TV and recordings.
 
-[**VLC**](https://www.videolan.org/vlc/download-android.html) is recommended, but other media players can also work.
+[**VLC**](https://www.videolan.org/vlc/download-android.html) is recommended, though other media
+players may also work.
+
+## Requirements
+
+- An **Enigma2-based** set-top box (satellite or cable).
+- Up-to-date **OpenWebif** plugin enabled and configured.
+
+## Compatibility
+
+Tested with popular Enigma2 images.
+
+Some images, like **VTi**, may require manually updating the OpenWebif plugin to ensure full
+compatibility.
 
 ## Translation
 
@@ -33,22 +47,11 @@ EnigmaDroid currently only supports external media players for streaming live co
 [![Crowdin Push](https://github.com/deprec8/EnigmaDroid/actions/workflows/crowdin-push.yml/badge.svg)](https://github.com/deprec8/EnigmaDroid/actions/workflows/crowdin-push.yml)
 [![Crowdin Pull](https://github.com/deprec8/EnigmaDroid/actions/workflows/crowdin-pull.yml/badge.svg)](https://github.com/deprec8/EnigmaDroid/actions/workflows/crowdin-pull.yml)
 
-Translation is managed on [**Crowdin**](https://crowdin.com/project/enigmadroid).
+Translations are managed on [**Crowdin**](https://crowdin.com/project/enigmadroid).
 
-Most translations in this project are generated using machine translation and may require further refinement for full accuracy.
+Many translations are generated using machine translation and may need refinement.
 
-If you notice any errors, feel free to correct them directly on Crowdin.
-
-## Requirements
-
-- A set-top box running **Enigma2**
-- Up-to-date **OpenWebif** plugin enabled and configured
-
-## Compatibility
-
-Tested with popular Enigma2 images.
-
-Some images, such as **VTi**, may require the OpenWebif plugin to be updated manually to be compatible with this app.
+Spotted an error? Jump in and fix it directly on Crowdin.
 
 ## Screenshots
 
