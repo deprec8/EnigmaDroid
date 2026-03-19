@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C) 2025-2026 deprec8
   ~
   ~ This file is part of EnigmaDroid.
@@ -19,7 +18,7 @@
   -->
 
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-  <background android:drawable="@mipmap/ic_shortcut_background"/>
-  <foreground android:drawable="@mipmap/ic_shortcut_device_foreground"/>
-  <monochrome android:drawable="@mipmap/ic_shortcut_device_monochrome"/>
+    <background android:drawable="@color/ic_shortcut_background"/>
+    <foreground android:drawable="@drawable/ic_shortcut_owif_foreground"/>
+    <monochrome android:drawable="@drawable/ic_shortcut_owif_monochrome"/>
 </adaptive-icon>
