@@ -167,7 +167,7 @@ object IntentUtils {
                 .setIcon(
                     Icon.createWithResource(
                         context,
-                        R.mipmap.ic_shortcut_website
+                        R.mipmap.ic_shortcut_owif
                     )
                 )
                 .setShortLabel(device.name + " (Web)").setIntent(
