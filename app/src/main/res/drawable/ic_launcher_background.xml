@@ -17,8 +17,14 @@
   ~ along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-    <background android:drawable="@mipmap/ic_launcher_background"/>
-    <foreground android:drawable="@mipmap/ic_launcher_foreground"/>
-    <monochrome android:drawable="@mipmap/ic_launcher_monochrome"/>
-</adaptive-icon>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <gradient
+        android:angle="315"
+        android:endColor="#003D79"
+        android:startColor="#0d86ca"
+        android:type="linear"/>
+</shape>
