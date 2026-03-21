@@ -22,8 +22,8 @@
         android:enabled="true"
         android:icon="@mipmap/ic_shortcut_remote_control"
         android:shortcutId="open_remote_control"
-        android:shortcutLongLabel="@string/open_remote_control"
-        android:shortcutShortLabel="@string/remote_control">
+        android:shortcutLongLabel="@string/remote_control"
+        android:shortcutShortLabel="@string/remote">
         <intent
             android:action="android.intent.action.VIEW"
             android:data="enigmadroid://remotecontrol"/>
