@@ -17,15 +17,8 @@
   ~ along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
-    <shortcut
-        android:enabled="true"
-        android:icon="@mipmap/ic_shortcut_remote_control"
-        android:shortcutId="open_remote_control"
-        android:shortcutLongLabel="@string/remote_control"
-        android:shortcutShortLabel="@string/remote">
-        <intent
-            android:action="android.intent.action.VIEW"
-            android:data="enigmadroid://remotecontrol"/>
-    </shortcut>
-</shortcuts>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/ic_shortcut_background"/>
+    <foreground android:drawable="@drawable/ic_shortcut_owif_foreground"/>
+    <monochrome android:drawable="@drawable/ic_shortcut_owif_monochrome"/>
+</adaptive-icon>

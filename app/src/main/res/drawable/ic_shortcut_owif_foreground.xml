@@ -1,0 +1,44 @@
+<!--
+  ~ Copyright (C) 2025-2026 deprec8
+  ~
+  ~ This file is part of EnigmaDroid.
+  ~
+  ~ EnigmaDroid is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ EnigmaDroid is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="960"
+    android:viewportHeight="960">
+    <group
+        android:scaleX="0.4524"
+        android:scaleY="0.4524"
+        android:translateX="262.848"
+        android:translateY="262.848">
+        <path android:pathData="M160,800Q127,800 103.5,776.5Q80,753 80,720L80,240Q80,207 103.5,183.5Q127,160 160,160L800,160Q833,160 856.5,183.5Q880,207 880,240L880,720Q880,753 856.5,776.5Q833,800 800,800L160,800ZM160,720L580,720L580,580L160,580L160,720Q160,720 160,720Q160,720 160,720ZM660,720L800,720Q800,720 800,720Q800,720 800,720L800,360L660,360L660,720ZM160,500L580,500L580,360L160,360L160,500Z">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:endColor="#003D79"
+                    android:endX="960"
+                    android:endY="960"
+                    android:startColor="#0d86ca"
+                    android:startX="0"
+                    android:startY="0"
+                    android:type="linear"/>
+            </aapt:attr>
+        </path>
+    </group>
+</vector>
