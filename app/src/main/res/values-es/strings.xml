@@ -75,6 +75,7 @@
     <string name="model">Modelo</string>
     <string name="brand">Marca</string>
     <string name="open_menu">Abrir menú</string>
+    <string name="remote">Remoto</string>
     <string name="open_remote_control">Abrir control remoto</string>
     <string name="tunertype">Tipo de sintonizador</string>
     <string name="tunernumber">Número de sintonizador</string>
