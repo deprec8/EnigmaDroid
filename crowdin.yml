@@ -22,6 +22,7 @@
   {
     "source": "/fastlane/metadata/android/en-US/full_description.txt",
     "translation": "/fastlane/metadata/android/%locale%/full_description.txt",
+    "type": "html",
     "languages_mapping": {
       "locale": {
       "de": "de-DE",
