@@ -75,6 +75,7 @@
     <string name="model">Modell</string>
     <string name="brand">Marke</string>
     <string name="open_menu">Menü öffnen</string>
+    <string name="remote">Fernbedienung</string>
     <string name="open_remote_control">Fernbedienung öffnen</string>
     <string name="tunertype">Tunertyp</string>
     <string name="tunernumber">Tunernummer</string>

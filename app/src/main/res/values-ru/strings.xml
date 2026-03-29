@@ -75,6 +75,7 @@
     <string name="model">Модель</string>
     <string name="brand">Торговая марка</string>
     <string name="open_menu">Открыть меню</string>
+    <string name="remote">Удалённое</string>
     <string name="open_remote_control">Открыть пульт дистанционного управления</string>
     <string name="tunertype">Тип тюнера</string>
     <string name="tunernumber">Номер тюнера</string>
