@@ -1,1 +1,1 @@
-The smartest Enigma2 companion on Android.
+The smartest Enigma2 companion for Android.
