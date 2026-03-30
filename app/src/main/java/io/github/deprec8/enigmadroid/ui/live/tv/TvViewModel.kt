@@ -28,6 +28,7 @@ import io.github.deprec8.enigmadroid.data.LoadingRepository
 import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.data.SettingsRepository
 import io.github.deprec8.enigmadroid.data.enums.ApiType
+import io.github.deprec8.enigmadroid.data.enums.EntryType
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.model.api.events.Event
 import io.github.deprec8.enigmadroid.model.api.events.EventBatch
@@ -85,7 +86,9 @@ class TvViewModel @Inject constructor(
             ) { eventBatches, searchInput, currentBouquetIndex ->
                 if (searchInput.isNotBlank() && eventBatches.isNotEmpty()) {
                     searchHistoryRepository.addToTvSearchHistory(searchInput)
-                    FilterUtils.filterEvents(searchInput, eventBatches[currentBouquetIndex].events)
+                    FilterUtils.filterEvents(
+                        searchInput,
+                        eventBatches[currentBouquetIndex].events.filter { it.type == EntryType.CHANNEL })
                 } else {
                     null
                 }

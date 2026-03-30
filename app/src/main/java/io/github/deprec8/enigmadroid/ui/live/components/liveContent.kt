@@ -44,10 +44,12 @@ import androidx.compose.material.icons.outlined.Videocam
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -167,45 +169,58 @@ fun LiveContent(
                     }
                     EntryType.MARKER    -> {
                         Column {
-                            ListItem(headlineContent = {
-                                Text(
-                                    event.serviceName,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }, leadingContent = {
-                                Icon(Icons.Outlined.Bookmark, stringResource(R.string.marker))
-                            })
+                            ListItem(
+                                headlineContent = {
+                                    Text(
+                                        event.serviceName,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                },
+                                leadingContent = {
+                                    Icon(Icons.Outlined.Bookmark, stringResource(R.string.marker))
+                                },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                            )
                             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
                         }
                     }
                     EntryType.DIRECTORY -> {
                         Column {
-                            ListItem(headlineContent = {
-                                Text(
-                                    event.serviceName,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }, leadingContent = {
-                                Icon(Icons.Outlined.Folder, stringResource(R.string.directory))
-                            })
+                            ListItem(
+                                headlineContent = {
+                                    Text(
+                                        event.serviceName,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                },
+                                leadingContent = {
+                                    Icon(Icons.Outlined.Folder, stringResource(R.string.directory))
+                                },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                            )
                             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
                         }
                     }
                     EntryType.GROUP     -> {
                         Column {
-                            ListItem(headlineContent = {
-                                Text(
-                                    event.serviceName,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }, leadingContent = {
-                                Icon(
-                                    Icons.Outlined.AutoAwesomeMosaic, stringResource(R.string.group)
-                                )
-                            })
+                            ListItem(
+                                headlineContent = {
+                                    Text(
+                                        event.serviceName,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                },
+                                leadingContent = {
+                                    Icon(
+                                        Icons.Outlined.AutoAwesomeMosaic,
+                                        stringResource(R.string.group)
+                                    )
+                                },
+                                colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                            )
                             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
                         }
                     }
