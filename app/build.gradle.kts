@@ -21,7 +21,7 @@ import com.android.build.gradle.internal.tasks.CompileArtProfileTask
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.jetbrains.kotlin.compose)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.google.dagger.hilt.android)
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.mikepenz.aboutlibraries)
@@ -85,6 +85,7 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "DebugProbesKt.bin"
         }
     }
 }
@@ -96,22 +97,11 @@ dependencies {
     ksp(libs.google.dagger.hilt.android.compiler)
     implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
 
-    // Splashscreen
-    implementation(libs.androidx.core.splashscreen)
-
     // Serialization
     implementation(libs.jetbrains.kotlinx.serialization.core)
     implementation(libs.jetbrains.kotlinx.serialization.json)
 
-    // Material
-    implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.compose.material3.adaptive)
-
-    // Lifecycle
-    implementation(libs.androidx.lifecycle.runtime.compose)
-    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
-
-    // Navigation
+    // Navigation3
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.navigation3.runtime)
 
@@ -120,11 +110,11 @@ dependencies {
 
     // Compose
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material3.adaptive)
+    implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.compose.ui.tooling.preview)
     debugImplementation(libs.androidx.compose.ui.tooling)
-    implementation(libs.androidx.compose.material.icons.extended)
 
     // Ktor
     implementation(libs.ktor.client.core)
@@ -134,17 +124,42 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
 
     // Room
-    implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
 
-    // Other
-    implementation(libs.androidx.core.ktx)
+    // Activity
+    implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.activity.compose)
+
+    // Core
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.core.splashscreen)
+
+    // Browser
     implementation(libs.androidx.browser)
+
+    // Jsoup
     implementation(libs.jsoup)
     implementation(libs.re2j)
 
+    // Coroutines
+    implementation(libs.jetbrains.kotlinx.coroutines.core)
+    implementation(libs.jetbrains.kotlinx.coroutines.android)
+
+    // Window
+    implementation(libs.androidx.window)
+
+    // Lifecycle
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    ksp(libs.androidx.lifecycle.compiler)
+
+    // Savedstate
+    implementation(libs.androidx.savedstate.ktx)
 }
 
 tasks.withType<CompileArtProfileTask> {
