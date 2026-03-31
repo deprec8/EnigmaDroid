@@ -31,13 +31,16 @@ import io.github.deprec8.enigmadroid.data.SettingsRepository
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.model.api.movies.Movie
 import io.github.deprec8.enigmadroid.model.api.movies.MovieBatch
+import io.github.deprec8.enigmadroid.ui.components.search.asHighlightedWords
 import io.github.deprec8.enigmadroid.utils.FilterUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -62,13 +65,17 @@ class MoviesViewModel @Inject constructor(
     private val _searchHistory = MutableStateFlow<List<String>>(emptyList())
     val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()
 
-    private val _searchInput = MutableStateFlow("")
-    val searchInput: StateFlow<String> = _searchInput.asStateFlow()
-
-    private val _useSearchHighlighting = MutableStateFlow(true)
-    val useSearchHighlighting: StateFlow<Boolean> = _useSearchHighlighting.asStateFlow()
-
     val searchFieldState = TextFieldState()
+
+    private val searchInput = MutableStateFlow("")
+    private val useSearchHighlighting = MutableStateFlow(true)
+
+    val highlightedWords: StateFlow<List<String>> =
+        searchInput.asHighlightedWords(useSearchHighlighting).stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
     private var fetchJob: Job? = null
 
@@ -79,7 +86,7 @@ class MoviesViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            combine(_movieBatches, _searchInput) { movieBatches, searchInput ->
+            combine(_movieBatches, searchInput) { movieBatches, searchInput ->
                 if (searchInput.isNotBlank() && movieBatches.isNotEmpty()) {
                     searchHistoryRepository.addToMoviesSearchHistory(searchInput)
                     FilterUtils.filterMovies(searchInput, movieBatches.flatMap { it.movies })
@@ -97,7 +104,7 @@ class MoviesViewModel @Inject constructor(
         }
         viewModelScope.launch {
             settingsRepository.getUseSearchHighlighting().collectLatest {
-                _useSearchHighlighting.value = it
+                useSearchHighlighting.value = it
             }
         }
     }
@@ -144,7 +151,7 @@ class MoviesViewModel @Inject constructor(
     }
 
     fun updateSearchInput() {
-        _searchInput.value = searchFieldState.text.toString()
+        searchInput.value = searchFieldState.text.toString()
     }
 
     suspend fun buildMovieStreamUrl(serviceReference: String): String {

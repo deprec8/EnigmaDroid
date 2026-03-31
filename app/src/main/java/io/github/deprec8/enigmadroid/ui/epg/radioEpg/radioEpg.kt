@@ -71,8 +71,7 @@ fun RadioEpgPage(
     val eventBatchSet by radioEpgViewModel.eventBatchSet.collectAsStateWithLifecycle()
     val filteredEvents by radioEpgViewModel.filteredEvents.collectAsStateWithLifecycle()
     val searchHistory by radioEpgViewModel.searchHistory.collectAsStateWithLifecycle()
-    val useSearchHighlighting by radioEpgViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
-    val searchInput by radioEpgViewModel.searchInput.collectAsStateWithLifecycle()
+    val highlightedWords by radioEpgViewModel.highlightedWords.collectAsStateWithLifecycle()
     val loadingState by radioEpgViewModel.loadingState.collectAsStateWithLifecycle()
     val bouquets by radioEpgViewModel.bouquets.collectAsStateWithLifecycle()
     val currentBouquetReference by radioEpgViewModel.currentBouquetReference.collectAsStateWithLifecycle()
@@ -90,10 +89,6 @@ fun RadioEpgPage(
             )
         }
     }
-    val highlightedWords = remember(searchInput) {
-        searchInput.split(" ").filter { it.isNotBlank() }
-    }
-
 
     LaunchedEffect(Unit) {
         radioEpgViewModel.updateLoadingState(false)
@@ -118,11 +113,7 @@ fun RadioEpgPage(
                         events = filteredEvents !!,
                         paddingValues = PaddingValues(0.dp),
                         showChannelName = true,
-                        highlightedWords = if (useSearchHighlighting) {
-                            highlightedWords
-                        } else {
-                            emptyList()
-                        },
+                        highlightedWords = highlightedWords,
                         onAddTimerForEvent = { radioEpgViewModel.addTimerForEvent(it) })
                 } else {
                     SearchHistory(searchHistory = searchHistory, onTermSearchClick = {

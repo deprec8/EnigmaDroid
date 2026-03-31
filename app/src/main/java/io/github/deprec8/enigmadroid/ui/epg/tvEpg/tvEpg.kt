@@ -73,9 +73,8 @@ fun TvEpgPage(
     val currentBouquetReference by tvEpgViewModel.currentBouquetReference.collectAsStateWithLifecycle()
     val filteredEvents by tvEpgViewModel.filteredEvents.collectAsStateWithLifecycle()
     val searchHistory by tvEpgViewModel.searchHistory.collectAsStateWithLifecycle()
-    val useSearchHighlighting by tvEpgViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
     val loadingState by tvEpgViewModel.loadingState.collectAsStateWithLifecycle()
-    val searchInput by tvEpgViewModel.searchInput.collectAsStateWithLifecycle()
+    val highlightedWords by tvEpgViewModel.highlightedWords.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { eventBatchSet.eventBatches.size })
@@ -89,9 +88,6 @@ fun TvEpgPage(
                 })
             )
         }
-    }
-    val highlightedWords = remember(searchInput) {
-        searchInput.split(" ").filter { it.isNotBlank() }
     }
 
     LaunchedEffect(Unit) {
@@ -117,11 +113,7 @@ fun TvEpgPage(
                         events = filteredEvents !!,
                         paddingValues = PaddingValues(0.dp),
                         showChannelName = true,
-                        highlightedWords = if (useSearchHighlighting) {
-                            highlightedWords
-                        } else {
-                            emptyList()
-                        },
+                        highlightedWords = highlightedWords,
                         onAddTimerForEvent = { tvEpgViewModel.addTimerForEvent(it) })
                 } else {
                     SearchHistory(searchHistory = searchHistory, onTermSearchClick = {

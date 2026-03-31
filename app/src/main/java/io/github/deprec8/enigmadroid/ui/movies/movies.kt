@@ -72,8 +72,7 @@ fun MoviesPage(
     val filteredMovies by moviesViewModel.filteredMovies.collectAsStateWithLifecycle()
     val searchHistory by moviesViewModel.searchHistory.collectAsStateWithLifecycle()
     val loadingState by moviesViewModel.loadingState.collectAsStateWithLifecycle()
-    val searchInput by moviesViewModel.searchInput.collectAsStateWithLifecycle()
-    val useSearchHighlighting by moviesViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
+    val highlightedWords by moviesViewModel.highlightedWords.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -88,9 +87,6 @@ fun MoviesPage(
                 })
             )
         }
-    }
-    val highlightedWords = remember(searchInput) {
-        searchInput.split(" ").filter { it.isNotBlank() }
     }
 
     LaunchedEffect(Unit) {
@@ -115,11 +111,7 @@ fun MoviesPage(
                     MoviesContent(
                         movies = filteredMovies !!,
                         paddingValues = PaddingValues(0.dp),
-                        highlightedWords = if (useSearchHighlighting) {
-                            highlightedWords
-                        } else {
-                            emptyList()
-                        },
+                        highlightedWords = highlightedWords,
                         onStreamMovie = { movie ->
                             scope.launch {
                                 IntentUtils.playMedia(

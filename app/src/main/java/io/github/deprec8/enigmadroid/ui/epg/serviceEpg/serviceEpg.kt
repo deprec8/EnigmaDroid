@@ -32,7 +32,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -61,14 +60,10 @@ fun ServiceEpgPage(
     val eventBatch by serviceEpgViewModel.eventBatch.collectAsStateWithLifecycle()
     val loadingState by serviceEpgViewModel.loadingState.collectAsStateWithLifecycle()
     val filteredEvents by serviceEpgViewModel.filteredEvents.collectAsStateWithLifecycle()
-    val useSearchHighlighting by serviceEpgViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
     val searchHistory by serviceEpgViewModel.searchHistory.collectAsStateWithLifecycle()
-    val searchInput by serviceEpgViewModel.searchInput.collectAsStateWithLifecycle()
+    val highlightedWords by serviceEpgViewModel.highlightedWords.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
-    val highlightedWords = remember(searchInput) {
-        searchInput.split(" ").filter { it.isNotBlank() }
-    }
 
     LaunchedEffect(Unit) {
         serviceEpgViewModel.updateLoadingState(false)
@@ -93,11 +88,7 @@ fun ServiceEpgPage(
                         events = filteredEvents !!,
                         paddingValues = PaddingValues(0.dp),
                         showChannelName = true,
-                        highlightedWords = if (useSearchHighlighting) {
-                            highlightedWords
-                        } else {
-                            emptyList()
-                        },
+                        highlightedWords = highlightedWords,
                         onAddTimerForEvent = { serviceEpgViewModel.addTimerForEvent(it) })
                 } else {
                     SearchHistory(searchHistory = searchHistory, onTermSearchClick = {

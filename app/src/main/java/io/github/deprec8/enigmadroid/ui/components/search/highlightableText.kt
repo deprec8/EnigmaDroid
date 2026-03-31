@@ -29,6 +29,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 
 @Composable
 fun HighlightedText(
@@ -68,4 +70,10 @@ fun HighlightedText(
     Text(
         text = annotatedString, maxLines = maxLines, overflow = overflow
     )
+}
+
+fun Flow<String>.asHighlightedWords(
+    enabled: Flow<Boolean>
+): Flow<List<String>> = combine(this, enabled) { text, isEnabled ->
+    if (isEnabled) text.split(" ").filter { it.isNotBlank() } else emptyList()
 }

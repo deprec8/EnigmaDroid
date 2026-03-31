@@ -30,13 +30,16 @@ import io.github.deprec8.enigmadroid.data.SettingsRepository
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.model.api.events.Event
 import io.github.deprec8.enigmadroid.model.api.events.EventBatch
+import io.github.deprec8.enigmadroid.ui.components.search.asHighlightedWords
 import io.github.deprec8.enigmadroid.utils.FilterUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -60,13 +63,17 @@ class ServiceEpgViewModel @Inject constructor(
     private val _searchHistory = MutableStateFlow<List<String>>(emptyList())
     val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()
 
-    private val _searchInput = MutableStateFlow("")
-    val searchInput: StateFlow<String> = _searchInput.asStateFlow()
-
-    private val _useSearchHighlighting = MutableStateFlow(true)
-    val useSearchHighlighting: StateFlow<Boolean> = _useSearchHighlighting.asStateFlow()
-
     val searchFieldState = TextFieldState()
+
+    private val searchInput = MutableStateFlow("")
+    private val useSearchHighlighting = MutableStateFlow(true)
+
+    val highlightedWords: StateFlow<List<String>> =
+        searchInput.asHighlightedWords(useSearchHighlighting).stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
     private var fetchJob: Job? = null
 
@@ -77,7 +84,7 @@ class ServiceEpgViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            combine(_eventBatch, _searchInput) { eventBatch, searchInput ->
+            combine(_eventBatch, searchInput) { eventBatch, searchInput ->
                 if (searchInput.isNotBlank() && eventBatch.events.isNotEmpty()) {
                     searchHistoryRepository.addToServiceEpgSearchHistory(searchInput)
                     FilterUtils.filterEvents(searchInput, eventBatch.events)
@@ -95,7 +102,7 @@ class ServiceEpgViewModel @Inject constructor(
         }
         viewModelScope.launch {
             settingsRepository.getUseSearchHighlighting().collectLatest {
-                _useSearchHighlighting.value = it
+                useSearchHighlighting.value = it
             }
         }
     }
@@ -121,6 +128,6 @@ class ServiceEpgViewModel @Inject constructor(
     }
 
     fun updateSearchInput() {
-        _searchInput.value = searchFieldState.text.toString()
+        searchInput.value = searchFieldState.text.toString()
     }
 }

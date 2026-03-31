@@ -70,9 +70,8 @@ fun RadioPage(
     val filteredEvents by radioViewModel.filteredEvents.collectAsStateWithLifecycle()
     val eventBatches by radioViewModel.eventBatches.collectAsStateWithLifecycle()
     val searchHistory by radioViewModel.searchHistory.collectAsStateWithLifecycle()
-    val useSearchHighlighting by radioViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
     val loadingState by radioViewModel.loadingState.collectAsStateWithLifecycle()
-    val searchInput by radioViewModel.searchInput.collectAsStateWithLifecycle()
+    val highlightedWords by radioViewModel.highlightedWords.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { eventBatches.size })
@@ -86,9 +85,6 @@ fun RadioPage(
                 })
             )
         }
-    }
-    val highlightedWords = remember(searchInput) {
-        searchInput.split(" ").filter { it.isNotBlank() }
     }
 
     LaunchedEffect(Unit) {
@@ -114,11 +110,7 @@ fun RadioPage(
                         events = filteredEvents !!,
                         paddingValues = PaddingValues(0.dp),
                         showChannelNumbers = false,
-                        highlightedWords = if (useSearchHighlighting) {
-                            highlightedWords
-                        } else {
-                            emptyList()
-                        },
+                        highlightedWords = highlightedWords,
                         onNavigateToServiceEpg = { serviceReference, serviceName ->
                             onNavigateToServiceEpg(
                                 serviceReference, serviceName

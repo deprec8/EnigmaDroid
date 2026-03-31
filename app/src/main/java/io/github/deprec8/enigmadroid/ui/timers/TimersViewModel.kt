@@ -31,13 +31,16 @@ import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.model.api.timers.Timer
 import io.github.deprec8.enigmadroid.model.api.timers.TimerBatch
 import io.github.deprec8.enigmadroid.model.api.timers.services.ServiceBatchSet
+import io.github.deprec8.enigmadroid.ui.components.search.asHighlightedWords
 import io.github.deprec8.enigmadroid.utils.FilterUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -64,13 +67,17 @@ class TimersViewModel @Inject constructor(
     private val _searchHistory = MutableStateFlow<List<String>>(emptyList())
     val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()
 
-    private val _searchInput = MutableStateFlow("")
-    val searchInput: StateFlow<String> = _searchInput.asStateFlow()
-
-    private val _useSearchHighlighting = MutableStateFlow(true)
-    val useSearchHighlighting: StateFlow<Boolean> = _useSearchHighlighting.asStateFlow()
-
     val searchFieldState = TextFieldState()
+
+    val searchInput = MutableStateFlow("")
+    val useSearchHighlighting = MutableStateFlow(true)
+
+    val highlightedWords: StateFlow<List<String>> =
+        searchInput.asHighlightedWords(useSearchHighlighting).stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
     private var fetchJob: Job? = null
 
@@ -81,7 +88,7 @@ class TimersViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            combine(_timerBatch, _searchInput) { timerBatch, searchInput ->
+            combine(_timerBatch, searchInput) { timerBatch, searchInput ->
                 if (searchInput.isNotBlank() && timerBatch.timers.isNotEmpty()) {
                     searchHistoryRepository.addToTimersSearchHistory(searchInput)
                     FilterUtils.filterTimers(searchInput, timerBatch.timers)
@@ -99,7 +106,7 @@ class TimersViewModel @Inject constructor(
         }
         viewModelScope.launch {
             settingsRepository.getUseSearchHighlighting().collectLatest {
-                _useSearchHighlighting.value = it
+                useSearchHighlighting.value = it
             }
         }
     }
@@ -133,7 +140,7 @@ class TimersViewModel @Inject constructor(
     }
 
     fun updateSearchInput() {
-        _searchInput.value = searchFieldState.text.toString()
+        searchInput.value = searchFieldState.text.toString()
     }
 
     fun addTimer(newTimer: Timer) {

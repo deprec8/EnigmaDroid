@@ -32,13 +32,16 @@ import io.github.deprec8.enigmadroid.data.enums.EntryType
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.model.api.events.Event
 import io.github.deprec8.enigmadroid.model.api.events.EventBatch
+import io.github.deprec8.enigmadroid.ui.components.search.asHighlightedWords
 import io.github.deprec8.enigmadroid.utils.FilterUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -62,15 +65,19 @@ class RadioViewModel @Inject constructor(
     private val _searchHistory = MutableStateFlow<List<String>>(emptyList())
     val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()
 
-    private val _searchInput = MutableStateFlow("")
-    val searchInput: StateFlow<String> = _searchInput.asStateFlow()
-
-    private val _useSearchHighlighting = MutableStateFlow(true)
-    val useSearchHighlighting: StateFlow<Boolean> = _useSearchHighlighting.asStateFlow()
-
     private val currentBouquetIndex = MutableStateFlow(0)
 
     val searchFieldState = TextFieldState()
+
+    private val searchInput = MutableStateFlow("")
+    private val useSearchHighlighting = MutableStateFlow(true)
+
+    val highlightedWords: StateFlow<List<String>> =
+        searchInput.asHighlightedWords(useSearchHighlighting).stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
     private var fetchJob: Job? = null
 
@@ -82,7 +89,7 @@ class RadioViewModel @Inject constructor(
         }
         viewModelScope.launch {
             combine(
-                _eventBatches, _searchInput, currentBouquetIndex
+                _eventBatches, searchInput, currentBouquetIndex
             ) { eventBatches, searchInput, currentBouquetIndex ->
                 if (searchInput.isNotBlank() && eventBatches.isNotEmpty()) {
                     searchHistoryRepository.addToRadioSearchHistory(searchInput)
@@ -103,7 +110,7 @@ class RadioViewModel @Inject constructor(
         }
         viewModelScope.launch {
             settingsRepository.getUseSearchHighlighting().collectLatest {
-                _useSearchHighlighting.value = it
+                useSearchHighlighting.value = it
             }
         }
     }
@@ -142,6 +149,6 @@ class RadioViewModel @Inject constructor(
 
     fun updateSearchInput(bouquetIndex: Int) {
         currentBouquetIndex.value = bouquetIndex
-        _searchInput.value = searchFieldState.text.toString()
+        searchInput.value = searchFieldState.text.toString()
     }
 }

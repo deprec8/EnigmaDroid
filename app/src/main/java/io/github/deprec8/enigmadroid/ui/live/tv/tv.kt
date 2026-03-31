@@ -71,8 +71,7 @@ fun TvPage(
     val eventBatches by tvViewModel.eventBatches.collectAsStateWithLifecycle()
     val loadingState by tvViewModel.loadingState.collectAsStateWithLifecycle()
     val searchHistory by tvViewModel.searchHistory.collectAsStateWithLifecycle()
-    val searchInput by tvViewModel.searchInput.collectAsStateWithLifecycle()
-    val useSearchHighlighting by tvViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
+    val highlightedWords by tvViewModel.highlightedWords.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { eventBatches.size })
@@ -86,9 +85,6 @@ fun TvPage(
                 })
             )
         }
-    }
-    val highlightedWords = remember(searchInput) {
-        searchInput.split(" ").filter { it.isNotBlank() }
     }
 
     LaunchedEffect(Unit) {
@@ -113,11 +109,7 @@ fun TvPage(
                         events = filteredEvents !!,
                         paddingValues = PaddingValues(0.dp),
                         showChannelNumbers = false,
-                        highlightedWords = if (useSearchHighlighting) {
-                            highlightedWords
-                        } else {
-                            emptyList()
-                        },
+                        highlightedWords = highlightedWords,
                         onNavigateToServiceEpg = { serviceReference, serviceName ->
                             onNavigateToServiceEpg(
                                 serviceReference, serviceName
