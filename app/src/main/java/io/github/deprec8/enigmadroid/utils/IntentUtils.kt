@@ -42,12 +42,10 @@ object IntentUtils {
             val intent = Intent(Intent.ACTION_CREATE_REMINDER).apply {
                 putExtra(Intent.EXTRA_TITLE, event.title)
                 putExtra(
-                    Intent.EXTRA_TEXT,
-                    event.shortDescription
+                    Intent.EXTRA_TEXT, event.shortDescription
                 )
                 putExtra(
-                    Intent.EXTRA_TIME,
-                    event.beginTimestamp * 1000
+                    Intent.EXTRA_TIME, event.beginTimestamp * 1000
                 )
             }
             if (intent.resolveActivity(context.packageManager) != null) {
@@ -56,16 +54,13 @@ object IntentUtils {
                 val intent = Intent(Intent.ACTION_INSERT).apply {
                     data = CalendarContract.Events.CONTENT_URI
                     putExtra(
-                        CalendarContract.Events.TITLE,
-                        event.title
+                        CalendarContract.Events.TITLE, event.title
                     )
                     putExtra(
-                        CalendarContract.Events.DESCRIPTION,
-                        event.shortDescription
+                        CalendarContract.Events.DESCRIPTION, event.shortDescription
                     )
                     putExtra(
-                        CalendarContract.EXTRA_EVENT_BEGIN_TIME,
-                        event.beginTimestamp * 1000
+                        CalendarContract.EXTRA_EVENT_BEGIN_TIME, event.beginTimestamp * 1000
                     )
                     putExtra(
                         CalendarContract.EXTRA_EVENT_END_TIME,
@@ -76,8 +71,7 @@ object IntentUtils {
                     context.startActivity(intent)
                 } else {
                     Toast.makeText(
-                        context,
-                        R.string.no_calendar_found, Toast.LENGTH_SHORT
+                        context, R.string.no_calendar_found, Toast.LENGTH_SHORT
                     ).show()
                 }
             }
@@ -85,16 +79,13 @@ object IntentUtils {
             val intent = Intent(Intent.ACTION_INSERT).apply {
                 data = CalendarContract.Events.CONTENT_URI
                 putExtra(
-                    CalendarContract.Events.TITLE,
-                    event.title
+                    CalendarContract.Events.TITLE, event.title
                 )
                 putExtra(
-                    CalendarContract.Events.DESCRIPTION,
-                    event.shortDescription
+                    CalendarContract.Events.DESCRIPTION, event.shortDescription
                 )
                 putExtra(
-                    CalendarContract.EXTRA_EVENT_BEGIN_TIME,
-                    event.beginTimestamp * 1000
+                    CalendarContract.EXTRA_EVENT_BEGIN_TIME, event.beginTimestamp * 1000
                 )
                 putExtra(
                     CalendarContract.EXTRA_EVENT_END_TIME,
@@ -105,8 +96,7 @@ object IntentUtils {
                 context.startActivity(intent)
             } else {
                 Toast.makeText(
-                    context,
-                    R.string.no_calendar_found, Toast.LENGTH_SHORT
+                    context, R.string.no_calendar_found, Toast.LENGTH_SHORT
                 ).show()
             }
         }
@@ -118,13 +108,13 @@ object IntentUtils {
                 url.toUri(), "video/mp4"
             )
             putExtra("title", title)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
         if (intent.resolveActivity(context.packageManager) != null) {
             context.startActivity(intent)
         } else {
             Toast.makeText(
-                context,
-                context.getString(R.string.no_media_player_found), Toast.LENGTH_SHORT
+                context, context.getString(R.string.no_media_player_found), Toast.LENGTH_SHORT
             ).show()
 
         }
@@ -132,9 +122,8 @@ object IntentUtils {
 
     fun openUrl(context: Context, url: String) {
         val intent = Intent(
-            Intent.ACTION_VIEW,
-            url.toUri()
-        ).addCategory(Intent.CATEGORY_BROWSABLE)
+            Intent.ACTION_VIEW, url.toUri()
+        ).addCategory(Intent.CATEGORY_BROWSABLE).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         if (intent.resolveActivity(context.packageManager) != null) {
             context.startActivity(intent)
         } else {
@@ -144,15 +133,11 @@ object IntentUtils {
 
     fun pinDevice(context: Context, device: Device, deviceId: Int) {
         context.getSystemService(ShortcutManager::class.java).requestPinShortcut(
-            ShortcutInfo
-                .Builder(context, "device_${device.id}")
-                .setIcon(
+            ShortcutInfo.Builder(context, "device_${device.id}").setIcon(
                     Icon.createWithResource(
-                        context,
-                        R.mipmap.ic_shortcut_device
+                        context, R.mipmap.ic_shortcut_device
                     )
-                )
-                .setShortLabel(device.name).setIntent(
+            ).setShortLabel(device.name).setIntent(
                     Intent(
                         "io.github.deprec8.enigmadroid.OPEN_WITH_DEVICE",
                     ).putExtra("device_id", deviceId)
@@ -162,18 +147,13 @@ object IntentUtils {
 
     fun pinOwifDevice(context: Context, device: Device, url: String) {
         context.getSystemService(ShortcutManager::class.java).requestPinShortcut(
-            ShortcutInfo
-                .Builder(context, "openwebif_${device.id}")
-                .setIcon(
+            ShortcutInfo.Builder(context, "openwebif_${device.id}").setIcon(
                     Icon.createWithResource(
-                        context,
-                        R.mipmap.ic_shortcut_owif
+                        context, R.mipmap.ic_shortcut_owif
                     )
-                )
-                .setShortLabel(device.name + " (Web)").setIntent(
+            ).setShortLabel(device.name + " (Web)").setIntent(
                     Intent(
-                        Intent.ACTION_DEFAULT,
-                        url.toUri()
+                        Intent.ACTION_DEFAULT, url.toUri()
                     )
                 ).build(), null
         )
