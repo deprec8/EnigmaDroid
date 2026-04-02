@@ -35,8 +35,13 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -116,21 +121,54 @@ fun ContentListItem(
             },
             trailingContent = {
                 if (! menuItemGroups.isNullOrEmpty() || editMenuItemGroup != null) {
-                    IconButton(onClick = { showDropDownMenu = true }) {
-                        Icon(
-                            Icons.Default.MoreVert, contentDescription = stringResource(
-                                R.string.open_action_menu
-                            )
+                    TooltipBox(
+                        tooltip = {
+                            PlainTooltip {
+                                Text(stringResource(id = R.string.action_menu))
+                            }
+                        },
+                        state = rememberTooltipState(),
+                        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                            TooltipAnchorPosition.Above, 4.dp
                         )
-                        DropdownMenu(
-                            expanded = showDropDownMenu,
-                            onDismissRequest = { showDropDownMenu = false }) {
-                            if (! menuItemGroups.isNullOrEmpty()) {
-                                menuItemGroups.forEachIndexed { index, menuSection ->
-                                    if (index != 0) {
+                    ) {
+                        IconButton(onClick = { showDropDownMenu = true }) {
+                            Icon(
+                                Icons.Default.MoreVert, contentDescription = stringResource(
+                                    R.string.action_menu
+                                )
+                            )
+                            DropdownMenu(
+                                expanded = showDropDownMenu,
+                                onDismissRequest = { showDropDownMenu = false }) {
+                                if (! menuItemGroups.isNullOrEmpty()) {
+                                    menuItemGroups.forEachIndexed { index, menuSection ->
+                                        if (index != 0) {
+                                            HorizontalDivider()
+                                        }
+                                        menuSection.menuItems.forEach { menuItem ->
+                                            DropdownMenuItem(onClick = {
+                                                showDropDownMenu = false
+                                                menuItem.action()
+                                            }, text = {
+                                                Text(
+                                                    text = menuItem.text,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis
+                                                )
+                                            }, leadingIcon = {
+                                                Icon(
+                                                    menuItem.outlinedIcon, contentDescription = null
+                                                )
+                                            })
+                                        }
+                                    }
+                                }
+                                if (editMenuItemGroup != null) {
+                                    if (! menuItemGroups.isNullOrEmpty()) {
                                         HorizontalDivider()
                                     }
-                                    menuSection.menuItems.forEach { menuItem ->
+                                    editMenuItemGroup.menuItems.forEach { menuItem ->
                                         DropdownMenuItem(onClick = {
                                             showDropDownMenu = false
                                             menuItem.action()
@@ -146,27 +184,6 @@ fun ContentListItem(
                                             )
                                         })
                                     }
-                                }
-                            }
-                            if (editMenuItemGroup != null) {
-                                if (! menuItemGroups.isNullOrEmpty()) {
-                                    HorizontalDivider()
-                                }
-                                editMenuItemGroup.menuItems.forEach { menuItem ->
-                                    DropdownMenuItem(onClick = {
-                                        showDropDownMenu = false
-                                        menuItem.action()
-                                    }, text = {
-                                        Text(
-                                            text = menuItem.text,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                    }, leadingIcon = {
-                                        Icon(
-                                            menuItem.outlinedIcon, contentDescription = null
-                                        )
-                                    })
                                 }
                             }
                         }

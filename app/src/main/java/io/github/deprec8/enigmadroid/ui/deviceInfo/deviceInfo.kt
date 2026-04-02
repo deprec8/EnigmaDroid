@@ -96,7 +96,7 @@ fun DeviceInfoPage(
         topBar = {
             TopAppBar(windowInsets = topAppBarWithDrawerWindowInsets(), title = {
                 Text(
-                    text = stringResource(id = R.string.deviceinfo),
+                    text = stringResource(id = R.string.device_info),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -146,30 +146,30 @@ fun DeviceInfoPage(
                 }
                 item {
                     ListItem(
-                        headlineContent = { Text(text = stringResource(R.string.dinfo_imageversion)) },
+                        headlineContent = { Text(text = stringResource(R.string.image)) },
                         supportingContent = { Text(text = deviceInfo.imageVersion) })
                 }
                 item {
                     ListItem(
-                        headlineContent = { Text(text = stringResource(R.string.dinfo_guiversion)) },
+                        headlineContent = { Text(text = stringResource(R.string.gui)) },
                         supportingContent = { Text(text = deviceInfo.enigmaVersion) })
 
                 }
                 item {
                     ListItem(
-                        headlineContent = { Text(text = stringResource(R.string.dinfo_frontpversion)) },
+                        headlineContent = { Text(text = stringResource(R.string.frontp)) },
                         supportingContent = { Text(text = deviceInfo.fpVersion.toString()) })
 
                 }
                 item {
                     ListItem(
-                        headlineContent = { Text(text = stringResource(R.string.kernel_version)) },
+                        headlineContent = { Text(text = stringResource(R.string.kernel)) },
                         supportingContent = { Text(text = deviceInfo.kernelVersion) })
 
                 }
                 item {
                     ListItem(
-                        headlineContent = { Text(text = stringResource(R.string.dinfo_interfaceversion)) },
+                        headlineContent = { Text(text = stringResource(R.string.interface_res)) },
                         supportingContent = { Text(text = deviceInfo.webifVersion) })
                 }
                 item(span = { GridItemSpan(maxLineSpan) }) {

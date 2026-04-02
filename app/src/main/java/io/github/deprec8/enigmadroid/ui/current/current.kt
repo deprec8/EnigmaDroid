@@ -169,25 +169,24 @@ fun CurrentPage(
                             Column(modifier = Modifier.fillMaxWidth(0.5f)) {
                                 ListItem(
                                     overlineContent = {
-                                        Text(text = stringResource(R.string.now))
+                                        Text(
+                                            text = stringResource(R.string.now) + " - " + stringResource(
+                                                R.string.until,
+                                                TimestampUtils.formatApiTimestampToTime(
+                                                    currentEventInfo.now.beginTimestamp + currentEventInfo.now.durationInSeconds
+                                                )
+                                            )
+                                        )
                                     },
                                     headlineContent = { Text(text = currentEventInfo.now.title) },
-                                    supportingContent = {
-                                        Column {
-                                            if (currentEventInfo.now.shortDescription.isNotBlank()) {
-                                                Text(
-                                                    text = currentEventInfo.now.shortDescription,
-                                                    maxLines = 1
-                                                )
-                                            }
+                                    supportingContent = if (currentEventInfo.next.shortDescription.isNotBlank()) {
+                                        {
                                             Text(
-                                                text = TimestampUtils.formatApiTimestampToTime(
-                                                    currentEventInfo.now.beginTimestamp
-                                                ) + " - " + TimestampUtils.formatApiTimestampToTime(
-                                                    currentEventInfo.now.beginTimestamp + currentEventInfo.now.durationInSeconds
-                                                ), maxLines = 1
+                                                text = currentEventInfo.now.shortDescription
                                             )
                                         }
+                                    } else {
+                                        null
                                     })
                                 LinearProgressIndicator(
                                     progress = {
@@ -207,51 +206,47 @@ fun CurrentPage(
                             }
                             ListItem(
                                 overlineContent = {
-                                    Text(text = stringResource(R.string.next))
+                                    Text(
+                                        text = stringResource(R.string.next) + " - " + stringResource(
+                                            R.string.starting_at,
+                                            TimestampUtils.formatApiTimestampToTime(
+                                                currentEventInfo.next.beginTimestamp
+                                            )
+                                        )
+                                    )
                                 },
                                 headlineContent = { Text(text = currentEventInfo.next.title) },
-                                supportingContent = {
-                                    Column {
-                                        if (currentEventInfo.next.shortDescription.isNotBlank()) {
-                                            Text(
-                                                text = currentEventInfo.next.shortDescription,
-                                                maxLines = 1
-                                            )
-                                        }
+                                supportingContent = if (currentEventInfo.next.shortDescription.isNotBlank()) {
+                                    {
                                         Text(
-                                            text = TimestampUtils.formatApiTimestampToTime(
-                                                currentEventInfo.next.beginTimestamp
-                                            ) + " - " + TimestampUtils.formatApiTimestampToTime(
-                                                currentEventInfo.next.beginTimestamp + currentEventInfo.next.durationInSeconds
-                                            ), maxLines = 1
+                                            text = currentEventInfo.next.shortDescription
                                         )
                                     }
+                                } else {
+                                    null
                                 },
-                                modifier = Modifier.fillMaxWidth(1f)
-                            )
+                                modifier = Modifier.fillMaxWidth(1f))
                         }
                     } else {
                         ListItem(
                             overlineContent = {
-                                Text(text = stringResource(R.string.now))
+                                Text(
+                                    text = stringResource(R.string.now) + " - " + stringResource(
+                                        R.string.until, TimestampUtils.formatApiTimestampToTime(
+                                            currentEventInfo.now.beginTimestamp + currentEventInfo.now.durationInSeconds
+                                        )
+                                    )
+                                )
                             },
                             headlineContent = { Text(text = currentEventInfo.now.title) },
-                            supportingContent = {
-                                Column {
-                                    if (currentEventInfo.now.shortDescription.isNotBlank()) {
-                                        Text(
-                                            text = currentEventInfo.now.shortDescription,
-                                            maxLines = 1
-                                        )
-                                    }
+                            supportingContent = if (currentEventInfo.next.shortDescription.isNotBlank()) {
+                                {
                                     Text(
-                                        text = TimestampUtils.formatApiTimestampToTime(
-                                            currentEventInfo.now.beginTimestamp
-                                        ) + " - " + TimestampUtils.formatApiTimestampToTime(
-                                            currentEventInfo.now.beginTimestamp + currentEventInfo.now.durationInSeconds
-                                        ), maxLines = 1
+                                        text = currentEventInfo.now.shortDescription
                                     )
                                 }
+                            } else {
+                                null
                             })
                         LinearProgressIndicator(
                             progress = {
@@ -271,25 +266,24 @@ fun CurrentPage(
                         Spacer(Modifier.size(8.dp))
                         ListItem(
                             overlineContent = {
-                                Text(text = stringResource(R.string.next))
+                                Text(
+                                    text = stringResource(R.string.next) + " - " + stringResource(
+                                        R.string.starting_at,
+                                        TimestampUtils.formatApiTimestampToTime(
+                                            currentEventInfo.next.beginTimestamp
+                                        )
+                                    )
+                                )
                             },
                             headlineContent = { Text(text = currentEventInfo.next.title) },
-                            supportingContent = {
-                                Column {
-                                    if (currentEventInfo.next.shortDescription.isNotBlank()) {
-                                        Text(
-                                            text = currentEventInfo.next.shortDescription,
-                                            maxLines = 1
-                                        )
-                                    }
+                            supportingContent = if (currentEventInfo.next.shortDescription.isNotBlank()) {
+                                {
                                     Text(
-                                        text = TimestampUtils.formatApiTimestampToTime(
-                                            currentEventInfo.next.beginTimestamp
-                                        ) + " - " + TimestampUtils.formatApiTimestampToTime(
-                                            currentEventInfo.next.beginTimestamp + currentEventInfo.next.durationInSeconds
-                                        ), maxLines = 1
+                                        text = currentEventInfo.next.shortDescription
                                     )
                                 }
+                            } else {
+                                null
                             })
                     }
                     Spacer(Modifier.size(16.dp))
@@ -308,7 +302,11 @@ fun CurrentPage(
                                     .fillMaxWidth(0.5f)
                                     .padding(start = 16.dp)
                             ) {
-                                Text(text = stringResource(R.string.stream_current))
+                                Text(
+                                    text = stringResource(
+                                        R.string.stream_service, currentEventInfo.now.serviceName
+                                    )
+                                )
                             }
                             OutlinedButton(
                                 onClick = {
@@ -320,7 +318,7 @@ fun CurrentPage(
                                     .fillMaxWidth(1f)
                                     .padding(horizontal = 16.dp)
                             ) {
-                                Text(text = stringResource(R.string.view_epg_for_current_channel))
+                                Text(text = stringResource(R.string.view_epg))
                             }
                         }
                     } else {
@@ -337,7 +335,11 @@ fun CurrentPage(
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp)
                         ) {
-                            Text(text = stringResource(R.string.stream_current))
+                            Text(
+                                text = stringResource(
+                                    R.string.stream_service, currentEventInfo.now.serviceName
+                                )
+                            )
                         }
                         Spacer(Modifier.size(16.dp))
                         OutlinedButton(
@@ -350,7 +352,11 @@ fun CurrentPage(
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp)
                         ) {
-                            Text(text = stringResource(R.string.view_epg_for_current_channel))
+                            Text(
+                                text = stringResource(
+                                    R.string.view_epg_from, currentEventInfo.now.serviceName
+                                )
+                            )
                         }
                     }
                     Spacer(Modifier.size(16.dp))

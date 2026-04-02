@@ -29,11 +29,9 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -51,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.util.withContext
 import io.github.deprec8.enigmadroid.R
+import io.github.deprec8.enigmadroid.ui.components.ArrowNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.insets.topAppBarWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.utils.IntentUtils
@@ -78,12 +77,7 @@ fun LibrariesPage(
                     overflow = TextOverflow.Ellipsis
                 )
             }, scrollBehavior = scrollBehavior, navigationIcon = {
-                IconButton(onClick = { onNavigateBack() }) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.navigate_back)
-                    )
-                }
+                ArrowNavigationButton { onNavigateBack() }
             })
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),

@@ -34,8 +34,14 @@ import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -139,20 +145,44 @@ fun TimersPage(
         AnimatedVisibility(
             loadingState == LoadingState.LOADED, enter = scaleIn(), exit = scaleOut()
         ) {
-            Column {
-                SmallFloatingActionButton(onClick = {
-                    timersViewModel.fetchData()
-                }, Modifier.align(Alignment.End)) {
-                    Icon(
-                        Icons.Default.Refresh,
-                        contentDescription = stringResource(R.string.refresh_page)
+            Column(horizontalAlignment = Alignment.End) {
+                TooltipBox(
+                    tooltip = {
+                        PlainTooltip {
+                            Text(stringResource(id = R.string.reload))
+                        }
+                    },
+                    state = rememberTooltipState(),
+                    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                        TooltipAnchorPosition.Above, 4.dp
                     )
+                ) {
+                    SmallFloatingActionButton(onClick = {
+                        timersViewModel.fetchData()
+                    }) {
+                        Icon(
+                            Icons.Default.Refresh,
+                            contentDescription = stringResource(R.string.reload)
+                        )
+                    }
                 }
-                FloatingActionButton(onClick = { showTimerSetupDialog = true }) {
-                    Icon(
-                        Icons.Default.Add,
-                        contentDescription = stringResource(id = R.string.add_timer)
+                TooltipBox(
+                    tooltip = {
+                        PlainTooltip {
+                            Text(stringResource(id = R.string.add_timer))
+                        }
+                    },
+                    state = rememberTooltipState(),
+                    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                        TooltipAnchorPosition.Start, 4.dp
                     )
+                ) {
+                    FloatingActionButton(onClick = { showTimerSetupDialog = true }) {
+                        Icon(
+                            Icons.Default.Add,
+                            contentDescription = stringResource(id = R.string.add_timer)
+                        )
+                    }
                 }
             }
         }

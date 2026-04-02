@@ -5,8 +5,6 @@
 - Improved the service picker dialog while editing a timer
 - Improved the visuals of multiple elements
 - Improved the overall stability and performance
-- Fixed the EPG button in the remote control
-- Fixed the deeplink behavior of the remote control
-- Fixed multiple issues with fullscreen dialogs
+- Fixed multiple issues related to the remote control
 - Synced Crowdin translations
 - Multiple other fixes and updates

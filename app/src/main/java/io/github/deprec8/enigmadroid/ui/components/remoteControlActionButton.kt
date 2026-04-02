@@ -24,17 +24,36 @@ import androidx.compose.material.icons.filled.Dialpad
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.PlainTooltip
+import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RemoteControlActionButton(onNavigateToRemoteControl: () -> Unit) {
-    IconButton(onClick = { onNavigateToRemoteControl() }) {
-        Icon(
-            Icons.Default.Dialpad,
-            contentDescription = stringResource(id = R.string.open_remote_control)
+    TooltipBox(
+        tooltip = {
+            PlainTooltip {
+                Text(stringResource(id = R.string.remote_control))
+            }
+        },
+        state = rememberTooltipState(),
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+            TooltipAnchorPosition.Below, 4.dp
         )
+    ) {
+        IconButton(onClick = { onNavigateToRemoteControl() }) {
+            Icon(
+                Icons.Default.Dialpad,
+                contentDescription = stringResource(id = R.string.remote_control)
+            )
+        }
     }
 }

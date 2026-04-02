@@ -24,19 +24,27 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.model.api.Bouquet
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BouquetMenu(
     bouquets: List<Bouquet>,
@@ -46,26 +54,38 @@ fun BouquetMenu(
 ) {
     var showMenu by rememberSaveable { mutableStateOf(false) }
 
-    IconButton(onClick = {
-        showMenu = true
-    }, enabled = bouquets.isNotEmpty() && loadingState == LoadingState.LOADED) {
-        Icon(
-            Icons.Default.MoreVert, contentDescription = stringResource(R.string.open_bouquet_menu)
+    TooltipBox(
+        tooltip = {
+            PlainTooltip {
+                Text(stringResource(R.string.bouquet_menu))
+            }
+        },
+        state = rememberTooltipState(),
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+            TooltipAnchorPosition.Below, 4.dp
         )
-        DropdownMenu(
-            expanded = showMenu, onDismissRequest = { showMenu = false }) {
-            bouquets.forEach { bouquet ->
-                DropdownMenuItem(text = { Text(bouquet.name) }, onClick = {
-                    onBouquetChange(bouquet.reference)
-                    showMenu = false
-                }, leadingIcon = {
-                    if (currentBouquetReference == bouquet.reference) {
-                        Icon(
-                            Icons.Filled.Check,
-                            contentDescription = stringResource(R.string.current_bouquet)
-                        )
-                    }
-                })
+    ) {
+        IconButton(onClick = {
+            showMenu = true
+        }, enabled = bouquets.isNotEmpty() && loadingState == LoadingState.LOADED) {
+            Icon(
+                Icons.Default.MoreVert, contentDescription = stringResource(R.string.bouquet_menu)
+            )
+            DropdownMenu(
+                expanded = showMenu, onDismissRequest = { showMenu = false }) {
+                bouquets.forEach { bouquet ->
+                    DropdownMenuItem(text = { Text(bouquet.name) }, onClick = {
+                        onBouquetChange(bouquet.reference)
+                        showMenu = false
+                    }, leadingIcon = {
+                        if (currentBouquetReference == bouquet.reference) {
+                            Icon(
+                                Icons.Filled.Check,
+                                contentDescription = stringResource(R.string.current_bouquet)
+                            )
+                        }
+                    })
+                }
             }
         }
     }

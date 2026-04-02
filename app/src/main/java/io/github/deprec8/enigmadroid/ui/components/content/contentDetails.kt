@@ -33,6 +33,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.HorizontalDivider
@@ -41,7 +42,12 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,6 +62,7 @@ import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.model.menu.MenuItemGroup
 import io.github.deprec8.enigmadroid.ui.components.search.HighlightedText
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ContentDetails(
     headlineText: String,
@@ -108,32 +115,42 @@ fun ContentDetails(
                     }
                 }, trailingContent = if (editMenuItemGroup != null) {
                     {
-                        FilledTonalIconButton(onClick = { showDropDownMenu = true }) {
-                            Icon(
-                                Icons.Filled.EditNote,
-                                contentDescription = stringResource(R.string.open_editing_menu)
+                        TooltipBox(
+                            tooltip = {
+                                PlainTooltip {
+                                    Text(stringResource(id = R.string.editing_menu))
+                                }
+                            },
+                            state = rememberTooltipState(),
+                            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                                TooltipAnchorPosition.Above, 4.dp
                             )
-                            DropdownMenu(
-                                expanded = showDropDownMenu,
-                                onDismissRequest = { showDropDownMenu = false }) {
-                                editMenuItemGroup.menuItems.forEach { menuItem ->
-                                    DropdownMenuItem(onClick = {
-                                        showDropDownMenu = false
-                                        onHideBottomSheet()
-                                        menuItem.action()
-                                    }, text = {
-                                        Text(
-                                            text = menuItem.text,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                    }, leadingIcon = {
-                                        Icon(
-                                            menuItem.outlinedIcon,
-                                            contentDescription = null
-                                        )
+                        ) {
+                            FilledTonalIconButton(onClick = { showDropDownMenu = true }) {
+                                Icon(
+                                    Icons.Filled.EditNote,
+                                    contentDescription = stringResource(R.string.editing_menu)
+                                )
+                                DropdownMenu(
+                                    expanded = showDropDownMenu,
+                                    onDismissRequest = { showDropDownMenu = false }) {
+                                    editMenuItemGroup.menuItems.forEach { menuItem ->
+                                        DropdownMenuItem(onClick = {
+                                            showDropDownMenu = false
+                                            onHideBottomSheet()
+                                            menuItem.action()
+                                        }, text = {
+                                            Text(
+                                                text = menuItem.text,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
+                                            )
+                                        }, leadingIcon = {
+                                            Icon(
+                                                menuItem.outlinedIcon, contentDescription = null
+                                            )
+                                        })
                                     }
-                                    )
                                 }
                             }
                         }
@@ -166,8 +183,7 @@ fun ContentDetails(
                             modifier = Modifier.weight(1f),
                             content = {
                                 Icon(
-                                    imageVector = menuItem.filledIcon,
-                                    contentDescription = null
+                                    imageVector = menuItem.filledIcon, contentDescription = null
                                 )
                                 Spacer(Modifier.size(12.dp))
                                 Text(

@@ -63,6 +63,7 @@ import androidx.compose.material.icons.outlined.Speed
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -70,7 +71,12 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -144,7 +150,7 @@ fun NavDrawerContent(
         ), DrawerPageGroup(
             stringResource(R.string.device), listOf(
                 DrawerPage(
-                    stringResource(R.string.deviceinfo),
+                    stringResource(R.string.device_info),
                     MainPages.DeviceInfo,
                     Icons.Outlined.DeveloperBoard,
                     Icons.Filled.DeveloperBoard
@@ -231,6 +237,7 @@ fun DrawerItem(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeviceItem(
     currentDevice: Device?,
@@ -254,27 +261,51 @@ fun DeviceItem(
                 ) + fadeIn() togetherWith scaleOut(targetScale = 0f) + fadeOut()
             }) {
                 when (it) {
-                    LoadingState.LOADED                                                                                                                       -> {
-                        IconButton(onClick = {
-                            onOpenOwif()
-                        }) {
-                            Icon(
-                                Icons.Default.Web,
-                                contentDescription = stringResource(R.string.open_openwebif),
+                    LoadingState.LOADED  -> {
+                        TooltipBox(
+                            tooltip = {
+                                PlainTooltip {
+                                    Text(stringResource(id = R.string.openwebif))
+                                }
+                            },
+                            state = rememberTooltipState(),
+                            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                                TooltipAnchorPosition.Below, 4.dp
                             )
+                        ) {
+                            IconButton(onClick = {
+                                onOpenOwif()
+                            }) {
+                                Icon(
+                                    Icons.Default.Web,
+                                    contentDescription = stringResource(R.string.openwebif),
+                                )
+                            }
                         }
                     }
-                    LoadingState.NO_DEVICE_AVAILABLE, LoadingState.DEVICE_NOT_ONLINE, LoadingState.NO_NETWORK_AVAILABLE, LoadingState.INVALID_DEVICE_RESPONSE -> {
-                        IconButton(onClick = { onUpdateDeviceStatus() }) {
-                            Icon(
-                                Icons.Default.RestartAlt,
-                                contentDescription = stringResource(R.string.retry),
-                            )
-                        }
-                    }
-                    LoadingState.LOADING                                                                                                                      -> {
+                    LoadingState.LOADING -> {
                         IconButton(onClick = {}, enabled = false) {
                             CircularProgressIndicator(Modifier.size(24.dp))
+                        }
+                    }
+                    else                 -> {
+                        TooltipBox(
+                            tooltip = {
+                                PlainTooltip {
+                                    Text(stringResource(id = R.string.retry))
+                                }
+                            },
+                            state = rememberTooltipState(),
+                            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                                TooltipAnchorPosition.Below, 4.dp
+                            )
+                        ) {
+                            IconButton(onClick = { onUpdateDeviceStatus() }) {
+                                Icon(
+                                    Icons.Default.RestartAlt,
+                                    contentDescription = stringResource(R.string.retry),
+                                )
+                            }
                         }
                     }
                 }

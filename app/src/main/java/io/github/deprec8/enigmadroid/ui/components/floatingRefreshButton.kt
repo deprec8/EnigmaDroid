@@ -24,24 +24,45 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.PlainTooltip
+import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FloatingRefreshButton(loadingState: LoadingState, onRefresh: () -> Unit) {
     AnimatedVisibility(
         loadingState == LoadingState.LOADED, enter = scaleIn(), exit = scaleOut()
     ) {
-        FloatingActionButton(onClick = {
-            onRefresh()
-        }) {
-            Icon(
-                Icons.Default.Refresh, contentDescription = stringResource(R.string.refresh_page)
+        TooltipBox(
+            tooltip = {
+                PlainTooltip {
+                    Text(stringResource(id = R.string.reload))
+                }
+            },
+            state = rememberTooltipState(),
+            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                TooltipAnchorPosition.Above, 4.dp
             )
+        ) {
+            FloatingActionButton(onClick = {
+                onRefresh()
+            }) {
+                Icon(
+                    Icons.Default.Refresh, contentDescription = stringResource(R.string.reload)
+                )
+            }
         }
     }
 }

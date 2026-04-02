@@ -31,18 +31,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Dialpad
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -62,6 +66,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
+import io.github.deprec8.enigmadroid.ui.components.ArrowNavigationButton
 import io.github.deprec8.enigmadroid.ui.remoteControl.components.ActionMenu
 import io.github.deprec8.enigmadroid.ui.remoteControl.components.ArrowButtons
 import io.github.deprec8.enigmadroid.ui.remoteControl.components.BouquetButtons
@@ -115,13 +120,7 @@ fun RemoteControlPage(
                     overflow = TextOverflow.Ellipsis
                 )
             }, navigationIcon = {
-                IconButton(
-                    onClick = { onNavigateBack() }) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.navigate_back)
-                    )
-                }
+                ArrowNavigationButton { onNavigateBack() }
             }, scrollBehavior = scrollBehavior, actions = {
                 Row {
                     DeviceText(loadingState, currentDevice) {
@@ -130,14 +129,26 @@ fun RemoteControlPage(
                         }
                     }
                     if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)) {
-                        IconButton(
-                            onClick = { showNumbers = true },
-                            enabled = loadingState == LoadingState.LOADED
-                        ) {
-                            Icon(
-                                Icons.Default.Dialpad,
-                                contentDescription = stringResource(R.string.open_number_pad)
+                        TooltipBox(
+                            tooltip = {
+                                PlainTooltip {
+                                    Text(stringResource(id = R.string.number_pad))
+                                }
+                            },
+                            state = rememberTooltipState(),
+                            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                                TooltipAnchorPosition.Below, 4.dp
                             )
+                        ) {
+                            IconButton(
+                                onClick = { showNumbers = true },
+                                enabled = loadingState == LoadingState.LOADED
+                            ) {
+                                Icon(
+                                    Icons.Default.Dialpad,
+                                    contentDescription = stringResource(R.string.number_pad)
+                                )
+                            }
                         }
                     }
                     ActionMenu(

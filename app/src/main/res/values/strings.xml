@@ -25,23 +25,23 @@
     <string name="device">Device</string>
     <string name="settings">Settings</string>
     <string name="content">Content</string>
-    <string name="deviceinfo">Device info</string>
+    <string name="device_info">Device info</string>
     <string name="stream">Stream</string>
     <string name="creator">Creator</string>
     <string name="version">Version</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="name">Name</string>
-    <string name="dinfo_imageversion">Image version</string>
-    <string name="dinfo_guiversion">GUI version</string>
-    <string name="dinfo_frontpversion">FrontP version</string>
-    <string name="dinfo_interfaceversion">Interface version</string>
+    <string name="image">Image</string>
+    <string name="gui">GUI</string>
+    <string name="frontp">FrontP</string>
+    <string name="interface_res">Interface</string>
     <string name="tuner">Tuner</string>
     <string name="network">Network</string>
     <string name="storage">Storage</string>
     <string name="free">free</string>
     <string name="about">About</string>
-    <string name="ip_address_hostname">IP Address or Hostname</string>
+    <string name="ip_address_or_hostname">IP Address or Hostname</string>
     <string name="port">Port</string>
     <string name="https" translatable="false">HTTPS</string>
     <string name="login">Login</string>
@@ -59,38 +59,34 @@
     <string name="search_movies">Search movies</string>
     <string name="radio">Radio</string>
     <string name="signal">Signal</string>
-    <string name="open_number_pad">Open number pad</string>
+    <string name="number_pad">Number pad</string>
     <string name="remote_control">Remote control</string>
     <string name="toggle_standby">Toggle standby</string>
     <string name="restart">Restart</string>
     <string name="restart_gui">Restart GUI</string>
     <string name="shutdown">Shutdown</string>
     <string name="close">Close</string>
-    <string name="start_by_adding_one_device">Start by adding one device, you can add more later.</string>
+    <string name="setup_device_creation_info">Start by adding one device, you can add more later.</string>
     <string name="finish_setup">Finish setup</string>
     <string name="welcome_to_enigmadroid">Welcome to EnigmaDroid</string>
     <string name="live_port">Live Port</string>
     <string name="current">Current</string>
-    <string name="stream_current">Stream current program</string>
-    <string name="kernel_version">Kernel Version</string>
+    <string name="kernel">Kernel</string>
     <string name="uptime">Uptime</string>
     <string name="model">Model</string>
     <string name="brand">Brand</string>
-    <string name="open_menu">Open Menu</string>
+    <string name="navigation_drawer">Navigation drawer</string>
     <string name="remote">Remote</string>
-    <string name="open_remote_control">Open remote control</string>
-    <string name="tunertype">Tunertype</string>
-    <string name="tunernumber">Tunernumber</string>
+    <string name="type">Type</string>
+    <string name="number">Number</string>
     <string name="snr" translatable="false">SNR</string>
     <string name="channel_down">Channel down</string>
     <string name="general">General</string>
     <string name="current_device">Current device</string>
     <string name="editing_menu">Editing menu</string>
     <string name="no_results">No results</string>
-    <string name="close_search">Close search</string>
-    <string name="clear_search">Clear search</string>
     <string name="delete_movie">Delete movie</string>
-    <string name="if_you_delete_this_movie_it_will_not_be_recoverable">If you delete this movie it will not be recoverable.</string>
+    <string name="delete_movie_warning">If you delete this movie it will not be recoverable.</string>
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
     <string name="rename_movie">Rename movie</string>
@@ -126,36 +122,35 @@
     <string name="license">License</string>
     <string name="app_source" translatable="false">github.com/deprec8/EnigmaDroid/</string>
     <string name="app_license" translatable="false">GNU General Public License 3</string>
-    <string name="open_action_menu">Open action menu</string>
+    <string name="action_menu">Action menu</string>
     <string name="enabled">Enabled</string>
-    <string name="device_not_connected">Device not connected</string>
-    <string name="no_device_available">No device available</string>
-    <string name="version_not_found">Version not found</string>
+    <string name="device_not_connected">Device not connected.</string>
+    <string name="no_device_available">No device available.</string>
+    <string name="version_not_found">Version not found.</string>
     <string name="app_developer" translatable="false">github.com/deprec8</string>
-    <string name="open_openwebif">Open OpenWebif</string>
-    <string name="toggle_password_visibility">Toggle password visibility</string>
+    <string name="openwebif">OpenWebif</string>
     <string name="delete_timer">Delete timer</string>
-    <string name="if_you_delete_this_timer_it_will_not_be_recoverable">If you delete this timer it will not be recoverable.</string>
+    <string name="delete_timer_warning">If you delete this timer it will not be recoverable.</string>
     <string name="third_party_libraries">Third Party Libraries</string>
     <string name="source_code">Source Code</string>
-    <string name="libraries">%1$s Libraries</string>
+    <string name="libraries_amount">%1$s Libraries</string>
     <string name="searching_for_device">Searching for device…</string>
     <string name="channel_up">Channel up</string>
     <string name="retry">Retry</string>
-    <string name="no_devices_found">No devices found</string>
+    <string name="no_devices_found">No devices found.</string>
     <string name="skip">Skip</string>
     <string name="delete_device">Delete device</string>
-    <string name="if_you_delete_this_device_it_will_not_be_recoverable">If you delete this device it will not be recoverable.</string>
+    <string name="delete_device_warning">You can add this device again at any time.</string>
     <string name="pin_webif">Pin WebIf</string>
     <string name="standby">Standby</string>
     <string name="automatic">Automatic</string>
-    <string name="afterevent">After event</string>
+    <string name="after_event">After event</string>
     <string name="screenshot">Screenshot</string>
-    <string name="add_a_device_to_connect_to">Add a device to connect to</string>
+    <string name="add_a_device_to_connect_to">Add a device to connect to.</string>
     <string name="app_license_url" translatable="false">https://www.gnu.org/licenses/gpl-3.0.de.html</string>
     <string name="app_source_url" translatable="false">https://github.com/deprec8/EnigmaDroid/</string>
     <string name="app_developer_url" translatable="false">https://github.com/deprec8</string>
-    <string name="device_is_not_playing_any_channel">Device is not playing any channel</string>
+    <string name="device_is_not_playing_any_channel">Device is not playing any channel.</string>
     <string name="edit_timer">Edit Timer</string>
     <string name="tv_epg">TV EPG</string>
     <string name="radio_epg">Radio EPG</string>
@@ -164,14 +159,13 @@
     <string name="search_events">Search events</string>
     <string name="switch_channel">Switch</string>
     <string name="service">Service</string>
-    <string name="open_search">Open search</string>
     <string name="no_browser_found">No browser found.</string>
     <string name="no_calendar_found">No calendar found.</string>
     <string name="no_media_player_found">No media player found.</string>
     <string name="download">Download</string>
-    <string name="downloading">Downloading %1$s</string>
-    <string name="fetching_screenshot">Fetching screenshot</string>
-    <string name="refresh_page">Refresh page</string>
+    <string name="downloading">Downloading \"%1$s\"…</string>
+    <string name="fetching_screenshot">Fetching screenshot…</string>
+    <string name="reload">Reload</string>
     <string name="app_issue" translatable="false">github.com/deprec8/EnigmaDroid/issues</string>
     <string name="issue_tracker">Issue Tracker</string>
     <string name="app_issue_url" translatable="false">https://github.com/deprec8/EnigmaDroid/issues</string>
@@ -191,16 +185,16 @@
     <string name="create">Create</string>
     <string name="discard">Discard</string>
     <string name="discard_unsaved_changes">Discard unsaved changes?</string>
-    <string name="you_may_have_changes_that_won_t_be_saved_if_you_close">You may have changes that won\'t be saved if you close.</string>
+    <string name="discard_warning">You may have changes that won\'t be saved if you close.</string>
     <string name="repeats_on">Repeats on:</string>
-    <string name="navigate_back">Navigate back</string>
+    <string name="go_back">Go back</string>
     <string name="manage_your_devices_and_connect_to_them">Manage your devices and connect to them.</string>
     <string name="information_about_the_app">Information about the app.</string>
     <string name="configure_your_remote_control">Configure your remote control.</string>
     <string name="haptic_feedback">Haptic feedback</string>
     <string name="vibrate_when_buttons_are_pressed">Vibrate when buttons are pressed.</string>
     <string name="pin_shortcut">Pin shortcut</string>
-    <string name="insert_search_term">Insert search term</string>
+    <string name="insert">Insert</string>
     <string name="type_something_to_search">Type something to search</string>
     <string name="clear">Clear</string>
     <string name="clear_search_histories">Clear search histories</string>
@@ -215,7 +209,6 @@
     <string name="app_translation" translatable="false">crowdin.com/project/enigmadroid</string>
     <string name="app_translation_url" translatable="false">https://crowdin.com/project/enigmadroid</string>
     <string name="view_epg">View EPG</string>
-    <string name="view_epg_for_current_channel">View EPG for current channel</string>
     <string name="all">All</string>
     <string name="waiting">Waiting</string>
     <string name="prepared">Prepared</string>
@@ -226,14 +219,13 @@
     <string name="log_entries">Log entries</string>
     <string name="view_log">View log</string>
     <string name="code">Code: %1$d</string>
-    <string name="no_network_available">No network available</string>
-    <string name="connect_to_a_network">Connect to a network</string>
-    <string name="open_bouquet_menu">Open bouquet menu</string>
+    <string name="no_network_available">No network available.</string>
+    <string name="connect_to_a_network">Connect to a network.</string>
     <string name="current_bouquet">Current bouquet</string>
-    <string name="search_epg_for">Search EPG for %1$s</string>
+    <string name="search_epg_from">Search EPG from \"%1$s\"</string>
     <string name="service_epg">Service EPG</string>
-    <string name="error_loading_libraries">Error loading libraries</string>
-    <string name="invalid_device_response">Invalid device response</string>
+    <string name="error_loading_libraries">Error loading libraries.</string>
+    <string name="invalid_device_response">Invalid device response.</string>
     <string name="enable">Enable</string>
     <string name="disable">Disable</string>
     <string name="marker">Marker</string>
@@ -241,7 +233,13 @@
     <string name="group">Group</string>
     <string name="current_service">Current service</string>
     <string name="choose_service">Choose service</string>
-    <string name="no_service_selected">No service selected</string>
+    <string name="no_service_selected">No service selected.</string>
     <string name="cancelled">Cancelled</string>
-    <string name="open_editing_menu">Open editing menu</string>
+    <string name="hide_password">Hide password</string>
+    <string name="show_password">Show password</string>
+    <string name="bouquet_menu">Bouquet menu</string>
+    <string name="stream_service">Stream \"%1$s\"</string>
+    <string name="view_epg_from">View EPG from \"%1$s\"</string>
+    <string name="starting_at">Starting at %1$s</string>
+    <string name="until">Until %1$s</string>
 </resources>

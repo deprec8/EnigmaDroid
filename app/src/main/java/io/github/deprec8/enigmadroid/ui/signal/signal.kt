@@ -142,14 +142,14 @@ fun SignalPage(
                             }
                             Column(Modifier.fillMaxWidth(1f)) {
                                 ListItem(
-                                    headlineContent = { Text(text = stringResource(R.string.tunertype)) },
+                                    headlineContent = { Text(text = stringResource(R.string.type)) },
                                     supportingContent = {
                                         Text(
                                             text = signalInfo.tunerType
                                         )
                                     })
                                 ListItem(
-                                    headlineContent = { Text(text = stringResource(R.string.tunernumber)) },
+                                    headlineContent = { Text(text = stringResource(R.string.number)) },
                                     supportingContent = {
                                         Text(
                                             text = signalInfo.tunerNumber
@@ -188,14 +188,14 @@ fun SignalPage(
                             )
                         }
                         ListItem(
-                            headlineContent = { Text(text = stringResource(R.string.tunertype)) },
+                            headlineContent = { Text(text = stringResource(R.string.type)) },
                             supportingContent = {
                                 Text(
                                     text = signalInfo.tunerType
                                 )
                             })
                         ListItem(
-                            headlineContent = { Text(text = stringResource(R.string.tunernumber)) },
+                            headlineContent = { Text(text = stringResource(R.string.number)) },
                             supportingContent = {
                                 Text(
                                     text = signalInfo.tunerNumber

@@ -20,8 +20,7 @@
 package io.github.deprec8.enigmadroid.ui.components
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.DrawerState
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,46 +29,31 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DrawerNavigationButton(
-    drawerState: DrawerState
-) {
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-    val scope = rememberCoroutineScope()
-    val isSmallScreenLayout =
-        ! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || ! windowSizeClass.isHeightAtLeastBreakpoint(
-            WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
-        )
-
-    if (isSmallScreenLayout) {
-        TooltipBox(
-            tooltip = {
-                PlainTooltip {
-                    Text(stringResource(id = R.string.navigation_drawer))
-                }
-            },
-            state = rememberTooltipState(),
-            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-                TooltipAnchorPosition.Below, 4.dp
-            )
-        ) {
-            IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                Icon(
-                    Icons.Default.Menu,
-                    contentDescription = stringResource(R.string.navigation_drawer)
-                )
+fun ArrowNavigationButton(onNavigateBack: () -> Unit) {
+    TooltipBox(
+        tooltip = {
+            PlainTooltip {
+                Text(stringResource(id = R.string.go_back))
             }
+        },
+        state = rememberTooltipState(),
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+            TooltipAnchorPosition.Below, 4.dp
+        )
+    ) {
+        IconButton(onClick = { onNavigateBack() }) {
+            Icon(
+                Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = stringResource(R.string.go_back)
+            )
         }
     }
 }

@@ -23,11 +23,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,6 +36,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
+import io.github.deprec8.enigmadroid.ui.components.ArrowNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.FloatingRefreshButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
@@ -81,7 +78,7 @@ fun ServiceEpgPage(
         SearchTopAppBar(
             enabled = eventBatch.events.isNotEmpty() && loadingState == LoadingState.LOADED,
             textFieldState = serviceEpgViewModel.searchFieldState,
-            placeholder = stringResource(R.string.search_epg_for, serviceName),
+            placeholder = stringResource(R.string.search_epg_from, serviceName),
             content = {
                 if (filteredEvents != null) {
                     EpgContent(
@@ -102,13 +99,7 @@ fun ServiceEpgPage(
                 }
             },
             navigationButton = {
-                IconButton(
-                    onClick = { onNavigateBack() }) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.navigate_back)
-                    )
-                }
+                ArrowNavigationButton { onNavigateBack() }
             },
             onSearch = {
                 serviceEpgViewModel.updateSearchInput()

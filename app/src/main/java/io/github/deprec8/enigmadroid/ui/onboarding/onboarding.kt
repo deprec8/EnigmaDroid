@@ -91,7 +91,7 @@ fun OnboardingPage(
                 style = MaterialTheme.typography.headlineSmall
             )
             Text(
-                text = stringResource(R.string.start_by_adding_one_device),
+                text = stringResource(R.string.setup_device_creation_info),
                 Modifier.padding(horizontal = 16.dp)
             )
             DeviceSetupCard(

@@ -28,7 +28,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.CollectionsBookmark
@@ -40,7 +39,6 @@ import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material.icons.outlined.Translate
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -55,6 +53,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.util.withContext
 import io.github.deprec8.enigmadroid.R
+import io.github.deprec8.enigmadroid.ui.components.ArrowNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.insets.topAppBarWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.utils.IntentUtils
@@ -92,12 +91,7 @@ fun AboutPage(
                     overflow = TextOverflow.Ellipsis
                 )
             }, scrollBehavior = scrollBehavior, navigationIcon = {
-                IconButton(onClick = { onNavigateBack() }) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.navigate_back)
-                    )
-                }
+                ArrowNavigationButton { onNavigateBack() }
             })
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -187,7 +181,7 @@ fun AboutPage(
                     Text(
                         text = if (libraries != null) {
                             stringResource(
-                                R.string.libraries, libraries.size
+                                R.string.libraries_amount, libraries.size
                             )
                         } else {
                             stringResource(R.string.error_loading_libraries)

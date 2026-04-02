@@ -37,7 +37,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.MoreVert
@@ -54,11 +53,16 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -76,6 +80,7 @@ import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
+import io.github.deprec8.enigmadroid.ui.components.ArrowNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.insets.topAppBarWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.utils.IntentUtils
@@ -106,23 +111,30 @@ fun DevicesPage(
                     overflow = TextOverflow.Ellipsis
                 )
             }, scrollBehavior = scrollBehavior, navigationIcon = {
-                IconButton(onClick = { onNavigateBack() }) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.navigate_back)
-                    )
-                }
+                ArrowNavigationButton { onNavigateBack() }
             })
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    showAddDialog = true
-                }) {
-                Icon(
-                    Icons.Default.Add,
-                    contentDescription = stringResource(id = R.string.add_device),
+            TooltipBox(
+                tooltip = {
+                    PlainTooltip {
+                        Text(stringResource(id = R.string.add_device))
+                    }
+                },
+                state = rememberTooltipState(),
+                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                    TooltipAnchorPosition.Above, 4.dp
                 )
+            ) {
+                FloatingActionButton(
+                    onClick = {
+                        showAddDialog = true
+                    }) {
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = stringResource(id = R.string.add_device),
+                    )
+                }
             }
         },
         contentWindowInsets = contentWithDrawerWindowInsets(),
@@ -185,11 +197,23 @@ fun DevicesPage(
                                 )
                             }
                         }, trailingContent = {
-                            IconButton(onClick = { showDropDownMenu = true }) {
-                                Icon(
-                                    Icons.Default.MoreVert,
-                                    contentDescription = stringResource(R.string.editing_menu)
+                            TooltipBox(
+                                tooltip = {
+                                    PlainTooltip {
+                                        Text(stringResource(id = R.string.action_menu))
+                                    }
+                                },
+                                state = rememberTooltipState(),
+                                positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                                    TooltipAnchorPosition.Above, 4.dp
                                 )
+                            ) {
+                                IconButton(onClick = { showDropDownMenu = true }) {
+                                    Icon(
+                                        Icons.Default.MoreVert,
+                                        contentDescription = stringResource(R.string.action_menu)
+                                    )
+                                }
                             }
                             DropdownMenu(
                                 expanded = showDropDownMenu,
@@ -261,7 +285,7 @@ fun DevicesPage(
 
                             },
                             title = { Text(text = stringResource(R.string.delete_device)) },
-                            text = { Text(text = stringResource(R.string.if_you_delete_this_device_it_will_not_be_recoverable)) },
+                            text = { Text(text = stringResource(R.string.delete_device_warning)) },
                             icon = {
                                 Icon(
                                     Icons.Outlined.Delete, contentDescription = null

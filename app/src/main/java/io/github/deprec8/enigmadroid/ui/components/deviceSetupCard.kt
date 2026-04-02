@@ -34,14 +34,20 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedSecureTextField
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -60,6 +66,7 @@ import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeviceSetupCard(
     modifier: Modifier,
@@ -110,7 +117,7 @@ fun DeviceSetupCard(
                     ),
                     label = {
                         Text(
-                            text = stringResource(R.string.ip_address_hostname),
+                            text = stringResource(R.string.ip_address_or_hostname),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -155,24 +162,9 @@ fun DeviceSetupCard(
                 Spacer(Modifier.size(16.dp))
                 OutlinedSecureTextField(
                     state = passwordState, enabled = isLogin, trailingIcon = {
-                        IconButton(
-                            onClick = { passwordVisible = ! passwordVisible }, enabled = isLogin
-                        ) {
-                            when (passwordVisible) {
-                                true  -> {
-                                    Icon(
-                                        Icons.Default.VisibilityOff,
-                                        contentDescription = stringResource(R.string.toggle_password_visibility)
-                                    )
-                                }
-                                false -> {
-                                    Icon(
-                                        Icons.Default.Visibility,
-                                        contentDescription = stringResource(R.string.toggle_password_visibility)
-                                    )
-                                }
-                            }
-                        }
+                        PasswordVisibilityToggleButton(
+                            passwordVisible, { passwordVisible = it }, isLogin
+                        )
                     }, keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Done
                     ), textObfuscationMode = if (! passwordVisible) {
@@ -217,7 +209,7 @@ fun DeviceSetupCard(
                 ),
                 label = {
                     Text(
-                        text = stringResource(R.string.ip_address_hostname),
+                        text = stringResource(R.string.ip_address_or_hostname),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -258,24 +250,9 @@ fun DeviceSetupCard(
             Spacer(modifier = Modifier.size(8.dp))
             OutlinedSecureTextField(
                 state = passwordState, enabled = isLogin, trailingIcon = {
-                    IconButton(
-                        onClick = { passwordVisible = ! passwordVisible }, enabled = isLogin
-                    ) {
-                        when (passwordVisible) {
-                            true -> {
-                                Icon(
-                                    Icons.Default.VisibilityOff,
-                                    contentDescription = stringResource(R.string.toggle_password_visibility)
-                                )
-                            }
-                            false -> {
-                                Icon(
-                                    Icons.Default.Visibility,
-                                    contentDescription = stringResource(R.string.toggle_password_visibility)
-                                )
-                            }
-                        }
-                    }
+                    PasswordVisibilityToggleButton(
+                        passwordVisible, { passwordVisible = it }, isLogin
+                    )
                 }, keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done
                 ), textObfuscationMode = if (! passwordVisible) {
@@ -385,5 +362,50 @@ private fun FormPortSettings(
             },
             modifier = Modifier.fillMaxWidth(1f)
         )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun PasswordVisibilityToggleButton(
+    passwordVisible: Boolean, onVisibilityChange: (value: Boolean) -> Unit, isLogin: Boolean
+) {
+    TooltipBox(
+        tooltip = {
+            PlainTooltip {
+                Text(
+                    if (passwordVisible) stringResource(id = R.string.hide_password) else stringResource(
+                        id = R.string.show_password
+                    )
+                )
+            }
+        },
+        enableUserInput = isLogin,
+        state = rememberTooltipState(),
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+            TooltipAnchorPosition.Above, 4.dp
+        )
+    ) {
+        IconButton(
+            onClick = { onVisibilityChange(! passwordVisible) }, enabled = isLogin
+        ) {
+            when (passwordVisible) {
+                true  -> {
+
+                    Icon(
+                        Icons.Default.VisibilityOff,
+                        contentDescription = stringResource(R.string.hide_password)
+                    )
+                }
+                false -> {
+
+                    Icon(
+                        Icons.Default.Visibility,
+                        contentDescription = stringResource(R.string.show_password)
+                    )
+                }
+            }
+        }
+
     }
 }

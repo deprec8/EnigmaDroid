@@ -33,9 +33,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,6 +53,7 @@ import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeviceText(
     loadingState: LoadingState, currentDevice: Device?, onUpdateLoadingState: () -> Unit
@@ -70,24 +77,36 @@ fun DeviceText(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                LoadingState.NO_DEVICE_AVAILABLE, LoadingState.DEVICE_NOT_ONLINE, LoadingState.NO_NETWORK_AVAILABLE, LoadingState.INVALID_DEVICE_RESPONSE -> IconButton(
-                    onClick = { onUpdateLoadingState() },
-                    modifier = Modifier
-                        .padding(12.dp)
-                        .size(24.dp)
-                        .align(Alignment.Center)
-                ) {
-                    Icon(
-                        Icons.Default.RestartAlt,
-                        contentDescription = stringResource(R.string.retry)
-                    )
-                }
                 LoadingState.LOADING -> CircularProgressIndicator(
                     Modifier
                         .padding(12.dp)
                         .size(24.dp)
                         .align(Alignment.Center)
                 )
+                else                 -> TooltipBox(
+                    tooltip = {
+                        PlainTooltip {
+                            Text(stringResource(id = R.string.retry))
+                        }
+                    },
+                    state = rememberTooltipState(),
+                    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                        TooltipAnchorPosition.Below, 4.dp
+                    )
+                ) {
+                    IconButton(
+                        onClick = { onUpdateLoadingState() },
+                        modifier = Modifier
+                            .padding(12.dp)
+                            .size(24.dp)
+                            .align(Alignment.Center)
+                    ) {
+                        Icon(
+                            Icons.Default.RestartAlt,
+                            contentDescription = stringResource(R.string.retry)
+                        )
+                    }
+                }
             }
         }
     }

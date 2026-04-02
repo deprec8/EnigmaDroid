@@ -28,19 +28,27 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.NorthWest
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchHistory(
     searchHistory: List<String>,
@@ -57,11 +65,23 @@ fun SearchHistory(
                 ListItem(
                     headlineContent = { Text(searchTerm) },
                     trailingContent = {
-                        IconButton(onClick = { onTermInsertClick(searchTerm) }) {
-                            Icon(
-                                Icons.Default.NorthWest,
-                                contentDescription = stringResource(R.string.insert_search_term)
+                        TooltipBox(
+                            tooltip = {
+                                PlainTooltip {
+                                    Text(stringResource(id = R.string.insert))
+                                }
+                            },
+                            state = rememberTooltipState(),
+                            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                                TooltipAnchorPosition.Above, 4.dp
                             )
+                        ) {
+                            IconButton(onClick = { onTermInsertClick(searchTerm) }) {
+                                Icon(
+                                    Icons.Default.NorthWest,
+                                    contentDescription = stringResource(R.string.insert)
+                                )
+                            }
                         }
                     },
                     leadingContent = {

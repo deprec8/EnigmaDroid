@@ -377,7 +377,7 @@ fun TimerSetupDialog(
                         onValueChange = { },
                         readOnly = true,
                         singleLine = true,
-                        label = { Text(stringResource(R.string.afterevent)) },
+                        label = { Text(stringResource(R.string.after_event)) },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = showAftereventMenu) },
                         colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
                         modifier = Modifier
@@ -523,7 +523,7 @@ private fun ServicePickerDialog(
                             }) {
                                 Icon(
                                     Icons.AutoMirrored.Outlined.ArrowBack,
-                                    stringResource(R.string.navigate_back)
+                                    stringResource(R.string.go_back)
                                 )
                             }
                         },

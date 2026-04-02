@@ -36,7 +36,7 @@ fun DeleteMovieDialog(onDismissRequest: () -> Unit, onConfirmRequest: () -> Unit
             onDismissRequest()
         },
         title = { Text(text = stringResource(R.string.delete_movie)) },
-        text = { Text(text = stringResource(R.string.if_you_delete_this_movie_it_will_not_be_recoverable)) },
+        text = { Text(text = stringResource(R.string.delete_movie_warning)) },
         icon = {
             Icon(
                 Icons.Outlined.Delete, contentDescription = null
