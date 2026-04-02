@@ -122,7 +122,6 @@
     <string name="device_not_connected">Gerät nicht verbunden.</string>
     <string name="no_device_available">Kein Gerät verfügbar.</string>
     <string name="version_not_found">Version nicht gefunden.</string>
-    <string name="openwebif">OpenWebif</string>
     <string name="delete_timer">Timer löschen</string>
     <string name="delete_timer_warning">Wenn sie diesen Timer löschen wird er nicht wiederherstellbar sein.</string>
     <string name="third_party_libraries">Drittanbieter Bibliotheken</string>

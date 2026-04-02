@@ -122,7 +122,6 @@
     <string name="device_not_connected">Устройство не подключено.</string>
     <string name="no_device_available">Устройство недоступно.</string>
     <string name="version_not_found">Версия не найдена.</string>
-    <string name="openwebif">OpenWebif</string>
     <string name="delete_timer">Удалить таймер</string>
     <string name="delete_timer_warning">Если вы удалите этот таймер, его будет уже не восстановить.</string>
     <string name="third_party_libraries">Сторонние библиотеки</string>

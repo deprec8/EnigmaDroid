@@ -128,7 +128,7 @@
     <string name="no_device_available">No device available.</string>
     <string name="version_not_found">Version not found.</string>
     <string name="app_developer" translatable="false">github.com/deprec8</string>
-    <string name="openwebif">OpenWebif</string>
+    <string name="openwebif" translatable="false">OpenWebif</string>
     <string name="delete_timer">Delete timer</string>
     <string name="delete_timer_warning">If you delete this timer it will not be recoverable.</string>
     <string name="third_party_libraries">Third Party Libraries</string>

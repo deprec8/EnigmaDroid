@@ -122,7 +122,6 @@
     <string name="device_not_connected">Appareil non connecté.</string>
     <string name="no_device_available">Aucun appareil disponible.</string>
     <string name="version_not_found">Version introuvable.</string>
-    <string name="openwebif">OpenWebif</string>
     <string name="delete_timer">Supprimer la minuterie</string>
     <string name="delete_timer_warning">Si vous supprimez cette minuterie, elle ne pourra pas être récupérée.</string>
     <string name="third_party_libraries">Bibliothèques tierces</string>
