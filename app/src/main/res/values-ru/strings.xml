@@ -32,7 +32,7 @@
     <string name="delete">Удалить</string>
     <string name="name">Название</string>
     <string name="image">Изображение</string>
-    <string name="gui">GUI </string>
+    <string name="gui">GUI</string>
     <string name="frontp">Впереди</string>
     <string name="interface_res">Интерфейс</string>
     <string name="tuner">Тюнер</string>
@@ -76,7 +76,7 @@
     <string name="navigation_drawer">Панель навигации</string>
     <string name="remote">Удалённое</string>
     <string name="type">Тип</string>
-    <string name="number">номер</string>
+    <string name="number">Номер</string>
     <string name="channel_down">Переключить на следующий канал</string>
     <string name="general">Общие</string>
     <string name="current_device">Текущее устройство</string>
