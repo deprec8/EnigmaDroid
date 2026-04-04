@@ -25,15 +25,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Tab
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -42,13 +37,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.ui.components.FloatingRefreshButton
+import io.github.deprec8.enigmadroid.ui.components.ContentTab
+import io.github.deprec8.enigmadroid.ui.components.ContentTabRow
+import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.RemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
@@ -75,15 +71,9 @@ fun RadioPage(
 
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { eventBatches.size })
-    val selectedTabIndex = remember {
+    val selectedTabIndex by remember {
         derivedStateOf {
-            pagerState.currentPage.coerceIn(
-                0, (if (eventBatches.size - 1 < 0) {
-                    0
-                } else {
-                    eventBatches.size - 1
-                })
-            )
+            pagerState.currentPage.coerceIn(0, (eventBatches.size - 1).coerceAtLeast(0))
         }
     }
 
@@ -98,7 +88,7 @@ fun RadioPage(
     }
 
     Scaffold(floatingActionButton = {
-        FloatingRefreshButton(loadingState) { radioViewModel.fetchData() }
+        FloatingReloadButton(loadingState) { radioViewModel.fetchData() }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
             enabled = eventBatches.isNotEmpty() && loadingState == LoadingState.LOADED,
@@ -128,7 +118,7 @@ fun RadioPage(
                 } else {
                     SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
                         radioViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
-                        radioViewModel.updateSearchInput(selectedTabIndex.value)
+                        radioViewModel.updateSearchInput(selectedTabIndex)
                     }, onTermInsertClick = {
                         radioViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
                             it
@@ -143,34 +133,21 @@ fun RadioPage(
                 RemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
             },
             onSearch = {
-                radioViewModel.updateSearchInput(selectedTabIndex.value)
+                radioViewModel.updateSearchInput(selectedTabIndex)
             },
             tabBar = {
                 if (eventBatches.isNotEmpty() && loadingState == LoadingState.LOADED) {
-                    PrimaryScrollableTabRow(
-                        selectedTabIndex = selectedTabIndex.value,
-                        divider = { },
-                        scrollState = rememberScrollState()
-                    ) {
+                    ContentTabRow(selectedTabIndex) {
                         eventBatches.forEachIndexed { index, eventBatch ->
-                            Tab(
-                                text = {
-                                    Text(
-                                        text = eventBatch.name,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                },
-                                onClick = {
-                                    scope.launch {
-                                        pagerState.animateScrollToPage(index)
-                                    }
-                                },
-                                selected = index == selectedTabIndex.value,
-                            )
+                            ContentTab(
+                                name = eventBatch.name, selected = index == selectedTabIndex
+                            ) {
+                                scope.launch {
+                                    pagerState.animateScrollToPage(index)
+                                }
+                            }
                         }
                     }
-                    HorizontalDivider()
                 }
             })
 

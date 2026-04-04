@@ -100,7 +100,7 @@ fun LiveContent(
                 }
             }) { event ->
                 when (event.type) {
-                    EntryType.CHANNEL   -> {
+                    EntryType.CHANNEL -> {
                         ContentListItem(
                             highlightedWords = highlightedWords,
                             headlineText = event.serviceName,
@@ -167,7 +167,7 @@ fun LiveContent(
                             additionalDescription = event.genre
                         )
                     }
-                    EntryType.MARKER    -> {
+                    EntryType.MARKER  -> {
                         Column {
                             ListItem(
                                 headlineContent = {
@@ -203,7 +203,7 @@ fun LiveContent(
                             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
                         }
                     }
-                    EntryType.GROUP     -> {
+                    EntryType.GROUP   -> {
                         Column {
                             ListItem(
                                 headlineContent = {
@@ -224,7 +224,7 @@ fun LiveContent(
                             HorizontalDivider(Modifier.padding(horizontal = 16.dp))
                         }
                     }
-                    else                -> {}
+                    else              -> {}
                 }
 
             }

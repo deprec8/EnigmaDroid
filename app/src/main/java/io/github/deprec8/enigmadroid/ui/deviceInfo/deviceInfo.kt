@@ -56,7 +56,7 @@ import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.model.api.device.DeviceInfo
 import io.github.deprec8.enigmadroid.ui.components.DrawerNavigationButton
-import io.github.deprec8.enigmadroid.ui.components.FloatingRefreshButton
+import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.RemoteControlActionButton
@@ -90,7 +90,7 @@ fun DeviceInfoPage(
 
     Scaffold(
         floatingActionButton = {
-            FloatingRefreshButton(loadingState) { deviceInfoViewModel.fetchData() }
+            FloatingReloadButton(loadingState) { deviceInfoViewModel.fetchData() }
         },
         contentWindowInsets = contentWithDrawerWindowInsets(),
         topBar = {

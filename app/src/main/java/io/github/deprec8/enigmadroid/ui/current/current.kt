@@ -60,7 +60,7 @@ import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.ui.components.DrawerNavigationButton
-import io.github.deprec8.enigmadroid.ui.components.FloatingRefreshButton
+import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.RemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
@@ -102,7 +102,7 @@ fun CurrentPage(
 
     Scaffold(
         floatingActionButton = {
-            FloatingRefreshButton(loadingState) { currentViewModel.fetchData() }
+            FloatingReloadButton(loadingState) { currentViewModel.fetchData() }
         },
         contentWindowInsets = contentWithDrawerWindowInsets(),
         topBar = {

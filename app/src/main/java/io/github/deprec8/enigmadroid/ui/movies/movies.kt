@@ -49,7 +49,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.ui.components.FloatingRefreshButton
+import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.RemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
@@ -100,7 +100,7 @@ fun MoviesPage(
     }
 
     Scaffold(floatingActionButton = {
-        FloatingRefreshButton(loadingState) { moviesViewModel.fetchData() }
+        FloatingReloadButton(loadingState) { moviesViewModel.fetchData() }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
             enabled = movieBatches.isNotEmpty() && loadingState == LoadingState.LOADED,

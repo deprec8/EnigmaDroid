@@ -125,9 +125,7 @@ fun SearchTopAppBar(
                 }
             }
             if (tabBar != null) {
-                Column(Modifier.padding(top = 8.dp)) {
-                    tabBar()
-                }
+                tabBar()
             } else {
                 Spacer(Modifier.size(8.dp))
             }

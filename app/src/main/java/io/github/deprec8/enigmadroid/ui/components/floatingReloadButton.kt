@@ -41,7 +41,7 @@ import io.github.deprec8.enigmadroid.data.enums.LoadingState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FloatingRefreshButton(loadingState: LoadingState, onRefresh: () -> Unit) {
+fun FloatingReloadButton(loadingState: LoadingState, onReload: () -> Unit) {
     AnimatedVisibility(
         loadingState == LoadingState.LOADED, enter = scaleIn(), exit = scaleOut()
     ) {
@@ -57,7 +57,7 @@ fun FloatingRefreshButton(loadingState: LoadingState, onRefresh: () -> Unit) {
             )
         ) {
             FloatingActionButton(onClick = {
-                onRefresh()
+                onReload()
             }) {
                 Icon(
                     Icons.Default.Refresh, contentDescription = stringResource(R.string.reload)

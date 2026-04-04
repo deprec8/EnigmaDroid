@@ -37,7 +37,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.ui.components.ArrowNavigationButton
-import io.github.deprec8.enigmadroid.ui.components.FloatingRefreshButton
+import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
@@ -73,7 +73,7 @@ fun ServiceEpgPage(
     }
 
     Scaffold(floatingActionButton = {
-        FloatingRefreshButton(loadingState) { serviceEpgViewModel.fetchData(serviceReference) }
+        FloatingReloadButton(loadingState) { serviceEpgViewModel.fetchData(serviceReference) }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
             enabled = eventBatch.events.isNotEmpty() && loadingState == LoadingState.LOADED,
