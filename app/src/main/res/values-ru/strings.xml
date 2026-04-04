@@ -65,7 +65,7 @@
     <string name="shutdown">Завершение работы</string>
     <string name="close">Закрыть</string>
     <string name="setup_device_creation_info">Начните с добавления одного устройства, остальные можно будет добавить позже.</string>
-    <string name="finish_setup">Завершить настройку</string>
+    <string name="finish">Завершить настройку</string>
     <string name="welcome_to_enigmadroid">Добро пожаловать в EnigmaDroid</string>
     <string name="live_port">Порт live</string>
     <string name="current">Текущая</string>

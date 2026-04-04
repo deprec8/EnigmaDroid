@@ -29,17 +29,27 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.SkipNext
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.ui.components.DeviceSetupCard
 
@@ -47,7 +57,12 @@ import io.github.deprec8.enigmadroid.ui.components.DeviceSetupCard
 fun OnboardingPage(
     onboardingViewModel: OnboardingViewModel = hiltViewModel()
 ) {
+    val isEveryFieldFilled by onboardingViewModel.isEveryFieldFilled.collectAsStateWithLifecycle()
+
     val scrollState = rememberScrollState()
+    var showSkipDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
 
     Scaffold(
         bottomBar = {
@@ -56,22 +71,16 @@ fun OnboardingPage(
                     Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     OutlinedButton(
-                        onClick = { onboardingViewModel.completeOnboarding() },
-                        modifier = Modifier.padding(16.dp)
+                        onClick = { showSkipDialog = true }, modifier = Modifier.padding(16.dp)
                     ) {
                         Text(stringResource(R.string.skip))
                     }
                     Button(
                         onClick = {
-                            if (onboardingViewModel.isEveryFieldFilled()) {
-                                onboardingViewModel.addDevice()
-                                onboardingViewModel.completeOnboarding()
-                            }
-                        },
-                        enabled = onboardingViewModel.isEveryFieldFilled(),
-                        modifier = Modifier.padding(16.dp)
+                            onboardingViewModel.completeOnboardingWithDevice()
+                        }, enabled = isEveryFieldFilled, modifier = Modifier.padding(16.dp)
                     ) {
-                        Text(text = stringResource(R.string.finish_setup))
+                        Text(text = stringResource(R.string.finish))
                     }
 
                 }
@@ -109,5 +118,28 @@ fun OnboardingPage(
             )
         }
 
+    }
+
+    if (showSkipDialog) {
+        AlertDialog(onDismissRequest = { showSkipDialog = false }, confirmButton = {
+            TextButton(onClick = {
+                showSkipDialog = false
+                onboardingViewModel.completeOnboarding()
+            }) {
+                Text(stringResource(R.string.skip))
+            }
+        }, icon = {
+            Icon(Icons.Outlined.SkipNext, null)
+        }, title = {
+            Text(stringResource(R.string.setup_skip_title))
+        }, text = {
+            Text(stringResource(R.string.setup_skip_text))
+        }, dismissButton = {
+            TextButton(onClick = {
+                showSkipDialog = false
+            }) {
+                Text(stringResource(R.string.cancel))
+            }
+        })
     }
 }

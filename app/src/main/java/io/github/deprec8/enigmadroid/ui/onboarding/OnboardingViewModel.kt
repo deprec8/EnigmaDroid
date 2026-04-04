@@ -24,6 +24,7 @@ import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,6 +32,10 @@ import io.github.deprec8.enigmadroid.data.DevicesRepository
 import io.github.deprec8.enigmadroid.data.OnboardingRepository
 import io.github.deprec8.enigmadroid.data.objects.DefaultPort
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -58,6 +63,34 @@ class OnboardingViewModel @Inject constructor(
 
     val passwordState = TextFieldState("")
 
+    private val _isEveryFieldFilled = MutableStateFlow(false)
+    val isEveryFieldFilled = _isEveryFieldFilled.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            val baseFlow = combine(
+                snapshotFlow { nameState.text },
+                snapshotFlow { ipState.text },
+                snapshotFlow { portState.text },
+                snapshotFlow { livePortState.text }) { name, ip, port, livePort ->
+                listOf(name, ip, port, livePort).all { it.isNotBlank() }
+            }
+
+            val loginFlow = combine(
+                snapshotFlow { userState.text },
+                snapshotFlow { passwordState.text },
+                snapshotFlow { isLogin }) { user, password, isLogin ->
+                ! isLogin || (user.isNotBlank() && password.isNotBlank())
+            }
+
+            combine(baseFlow, loginFlow) { baseFilled, loginFilled ->
+                baseFilled && loginFilled
+            }.collectLatest {
+                _isEveryFieldFilled.value = it
+            }
+        }
+    }
+
     fun toggleHttps() {
         isHttps = ! isHttps
         if (portState.text == DefaultPort.HTTP && isHttps) {
@@ -72,33 +105,24 @@ class OnboardingViewModel @Inject constructor(
         isLogin = ! isLogin
     }
 
-    fun addDevice() {
+    fun completeOnboardingWithDevice() {
         viewModelScope.launch {
-            devicesRepository.addDevice(
-                Device(
-                    0,
-                    nameState.text.toString(),
-                    ipState.text.toString(),
-                    isHttps,
-                    isLogin,
-                    userState.text.toString(),
-                    passwordState.text.toString(),
-                    portState.text.toString(),
-                    livePortState.text.toString()
+            if (_isEveryFieldFilled.value) {
+                devicesRepository.addDevice(
+                    Device(
+                        0,
+                        nameState.text.toString(),
+                        ipState.text.toString().trim(),
+                        isHttps,
+                        isLogin,
+                        userState.text.toString(),
+                        passwordState.text.toString(),
+                        portState.text.toString().trim(),
+                        livePortState.text.toString().trim()
+                    )
                 )
-            )
-        }
-    }
-
-    fun isEveryFieldFilled(): Boolean {
-        return if (nameState.text.isNotBlank() && ipState.text.isNotBlank() && portState.text.isNotBlank() && livePortState.text.isNotBlank()) {
-            if (isLogin) {
-                userState.text.isNotBlank() && passwordState.text.isNotBlank()
-            } else {
-                true
+                onboardingRepository.completeOnboarding()
             }
-        } else {
-            false
         }
     }
 

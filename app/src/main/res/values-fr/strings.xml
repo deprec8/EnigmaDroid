@@ -65,7 +65,7 @@
     <string name="shutdown">Éteindre</string>
     <string name="close">Fermer</string>
     <string name="setup_device_creation_info">Commencez par ajouter un appareil, vous pourrez en ajouter d’autres plus tard.</string>
-    <string name="finish_setup">Terminer la configuration</string>
+    <string name="finish">Terminer la configuration</string>
     <string name="welcome_to_enigmadroid">Bienvenue dans EnigmaDroid</string>
     <string name="live_port">Port Live</string>
     <string name="current">Actuel</string>

@@ -92,13 +92,13 @@ fun DeviceSetupDialog(
                             Device(
                                 0,
                                 nameState.text.toString(),
-                                ipState.text.toString(),
+                                ipState.text.toString().trim(),
                                 isHttps,
                                 isLogin,
                                 userState.text.toString(),
                                 passwordState.text.toString(),
-                                portState.text.toString(),
-                                livePortState.text.toString()
+                                portState.text.toString().trim(),
+                                livePortState.text.toString().trim()
                             ), oldDevice
                         )
                     }
