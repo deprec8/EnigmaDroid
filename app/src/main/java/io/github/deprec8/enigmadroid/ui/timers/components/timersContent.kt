@@ -27,9 +27,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.automirrored.outlined.List
@@ -45,8 +47,14 @@ import androidx.compose.material.icons.outlined.QuestionMark
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material.icons.outlined.TimerOff
 import androidx.compose.material.icons.outlined.Videocam
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -285,4 +293,63 @@ private fun Timer.getState(): String {
             stringResource(R.string.unknown)
         }
     }
+}
+
+@Composable
+private fun DeleteTimerDialog(onDismissRequest: () -> Unit, onConfirmRequest: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = {
+            onDismissRequest()
+        },
+        title = { Text(text = stringResource(R.string.delete_timer)) },
+        text = { Text(text = stringResource(R.string.delete_timer_warning)) },
+        icon = { Icon(Icons.Outlined.Delete, contentDescription = null) },
+        confirmButton = {
+            TextButton(onClick = {
+                onConfirmRequest()
+            }) { Text(stringResource(R.string.confirm)) }
+        },
+        dismissButton = {
+            TextButton(onClick = {
+                onDismissRequest()
+            }) { Text(stringResource(R.string.cancel)) }
+        })
+}
+
+@Composable
+private fun TimerLogDialog(timer: Timer, onDismissRequest: () -> Unit) {
+    AlertDialog(onDismissRequest = {
+        onDismissRequest()
+    }, title = { Text(text = stringResource(R.string.log_entries)) }, text = {
+        LazyColumn {
+            items(timer.logEntries) {
+                ListItem(
+                    overlineContent = {
+                        Text(stringResource(R.string.code, it.code))
+                    },
+                    headlineContent = {
+                        Text(
+                            text = TimestampUtils.formatApiTimestampToDate(
+                                it.timestamp
+                            ) + " " + TimestampUtils.formatApiTimestampToTime(
+                                it.timestamp
+                            )
+                        )
+                    },
+                    supportingContent = {
+                        Text(text = it.message)
+                    },
+                    colors = ListItemDefaults.colors(containerColor = AlertDialogDefaults.containerColor)
+                )
+            }
+        }
+    }, icon = {
+        Icon(
+            Icons.AutoMirrored.Outlined.List, contentDescription = null
+        )
+    }, confirmButton = {
+        TextButton(onClick = {
+            onDismissRequest()
+        }) { Text(stringResource(R.string.close)) }
+    })
 }

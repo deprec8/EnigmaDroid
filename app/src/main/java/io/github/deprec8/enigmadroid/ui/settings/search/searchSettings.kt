@@ -52,9 +52,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.ui.components.ArrowNavigationButton
-import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.insets.topAppBarWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.navigation.ArrowNavigationButton
+import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

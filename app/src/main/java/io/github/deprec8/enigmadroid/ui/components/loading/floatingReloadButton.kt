@@ -17,57 +17,50 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.components
+package io.github.deprec8.enigmadroid.ui.components.loading
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.DrawerState
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
-import kotlinx.coroutines.launch
+import io.github.deprec8.enigmadroid.data.enums.LoadingState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DrawerNavigationButton(
-    drawerState: DrawerState
-) {
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-    val scope = rememberCoroutineScope()
-    val isSmallScreenLayout =
-        ! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || ! windowSizeClass.isHeightAtLeastBreakpoint(
-            WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
-        )
-
-    if (isSmallScreenLayout) {
+fun FloatingReloadButton(loadingState: LoadingState, onReload: () -> Unit) {
+    AnimatedVisibility(
+        loadingState == LoadingState.LOADED, enter = scaleIn(), exit = scaleOut()
+    ) {
         TooltipBox(
             tooltip = {
                 PlainTooltip {
-                    Text(stringResource(id = R.string.navigation_drawer))
+                    Text(stringResource(id = R.string.reload))
                 }
             },
             state = rememberTooltipState(),
             positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-                TooltipAnchorPosition.Below, 4.dp
+                TooltipAnchorPosition.Above, 4.dp
             )
         ) {
-            IconButton(onClick = { scope.launch { drawerState.open() } }) {
+            FloatingActionButton(onClick = {
+                onReload()
+            }) {
                 Icon(
-                    Icons.Default.Menu,
-                    contentDescription = stringResource(R.string.navigation_drawer)
+                    Icons.Default.Refresh, contentDescription = stringResource(R.string.reload)
                 )
             }
         }

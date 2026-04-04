@@ -49,9 +49,9 @@ import androidx.compose.ui.unit.dp
 import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.util.withContext
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.ui.components.ArrowNavigationButton
-import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.insets.topAppBarWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.navigation.ArrowNavigationButton
+import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.utils.IntentUtils
 
 @OptIn(ExperimentalMaterial3Api::class)

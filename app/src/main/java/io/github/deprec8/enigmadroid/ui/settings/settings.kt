@@ -47,9 +47,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.model.navigation.SettingsPages
-import io.github.deprec8.enigmadroid.ui.components.DrawerNavigationButton
-import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.insets.topAppBarWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.navigation.DrawerNavigationButton
+import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
 
 
 @OptIn(ExperimentalMaterial3Api::class)

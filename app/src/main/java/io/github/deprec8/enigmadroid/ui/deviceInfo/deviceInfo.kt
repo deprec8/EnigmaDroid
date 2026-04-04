@@ -55,13 +55,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.model.api.device.DeviceInfo
-import io.github.deprec8.enigmadroid.ui.components.DrawerNavigationButton
-import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
-import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
-import io.github.deprec8.enigmadroid.ui.components.RemoteControlActionButton
-import io.github.deprec8.enigmadroid.ui.components.insets.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.insets.topAppBarWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
+import io.github.deprec8.enigmadroid.ui.components.loading.FloatingReloadButton
+import io.github.deprec8.enigmadroid.ui.components.loading.LoadingScreen
+import io.github.deprec8.enigmadroid.ui.components.navigation.DrawerNavigationButton
+import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
+import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

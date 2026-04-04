@@ -17,13 +17,14 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.components.insets
+package io.github.deprec8.enigmadroid.ui.components
 
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.only
 import androidx.compose.material3.ScaffoldDefaults
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.window.core.layout.WindowSizeClass
@@ -39,6 +40,20 @@ fun contentWithDrawerWindowInsets(): WindowInsets {
     } else {
         ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Vertical).add(
             ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.End)
+        )
+    }
+}
+
+@Composable
+fun topAppBarWithDrawerWindowInsets(): WindowInsets {
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+    return if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) ||
+        ! windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
+    ) {
+        TopAppBarDefaults.windowInsets
+    } else {
+        TopAppBarDefaults.windowInsets.only(WindowInsetsSides.Vertical).add(
+            TopAppBarDefaults.windowInsets.only(WindowInsetsSides.End)
         )
     }
 }

@@ -17,17 +17,17 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.components.search
+package io.github.deprec8.enigmadroid.ui.components.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Dialpad
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.PlainTooltip
-import androidx.compose.material3.SearchBarState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
@@ -44,8 +44,31 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchTopAppBarDrawerNavigationButton(
-    drawerState: DrawerState, searchBarState: SearchBarState
+fun ArrowNavigationButton(onNavigateBack: () -> Unit) {
+    TooltipBox(
+        tooltip = {
+            PlainTooltip {
+                Text(stringResource(id = R.string.go_back))
+            }
+        },
+        state = rememberTooltipState(),
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+            TooltipAnchorPosition.Below, 4.dp
+        )
+    ) {
+        IconButton(onClick = { onNavigateBack() }) {
+            Icon(
+                Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = stringResource(R.string.go_back)
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DrawerNavigationButton(
+    drawerState: DrawerState
 ) {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     val scope = rememberCoroutineScope()
@@ -69,31 +92,32 @@ fun SearchTopAppBarDrawerNavigationButton(
             IconButton(onClick = { scope.launch { drawerState.open() } }) {
                 Icon(
                     Icons.Default.Menu,
-                    contentDescription = stringResource(id = R.string.navigation_drawer)
+                    contentDescription = stringResource(R.string.navigation_drawer)
                 )
             }
         }
-    } else {
-        TooltipBox(
-            tooltip = {
-                PlainTooltip {
-                    Text(stringResource(id = R.string.search))
-                }
-            },
-            state = rememberTooltipState(),
-            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-                TooltipAnchorPosition.Below, 4.dp
-            )
-        ) {
-            IconButton(onClick = {
-                scope.launch {
-                    searchBarState.animateToExpanded()
-                }
-            }) {
-                Icon(
-                    Icons.Default.Search, contentDescription = stringResource(R.string.search)
-                )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RemoteControlActionButton(onNavigateToRemoteControl: () -> Unit) {
+    TooltipBox(
+        tooltip = {
+            PlainTooltip {
+                Text(stringResource(id = R.string.remote_control))
             }
+        },
+        state = rememberTooltipState(),
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+            TooltipAnchorPosition.Below, 4.dp
+        )
+    ) {
+        IconButton(onClick = { onNavigateToRemoteControl() }) {
+            Icon(
+                Icons.Default.Dialpad,
+                contentDescription = stringResource(id = R.string.remote_control)
+            )
         }
     }
 }

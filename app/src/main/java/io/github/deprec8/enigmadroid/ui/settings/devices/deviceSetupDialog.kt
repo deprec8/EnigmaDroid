@@ -34,8 +34,8 @@ import androidx.compose.ui.res.stringResource
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.objects.DefaultPort
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
-import io.github.deprec8.enigmadroid.ui.components.AdaptiveDialog
 import io.github.deprec8.enigmadroid.ui.components.DeviceSetupCard
+import io.github.deprec8.enigmadroid.ui.components.dialogs.AdaptiveDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

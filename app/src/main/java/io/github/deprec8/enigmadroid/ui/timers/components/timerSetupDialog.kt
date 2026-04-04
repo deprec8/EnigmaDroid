@@ -102,7 +102,7 @@ import io.github.deprec8.enigmadroid.model.api.timers.Timer
 import io.github.deprec8.enigmadroid.model.api.timers.services.Service
 import io.github.deprec8.enigmadroid.model.api.timers.services.ServiceBatch
 import io.github.deprec8.enigmadroid.model.api.timers.services.ServiceBatchSet
-import io.github.deprec8.enigmadroid.ui.components.AdaptiveDialog
+import io.github.deprec8.enigmadroid.ui.components.dialogs.AdaptiveDialog
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
