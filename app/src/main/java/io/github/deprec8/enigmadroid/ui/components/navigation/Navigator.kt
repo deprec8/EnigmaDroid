@@ -42,4 +42,11 @@ class Navigator(val state: NavigationState) {
             currentStack.removeLastOrNull()
         }
     }
+
+    fun goTop() {
+        val currentStack = state.backStacks[state.topLevelRoute]
+            ?: error("Stack for ${state.topLevelRoute} not found")
+
+        currentStack.replaceAll { state.topLevelRoute }
+    }
 }
