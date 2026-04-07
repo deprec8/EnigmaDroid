@@ -20,6 +20,7 @@
 package io.github.deprec8.enigmadroid.model.navigation
 
 import androidx.navigation3.runtime.NavKey
+import io.github.deprec8.enigmadroid.model.api.movies.MovieBatch
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -42,6 +43,9 @@ sealed class MainPages : NavKey {
 
     @Serializable
     data object Movies : MainPages()
+
+    @Serializable
+    data class MoviesDirectory(val path: String, val preloadBatch: MovieBatch?) : MainPages()
 
     @Serializable
     data object Timers : MainPages()
