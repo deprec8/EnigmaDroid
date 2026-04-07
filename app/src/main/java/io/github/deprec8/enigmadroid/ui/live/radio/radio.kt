@@ -135,7 +135,7 @@ fun RadioPage(
             onSearch = {
                 radioViewModel.updateSearchInput(selectedTabIndex)
             },
-            tabBar = {
+            actionBar = {
                 if (eventBatches.isNotEmpty() && loadingState == LoadingState.LOADED) {
                     ContentTabRow(selectedTabIndex) {
                         eventBatches.forEachIndexed { index, eventBatch ->

@@ -20,12 +20,18 @@
 package io.github.deprec8.enigmadroid.ui.movies
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -33,6 +39,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -133,6 +140,32 @@ fun MoviesPage(
             },
             onSearch = {
                 moviesViewModel.updateSearchInput()
+            },
+            actionBar = {
+                movieBatch?.let {
+                    OutlinedCard(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                            .fillMaxWidth(),
+                    ) {
+                        Row {
+                            Text(
+                                it.directory,
+                                style = MaterialTheme.typography.labelLarge,
+                                modifier = Modifier.padding(8.dp),
+                                overflow = TextOverflow.StartEllipsis,
+                                maxLines = 1
+                            )
+                            Spacer(Modifier.weight(1f))
+                            Text(
+                                stringResource(R.string.files, it.movies.size),
+                                style = MaterialTheme.typography.labelLarge,
+                                modifier = Modifier.padding(8.dp),
+                                maxLines = 1
+                            )
+                        }
+                    }
+                }
             })
     }
 
@@ -142,7 +175,6 @@ fun MoviesPage(
                 movies = movieBatch?.movies ?: emptyList(),
                 bookmarks = movieBatch?.bookmarks ?: emptyList(),
                 directory = movieBatch?.directory ?: "",
-                highlightedWords = highlightedWords,
                 paddingValues = innerPadding,
                 preloadBatches = preloadBatches,
                 onStreamMovie = { movie ->

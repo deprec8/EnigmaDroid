@@ -134,7 +134,7 @@ fun TvPage(
             onSearch = {
                 tvViewModel.updateSearchInput(selectedTabIndex)
             },
-            tabBar = {
+            actionBar = {
                 if (eventBatches.isNotEmpty() && loadingState == LoadingState.LOADED) {
                     ContentTabRow(selectedTabIndex) {
                         eventBatches.forEachIndexed { index, eventBatch ->

@@ -73,7 +73,7 @@ fun SearchTopAppBar(
     navigationButton: @Composable ((searchBarState: SearchBarState) -> Unit),
     actionButtons: @Composable (() -> Unit)? = null,
     content: @Composable (() -> Unit)? = null,
-    tabBar: @Composable (() -> Unit)? = null,
+    actionBar: @Composable (() -> Unit)? = null,
     onSearch: () -> Unit,
     enabled: Boolean = true
 ) {
@@ -147,8 +147,8 @@ fun SearchTopAppBar(
                     }
                 }
             }
-            if (tabBar != null) {
-                tabBar()
+            if (actionBar != null) {
+                actionBar()
             } else {
                 Spacer(Modifier.size(8.dp))
             }
