@@ -245,4 +245,5 @@
     <string name="setup_skip_title">Not ready to set up a device?</string>
     <string name="setup_skip_text">Most features require at least one device to be set up. You can add one whenever you’re ready.</string>
     <string name="files">%1$d files</string>
+    <string name="go_top">Go top</string>
 </resources>

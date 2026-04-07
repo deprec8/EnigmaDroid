@@ -25,8 +25,10 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.window.DialogProperties
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
@@ -43,7 +45,9 @@ import io.github.deprec8.enigmadroid.ui.epg.serviceEpg.ServiceEpgPage
 import io.github.deprec8.enigmadroid.ui.epg.tvEpg.TvEpgPage
 import io.github.deprec8.enigmadroid.ui.live.radio.RadioPage
 import io.github.deprec8.enigmadroid.ui.live.tv.TvPage
+import io.github.deprec8.enigmadroid.ui.movies.MoviesDirectoryPage
 import io.github.deprec8.enigmadroid.ui.movies.MoviesPage
+import io.github.deprec8.enigmadroid.ui.movies.MoviesViewModel
 import io.github.deprec8.enigmadroid.ui.remoteControl.RemoteControlPage
 import io.github.deprec8.enigmadroid.ui.settings.SettingsPage
 import io.github.deprec8.enigmadroid.ui.settings.about.AboutPage
@@ -81,7 +85,29 @@ fun NavigationDisplay(
         entry<MainPages.Movies> {
             MoviesPage(
                 onNavigateToRemoteControl = { navigator.navigate(MainPages.RemoteControl) },
+                onNavigateToDirectory = { path, preloadBatch ->
+                    navigator.navigate(MainPages.MoviesDirectory(path, preloadBatch))
+                },
                 drawerState
+            )
+        }
+        entry<MainPages.MoviesDirectory> { backStackEntry ->
+            val moviesViewModel: MoviesViewModel = hiltViewModel()
+            LaunchedEffect(backStackEntry) {
+                moviesViewModel.initialize(backStackEntry.path, backStackEntry.preloadBatch)
+            }
+            MoviesDirectoryPage(
+                onNavigateToRemoteControl = { navigator.navigate(MainPages.RemoteControl) },
+                onNavigateToDirectory = { path, preloadBatch ->
+                    navigator.navigate(MainPages.MoviesDirectory(path, preloadBatch))
+                },
+                onNavigateBack = {
+                    navigator.goBack()
+                },
+                onNavigateToTop = {
+                    navigator.goTop()
+                },
+                moviesViewModel
             )
         }
         entry<MainPages.TvEpg> {
@@ -147,11 +173,9 @@ fun NavigationDisplay(
                 })
         }
         entry<SettingsPages.About> {
-            AboutPage(
-                onNavigateBack = { navigator.goBack() },
-                onNavigateToLibraries = {
-                    navigator.navigate(SettingsPages.Libraries)
-                })
+            AboutPage(onNavigateBack = { navigator.goBack() }, onNavigateToLibraries = {
+                navigator.navigate(SettingsPages.Libraries)
+            })
         }
         entry<SettingsPages.Libraries> {
             LibrariesPage(
