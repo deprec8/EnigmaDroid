@@ -77,7 +77,7 @@ fun MoviesContent(
     onDownloadMovie: (Movie) -> Unit,
     onNavigateToDirectory: (String, MovieBatch?) -> Unit = { _, _ -> }
 ) {
-    if (movies.isNotEmpty()) {
+    if (movies.isNotEmpty() || bookmarks.isNotEmpty()) {
         LazyVerticalGrid(
             columns = GridCells.Adaptive(310.dp),
             Modifier
