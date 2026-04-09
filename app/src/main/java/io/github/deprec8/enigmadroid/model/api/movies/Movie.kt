@@ -25,7 +25,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Movie(
-    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("description") val shortDescription: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("description") val shortDescription: String = "",
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("tags") val tags: String = "N/A",
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("filename") val fileName: String = "",
     @SerialName("serviceref") val serviceReference: String = "",
@@ -33,6 +33,6 @@ data class Movie(
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("length") val length: String = "N/A",
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("servicename") val serviceName: String = "N/A",
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("begintime") val begin: String = "N/A",
-    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("descriptionExtended") val longDescription: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("descriptionExtended") val longDescription: String = "",
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("filesize_readable") val filesizeReadable: String = "N/A"
 )

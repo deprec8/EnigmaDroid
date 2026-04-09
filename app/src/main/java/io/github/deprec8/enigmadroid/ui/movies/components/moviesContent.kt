@@ -107,10 +107,8 @@ fun MoviesContent(
                 ContentListItem(
                     highlightedWords = highlightedWords,
                     headlineText = movie.eventName,
-                    overlineText = movie.serviceName.ifBlank {
-                        null
-                    },
-                    supportingText = "${movie.begin} / ${movie.length} / ${movie.filesizeReadable}",
+                    overlineText = "${movie.serviceName} - ${movie.begin}",
+                    supportingText = "${movie.length} (${movie.filesizeReadable})",
                     shortDescription = movie.shortDescription,
                     longDescription = movie.longDescription,
                     menuItemGroups = listOf(
