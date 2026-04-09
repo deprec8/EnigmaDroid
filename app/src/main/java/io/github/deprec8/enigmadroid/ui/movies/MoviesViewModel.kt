@@ -148,21 +148,21 @@ class MoviesViewModel @Inject constructor(
     fun rename(serviceReference: String, newName: String) {
         viewModelScope.launch {
             apiRepository.renameMovie(serviceReference, newName)
-            fetchData()
+            fetchData(true)
         }
     }
 
     fun move(serviceReference: String, dirName: String) {
         viewModelScope.launch {
             apiRepository.moveMovie(serviceReference, dirName)
-            fetchData()
+            fetchData(true)
         }
     }
 
     fun delete(serviceReference: String) {
         viewModelScope.launch {
             apiRepository.deleteMovie(serviceReference)
-            fetchData()
+            fetchData(true)
         }
     }
 

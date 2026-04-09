@@ -89,7 +89,7 @@
     <string name="rename_movie">Переименовать фильм</string>
     <string name="new_name">Новое имя</string>
     <string name="move_movie">Переместить фильм</string>
-    <string name="new_location">Новое местоположение</string>
+    <string name="new_directory">Новое местоположение</string>
     <string name="rename">Переименовать</string>
     <string name="move">Переместить</string>
     <string name="channel">Канал</string>

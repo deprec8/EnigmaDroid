@@ -212,7 +212,7 @@ class ApiRepository @Inject constructor(
     }
 
     suspend fun moveMovie(serviceReference: String, dirName: String) {
-        networkDataSource.postApi("moviemove?sRef=$serviceReference&dirname=/media/hdd/movie/$dirName")
+        networkDataSource.postApi("moviemove?sRef=$serviceReference&dirname=$dirName")
     }
 
     suspend fun deleteMovie(serviceReference: String) {

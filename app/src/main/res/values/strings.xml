@@ -92,7 +92,7 @@
     <string name="rename_movie">Rename movie</string>
     <string name="new_name">New name</string>
     <string name="move_movie">Move movie</string>
-    <string name="new_location">New location</string>
+    <string name="new_directory">New directory</string>
     <string name="rename">Rename</string>
     <string name="move">Move</string>
     <string name="channel">Channel</string>
@@ -246,4 +246,6 @@
     <string name="setup_skip_text">Most features require at least one device to be set up. You can add one whenever you’re ready.</string>
     <string name="files">%1$d files</string>
     <string name="go_top">Go top</string>
+    <string name="name_must_be_changed_and_can_t_be_blank">Name must be changed and can\'t be blank.</string>
+    <string name="directory_must_be_changed_and_must_start_and_end_with">Directory must be changed and must start and end with \"/\".</string>
 </resources>

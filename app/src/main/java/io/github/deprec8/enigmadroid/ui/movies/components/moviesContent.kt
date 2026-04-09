@@ -173,7 +173,7 @@ fun MoviesContent(
 
                 if (showRenameDialog) {
                     RenameMovieDialog(
-                        movie,
+                        movie.eventName,
                         onDismissRequest = { showRenameDialog = false },
                         onConfirmRequest = {
                             showRenameDialog = false
@@ -183,6 +183,7 @@ fun MoviesContent(
 
                 if (showMoveDialog) {
                     MoveMovieDialog(
+                        oldDirectory = directory,
                         onDismissRequest = { showMoveDialog = false },
                         onConfirmRequest = {
                             showMoveDialog = false
