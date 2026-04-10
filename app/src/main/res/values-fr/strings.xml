@@ -64,9 +64,9 @@
     <string name="restart_gui">Redémarrer l’interface</string>
     <string name="shutdown">Éteindre</string>
     <string name="close">Fermer</string>
-    <string name="setup_device_creation_info">Commencez par ajouter un appareil, vous pourrez en ajouter d’autres plus tard.</string>
-    <string name="finish">Terminer la configuration</string>
-    <string name="welcome_to_enigmadroid">Bienvenue dans EnigmaDroid</string>
+    <string name="setup_device_creation_info">Let’s get you started by setting up your first device.</string>
+    <string name="finish">Finish</string>
+    <string name="welcome_to_enigmadroid">Welcome to EnigmaDroid!</string>
     <string name="live_port">Port Live</string>
     <string name="current">Actuel</string>
     <string name="kernel">Noyau</string>
@@ -227,4 +227,6 @@
     <string name="view_epg_from">Voir EPG de \"%1$s\"</string>
     <string name="starting_at">À partir de %1$s</string>
     <string name="until">Jusqu\'à %1$s</string>
+    <string name="setup_skip_title">Not ready to set up a device?</string>
+    <string name="setup_skip_text">Most features require at least one device to be set up. You can add one whenever you’re ready.</string>
 </resources>
