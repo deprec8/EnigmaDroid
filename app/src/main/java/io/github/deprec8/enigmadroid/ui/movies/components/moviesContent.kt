@@ -51,6 +51,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
@@ -95,7 +96,7 @@ fun MoviesContent(
                     onNavigateToDirectory("$directory$bookmark", preloadBatches[bookmark])
                 }, supportingContent = {
                     preloadBatches[bookmark]?.let {
-                        Text(stringResource(R.string.files, it.movies.size))
+                        Text(pluralStringResource(R.plurals.files, it.movies.size, it.movies.size))
                     }
                 })
             }
