@@ -134,13 +134,12 @@ class MoviesViewModel @Inject constructor(
                 _movieBatch.value = apiRepository.fetchMovieBatch(path)
             }
             _movieBatch.value?.let {
-                it.bookmarks.forEach { bookmark ->
-                    if (_preloadBatches.value[bookmark] == null) {
+                it.bookmarks.filter { bookmark -> _preloadBatches.value[bookmark] == null }
+                    .forEach { bookmark ->
                         _preloadBatches.value += Pair(
                             bookmark, apiRepository.fetchMovieBatch("${it.directory}$bookmark")
                         )
                     }
-                }
             }
         }
     }
@@ -166,7 +165,7 @@ class MoviesViewModel @Inject constructor(
         }
     }
 
-    fun downloadMovie(movie: Movie) {
+    fun download(movie: Movie) {
         viewModelScope.launch {
             downloadRepository.downloadMovie(movie)
         }

@@ -21,9 +21,7 @@ package io.github.deprec8.enigmadroid.ui.movies
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
@@ -31,8 +29,6 @@ import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -47,7 +43,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -61,6 +56,7 @@ import io.github.deprec8.enigmadroid.ui.components.navigation.ArrowNavigationBut
 import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
+import io.github.deprec8.enigmadroid.ui.movies.components.MoviesActionBar
 import io.github.deprec8.enigmadroid.ui.movies.components.MoviesContent
 import io.github.deprec8.enigmadroid.utils.IntentUtils
 import kotlinx.coroutines.launch
@@ -129,7 +125,7 @@ fun MoviesDirectoryPage(
                                 movie.serviceReference, newLocation
                             )
                         },
-                        onDownloadMovie = { movie -> moviesViewModel.downloadMovie(movie) })
+                        onDownloadMovie = { movie -> moviesViewModel.download(movie) })
                 } else {
                     SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
                         moviesViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
@@ -169,30 +165,7 @@ fun MoviesDirectoryPage(
                 moviesViewModel.updateSearchInput()
             },
             actionBar = {
-                movieBatch?.let {
-                    OutlinedCard(
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
-                            .fillMaxWidth(),
-                    ) {
-                        Row {
-                            Text(
-                                it.directory,
-                                style = MaterialTheme.typography.labelLarge,
-                                modifier = Modifier.padding(8.dp),
-                                overflow = TextOverflow.StartEllipsis,
-                                maxLines = 1
-                            )
-                            Spacer(Modifier.weight(1f))
-                            Text(
-                                stringResource(R.string.files, it.movies.size),
-                                style = MaterialTheme.typography.labelLarge,
-                                modifier = Modifier.padding(8.dp),
-                                maxLines = 1
-                            )
-                        }
-                    }
-                }
+                MoviesActionBar(movieBatch)
             })
     }
 
@@ -225,7 +198,7 @@ fun MoviesDirectoryPage(
                         movie.serviceReference, newLocation
                     )
                 },
-                onDownloadMovie = { movie -> moviesViewModel.downloadMovie(movie) },
+                onDownloadMovie = { movie -> moviesViewModel.download(movie) },
                 onNavigateToDirectory = { path, preloadBatch ->
                     onNavigateToDirectory(path, preloadBatch)
                 })
@@ -234,16 +207,15 @@ fun MoviesDirectoryPage(
                 Modifier
                     .consumeWindowInsets(innerPadding)
                     .padding(innerPadding),
-
                 onUpdateLoadingState = {
                     scope.launch {
                         moviesViewModel.updateLoadingState(
                             it
                         )
                     }
-                }, loadingState = loadingState
+                },
+                loadingState = loadingState
             )
-
         }
     }
 }
