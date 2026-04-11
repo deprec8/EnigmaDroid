@@ -19,6 +19,7 @@
 
 package io.github.deprec8.enigmadroid.ui.movies.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,17 +40,23 @@ import androidx.compose.material.icons.outlined.Cast
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.PlayArrow
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.model.api.movies.Movie
+import io.github.deprec8.enigmadroid.model.api.movies.MovieBatch
 import io.github.deprec8.enigmadroid.model.menu.MenuItem
 import io.github.deprec8.enigmadroid.model.menu.MenuItemGroup
 import io.github.deprec8.enigmadroid.ui.components.NoResults
@@ -58,16 +65,20 @@ import io.github.deprec8.enigmadroid.ui.components.content.ContentListItem
 @Composable
 fun MoviesContent(
     movies: List<Movie>,
+    bookmarks: List<String> = emptyList(),
+    directory: String = "",
     paddingValues: PaddingValues,
     highlightedWords: List<String> = emptyList(),
+    preloadBatches: Map<String, MovieBatch> = emptyMap(),
     onStreamMovie: (Movie) -> Unit,
     onPlayMovieOnDevice: (Movie) -> Unit,
     onDeleteMovie: (Movie) -> Unit,
     onRenameMovie: (Movie, String) -> Unit,
     onMoveMovie: (Movie, String) -> Unit,
-    onDownloadMovie: (Movie) -> Unit
+    onDownloadMovie: (Movie) -> Unit,
+    onNavigateToDirectory: (String, MovieBatch?) -> Unit = { _, _ -> }
 ) {
-    if (movies.isNotEmpty()) {
+    if (movies.isNotEmpty() || bookmarks.isNotEmpty()) {
         LazyVerticalGrid(
             columns = GridCells.Adaptive(310.dp),
             Modifier
@@ -76,6 +87,19 @@ fun MoviesContent(
                 .imePadding(),
             contentPadding = paddingValues
         ) {
+            items(bookmarks) { bookmark ->
+                ListItem(headlineContent = {
+                    Text(bookmark)
+                }, leadingContent = {
+                    Icon(Icons.Outlined.Folder, stringResource(R.string.directory))
+                }, modifier = Modifier.clickable {
+                    onNavigateToDirectory("$directory$bookmark", preloadBatches[bookmark])
+                }, supportingContent = {
+                    preloadBatches[bookmark]?.let {
+                        Text(pluralStringResource(R.plurals.files, it.movies.size, it.movies.size))
+                    }
+                })
+            }
             items(movies) { movie ->
                 var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
                 var showRenameDialog by rememberSaveable { mutableStateOf(false) }
@@ -84,10 +108,8 @@ fun MoviesContent(
                 ContentListItem(
                     highlightedWords = highlightedWords,
                     headlineText = movie.eventName,
-                    overlineText = movie.serviceName.ifBlank {
-                        null
-                    },
-                    supportingText = "${movie.begin} / ${movie.length} / ${movie.filesizeReadable}",
+                    overlineText = "${movie.serviceName} - ${movie.begin}",
+                    supportingText = "${movie.length} (${movie.filesizeReadable})",
                     shortDescription = movie.shortDescription,
                     longDescription = movie.longDescription,
                     menuItemGroups = listOf(
@@ -150,7 +172,7 @@ fun MoviesContent(
 
                 if (showRenameDialog) {
                     RenameMovieDialog(
-                        movie,
+                        movie.eventName,
                         onDismissRequest = { showRenameDialog = false },
                         onConfirmRequest = {
                             showRenameDialog = false
@@ -160,6 +182,7 @@ fun MoviesContent(
 
                 if (showMoveDialog) {
                     MoveMovieDialog(
+                        oldDirectory = directory,
                         onDismissRequest = { showMoveDialog = false },
                         onConfirmRequest = {
                             showMoveDialog = false

@@ -89,7 +89,7 @@
     <string name="rename_movie">Renombrar película</string>
     <string name="new_name">Nuevo nombre</string>
     <string name="move_movie">Mover película</string>
-    <string name="new_location">Nueva ubicación</string>
+    <string name="new_directory">Nueva ubicación</string>
     <string name="rename">Renombrar</string>
     <string name="move">Mover</string>
     <string name="channel">Canal</string>

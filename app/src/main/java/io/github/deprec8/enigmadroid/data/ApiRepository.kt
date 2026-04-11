@@ -41,8 +41,6 @@ import io.github.deprec8.enigmadroid.model.api.device.DeviceInfo
 import io.github.deprec8.enigmadroid.model.api.events.EventBatch
 import io.github.deprec8.enigmadroid.model.api.events.EventBatchSet
 import io.github.deprec8.enigmadroid.model.api.movies.MovieBatch
-import io.github.deprec8.enigmadroid.model.api.movies.bookmarks.Bookmark
-import io.github.deprec8.enigmadroid.model.api.movies.bookmarks.BookmarkBatch
 import io.github.deprec8.enigmadroid.model.api.timers.Timer
 import io.github.deprec8.enigmadroid.model.api.timers.TimerBatch
 import io.github.deprec8.enigmadroid.model.api.timers.services.ServiceBatch
@@ -196,37 +194,17 @@ class ApiRepository @Inject constructor(
         }
     }
 
-    fun fetchMovieBatches(): Flow<MovieBatch> = flow {
-        val bookmarks = mutableListOf<Bookmark>()
-        val rawBookmarkJson = networkDataSource.fetchApi("movielist")
-        val movies = json.decodeFromString(
-            BookmarkBatch.serializer(), rawBookmarkJson
-        )
-        bookmarks.add(
-            Bookmark(
-                directory = movies.directory, displayName = "/"
-            )
-        )
-        movies.bookmarks.forEach {
-            bookmarks.add(
-                Bookmark(
-                    directory = bookmarks[0].directory + it, displayName = "/$it"
+    suspend fun fetchMovieBatch(directory: String? = null): MovieBatch {
+        val endpoint = if (directory == null) "movielist" else "movielist?dirname=$directory"
+        val rawJson = networkDataSource.fetchApi(endpoint)
+
+        return withContext(Dispatchers.Default) {
+            runCatching {
+                json.decodeFromString(
+                    MovieBatch.serializer(), rawJson
                 )
-            )
+            }.getOrDefault(MovieBatch())
         }
-        bookmarks.forEach { bookmark ->
-            val rawJson = networkDataSource.fetchApi(
-                "movielist?dirname=${
-                    bookmark.directory
-                }"
-            )
-            val movieBatch = json.decodeFromString(
-                MovieBatch.serializer(), rawJson
-            )
-            emit(movieBatch.copy(bookmark = bookmark))
-        }
-    }.flowOn(Dispatchers.Default).catch {
-        emit(MovieBatch())
     }
 
     suspend fun renameMovie(serviceReference: String, newName: String) {
@@ -234,7 +212,7 @@ class ApiRepository @Inject constructor(
     }
 
     suspend fun moveMovie(serviceReference: String, dirName: String) {
-        networkDataSource.postApi("moviemove?sRef=$serviceReference&dirname=/media/hdd/movie/$dirName")
+        networkDataSource.postApi("moviemove?sRef=$serviceReference&dirname=$dirName")
     }
 
     suspend fun deleteMovie(serviceReference: String) {

@@ -89,7 +89,7 @@
     <string name="rename_movie">Renommer le film</string>
     <string name="new_name">Nouveau nom</string>
     <string name="move_movie">Déplacer le film</string>
-    <string name="new_location">Nouvel emplacement</string>
+    <string name="new_directory">Nouvel emplacement</string>
     <string name="rename">Renommer</string>
     <string name="move">Déplacer</string>
     <string name="channel">Chaîne</string>

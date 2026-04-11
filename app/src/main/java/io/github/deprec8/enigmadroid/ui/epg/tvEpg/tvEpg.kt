@@ -133,7 +133,7 @@ fun TvEpgPage(
             onSearch = {
                 tvEpgViewModel.updateSearchInput()
             },
-            tabBar = {
+            actionBar = {
                 if (eventBatchSet.eventBatches.isNotEmpty() && loadingState == LoadingState.LOADED) {
                     ContentTabRow(selectedTabIndex) {
                         eventBatchSet.eventBatches.forEachIndexed { index, eventBatch ->

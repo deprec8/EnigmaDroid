@@ -56,8 +56,8 @@ class MoviesViewModel @Inject constructor(
     private val _filteredMovies = MutableStateFlow<List<Movie>?>(null)
     val filteredMovies: StateFlow<List<Movie>?> = _filteredMovies.asStateFlow()
 
-    private val _movieBatches = MutableStateFlow<List<MovieBatch>>(emptyList())
-    val movieBatches: StateFlow<List<MovieBatch>> = _movieBatches.asStateFlow()
+    private val _movieBatch = MutableStateFlow<MovieBatch?>(null)
+    val movieBatch: StateFlow<MovieBatch?> = _movieBatch.asStateFlow()
 
     private val _loadingState = MutableStateFlow(LoadingState.LOADING)
     val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
@@ -65,10 +65,15 @@ class MoviesViewModel @Inject constructor(
     private val _searchHistory = MutableStateFlow<List<String>>(emptyList())
     val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()
 
+    private val _preloadBatches = MutableStateFlow<Map<String, MovieBatch>>(emptyMap())
+    val preloadBatches: StateFlow<Map<String, MovieBatch>> = _preloadBatches.asStateFlow()
+
     val searchFieldState = TextFieldState()
 
     private val searchInput = MutableStateFlow("")
     private val useSearchHighlighting = MutableStateFlow(true)
+
+    private var path: String? = null
 
     val highlightedWords: StateFlow<List<String>> =
         searchInput.asHighlightedWords(useSearchHighlighting).stateIn(
@@ -86,10 +91,10 @@ class MoviesViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            combine(_movieBatches, searchInput) { movieBatches, searchInput ->
-                if (searchInput.isNotBlank() && movieBatches.isNotEmpty()) {
+            combine(_movieBatch, searchInput) { movieBatch, searchInput ->
+                if (searchInput.isNotBlank() && movieBatch?.movies?.isNotEmpty() == true) {
                     searchHistoryRepository.addToMoviesSearchHistory(searchInput)
-                    FilterUtils.filterMovies(searchInput, movieBatches.flatMap { it.movies })
+                    FilterUtils.filterMovies(searchInput, movieBatch.movies)
                 } else {
                     null
                 }
@@ -109,16 +114,32 @@ class MoviesViewModel @Inject constructor(
         }
     }
 
+    fun initialize(path: String, movieBatch: MovieBatch?) {
+        this.path = path
+        _movieBatch.value = movieBatch
+    }
+
     suspend fun updateLoadingState(isForcedUpdate: Boolean) {
         loadingRepository.updateLoadingState(isForcedUpdate)
     }
 
-    fun fetchData() {
+    fun fetchData(isForcedFetch: Boolean = false) {
         fetchJob?.cancel()
-        _movieBatches.value = emptyList()
+        if (isForcedFetch) {
+            _movieBatch.value = null
+            _preloadBatches.value = emptyMap()
+        }
         fetchJob = viewModelScope.launch {
-            apiRepository.fetchMovieBatches().collect { movieBatch ->
-                _movieBatches.value += movieBatch
+            if (_movieBatch.value == null) {
+                _movieBatch.value = apiRepository.fetchMovieBatch(path)
+            }
+            _movieBatch.value?.let {
+                it.bookmarks.filter { bookmark -> _preloadBatches.value[bookmark] == null }
+                    .forEach { bookmark ->
+                        _preloadBatches.value += Pair(
+                            bookmark, apiRepository.fetchMovieBatch("${it.directory}$bookmark")
+                        )
+                    }
             }
         }
     }
@@ -126,25 +147,25 @@ class MoviesViewModel @Inject constructor(
     fun rename(serviceReference: String, newName: String) {
         viewModelScope.launch {
             apiRepository.renameMovie(serviceReference, newName)
-            fetchData()
+            fetchData(true)
         }
     }
 
     fun move(serviceReference: String, dirName: String) {
         viewModelScope.launch {
             apiRepository.moveMovie(serviceReference, dirName)
-            fetchData()
+            fetchData(true)
         }
     }
 
     fun delete(serviceReference: String) {
         viewModelScope.launch {
             apiRepository.deleteMovie(serviceReference)
-            fetchData()
+            fetchData(true)
         }
     }
 
-    fun downloadMovie(movie: Movie) {
+    fun download(movie: Movie) {
         viewModelScope.launch {
             downloadRepository.downloadMovie(movie)
         }
@@ -164,5 +185,4 @@ class MoviesViewModel @Inject constructor(
             apiRepository.playOnDevice(serviceReference)
         }
     }
-
 }
