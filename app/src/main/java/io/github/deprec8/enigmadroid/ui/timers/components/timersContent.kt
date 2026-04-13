@@ -83,7 +83,7 @@ fun TimersContent(
     onToggleTimerStatus: (Timer) -> Unit,
     onEditTimer: (Timer, Timer) -> Unit,
     onDeleteTimer: (Timer) -> Unit,
-    serviceBatchSet: ServiceBatchSet
+    serviceBatchSet: ServiceBatchSet?
 ) {
     if (timers.isNotEmpty()) {
         LazyVerticalGrid(

@@ -27,5 +27,4 @@ import kotlinx.serialization.Serializable
 data class EventBatch(
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("bouquetName") val name: String = "N/A",
     @SerialName("events") val events: List<Event> = emptyList(),
-    @SerialName("result") val result: Boolean = false
 )

@@ -55,14 +55,14 @@ class TimersViewModel @Inject constructor(
     private val _filteredTimers = MutableStateFlow<List<Timer>?>(null)
     val filteredTimers: StateFlow<List<Timer>?> = _filteredTimers.asStateFlow()
 
-    private val _timerBatch = MutableStateFlow(TimerBatch())
-    val timerBatch: StateFlow<TimerBatch> = _timerBatch.asStateFlow()
+    private val _timerBatch = MutableStateFlow<TimerBatch?>(null)
+    val timerBatch: StateFlow<TimerBatch?> = _timerBatch.asStateFlow()
 
     private val _loadingState = MutableStateFlow(LoadingState.LOADING)
     val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
 
-    private val _serviceBatchSet = MutableStateFlow(ServiceBatchSet())
-    val serviceBatchSet: StateFlow<ServiceBatchSet> = _serviceBatchSet.asStateFlow()
+    private val _serviceBatchSet = MutableStateFlow<ServiceBatchSet?>(null)
+    val serviceBatchSet: StateFlow<ServiceBatchSet?> = _serviceBatchSet.asStateFlow()
 
     private val _searchHistory = MutableStateFlow<List<String>>(emptyList())
     val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()
@@ -89,7 +89,7 @@ class TimersViewModel @Inject constructor(
         }
         viewModelScope.launch {
             combine(_timerBatch, searchInput) { timerBatch, searchInput ->
-                if (searchInput.isNotBlank() && timerBatch.timers.isNotEmpty()) {
+                if (searchInput.isNotBlank() && timerBatch?.timers?.isNotEmpty() == true) {
                     searchHistoryRepository.addToTimersSearchHistory(searchInput)
                     FilterUtils.filterTimers(searchInput, timerBatch.timers)
                 } else {
@@ -115,27 +115,33 @@ class TimersViewModel @Inject constructor(
         loadingRepository.updateLoadingState(isForcedUpdate)
     }
 
-    fun fetchData() {
+    fun fetchData(
+        forcedTimerBatch: Boolean = false, forcedServiceBatchSet: Boolean = false
+    ) {
         fetchJob?.cancel()
-        _timerBatch.value = TimerBatch()
-        _serviceBatchSet.value = ServiceBatchSet()
+        if (forcedTimerBatch) _timerBatch.value = null
+        if (forcedServiceBatchSet) _serviceBatchSet.value = null
         fetchJob = viewModelScope.launch {
-            _timerBatch.value = apiRepository.fetchTimerBatch()
-            _serviceBatchSet.value = apiRepository.fetchServiceBatchSet()
+            if (_timerBatch.value == null) {
+                _timerBatch.value = apiRepository.fetchTimerBatch()
+            }
+            if (_serviceBatchSet.value == null) {
+                _serviceBatchSet.value = apiRepository.fetchServiceBatchSet()
+            }
         }
     }
 
     fun deleteTimer(timer: Timer) {
         viewModelScope.launch {
             apiRepository.deleteTimer(timer)
-            fetchData()
+            fetchData(true)
         }
     }
 
     fun toggleTimerStatus(timer: Timer) {
         viewModelScope.launch {
             apiRepository.toggleTimerStatus(timer)
-            fetchData()
+            fetchData(true)
         }
     }
 
@@ -146,14 +152,14 @@ class TimersViewModel @Inject constructor(
     fun addTimer(newTimer: Timer) {
         viewModelScope.launch {
             apiRepository.addTimer(newTimer)
-            fetchData()
+            fetchData(true)
         }
     }
 
     fun editTimer(oldTimer: Timer, newTimer: Timer) {
         viewModelScope.launch {
             apiRepository.editTimer(oldTimer, newTimer)
-            fetchData()
+            fetchData(true)
         }
     }
 }

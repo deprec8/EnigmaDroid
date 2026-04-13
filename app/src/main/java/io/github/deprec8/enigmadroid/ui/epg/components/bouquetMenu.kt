@@ -47,7 +47,7 @@ import io.github.deprec8.enigmadroid.model.api.Bouquet
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BouquetMenu(
-    bouquets: List<Bouquet>,
+    bouquets: List<Bouquet>?,
     currentBouquetReference: String,
     loadingState: LoadingState,
     onBouquetChange: (bouquetReference: String) -> Unit
@@ -67,13 +67,13 @@ fun BouquetMenu(
     ) {
         IconButton(onClick = {
             showMenu = true
-        }, enabled = bouquets.isNotEmpty() && loadingState == LoadingState.LOADED) {
+        }, enabled = bouquets?.isNotEmpty() == true && loadingState == LoadingState.LOADED) {
             Icon(
                 Icons.Default.MoreVert, contentDescription = stringResource(R.string.bouquet_menu)
             )
             DropdownMenu(
                 expanded = showMenu, onDismissRequest = { showMenu = false }) {
-                bouquets.forEach { bouquet ->
+                bouquets?.forEach { bouquet ->
                     DropdownMenuItem(text = { Text(bouquet.name) }, onClick = {
                         onBouquetChange(bouquet.reference)
                         showMenu = false

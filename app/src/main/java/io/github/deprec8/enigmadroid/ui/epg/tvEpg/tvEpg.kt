@@ -73,12 +73,11 @@ fun TvEpgPage(
     val highlightedWords by tvEpgViewModel.highlightedWords.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
-    val pagerState = rememberPagerState(pageCount = { eventBatchSet.eventBatches.size })
+    val pagerState = rememberPagerState(pageCount = { eventBatchSet?.eventBatches?.size ?: 0 })
     val selectedTabIndex by remember {
         derivedStateOf {
             pagerState.currentPage.coerceIn(
-                0,
-                (eventBatchSet.eventBatches.size - 1).coerceAtLeast(0)
+                0, ((eventBatchSet?.eventBatches?.size ?: 0) - 1).coerceAtLeast(0)
             )
         }
     }
@@ -94,21 +93,25 @@ fun TvEpgPage(
     }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(loadingState) { tvEpgViewModel.fetchData() }
+        FloatingReloadButton(loadingState) {
+            tvEpgViewModel.fetchData(
+                forcedEpgBatchSet = true, forcedBouquets = true
+            )
+        }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = eventBatchSet.eventBatches.isNotEmpty() && loadingState == LoadingState.LOADED,
+            enabled = eventBatchSet?.eventBatches?.isNotEmpty() == true && loadingState == LoadingState.LOADED,
             textFieldState = tvEpgViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_epg),
             content = {
-                if (filteredEvents != null) {
+                filteredEvents?.let {
                     EpgContent(
-                        events = filteredEvents !!,
+                        events = it,
                         paddingValues = PaddingValues(0.dp),
                         showChannelName = true,
                         highlightedWords = highlightedWords,
-                        onAddTimerForEvent = { tvEpgViewModel.addTimerForEvent(it) })
-                } else {
+                        onAddTimerForEvent = { event -> tvEpgViewModel.addTimerForEvent(event) })
+                } ?: run {
                     SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
                         tvEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
                         tvEpgViewModel.updateSearchInput()
@@ -134,9 +137,9 @@ fun TvEpgPage(
                 tvEpgViewModel.updateSearchInput()
             },
             actionBar = {
-                if (eventBatchSet.eventBatches.isNotEmpty() && loadingState == LoadingState.LOADED) {
+                if (eventBatchSet?.eventBatches?.isNotEmpty() == true && loadingState == LoadingState.LOADED) {
                     ContentTabRow(selectedTabIndex) {
-                        eventBatchSet.eventBatches.forEachIndexed { index, eventBatch ->
+                        eventBatchSet?.eventBatches?.forEachIndexed { index, eventBatch ->
                             ContentTab(
                                 name = eventBatch.name, selected = index == selectedTabIndex
                             ) {
@@ -151,22 +154,24 @@ fun TvEpgPage(
     }
 
     ) { innerPadding ->
-        if (eventBatchSet.eventBatches.isNotEmpty() && loadingState == LoadingState.LOADED) {
-            HorizontalPager(
-                modifier = Modifier.fillMaxSize(),
-                state = pagerState,
-            ) { service ->
-                EpgContent(
-                    events = eventBatchSet.eventBatches[service].events,
-                    innerPadding,
-                    onAddTimerForEvent = { tvEpgViewModel.addTimerForEvent(it) })
+        if (eventBatchSet != null && loadingState == LoadingState.LOADED) {
+            if (eventBatchSet?.eventBatches?.isNotEmpty() == true) {
+                HorizontalPager(
+                    modifier = Modifier.fillMaxSize(),
+                    state = pagerState,
+                ) { service ->
+                    EpgContent(
+                        events = eventBatchSet?.eventBatches[service]?.events ?: emptyList(),
+                        innerPadding,
+                        onAddTimerForEvent = { tvEpgViewModel.addTimerForEvent(it) })
+                }
+            } else {
+                NoResults(
+                    Modifier
+                        .consumeWindowInsets(innerPadding)
+                        .padding(innerPadding)
+                )
             }
-        } else if (eventBatchSet.result && loadingState == LoadingState.LOADED) {
-            NoResults(
-                Modifier
-                    .consumeWindowInsets(innerPadding)
-                    .padding(innerPadding)
-            )
         } else {
             LoadingScreen(
                 Modifier

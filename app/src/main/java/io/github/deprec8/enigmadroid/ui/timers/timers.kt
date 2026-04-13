@@ -57,7 +57,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.loading.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
@@ -100,13 +99,13 @@ fun TimersPage(
 
     Scaffold(contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = timerBatch.result && loadingState == LoadingState.LOADED,
+            enabled = timerBatch?.timers?.isNotEmpty() == true && loadingState == LoadingState.LOADED,
             textFieldState = timersViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_timers),
             content = {
-                if (filteredTimers != null) {
+                filteredTimers?.let {
                     TimersContent(
-                        timers = filteredTimers !!,
+                        timers = it,
                         paddingValues = PaddingValues(0.dp),
                         highlightedWords = highlightedWords,
                         onToggleTimerStatus = {
@@ -120,7 +119,7 @@ fun TimersPage(
                         },
                         serviceBatchSet = serviceBatchSet
                     )
-                } else {
+                } ?: run {
                     SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
                         timersViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
                         timersViewModel.updateSearchInput()
@@ -158,7 +157,9 @@ fun TimersPage(
                     )
                 ) {
                     SmallFloatingActionButton(onClick = {
-                        timersViewModel.fetchData()
+                        timersViewModel.fetchData(
+                            forcedTimerBatch = true, forcedServiceBatchSet = true
+                        )
                     }) {
                         Icon(
                             Icons.Default.Refresh,
@@ -189,9 +190,9 @@ fun TimersPage(
     }
 
     ) { innerPadding ->
-        if (timerBatch.timers.isNotEmpty() && loadingState == LoadingState.LOADED) {
+        if (timerBatch != null && loadingState == LoadingState.LOADED) {
             TimersContent(
-                timers = timerBatch.timers,
+                timers = timerBatch?.timers ?: emptyList(),
                 paddingValues = innerPadding,
                 onToggleTimerStatus = {
                     timersViewModel.toggleTimerStatus(it)
@@ -203,12 +204,6 @@ fun TimersPage(
                     timersViewModel.deleteTimer(it)
                 },
                 serviceBatchSet = serviceBatchSet
-            )
-        } else if (timerBatch.result && loadingState == LoadingState.LOADED) {
-            NoResults(
-                Modifier
-                    .consumeWindowInsets(innerPadding)
-                    .padding(innerPadding)
             )
         } else {
             LoadingScreen(

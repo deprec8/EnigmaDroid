@@ -39,8 +39,8 @@ class SignalViewModel @Inject constructor(
     private val apiRepository: ApiRepository, private val loadingRepository: LoadingRepository
 ) : ViewModel() {
 
-    private val _signalInfo = MutableStateFlow(SignalInfo())
-    val signalInfo: StateFlow<SignalInfo> = _signalInfo.asStateFlow()
+    private val _signalInfo = MutableStateFlow<SignalInfo?>(null)
+    val signalInfo: StateFlow<SignalInfo?> = _signalInfo.asStateFlow()
 
     private val _loadingState = MutableStateFlow(LoadingState.LOADING)
     val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
@@ -59,11 +59,13 @@ class SignalViewModel @Inject constructor(
         loadingRepository.updateLoadingState(isForcedUpdate)
     }
 
-    fun fetchData() {
+    fun fetchData(forced: Boolean = false) {
         fetchJob?.cancel()
-        _signalInfo.value = SignalInfo()
+        if (forced) _signalInfo.value = null
         viewModelScope.launch {
-            _signalInfo.value = apiRepository.fetchSignalInfo()
+            if (_signalInfo.value == null) {
+                _signalInfo.value = apiRepository.fetchSignalInfo()
+            }
         }
     }
 }

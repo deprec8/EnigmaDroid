@@ -90,7 +90,7 @@ fun NumberButtons(
                             .aspectRatio(2f),
                         shape = MaterialTheme.shapes.extraLarge,
                     ) {
-                        Text(text = button.text !!, textAlign = TextAlign.Center)
+                        button.text?.let { Text(text = it, textAlign = TextAlign.Center) }
                     }
                 }
             }

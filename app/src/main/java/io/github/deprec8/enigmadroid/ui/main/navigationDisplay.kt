@@ -42,6 +42,7 @@ import io.github.deprec8.enigmadroid.ui.current.CurrentPage
 import io.github.deprec8.enigmadroid.ui.deviceInfo.DeviceInfoPage
 import io.github.deprec8.enigmadroid.ui.epg.radioEpg.RadioEpgPage
 import io.github.deprec8.enigmadroid.ui.epg.serviceEpg.ServiceEpgPage
+import io.github.deprec8.enigmadroid.ui.epg.serviceEpg.ServiceEpgViewModel
 import io.github.deprec8.enigmadroid.ui.epg.tvEpg.TvEpgPage
 import io.github.deprec8.enigmadroid.ui.live.radio.RadioPage
 import io.github.deprec8.enigmadroid.ui.live.tv.TvPage
@@ -77,10 +78,15 @@ fun NavigationDisplay(
             )
         }
         entry<MainPages.ServiceEpg> { backStackEntry ->
+            val serviceEpgViewModel: ServiceEpgViewModel = hiltViewModel()
+            LaunchedEffect(backStackEntry) {
+                serviceEpgViewModel.initialize(backStackEntry.serviceReference)
+            }
             ServiceEpgPage(
-                serviceReference = backStackEntry.serviceReference,
                 serviceName = backStackEntry.serviceName,
-                onNavigateBack = { navigator.goBack() })
+                onNavigateBack = { navigator.goBack() },
+                serviceEpgViewModel
+            )
         }
         entry<MainPages.Movies> {
             MoviesPage(

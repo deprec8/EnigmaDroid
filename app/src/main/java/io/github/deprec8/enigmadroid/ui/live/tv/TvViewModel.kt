@@ -56,8 +56,8 @@ class TvViewModel @Inject constructor(
     private val _filteredEvents = MutableStateFlow<List<Event>?>(null)
     val filteredEvents: StateFlow<List<Event>?> = _filteredEvents.asStateFlow()
 
-    private val _eventBatches = MutableStateFlow<List<EventBatch>>(emptyList())
-    val eventBatches: StateFlow<List<EventBatch>> = _eventBatches.asStateFlow()
+    private val _eventBatches = MutableStateFlow<List<EventBatch>?>(null)
+    val eventBatches: StateFlow<List<EventBatch>?> = _eventBatches.asStateFlow()
 
     private val _loadingState = MutableStateFlow(LoadingState.LOADING)
     val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
@@ -91,7 +91,7 @@ class TvViewModel @Inject constructor(
             combine(
                 _eventBatches, searchInput, currentBouquetIndex
             ) { eventBatches, searchInput, currentBouquetIndex ->
-                if (searchInput.isNotBlank() && eventBatches.isNotEmpty()) {
+                if (searchInput.isNotBlank() && eventBatches?.isNotEmpty() == true) {
                     searchHistoryRepository.addToTvSearchHistory(searchInput)
                     FilterUtils.filterEvents(
                         searchInput,
@@ -123,12 +123,14 @@ class TvViewModel @Inject constructor(
         return apiRepository.buildLiveStreamUrl(serviceReference)
     }
 
-    fun fetchData() {
+    fun fetchData(forced: Boolean = false) {
         fetchJob?.cancel()
-        _eventBatches.value = emptyList()
+        if (forced) _eventBatches.value = null
         fetchJob = viewModelScope.launch {
-            apiRepository.fetchEventBatches(ApiType.TV).collect { events ->
-                _eventBatches.value += events
+            if (_eventBatches.value == null) {
+                apiRepository.fetchEventBatches(ApiType.TV).collect { events ->
+                    _eventBatches.value = _eventBatches.value?.plus(events) ?: listOf(events)
+                }
             }
         }
     }

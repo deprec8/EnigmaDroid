@@ -73,12 +73,11 @@ fun RadioEpgPage(
     val currentBouquetReference by radioEpgViewModel.currentBouquetReference.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
-    val pagerState = rememberPagerState(pageCount = { eventBatchSet.eventBatches.size })
+    val pagerState = rememberPagerState(pageCount = { eventBatchSet?.eventBatches?.size ?: 0 })
     val selectedTabIndex by remember {
         derivedStateOf {
             pagerState.currentPage.coerceIn(
-                0,
-                (eventBatchSet.eventBatches.size - 1).coerceAtLeast(0)
+                0, ((eventBatchSet?.eventBatches?.size ?: 0) - 1).coerceAtLeast(0)
             )
         }
     }
@@ -94,21 +93,25 @@ fun RadioEpgPage(
     }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(loadingState) { radioEpgViewModel.fetchData() }
+        FloatingReloadButton(loadingState) {
+            radioEpgViewModel.fetchData(
+                forcedEpgBatchSet = true, forcedBouquets = true
+            )
+        }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = eventBatchSet.eventBatches.isNotEmpty() && loadingState == LoadingState.LOADED,
+            enabled = eventBatchSet?.eventBatches?.isNotEmpty() == true && loadingState == LoadingState.LOADED,
             textFieldState = radioEpgViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_epg),
             content = {
-                if (filteredEvents != null) {
+                filteredEvents?.let {
                     EpgContent(
-                        events = filteredEvents !!,
+                        events = it,
                         paddingValues = PaddingValues(0.dp),
                         showChannelName = true,
                         highlightedWords = highlightedWords,
-                        onAddTimerForEvent = { radioEpgViewModel.addTimerForEvent(it) })
-                } else {
+                        onAddTimerForEvent = { event -> radioEpgViewModel.addTimerForEvent(event) })
+                } ?: run {
                     SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
                         radioEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
                         radioEpgViewModel.updateSearchInput()
@@ -134,9 +137,9 @@ fun RadioEpgPage(
                 radioEpgViewModel.updateSearchInput()
             },
             actionBar = {
-                if (eventBatchSet.eventBatches.isNotEmpty() && loadingState == LoadingState.LOADED) {
+                if (eventBatchSet?.eventBatches?.isNotEmpty() == true && loadingState == LoadingState.LOADED) {
                     ContentTabRow(selectedTabIndex) {
-                        eventBatchSet.eventBatches.forEachIndexed { index, eventBatch ->
+                        eventBatchSet?.eventBatches?.forEachIndexed { index, eventBatch ->
                             ContentTab(
                                 name = eventBatch.name, selected = index == selectedTabIndex
                             ) {
@@ -151,22 +154,24 @@ fun RadioEpgPage(
     }
 
     ) { innerPadding ->
-        if (eventBatchSet.eventBatches.isNotEmpty() && loadingState == LoadingState.LOADED) {
-            HorizontalPager(
-                modifier = Modifier.fillMaxSize(),
-                state = pagerState,
-            ) { service ->
-                EpgContent(
-                    events = eventBatchSet.eventBatches[service].events,
-                    innerPadding,
-                    onAddTimerForEvent = { radioEpgViewModel.addTimerForEvent(it) })
+        if (eventBatchSet != null && loadingState == LoadingState.LOADED) {
+            if (eventBatchSet?.eventBatches?.isNotEmpty() == true) {
+                HorizontalPager(
+                    modifier = Modifier.fillMaxSize(),
+                    state = pagerState,
+                ) { service ->
+                    EpgContent(
+                        events = eventBatchSet?.eventBatches[service]?.events ?: emptyList(),
+                        innerPadding,
+                        onAddTimerForEvent = { radioEpgViewModel.addTimerForEvent(it) })
+                }
+            } else {
+                NoResults(
+                    Modifier
+                        .consumeWindowInsets(innerPadding)
+                        .padding(innerPadding)
+                )
             }
-        } else if (eventBatchSet.result && loadingState == LoadingState.LOADED) {
-            NoResults(
-                Modifier
-                    .consumeWindowInsets(innerPadding)
-                    .padding(innerPadding)
-            )
         } else {
             LoadingScreen(
                 Modifier

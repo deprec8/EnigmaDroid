@@ -19,24 +19,10 @@
 
 package io.github.deprec8.enigmadroid.ui.deviceInfo
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Apps
-import androidx.compose.material.icons.outlined.SettingsEthernet
-import androidx.compose.material.icons.outlined.SimCard
-import androidx.compose.material.icons.outlined.Storage
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -49,13 +35,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.model.api.device.DeviceInfo
-import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.loading.FloatingReloadButton
 import io.github.deprec8.enigmadroid.ui.components.loading.LoadingScreen
@@ -90,7 +74,7 @@ fun DeviceInfoPage(
 
     Scaffold(
         floatingActionButton = {
-            FloatingReloadButton(loadingState) { deviceInfoViewModel.fetchData() }
+            FloatingReloadButton(loadingState) { deviceInfoViewModel.fetchData(true) }
         },
         contentWindowInsets = contentWithDrawerWindowInsets(),
         topBar = {
@@ -109,137 +93,8 @@ fun DeviceInfoPage(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
 
         ) { innerPadding ->
-        if (deviceInfo != DeviceInfo() && loadingState == LoadingState.LOADED) {
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(310.dp),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .consumeWindowInsets(innerPadding),
-                contentPadding = innerPadding
-            ) {
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    Column {
-                        ListItem(headlineContent = {
-                            Text(stringResource(R.string.general))
-                        }, leadingContent = {
-                            Icon(
-                                Icons.Outlined.Apps, null
-                            )
-                        })
-                        HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-                    }
-                }
-                item {
-                    ListItem(
-                        headlineContent = { Text(text = stringResource(R.string.brand)) },
-                        supportingContent = { Text(text = deviceInfo.brand) })
-                }
-                item {
-                    ListItem(
-                        headlineContent = { Text(text = stringResource(R.string.model)) },
-                        supportingContent = { Text(text = deviceInfo.model) })
-                }
-                item {
-                    ListItem(
-                        headlineContent = { Text(text = stringResource(R.string.uptime)) },
-                        supportingContent = { Text(text = deviceInfo.uptime) })
-                }
-                item {
-                    ListItem(
-                        headlineContent = { Text(text = stringResource(R.string.image)) },
-                        supportingContent = { Text(text = deviceInfo.imageVersion) })
-                }
-                item {
-                    ListItem(
-                        headlineContent = { Text(text = stringResource(R.string.gui)) },
-                        supportingContent = { Text(text = deviceInfo.enigmaVersion) })
-
-                }
-                item {
-                    ListItem(
-                        headlineContent = { Text(text = stringResource(R.string.frontp)) },
-                        supportingContent = { Text(text = deviceInfo.fpVersion.toString()) })
-
-                }
-                item {
-                    ListItem(
-                        headlineContent = { Text(text = stringResource(R.string.kernel)) },
-                        supportingContent = { Text(text = deviceInfo.kernelVersion) })
-
-                }
-                item {
-                    ListItem(
-                        headlineContent = { Text(text = stringResource(R.string.interface_res)) },
-                        supportingContent = { Text(text = deviceInfo.webifVersion) })
-                }
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    Column {
-                        ListItem(headlineContent = {
-                            Text(stringResource(R.string.tuner))
-                        }, leadingContent = {
-                            Icon(
-                                Icons.Outlined.SimCard, null
-                            )
-                        })
-                        HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-                    }
-                }
-                items(deviceInfo.tuners) { tuner ->
-                    ListItem(headlineContent = { Text(text = tuner.name) }, supportingContent = {
-                        Text(
-                            text = tuner.type
-                        )
-                    })
-                }
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    Column {
-                        ListItem(headlineContent = {
-                            Text(stringResource(R.string.network))
-                        }, leadingContent = {
-                            Icon(
-                                Icons.Outlined.SettingsEthernet, null
-                            )
-                        })
-                        HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-                    }
-                }
-                items(deviceInfo.interfaces) { iface ->
-                    ListItem(headlineContent = { Text(text = iface.name) }, supportingContent = {
-                        Text(
-                            text = iface.ip
-                        )
-                    })
-                }
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    Column {
-                        ListItem(headlineContent = {
-                            Text(stringResource(R.string.storage))
-                        }, leadingContent = {
-                            Icon(
-                                Icons.Outlined.Storage, null
-                            )
-                        })
-                        HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-                    }
-                }
-                items(deviceInfo.hdds) { hdd ->
-                    ListItem(
-                        headlineContent = { Text(text = "${hdd.model} (${hdd.mount})") },
-                        supportingContent = {
-                            Text(
-                                text = "${hdd.capacity} (${hdd.free} " + stringResource(
-                                    R.string.free
-                                ) + ")"
-                            )
-                        })
-                }
-            }
-        } else if (deviceInfo.result && loadingState == LoadingState.LOADED) {
-            NoResults(
-                Modifier
-                    .padding(innerPadding)
-                    .consumeWindowInsets(innerPadding)
-            )
+        if (deviceInfo != null && loadingState == LoadingState.LOADED) {
+            DeviceInfoContent(deviceInfo ?: DeviceInfo(), innerPadding)
         } else {
             LoadingScreen(
                 Modifier

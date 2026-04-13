@@ -92,8 +92,8 @@ fun LibrariesPage(
             ) {
                 items(libraries) { library ->
                     ListItem(modifier = Modifier.clickable {
-                        if (library.website != null) {
-                            IntentUtils.openUrl(context, library.website !!)
+                        library.website?.let {
+                            IntentUtils.openUrl(context, it)
                         }
                     }, trailingContent = {
                         Icon(Icons.Outlined.Link, contentDescription = null)

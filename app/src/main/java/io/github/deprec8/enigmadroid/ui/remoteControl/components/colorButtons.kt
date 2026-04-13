@@ -85,15 +85,17 @@ fun ColorButtons(onButtonClicked: (RemoteControlButtonType) -> Unit, enabled: Bo
                     .aspectRatio(1.5f),
                 shape = MaterialTheme.shapes.extraLarge,
             ) {
-                Icon(
-                    button.icon !!,
-                    contentDescription = button.iconLabel !!,
-                    tint = if (! enabled) {
-                        ButtonDefaults.buttonColors().disabledContentColor
-                    } else {
-                        button.iconTint !!
+                if (! enabled) {
+                    ButtonDefaults.buttonColors().disabledContentColor
+                } else {
+                    button.iconTint
+                }?.let {
+                    button.icon?.let { imageVector ->
+                        Icon(
+                            imageVector, contentDescription = button.iconLabel, tint = it
+                        )
                     }
-                )
+                }
             }
         }
     }

@@ -39,8 +39,8 @@ class CurrentViewModel @Inject constructor(
     private val apiRepository: ApiRepository, private val loadingRepository: LoadingRepository
 ) : ViewModel() {
 
-    private val _currentInfo = MutableStateFlow(CurrentInfo())
-    val currentInfo: StateFlow<CurrentInfo> = _currentInfo.asStateFlow()
+    private val _currentInfo = MutableStateFlow<CurrentInfo?>(null)
+    val currentInfo: StateFlow<CurrentInfo?> = _currentInfo.asStateFlow()
 
     private val _loadingState = MutableStateFlow(LoadingState.LOADING)
     val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
@@ -59,11 +59,13 @@ class CurrentViewModel @Inject constructor(
         loadingRepository.updateLoadingState(isForcedUpdate)
     }
 
-    fun fetchData() {
+    fun fetchData(forced: Boolean = false) {
         fetchJob?.cancel()
-        _currentInfo.value = CurrentInfo()
-        viewModelScope.launch {
-            _currentInfo.value = apiRepository.fetchCurrentInfo()
+        if (forced) _currentInfo.value = null
+        fetchJob = viewModelScope.launch {
+            if (_currentInfo.value == null) {
+                _currentInfo.value = apiRepository.fetchCurrentInfo()
+            }
         }
     }
 

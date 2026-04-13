@@ -34,6 +34,7 @@ import io.github.deprec8.enigmadroid.model.api.movies.MovieBatch
 import io.github.deprec8.enigmadroid.ui.components.search.asHighlightedWords
 import io.github.deprec8.enigmadroid.utils.FilterUtils
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -123,24 +124,33 @@ class MoviesViewModel @Inject constructor(
         loadingRepository.updateLoadingState(isForcedUpdate)
     }
 
-    fun fetchData(isForcedFetch: Boolean = false) {
+    fun fetchData(forced: Boolean = false) {
         fetchJob?.cancel()
-        if (isForcedFetch) {
+
+        if (forced) {
             _movieBatch.value = null
             _preloadBatches.value = emptyMap()
         }
+
         fetchJob = viewModelScope.launch {
-            if (_movieBatch.value == null) {
-                _movieBatch.value = apiRepository.fetchMovieBatch(path)
+            var movieBatch = _movieBatch.value
+
+            if (movieBatch == null) {
+                movieBatch = apiRepository.fetchMovieBatch(path)
+                _movieBatch.value = movieBatch
             }
-            _movieBatch.value?.let {
-                it.bookmarks.filter { bookmark -> _preloadBatches.value[bookmark] == null }
-                    .forEach { bookmark ->
-                        _preloadBatches.value += Pair(
-                            bookmark, apiRepository.fetchMovieBatch("${it.directory}$bookmark")
-                        )
-                    }
-            }
+
+            val directory = movieBatch.directory
+
+            movieBatch.bookmarks.asSequence()
+                .filter { bookmark -> _preloadBatches.value[bookmark] == null }
+                .forEach { bookmark ->
+                    ensureActive()
+
+                    val result = apiRepository.fetchMovieBatch("$directory$bookmark")
+
+                    _preloadBatches.value += (bookmark to result)
+                }
         }
     }
 

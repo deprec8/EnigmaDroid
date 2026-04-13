@@ -39,8 +39,8 @@ class DeviceInfoViewModel @Inject constructor(
     private val apiRepository: ApiRepository, private val loadingRepository: LoadingRepository
 ) : ViewModel() {
 
-    private val _deviceInfo = MutableStateFlow(DeviceInfo())
-    val deviceInfo: StateFlow<DeviceInfo> = _deviceInfo.asStateFlow()
+    private val _deviceInfo = MutableStateFlow<DeviceInfo?>(null)
+    val deviceInfo: StateFlow<DeviceInfo?> = _deviceInfo.asStateFlow()
 
     private val _loadingState = MutableStateFlow(LoadingState.LOADING)
     val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
@@ -55,15 +55,17 @@ class DeviceInfoViewModel @Inject constructor(
         }
     }
 
-    suspend fun updateLoadingState(forceUpdate: Boolean) {
-        loadingRepository.updateLoadingState(forceUpdate)
+    suspend fun updateLoadingState(isForcedUpdate: Boolean) {
+        loadingRepository.updateLoadingState(isForcedUpdate)
     }
 
-    fun fetchData() {
+    fun fetchData(forced: Boolean = false) {
         fetchJob?.cancel()
-        _deviceInfo.value = DeviceInfo()
+        if (forced) _deviceInfo.value = null
         fetchJob = viewModelScope.launch {
-            _deviceInfo.value = apiRepository.fetchDeviceInfo()
+            if (_deviceInfo.value == null) {
+                _deviceInfo.value = apiRepository.fetchDeviceInfo()
+            }
         }
     }
 }

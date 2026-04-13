@@ -111,7 +111,7 @@ fun TimerSetupDialog(
     oldTimer: Timer? = null,
     onDismissRequest: () -> Unit,
     onSaveRequest: (newTimer: Timer, oldTimer: Timer?) -> Unit,
-    serviceBatchSet: ServiceBatchSet,
+    serviceBatchSet: ServiceBatchSet?,
 ) {
     val titleState = rememberTextFieldState(oldTimer?.title ?: "")
     val shortDescriptionState = rememberTextFieldState(oldTimer?.shortDescription ?: "")
@@ -210,8 +210,8 @@ fun TimerSetupDialog(
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                     headlineContent = { Text(text = stringResource(R.string.service)) },
                     supportingContent = {
-                        Text(text = serviceBatchSet.serviceBatches.flatMap { it.services }
-                            .firstOrNull {
+                        Text(text = serviceBatchSet?.serviceBatches?.flatMap { it.services }
+                            ?.firstOrNull {
                                 it.serviceReference == serviceReference
                             }?.serviceName ?: serviceReference.ifBlank {
                             stringResource(R.string.no_service_selected)
@@ -500,7 +500,7 @@ fun TimerSetupDialog(
 
 @Composable
 private fun ServicePickerDialog(
-    serviceBatchSet: ServiceBatchSet,
+    serviceBatchSet: ServiceBatchSet?,
     currentServiceReference: String? = null,
     onDismissRequest: () -> Unit,
     onServiceClicked: (service: Service) -> Unit
@@ -618,7 +618,7 @@ private fun ServicePickerDialog(
                     }
                 }
             }
-        } else if (serviceBatchSet.result) {
+        } else if (serviceBatchSet != null) {
             LazyColumn {
                 items(serviceBatchSet.serviceBatches) { serviceBatch ->
                     ListItem(

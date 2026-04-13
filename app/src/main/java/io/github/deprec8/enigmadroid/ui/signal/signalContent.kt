@@ -1,0 +1,164 @@
+/*
+ * Copyright (C) 2025-2026 deprec8
+ *
+ * This file is part of EnigmaDroid.
+ *
+ * EnigmaDroid is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * EnigmaDroid is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package io.github.deprec8.enigmadroid.ui.signal
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.window.core.layout.WindowSizeClass
+import io.github.deprec8.enigmadroid.R
+import io.github.deprec8.enigmadroid.model.api.SignalInfo
+import io.github.deprec8.enigmadroid.ui.components.NoResults
+
+@Composable
+fun SignalContent(signalInfo: SignalInfo, paddingValues: PaddingValues) {
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+    val scrollState = rememberScrollState()
+
+    if (signalInfo.inStandby == "false") {
+        Column(
+            Modifier
+                .fillMaxSize()
+                .consumeWindowInsets(paddingValues)
+                .verticalScroll(scrollState)
+                .padding(paddingValues), verticalArrangement = Arrangement.Center
+        ) {
+            if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)) {
+                Row {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .padding(20.dp)
+                            .fillMaxWidth(0.5f)
+                    ) {
+                        CircularProgressIndicator(
+                            strokeWidth = 10.dp, progress = {
+                                if (signalInfo.agc.isNotBlank()) {
+                                    signalInfo.agc.toFloat() / 100
+                                } else {
+                                    0f
+                                }
+                            }, modifier = Modifier.size(300.dp)
+                        )
+                        Text(
+                            modifier = Modifier.align(Alignment.Center),
+                            textAlign = TextAlign.Center,
+                            text = "${signalInfo.agc}%",
+                            fontSize = 40.sp
+                        )
+                    }
+                    Column(Modifier.fillMaxWidth(1f)) {
+                        ListItem(
+                            headlineContent = { Text(text = stringResource(R.string.type)) },
+                            supportingContent = {
+                                Text(
+                                    text = signalInfo.tunerType
+                                )
+                            })
+                        ListItem(
+                            headlineContent = { Text(text = stringResource(R.string.number)) },
+                            supportingContent = {
+                                Text(
+                                    text = signalInfo.tunerNumber
+                                )
+                            })
+                        ListItem(
+                            headlineContent = { Text(text = stringResource(R.string.snr)) },
+                            supportingContent = {
+                                Text(
+                                    text = "${signalInfo.snr}%",
+                                )
+                            })
+                    }
+                }
+            } else {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .padding(20.dp)
+                        .fillMaxWidth()
+                ) {
+                    CircularProgressIndicator(
+                        strokeWidth = 10.dp, progress = {
+                            if (signalInfo.agc.isNotBlank()) {
+                                signalInfo.agc.toFloat() / 100
+                            } else {
+                                0f
+                            }
+                        }, modifier = Modifier.size(300.dp)
+                    )
+                    Text(
+                        modifier = Modifier.align(Alignment.Center),
+                        textAlign = TextAlign.Center,
+                        text = "${signalInfo.agc}%",
+                        fontSize = 40.sp
+                    )
+                }
+                ListItem(
+                    headlineContent = { Text(text = stringResource(R.string.type)) },
+                    supportingContent = {
+                        Text(
+                            text = signalInfo.tunerType
+                        )
+                    })
+                ListItem(
+                    headlineContent = { Text(text = stringResource(R.string.number)) },
+                    supportingContent = {
+                        Text(
+                            text = signalInfo.tunerNumber
+                        )
+                    })
+                ListItem(
+                    headlineContent = { Text(text = stringResource(R.string.snr)) },
+                    supportingContent = {
+                        Text(
+                            text = "${signalInfo.snr}%",
+                        )
+                    })
+            }
+        }
+    } else {
+        NoResults(
+            Modifier
+                .consumeWindowInsets(paddingValues)
+                .padding(paddingValues)
+        )
+    }
+}

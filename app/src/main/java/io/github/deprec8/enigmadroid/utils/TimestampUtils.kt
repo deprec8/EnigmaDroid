@@ -75,7 +75,9 @@ object TimestampUtils {
 
         val date = dateFormat.parse(timeString)
         val calendar = Calendar.getInstance()
-        calendar.time = date !!
+        if (date != null) {
+            calendar.time = date
+        }
         return calendar.timeInMillis
     }
 

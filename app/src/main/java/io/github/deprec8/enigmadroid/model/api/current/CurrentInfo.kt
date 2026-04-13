@@ -26,5 +26,5 @@ import kotlinx.serialization.Serializable
 data class CurrentInfo(
     @SerialName("info") val info: CurrentDetails = CurrentDetails(),
     @SerialName("now") val now: Current = Current(),
-    @SerialName("next") val next: Current = Current(),
+    @SerialName("next") val next: Current = Current()
 )

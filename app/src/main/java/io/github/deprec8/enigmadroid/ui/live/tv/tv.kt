@@ -70,10 +70,10 @@ fun TvPage(
     val highlightedWords by tvViewModel.highlightedWords.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
-    val pagerState = rememberPagerState(pageCount = { eventBatches.size })
+    val pagerState = rememberPagerState(pageCount = { eventBatches?.size ?: 0 })
     val selectedTabIndex by remember {
         derivedStateOf {
-            pagerState.currentPage.coerceIn(0, (eventBatches.size - 1).coerceAtLeast(0))
+            pagerState.currentPage.coerceIn(0, ((eventBatches?.size ?: 0) - 1).coerceAtLeast(0))
         }
     }
 
@@ -87,16 +87,16 @@ fun TvPage(
     }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(loadingState) { tvViewModel.fetchData() }
+        FloatingReloadButton(loadingState) { tvViewModel.fetchData(true) }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
             textFieldState = tvViewModel.searchFieldState,
-            enabled = eventBatches.isNotEmpty() && loadingState == LoadingState.LOADED,
+            enabled = eventBatches?.isNotEmpty() == true && loadingState == LoadingState.LOADED,
             placeholder = stringResource(R.string.search_events),
             content = {
-                if (filteredEvents != null) {
+                filteredEvents?.let {
                     LiveContent(
-                        events = filteredEvents !!,
+                        events = it,
                         paddingValues = PaddingValues(0.dp),
                         showChannelNumbers = false,
                         highlightedWords = highlightedWords,
@@ -114,7 +114,7 @@ fun TvPage(
                         buildLiveStreamUrl = {
                             tvViewModel.buildLiveStreamUrl(it)
                         })
-                } else {
+                } ?: run {
                     SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
                         tvViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
                         tvViewModel.updateSearchInput(selectedTabIndex)
@@ -135,9 +135,9 @@ fun TvPage(
                 tvViewModel.updateSearchInput(selectedTabIndex)
             },
             actionBar = {
-                if (eventBatches.isNotEmpty() && loadingState == LoadingState.LOADED) {
+                if (eventBatches?.isNotEmpty() == true && loadingState == LoadingState.LOADED) {
                     ContentTabRow(selectedTabIndex) {
-                        eventBatches.forEachIndexed { index, eventBatch ->
+                        eventBatches?.forEachIndexed { index, eventBatch ->
                             ContentTab(
                                 name = eventBatch.name, selected = index == selectedTabIndex
                             ) {
@@ -151,12 +151,12 @@ fun TvPage(
             })
 
     }) { innerPadding ->
-        if (eventBatches.isNotEmpty() && loadingState == LoadingState.LOADED) {
+        if (eventBatches != null && loadingState == LoadingState.LOADED) {
             HorizontalPager(
                 modifier = Modifier.fillMaxSize(), state = pagerState
             ) { index ->
                 LiveContent(
-                    events = eventBatches[index].events,
+                    events = eventBatches?.get(index)?.events ?: emptyList(),
                     paddingValues = innerPadding,
                     onNavigateToServiceEpg = { serviceReference, serviceName ->
                         onNavigateToServiceEpg(

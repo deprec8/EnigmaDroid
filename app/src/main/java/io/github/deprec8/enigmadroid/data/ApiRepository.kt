@@ -175,7 +175,7 @@ class ApiRepository @Inject constructor(
                         EventBatch(
                             name = serviceName, events = events
                         )
-                    }, result = epgEventBatch.result)
+                    })
 
             }.getOrDefault(EventBatchSet())
         }
@@ -257,8 +257,7 @@ class ApiRepository @Inject constructor(
                     )
                 }
                 ServiceBatchSet(
-                    serviceBatches = uiServiceBatches,
-                    result = tvServiceBatchSet.result || radioServiceBatchSet.result
+                    serviceBatches = uiServiceBatches
                 )
             }.getOrDefault(ServiceBatchSet())
         }

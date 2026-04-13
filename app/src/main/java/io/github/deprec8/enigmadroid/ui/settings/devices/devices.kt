@@ -218,7 +218,7 @@ fun DevicesPage(
                             DropdownMenu(
                                 expanded = showDropDownMenu,
                                 onDismissRequest = { showDropDownMenu = false }) {
-                                if (shortcutManager !!.isRequestPinShortcutSupported) {
+                                if (shortcutManager.isRequestPinShortcutSupported) {
                                     DropdownMenuItem(
                                         text = { Text(stringResource(R.string.pin_shortcut)) },
                                         leadingIcon = {
@@ -330,8 +330,8 @@ fun DevicesPage(
                                                 .setShortLabel(newDevice.name).build()
                                         )
                                     )
+                                    devicesViewModel.editDevice(it, newDevice)
                                 }
-                                devicesViewModel.editDevice(oldDevice !!, newDevice)
                                 showEditDialog = false
                             })
                     }

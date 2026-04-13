@@ -24,6 +24,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ServiceBatchSet(
-    @SerialName("services") val serviceBatches: List<ServiceBatch> = emptyList(),
-    @SerialName("result") val result: Boolean = false
+    @SerialName("services") val serviceBatches: List<ServiceBatch> = emptyList()
 )

@@ -24,6 +24,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class TimerBatch(
-    @SerialName("timers") val timers: List<Timer> = emptyList(),
-    @SerialName("result") val result: Boolean = false
+    @SerialName("timers") val timers: List<Timer> = emptyList()
 )

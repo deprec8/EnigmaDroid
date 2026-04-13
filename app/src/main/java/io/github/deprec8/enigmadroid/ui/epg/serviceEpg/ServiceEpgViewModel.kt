@@ -51,8 +51,8 @@ class ServiceEpgViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
-    private val _eventBatch = MutableStateFlow(EventBatch())
-    val eventBatch: StateFlow<EventBatch> = _eventBatch.asStateFlow()
+    private val _eventBatch = MutableStateFlow<EventBatch?>(null)
+    val eventBatch: StateFlow<EventBatch?> = _eventBatch.asStateFlow()
 
     private val _loadingState = MutableStateFlow(LoadingState.LOADING)
     val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
@@ -77,6 +77,8 @@ class ServiceEpgViewModel @Inject constructor(
 
     private var fetchJob: Job? = null
 
+    private var serviceReference = ""
+
     init {
         viewModelScope.launch {
             loadingRepository.getLoadingState().collectLatest { state ->
@@ -85,7 +87,7 @@ class ServiceEpgViewModel @Inject constructor(
         }
         viewModelScope.launch {
             combine(_eventBatch, searchInput) { eventBatch, searchInput ->
-                if (searchInput.isNotBlank() && eventBatch.events.isNotEmpty()) {
+                if (searchInput.isNotBlank() && eventBatch?.events?.isNotEmpty() == true) {
                     searchHistoryRepository.addToServiceEpgSearchHistory(searchInput)
                     FilterUtils.filterEvents(searchInput, eventBatch.events)
                 } else {
@@ -107,15 +109,21 @@ class ServiceEpgViewModel @Inject constructor(
         }
     }
 
+    fun initialize(serviceReference: String) {
+        this.serviceReference = serviceReference
+    }
+
     suspend fun updateLoadingState(isForcedUpdate: Boolean) {
         loadingRepository.updateLoadingState(isForcedUpdate)
     }
 
-    fun fetchData(serviceReference: String) {
+    fun fetchData(forced: Boolean = false) {
         fetchJob?.cancel()
-        _eventBatch.value = EventBatch()
+        if (forced) _eventBatch.value = null
         fetchJob = viewModelScope.launch {
-            _eventBatch.value = apiRepository.fetchServiceEpgBatch(serviceReference)
+            if (_eventBatch.value == null) {
+                _eventBatch.value = apiRepository.fetchServiceEpgBatch(serviceReference)
+            }
         }
     }
 

@@ -36,5 +36,4 @@ data class DeviceInfo(
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("webifver") val webifVersion: String = "N/A",
     @SerialName("hdd") val hdds: List<HDD> = emptyList(),
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("model") val model: String = "N/A",
-    @SerialName("result") val result: Boolean = false
 )

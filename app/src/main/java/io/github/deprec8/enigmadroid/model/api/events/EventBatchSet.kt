@@ -20,6 +20,5 @@
 package io.github.deprec8.enigmadroid.model.api.events
 
 data class EventBatchSet(
-    val eventBatches: List<EventBatch> = emptyList(),
-    val result: Boolean = false,
+    val eventBatches: List<EventBatch> = emptyList()
 )

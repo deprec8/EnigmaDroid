@@ -99,9 +99,9 @@ fun MoviesDirectoryPage(
             textFieldState = moviesViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_movies),
             content = {
-                if (filteredMovies != null) {
+                filteredMovies?.let {
                     MoviesContent(
-                        movies = filteredMovies !!,
+                        movies = it,
                         paddingValues = PaddingValues(0.dp),
                         highlightedWords = highlightedWords,
                         onStreamMovie = { movie ->
@@ -126,7 +126,8 @@ fun MoviesDirectoryPage(
                             )
                         },
                         onDownloadMovie = { movie -> moviesViewModel.download(movie) })
-                } else {
+
+                } ?: run {
                     SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
                         moviesViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
                         moviesViewModel.updateSearchInput()

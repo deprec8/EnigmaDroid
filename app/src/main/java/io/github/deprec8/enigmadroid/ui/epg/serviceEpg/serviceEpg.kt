@@ -36,7 +36,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.loading.FloatingReloadButton
 import io.github.deprec8.enigmadroid.ui.components.loading.LoadingScreen
@@ -49,7 +48,6 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ServiceEpgPage(
-    serviceReference: String,
     serviceName: String,
     onNavigateBack: () -> Unit,
     serviceEpgViewModel: ServiceEpgViewModel = hiltViewModel()
@@ -68,26 +66,26 @@ fun ServiceEpgPage(
 
     LaunchedEffect(loadingState) {
         if (loadingState == LoadingState.LOADED) {
-            serviceEpgViewModel.fetchData(serviceReference)
+            serviceEpgViewModel.fetchData()
         }
     }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(loadingState) { serviceEpgViewModel.fetchData(serviceReference) }
+        FloatingReloadButton(loadingState) { serviceEpgViewModel.fetchData(true) }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = eventBatch.events.isNotEmpty() && loadingState == LoadingState.LOADED,
+            enabled = eventBatch?.events?.isNotEmpty() == true && loadingState == LoadingState.LOADED,
             textFieldState = serviceEpgViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_epg_from, serviceName),
             content = {
-                if (filteredEvents != null) {
+                filteredEvents?.let {
                     EpgContent(
-                        events = filteredEvents !!,
+                        events = it,
                         paddingValues = PaddingValues(0.dp),
                         showChannelName = true,
                         highlightedWords = highlightedWords,
-                        onAddTimerForEvent = { serviceEpgViewModel.addTimerForEvent(it) })
-                } else {
+                        onAddTimerForEvent = { event -> serviceEpgViewModel.addTimerForEvent(event) })
+                } ?: run {
                     SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
                         serviceEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
                         serviceEpgViewModel.updateSearchInput()
@@ -105,17 +103,11 @@ fun ServiceEpgPage(
                 serviceEpgViewModel.updateSearchInput()
             })
     }) { innerPadding ->
-        if (eventBatch.events.isNotEmpty() && loadingState == LoadingState.LOADED) {
+        if (eventBatch != null && loadingState == LoadingState.LOADED) {
             EpgContent(
-                events = eventBatch.events,
+                events = eventBatch?.events ?: emptyList(),
                 innerPadding,
                 onAddTimerForEvent = { serviceEpgViewModel.addTimerForEvent(it) })
-        } else if (eventBatch.result && loadingState == LoadingState.LOADED) {
-            NoResults(
-                Modifier
-                    .consumeWindowInsets(innerPadding)
-                    .padding(innerPadding)
-            )
         } else {
             LoadingScreen(
                 Modifier
