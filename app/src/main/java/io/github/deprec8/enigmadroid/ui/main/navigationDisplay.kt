@@ -225,7 +225,7 @@ fun NavigationDisplay(
         NavDisplay(
             entries = navigationState.toEntries(entryProvider),
             onBack = { navigator.goBack() },
-            sceneStrategy = remember { DialogSceneStrategy() },
+            sceneStrategies = remember { listOf(DialogSceneStrategy()) },
             transitionSpec = {
                 fadeIn() togetherWith fadeOut()
             },
