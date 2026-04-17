@@ -89,7 +89,7 @@
     <string name="rename_movie">Переименовать фильм</string>
     <string name="new_name">Новое имя</string>
     <string name="move_movie">Переместить фильм</string>
-    <string name="new_directory">Новое местоположение</string>
+    <string name="new_directory">New directory</string>
     <string name="rename">Переименовать</string>
     <string name="move">Переместить</string>
     <string name="channel">Канал</string>
@@ -229,4 +229,13 @@
     <string name="until">До %1$s</string>
     <string name="setup_skip_title">Not ready to set up a device?</string>
     <string name="setup_skip_text">Most features require at least one device to be set up. You can add one whenever you’re ready.</string>
+    <string name="go_top">Go top</string>
+    <string name="name_must_be_changed_and_can_t_be_blank">Name must be changed and can\'t be blank.</string>
+    <string name="directory_must_be_changed_and_must_start_and_end_with">Directory must be changed and must start and end with \"/\".</string>
+    <plurals name="files">
+        <item quantity="one">%1$d file</item>
+        <item quantity="few">%1$d files</item>
+        <item quantity="many">%1$d files</item>
+        <item quantity="other">%1$d files</item>
+    </plurals>
 </resources>
