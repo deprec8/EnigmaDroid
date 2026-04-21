@@ -19,8 +19,11 @@
 
 package io.github.deprec8.enigmadroid.ui.components.navigation
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -97,3 +100,6 @@ fun NavigationState.toEntries(
 
     return stacksInUse.flatMap { decoratedEntries[it] ?: emptyList() }.toMutableStateList()
 }
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+val LocalSharedTransitionScope = compositionLocalOf<SharedTransitionScope?> { null }

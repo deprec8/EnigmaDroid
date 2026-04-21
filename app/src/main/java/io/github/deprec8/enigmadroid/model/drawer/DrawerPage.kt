@@ -19,9 +19,11 @@
 
 package io.github.deprec8.enigmadroid.model.drawer
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation3.runtime.NavKey
 
+@Immutable
 data class DrawerPage(
     val name: String,
     val navKey: NavKey,
