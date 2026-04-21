@@ -73,39 +73,39 @@ fun CurrentPage(
         }
     }
 
-    Scaffold(
-        floatingActionButton = {
-            FloatingReloadButton(loadingState) { currentViewModel.fetchData(true) }
-        },
-        contentWindowInsets = contentWithDrawerWindowInsets(),
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(id = R.string.current),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                },
-                windowInsets = topAppBarWithDrawerWindowInsets(),
-                scrollBehavior = scrollBehavior,
-                navigationIcon = {
-                    DrawerNavigationButton(drawerState)
-                },
-                actions = {
-                    RemoteControlActionButton { onNavigateToRemoteControl() }
-                })
-        },
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-    ) { innerPadding ->
-        if (currentEventInfo != null && loadingState == LoadingState.LOADED) {
-            CurrentContent(currentEventInfo ?: CurrentInfo(), innerPadding, onBuildLiveStreamUrl = {
-                currentViewModel.buildLiveStreamUrl(it)
-            }, onNavigateToServiceEpg = { serviceReference, serviceName ->
-                onNavigateToServiceEpg(
-                    serviceReference, serviceName
+    Scaffold(floatingActionButton = {
+        FloatingReloadButton(loadingState) { currentViewModel.fetchData() }
+    }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
+        TopAppBar(
+            title = {
+                Text(
+                    text = stringResource(id = R.string.current),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
+            },
+            windowInsets = topAppBarWithDrawerWindowInsets(),
+            scrollBehavior = scrollBehavior,
+            navigationIcon = {
+                DrawerNavigationButton(drawerState)
+            },
+            actions = {
+                RemoteControlActionButton { onNavigateToRemoteControl() }
             })
+    }) { innerPadding ->
+        if (currentEventInfo != null && loadingState == LoadingState.LOADED) {
+            CurrentContent(
+                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                currentEventInfo ?: CurrentInfo(),
+                innerPadding,
+                onBuildLiveStreamUrl = {
+                    currentViewModel.buildLiveStreamUrl(it)
+                },
+                onNavigateToServiceEpg = { serviceReference, serviceName ->
+                    onNavigateToServiceEpg(
+                        serviceReference, serviceName
+                    )
+                })
         } else {
             LoadingScreen(
                 Modifier

@@ -71,24 +71,26 @@ fun SignalPage(
         }
     }
 
-    Scaffold(
-        floatingActionButton = {
-            FloatingReloadButton(loadingState) { signalViewModel.fetchData(true) }
-        }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
-            TopAppBar(
-                windowInsets = topAppBarWithDrawerWindowInsets(),
-                title = { Text(text = stringResource(R.string.signal)) },
-                scrollBehavior = scrollBehavior,
-                navigationIcon = {
-                    DrawerNavigationButton(drawerState)
-                },
-                actions = {
-                    RemoteControlActionButton { onNavigateToRemoteControl() }
-                })
-        }, modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
-    ) { innerPadding ->
+    Scaffold(floatingActionButton = {
+        FloatingReloadButton(loadingState) { signalViewModel.fetchData() }
+    }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
+        TopAppBar(
+            windowInsets = topAppBarWithDrawerWindowInsets(),
+            title = { Text(text = stringResource(R.string.signal)) },
+            scrollBehavior = scrollBehavior,
+            navigationIcon = {
+                DrawerNavigationButton(drawerState)
+            },
+            actions = {
+                RemoteControlActionButton { onNavigateToRemoteControl() }
+            })
+    }) { innerPadding ->
         if (signalInfo != null && loadingState == LoadingState.LOADED) {
-            SignalContent(signalInfo ?: SignalInfo(), innerPadding)
+            SignalContent(
+                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                signalInfo ?: SignalInfo(),
+                innerPadding
+            )
         } else {
             LoadingScreen(
                 Modifier

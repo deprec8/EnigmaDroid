@@ -72,29 +72,27 @@ fun DeviceInfoPage(
         }
     }
 
-    Scaffold(
-        floatingActionButton = {
-            FloatingReloadButton(loadingState) { deviceInfoViewModel.fetchData(true) }
-        },
-        contentWindowInsets = contentWithDrawerWindowInsets(),
-        topBar = {
-            TopAppBar(windowInsets = topAppBarWithDrawerWindowInsets(), title = {
-                Text(
-                    text = stringResource(id = R.string.device_info),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }, scrollBehavior = scrollBehavior, navigationIcon = {
-                DrawerNavigationButton(drawerState)
-            }, actions = {
-                RemoteControlActionButton { onNavigateToRemoteControl() }
-            })
-        },
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-
-        ) { innerPadding ->
+    Scaffold(floatingActionButton = {
+        FloatingReloadButton(loadingState) { deviceInfoViewModel.fetchData() }
+    }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
+        TopAppBar(windowInsets = topAppBarWithDrawerWindowInsets(), title = {
+            Text(
+                text = stringResource(id = R.string.device_info),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }, scrollBehavior = scrollBehavior, navigationIcon = {
+            DrawerNavigationButton(drawerState)
+        }, actions = {
+            RemoteControlActionButton { onNavigateToRemoteControl() }
+        })
+    }) { innerPadding ->
         if (deviceInfo != null && loadingState == LoadingState.LOADED) {
-            DeviceInfoContent(deviceInfo ?: DeviceInfo(), innerPadding)
+            DeviceInfoContent(
+                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                deviceInfo ?: DeviceInfo(),
+                innerPadding
+            )
         } else {
             LoadingScreen(
                 Modifier

@@ -124,25 +124,17 @@ class MoviesViewModel @Inject constructor(
         loadingRepository.updateLoadingState(isForcedUpdate)
     }
 
-    fun fetchData(forced: Boolean = false) {
+    fun fetchData() {
         fetchJob?.cancel()
-
-        if (forced) {
-            _movieBatch.value = null
-            _preloadBatches.value = emptyMap()
-        }
-
+        _movieBatch.value = null
+        _preloadBatches.value = emptyMap()
         fetchJob = viewModelScope.launch {
-            var movieBatch = _movieBatch.value
+            val batch = apiRepository.fetchMovieBatch(path)
+            _movieBatch.value = batch
 
-            if (movieBatch == null) {
-                movieBatch = apiRepository.fetchMovieBatch(path)
-                _movieBatch.value = movieBatch
-            }
+            val directory = batch.directory
 
-            val directory = movieBatch.directory
-
-            movieBatch.bookmarks.asSequence()
+            batch.bookmarks.asSequence()
                 .filter { bookmark -> _preloadBatches.value[bookmark] == null }
                 .forEach { bookmark ->
                     ensureActive()
@@ -157,21 +149,44 @@ class MoviesViewModel @Inject constructor(
     fun rename(serviceReference: String, newName: String) {
         viewModelScope.launch {
             apiRepository.renameMovie(serviceReference, newName)
-            fetchData(true)
+            fetchJob?.cancel()
+            fetchJob = viewModelScope.launch {
+                _movieBatch.value = apiRepository.fetchMovieBatch(path)
+            }
         }
     }
 
     fun move(serviceReference: String, dirName: String) {
         viewModelScope.launch {
             apiRepository.moveMovie(serviceReference, dirName)
-            fetchData(true)
+            fetchJob?.cancel()
+            _preloadBatches.value = emptyMap()
+            fetchJob = viewModelScope.launch {
+                val batch = apiRepository.fetchMovieBatch(path)
+                _movieBatch.value = batch
+
+                val directory = batch.directory
+
+                batch.bookmarks.asSequence()
+                    .filter { bookmark -> _preloadBatches.value[bookmark] == null }
+                    .forEach { bookmark ->
+                        ensureActive()
+
+                        val result = apiRepository.fetchMovieBatch("$directory$bookmark")
+
+                        _preloadBatches.value += (bookmark to result)
+                    }
+            }
         }
     }
 
     fun delete(serviceReference: String) {
         viewModelScope.launch {
             apiRepository.deleteMovie(serviceReference)
-            fetchData(true)
+            fetchJob?.cancel()
+            fetchJob = viewModelScope.launch {
+                _movieBatch.value = apiRepository.fetchMovieBatch(path)
+            }
         }
     }
 

@@ -115,33 +115,33 @@ class TimersViewModel @Inject constructor(
         loadingRepository.updateLoadingState(isForcedUpdate)
     }
 
-    fun fetchData(
-        forcedTimerBatch: Boolean = false, forcedServiceBatchSet: Boolean = false
-    ) {
+    fun fetchData() {
         fetchJob?.cancel()
-        if (forcedTimerBatch) _timerBatch.value = null
-        if (forcedServiceBatchSet) _serviceBatchSet.value = null
+        _timerBatch.value = null
+        _serviceBatchSet.value = null
         fetchJob = viewModelScope.launch {
-            if (_timerBatch.value == null) {
-                _timerBatch.value = apiRepository.fetchTimerBatch()
-            }
-            if (_serviceBatchSet.value == null) {
-                _serviceBatchSet.value = apiRepository.fetchServiceBatchSet()
-            }
+            _timerBatch.value = apiRepository.fetchTimerBatch()
+            _serviceBatchSet.value = apiRepository.fetchServiceBatchSet()
         }
     }
 
     fun deleteTimer(timer: Timer) {
         viewModelScope.launch {
             apiRepository.deleteTimer(timer)
-            fetchData(true)
+            fetchJob?.cancel()
+            fetchJob = viewModelScope.launch {
+                _timerBatch.value = apiRepository.fetchTimerBatch()
+            }
         }
     }
 
     fun toggleTimerStatus(timer: Timer) {
         viewModelScope.launch {
             apiRepository.toggleTimerStatus(timer)
-            fetchData(true)
+            fetchJob?.cancel()
+            fetchJob = viewModelScope.launch {
+                _timerBatch.value = apiRepository.fetchTimerBatch()
+            }
         }
     }
 
@@ -152,14 +152,20 @@ class TimersViewModel @Inject constructor(
     fun addTimer(newTimer: Timer) {
         viewModelScope.launch {
             apiRepository.addTimer(newTimer)
-            fetchData(true)
+            fetchJob?.cancel()
+            fetchJob = viewModelScope.launch {
+                _timerBatch.value = apiRepository.fetchTimerBatch()
+            }
         }
     }
 
     fun editTimer(oldTimer: Timer, newTimer: Timer) {
         viewModelScope.launch {
             apiRepository.editTimer(oldTimer, newTimer)
-            fetchData(true)
+            fetchJob?.cancel()
+            fetchJob = viewModelScope.launch {
+                _timerBatch.value = apiRepository.fetchTimerBatch()
+            }
         }
     }
 }

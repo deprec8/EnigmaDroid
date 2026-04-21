@@ -117,13 +117,11 @@ class ServiceEpgViewModel @Inject constructor(
         loadingRepository.updateLoadingState(isForcedUpdate)
     }
 
-    fun fetchData(forced: Boolean = false) {
+    fun fetchData() {
         fetchJob?.cancel()
-        if (forced) _eventBatch.value = null
+        _eventBatch.value = null
         fetchJob = viewModelScope.launch {
-            if (_eventBatch.value == null) {
-                _eventBatch.value = apiRepository.fetchServiceEpgBatch(serviceReference)
-            }
+            _eventBatch.value = apiRepository.fetchServiceEpgBatch(serviceReference)
         }
     }
 

@@ -157,9 +157,7 @@ fun TimersPage(
                     )
                 ) {
                     SmallFloatingActionButton(onClick = {
-                        timersViewModel.fetchData(
-                            forcedTimerBatch = true, forcedServiceBatchSet = true
-                        )
+                        timersViewModel.fetchData()
                     }) {
                         Icon(
                             Icons.Default.Refresh,

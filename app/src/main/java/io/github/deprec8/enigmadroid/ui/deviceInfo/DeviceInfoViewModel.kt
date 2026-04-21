@@ -59,13 +59,11 @@ class DeviceInfoViewModel @Inject constructor(
         loadingRepository.updateLoadingState(isForcedUpdate)
     }
 
-    fun fetchData(forced: Boolean = false) {
+    fun fetchData() {
         fetchJob?.cancel()
-        if (forced) _deviceInfo.value = null
+        _deviceInfo.value = null
         fetchJob = viewModelScope.launch {
-            if (_deviceInfo.value == null) {
-                _deviceInfo.value = apiRepository.fetchDeviceInfo()
-            }
+            _deviceInfo.value = apiRepository.fetchDeviceInfo()
         }
     }
 }

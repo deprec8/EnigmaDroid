@@ -122,16 +122,11 @@ class RadioEpgViewModel @Inject constructor(
         loadingRepository.updateLoadingState(isForcedUpdate)
     }
 
-    fun fetchData(
-        forcedEpgBatchSet: Boolean = false, forcedBouquets: Boolean = false
-    ) {
+    fun fetchData() {
         fetchJob?.cancel()
-        if (forcedEpgBatchSet) _eventBatchSet.value = null
-        if (forcedBouquets) {
-            _bouquets.value = null
-            fetchedEventBatchSetMap = emptyMap()
-        }
-
+        _eventBatchSet.value = null
+        _bouquets.value = null
+        fetchedEventBatchSetMap = emptyMap()
         fetchJob = viewModelScope.launch {
             fetchBouquets()
             fetchEpgBatchSet()
@@ -139,7 +134,6 @@ class RadioEpgViewModel @Inject constructor(
     }
 
     private suspend fun fetchBouquets() {
-        if (_bouquets.value != null) return
         val bouquets = apiRepository.fetchBouquets(ApiType.RADIO)
         _bouquets.value = bouquets
         val firstBRef = bouquets.firstOrNull()?.reference ?: ""
@@ -149,7 +143,6 @@ class RadioEpgViewModel @Inject constructor(
     }
 
     private suspend fun fetchEpgBatchSet() {
-        if (_eventBatchSet.value != null) return
         val cached = fetchedEventBatchSetMap[_currentBouquetReference.value]
         if (cached != null) {
             _eventBatchSet.value = cached
@@ -169,8 +162,12 @@ class RadioEpgViewModel @Inject constructor(
     }
 
     fun setCurrentBouquet(bouquetReference: String) {
+        fetchJob?.cancel()
         _currentBouquetReference.value = bouquetReference
-        fetchData(true)
+        _eventBatchSet.value = null
+        fetchJob = viewModelScope.launch {
+            fetchEpgBatchSet()
+        }
     }
 
     fun updateSearchInput() {

@@ -57,6 +57,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CurrentContent(
+    modifier: Modifier = Modifier,
     currentEventInfo: CurrentInfo,
     paddingValues: PaddingValues,
     onBuildLiveStreamUrl: suspend (String) -> String,
@@ -71,7 +72,7 @@ fun CurrentContent(
 
     if (currentEventInfo.info.result == true) {
         Column(
-            Modifier
+            modifier
                 .fillMaxSize()
                 .consumeWindowInsets(paddingValues)
                 .verticalScroll(scrollState)
