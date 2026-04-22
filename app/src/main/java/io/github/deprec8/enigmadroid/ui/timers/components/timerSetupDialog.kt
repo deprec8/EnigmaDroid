@@ -392,13 +392,22 @@ fun TimerSetupDialog(
                     ) {
                         DropdownMenuItem(
                             text = { Text(text = stringResource(R.string.automatic)) },
-                            onClick = { afterevent = 3 })
+                            onClick = {
+                                afterevent = 3
+                                showAftereventMenu = false
+                            })
                         DropdownMenuItem(
                             text = { Text(text = stringResource(R.string.shutdown)) },
-                            onClick = { afterevent = 2 })
+                            onClick = {
+                                afterevent = 2
+                                showAftereventMenu = false
+                            })
                         DropdownMenuItem(
                             text = { Text(text = stringResource(R.string.standby)) },
-                            onClick = { afterevent = 1 })
+                            onClick = {
+                                afterevent = 1
+                                showAftereventMenu = false
+                            })
                     }
 
                 }
