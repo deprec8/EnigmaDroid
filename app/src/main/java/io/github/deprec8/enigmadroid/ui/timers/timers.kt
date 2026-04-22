@@ -103,9 +103,9 @@ fun TimersPage(
             textFieldState = timersViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_timers),
             content = {
-                filteredTimers?.let {
+                filteredTimers?.let { filteredTimers ->
                     TimersContent(
-                        timers = it,
+                        timers = filteredTimers,
                         paddingValues = PaddingValues(0.dp),
                         highlightedWords = highlightedWords,
                         onToggleTimerStatus = {

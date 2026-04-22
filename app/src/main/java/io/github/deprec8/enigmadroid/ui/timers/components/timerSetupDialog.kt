@@ -67,7 +67,6 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -498,7 +497,7 @@ private fun ServicePickerDialog(
     onDismissRequest: () -> Unit,
     onServiceClicked: (service: Service) -> Unit
 ) {
-    var currentServiceBatch by rememberSaveable {
+    var currentServiceBatch by remember {
         mutableStateOf<ServiceBatch?>(null)
     }
 
@@ -507,22 +506,21 @@ private fun ServicePickerDialog(
     }, text = {
         if (currentServiceBatch != null) {
             Column {
-                OutlinedCard {
-                    ListItem(
-                        headlineContent = { Text(currentServiceBatch?.name ?: "") },
-                        leadingContent = {
-                            IconButton(onClick = {
-                                currentServiceBatch = null
-                            }) {
-                                Icon(
-                                    Icons.AutoMirrored.Outlined.ArrowBack,
-                                    stringResource(R.string.go_back)
-                                )
-                            }
-                        },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-                    )
-                }
+                ListItem(
+                    headlineContent = { Text(currentServiceBatch?.name ?: "") },
+                    leadingContent = {
+                        IconButton(onClick = {
+                            currentServiceBatch = null
+                        }) {
+                            Icon(
+                                Icons.AutoMirrored.Outlined.ArrowBack,
+                                stringResource(R.string.go_back)
+                            )
+                        }
+                    },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                )
+                HorizontalDivider()
                 LazyColumn {
                     items(currentServiceBatch?.services ?: emptyList()) { service ->
                         when (service.type) {

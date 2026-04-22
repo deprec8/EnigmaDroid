@@ -95,9 +95,9 @@ fun RadioPage(
             textFieldState = radioViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_events),
             content = {
-                filteredEvents?.let {
+                filteredEvents?.let { filterEvents ->
                     LiveContent(
-                        events = it,
+                        events = filterEvents,
                         paddingValues = PaddingValues(0.dp),
                         showChannelNumbers = false,
                         highlightedWords = highlightedWords,

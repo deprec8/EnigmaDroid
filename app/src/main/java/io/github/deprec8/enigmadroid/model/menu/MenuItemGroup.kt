@@ -19,6 +19,9 @@
 
 package io.github.deprec8.enigmadroid.model.menu
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class MenuItemGroup(
     val menuItems: List<MenuItem>,
 )

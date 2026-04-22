@@ -166,7 +166,7 @@ fun MoviesDirectoryPage(
                 moviesViewModel.updateSearchInput()
             },
             actionBar = {
-                MoviesActionBar(movieBatch)
+                MoviesActionBar(movieBatch, loadingState)
             })
     }
 

@@ -19,9 +19,11 @@
 
 package io.github.deprec8.enigmadroid.model.api.timers.services
 
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@Immutable
 @Serializable
 data class ServiceBatchSet(
     @SerialName("services") val serviceBatches: List<ServiceBatch> = emptyList()

@@ -55,6 +55,6 @@ Spotted an error? Jump in and fix it directly on Crowdin.
 
 ## Screenshots
 
-| <img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/1.jpg" alt="Navigation drawer" /> | <img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/2.jpg" alt="Live TV" />    | <img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/3.jpg" alt="Remote control" /> |
-|-------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
-| <img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/4.jpg" alt="Timers" />           | <img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/5.jpg" alt="Edit timer"/>   |<img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/6.jpg" alt="Device info"/> |
+| <img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/1.jpg" alt="Navigation drawer" /> | <img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/2.jpg" alt="Live TV" />   | <img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/3.jpg" alt="Remote control" /> |
+|-------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------|
+| <img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/4.jpg" alt="Timers" />            | <img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/5.jpg" alt="Edit timer"/> | <img src="./fastlane/metadata/android/en-US/images/phoneScreenshots/6.jpg" alt="Device info"/>     |

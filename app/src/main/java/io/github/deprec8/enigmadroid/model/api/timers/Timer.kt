@@ -19,11 +19,13 @@
 
 package io.github.deprec8.enigmadroid.model.api.timers
 
+import androidx.compose.runtime.Immutable
 import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
 import io.github.deprec8.enigmadroid.utils.LogEntrySerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@Immutable
 @Serializable
 data class Timer(
     @SerialName("begin") val beginTimestamp: Long = 0L,
