@@ -52,7 +52,6 @@ import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -63,6 +62,7 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -77,7 +77,6 @@ import androidx.compose.material3.TimePickerDialog
 import androidx.compose.material3.TimePickerDialogDefaults
 import androidx.compose.material3.TimePickerDialogDefaults.MinHeightForTimePicker
 import androidx.compose.material3.TimePickerDisplayMode
-import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
@@ -109,9 +108,9 @@ import io.github.deprec8.enigmadroid.utils.TimestampUtils
 @Composable
 fun TimerSetupDialog(
     oldTimer: Timer? = null,
+    serviceBatchSet: ServiceBatchSet?,
     onDismissRequest: () -> Unit,
     onSaveRequest: (newTimer: Timer, oldTimer: Timer?) -> Unit,
-    serviceBatchSet: ServiceBatchSet?,
 ) {
     val titleState = rememberTextFieldState(oldTimer?.title ?: "")
     val shortDescriptionState = rememberTextFieldState(oldTimer?.shortDescription ?: "")
@@ -139,17 +138,6 @@ fun TimerSetupDialog(
     var showBeginTimePicker by rememberSaveable { mutableStateOf(false) }
     var showEndTimePicker by rememberSaveable { mutableStateOf(false) }
     var showServicePicker by rememberSaveable { mutableStateOf(false) }
-
-    val beginTimeState = rememberTimePickerState(
-        initialHour = TimestampUtils.millisToHourInt(beginTimestamp),
-        initialMinute = TimestampUtils.millisToMinuteInt(beginTimestamp)
-    )
-    val endTimeState = rememberTimePickerState(
-        initialHour = TimestampUtils.millisToHourInt(endTimestamp),
-        initialMinute = TimestampUtils.millisToMinuteInt(endTimestamp)
-    )
-    val beginDateState = rememberDatePickerState(initialSelectedDateMillis = beginTimestamp)
-    val endDateState = rememberDatePickerState(initialSelectedDateMillis = endTimestamp)
 
     val toggleScrollState = rememberScrollState()
 
@@ -210,16 +198,24 @@ fun TimerSetupDialog(
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                     headlineContent = { Text(text = stringResource(R.string.service)) },
                     supportingContent = {
-                        Text(text = serviceBatchSet?.serviceBatches?.flatMap { it.services }
-                            ?.firstOrNull {
-                                it.serviceReference == serviceReference
-                            }?.serviceName ?: serviceReference.ifBlank {
-                            stringResource(R.string.no_service_selected)
-                        })
+                        if (serviceBatchSet != null) {
+                            Text(text = serviceBatchSet.serviceBatches.flatMap { it.services }
+                                .firstOrNull {
+                                    it.serviceReference == serviceReference
+                                }?.serviceName ?: serviceReference.ifBlank {
+                                stringResource(R.string.no_service_selected)
+                            })
+                        } else {
+                            LinearProgressIndicator(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp)
+                            )
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { showServicePicker = true })
+                        .clickable(serviceBatchSet != null) { showServicePicker = true })
                 Spacer(Modifier.size(8.dp))
                 OutlinedTextField(
                     state = titleState,
@@ -396,10 +392,10 @@ fun TimerSetupDialog(
                     ) {
                         DropdownMenuItem(
                             text = { Text(text = stringResource(R.string.automatic)) },
-                            onClick = { afterevent = 2 })
+                            onClick = { afterevent = 3 })
                         DropdownMenuItem(
                             text = { Text(text = stringResource(R.string.shutdown)) },
-                            onClick = { afterevent = 3 })
+                            onClick = { afterevent = 2 })
                         DropdownMenuItem(
                             text = { Text(text = stringResource(R.string.standby)) },
                             onClick = { afterevent = 1 })
@@ -446,51 +442,39 @@ fun TimerSetupDialog(
                 }
 
                 if (showBeginDatePicker) {
-                    DatePickerDialog(beginDateState, onDismissRequest = {
+                    SetupDatePickerDialog(timestamp = beginTimestamp, onDismissRequest = {
                         showBeginDatePicker = false
                     }, onSaveRequest = {
-                        beginTimestamp = TimestampUtils.combineDateTime(
-                            beginTimestamp, beginDateState.selectedDateMillis ?: beginTimestamp
-                        )
+                        beginTimestamp = it
                         showBeginDatePicker = false
                     })
                 }
 
                 if (showEndDatePicker) {
-                    DatePickerDialog(endDateState, onDismissRequest = {
+                    SetupDatePickerDialog(timestamp = endTimestamp, onDismissRequest = {
                         showEndDatePicker = false
                     }, onSaveRequest = {
-                        endTimestamp = TimestampUtils.combineDateTime(
-                            endTimestamp, endDateState.selectedDateMillis ?: endTimestamp
-                        )
+                        endTimestamp = it
                         showEndDatePicker = false
                     })
                 }
 
                 if (showBeginTimePicker) {
-                    TimePickerDialog(
-                        state = beginTimeState,
+                    SetupTimePickerDialog(
+                        timestamp = beginTimestamp,
                         onDismissRequest = { showBeginTimePicker = false },
                         onSaveRequest = {
-                            beginTimestamp = TimestampUtils.combineTimeDate(
-                                beginTimestamp, TimestampUtils.getMillisFromTimeString(
-                                    beginTimeState.hour.toString() + ":" + beginTimeState.minute.toString()
-                                )
-                            )
+                            beginTimestamp = it
                             showBeginTimePicker = false
                         })
                 }
 
                 if (showEndTimePicker) {
-                    TimePickerDialog(
-                        state = endTimeState,
+                    SetupTimePickerDialog(
+                        timestamp = endTimestamp,
                         onDismissRequest = { showEndTimePicker = false },
                         onSaveRequest = {
-                            endTimestamp = TimestampUtils.combineTimeDate(
-                                endTimestamp, TimestampUtils.getMillisFromTimeString(
-                                    endTimeState.hour.toString() + ":" + endTimeState.minute.toString()
-                                )
-                            )
+                            endTimestamp = it
                             showEndTimePicker = false
                         })
                 }
@@ -662,9 +646,13 @@ private fun ServicePickerDialog(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TimePickerDialog(
-    state: TimePickerState, onDismissRequest: () -> Unit, onSaveRequest: () -> Unit
+private fun SetupTimePickerDialog(
+    timestamp: Long, onDismissRequest: () -> Unit, onSaveRequest: (Long) -> Unit
 ) {
+    val state = rememberTimePickerState(
+        initialHour = TimestampUtils.millisToHourInt(timestamp),
+        initialMinute = TimestampUtils.millisToMinuteInt(timestamp)
+    )
     var displayMode by remember { mutableStateOf(TimePickerDisplayMode.Picker) }
 
     TimePickerDialog(
@@ -672,7 +660,13 @@ private fun TimePickerDialog(
         title = { TimePickerDialogDefaults.Title(displayMode = displayMode) },
         confirmButton = {
             TextButton(onClick = {
-                onSaveRequest()
+                onSaveRequest(
+                    TimestampUtils.combineTimeDate(
+                        timestamp, TimestampUtils.getMillisFromTimeString(
+                            state.hour.toString() + ":" + state.minute.toString()
+                        )
+                    )
+                )
             }) {
                 Text(stringResource(R.string.ok))
             }
@@ -705,15 +699,21 @@ private fun TimePickerDialog(
 }
 
 @Composable
-private fun DatePickerDialog(
-    state: DatePickerState, onDismissRequest: () -> Unit, onSaveRequest: () -> Unit
+private fun SetupDatePickerDialog(
+    timestamp: Long, onDismissRequest: () -> Unit, onSaveRequest: (Long) -> Unit
 ) {
+    val state = rememberDatePickerState(initialSelectedDateMillis = timestamp)
     val dateScrollState = rememberScrollState()
+
     DatePickerDialog(onDismissRequest = {
         onDismissRequest()
     }, confirmButton = {
         TextButton(onClick = {
-            onSaveRequest()
+            onSaveRequest(
+                TimestampUtils.combineDateTime(
+                    timestamp, state.selectedDateMillis ?: timestamp
+                )
+            )
         }) { Text(stringResource(R.string.ok)) }
 
     }, dismissButton = {

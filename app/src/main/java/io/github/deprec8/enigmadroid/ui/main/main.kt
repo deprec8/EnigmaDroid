@@ -89,7 +89,9 @@ fun MainPage(
         navigationState.topLevelRoute, navigationState.backStacks, isSmallScreenLayout
     ) {
         derivedStateOf {
-            navigationState.backStacks[navigationState.topLevelRoute]?.lastOrNull() != MainPages.RemoteControl && isSmallScreenLayout
+            navigationState.backStacks[navigationState.topLevelRoute]?.lastOrNull()?.let {
+                it != MainPages.RemoteControl
+            } == true && isSmallScreenLayout
         }
     }
 
