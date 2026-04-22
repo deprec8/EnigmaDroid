@@ -123,14 +123,12 @@ class TvViewModel @Inject constructor(
         return apiRepository.buildLiveStreamUrl(serviceReference)
     }
 
-    fun fetchData(forced: Boolean = false) {
+    fun fetchData() {
         fetchJob?.cancel()
-        if (forced) _eventBatches.value = null
+        _eventBatches.value = null
         fetchJob = viewModelScope.launch {
-            if (_eventBatches.value == null) {
-                apiRepository.fetchEventBatches(ApiType.TV).collect { events ->
-                    _eventBatches.value = _eventBatches.value?.plus(events) ?: listOf(events)
-                }
+            apiRepository.fetchEventBatches(ApiType.TV).collect { events ->
+                _eventBatches.value = _eventBatches.value?.plus(events) ?: listOf(events)
             }
         }
     }

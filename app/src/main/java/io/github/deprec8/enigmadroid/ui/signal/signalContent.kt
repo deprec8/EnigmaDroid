@@ -48,13 +48,15 @@ import io.github.deprec8.enigmadroid.model.api.SignalInfo
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 
 @Composable
-fun SignalContent(signalInfo: SignalInfo, paddingValues: PaddingValues) {
+fun SignalContent(
+    modifier: Modifier = Modifier, signalInfo: SignalInfo, paddingValues: PaddingValues
+) {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     val scrollState = rememberScrollState()
 
     if (signalInfo.inStandby == "false") {
         Column(
-            Modifier
+            modifier
                 .fillMaxSize()
                 .consumeWindowInsets(paddingValues)
                 .verticalScroll(scrollState)

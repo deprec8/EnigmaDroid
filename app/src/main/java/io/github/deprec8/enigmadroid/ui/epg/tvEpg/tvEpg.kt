@@ -94,9 +94,7 @@ fun TvEpgPage(
 
     Scaffold(floatingActionButton = {
         FloatingReloadButton(loadingState) {
-            tvEpgViewModel.fetchData(
-                forcedEpgBatchSet = true, forcedBouquets = true
-            )
+            tvEpgViewModel.fetchData()
         }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(

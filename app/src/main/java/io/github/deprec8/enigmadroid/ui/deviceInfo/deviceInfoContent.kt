@@ -46,11 +46,13 @@ import io.github.deprec8.enigmadroid.model.api.device.DeviceInfo
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 
 @Composable
-fun DeviceInfoContent(deviceInfo: DeviceInfo, paddingValues: PaddingValues) {
+fun DeviceInfoContent(
+    modifier: Modifier = Modifier, deviceInfo: DeviceInfo, paddingValues: PaddingValues
+) {
     if (deviceInfo != DeviceInfo()) {
         LazyVerticalGrid(
             columns = GridCells.Adaptive(310.dp),
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .consumeWindowInsets(paddingValues),
             contentPadding = paddingValues

@@ -92,7 +92,7 @@ fun MoviesDirectoryPage(
     }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(loadingState) { moviesViewModel.fetchData(true) }
+        FloatingReloadButton(loadingState) { moviesViewModel.fetchData() }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
             enabled = movieBatch != MovieBatch() && loadingState == LoadingState.LOADED,

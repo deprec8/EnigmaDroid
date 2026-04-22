@@ -59,13 +59,11 @@ class SignalViewModel @Inject constructor(
         loadingRepository.updateLoadingState(isForcedUpdate)
     }
 
-    fun fetchData(forced: Boolean = false) {
+    fun fetchData() {
         fetchJob?.cancel()
-        if (forced) _signalInfo.value = null
-        viewModelScope.launch {
-            if (_signalInfo.value == null) {
-                _signalInfo.value = apiRepository.fetchSignalInfo()
-            }
+        _signalInfo.value = null
+        fetchJob = viewModelScope.launch {
+            _signalInfo.value = apiRepository.fetchSignalInfo()
         }
     }
 }

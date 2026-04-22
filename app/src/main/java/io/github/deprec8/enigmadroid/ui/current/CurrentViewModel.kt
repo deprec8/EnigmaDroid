@@ -59,13 +59,11 @@ class CurrentViewModel @Inject constructor(
         loadingRepository.updateLoadingState(isForcedUpdate)
     }
 
-    fun fetchData(forced: Boolean = false) {
+    fun fetchData() {
         fetchJob?.cancel()
-        if (forced) _currentInfo.value = null
+        _currentInfo.value = null
         fetchJob = viewModelScope.launch {
-            if (_currentInfo.value == null) {
-                _currentInfo.value = apiRepository.fetchCurrentInfo()
-            }
+            _currentInfo.value = apiRepository.fetchCurrentInfo()
         }
     }
 

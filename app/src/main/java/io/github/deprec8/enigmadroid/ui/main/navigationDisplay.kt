@@ -19,23 +19,30 @@
 
 package io.github.deprec8.enigmadroid.ui.main
 
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.metadata
 import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
 import io.github.deprec8.enigmadroid.model.navigation.MainPages
 import io.github.deprec8.enigmadroid.model.navigation.SettingsPages
-import io.github.deprec8.enigmadroid.ui.components.dialogs.DialogSystemUiHelper
-import io.github.deprec8.enigmadroid.ui.components.navigation.NavigationState
+import io.github.deprec8.enigmadroid.ui.components.navigation.DrawerSceneDecoratorStrategy
+import io.github.deprec8.enigmadroid.ui.components.navigation.LocalSharedTransitionScope
 import io.github.deprec8.enigmadroid.ui.components.navigation.Navigator
 import io.github.deprec8.enigmadroid.ui.components.navigation.toEntries
 import io.github.deprec8.enigmadroid.ui.current.CurrentPage
@@ -61,10 +68,60 @@ import io.github.deprec8.enigmadroid.ui.timers.TimersPage
 
 @Composable
 fun NavigationDisplay(
-    navigator: Navigator, navigationState: NavigationState, drawerState: DrawerState
+    navigator: Navigator,
+    drawerState: DrawerState,
+    drawerSceneDecoratorStrategy: DrawerSceneDecoratorStrategy<NavKey>
 ) {
+    val density = LocalDensity.current
+    val slideDistance = remember(density) { with(density) { 30.dp.roundToPx() } }
+
+    val sharedAxisXForward: ContentTransform = (slideInHorizontally(
+        animationSpec = tween(300), initialOffsetX = { slideDistance }) + fadeIn(
+        animationSpec = tween(300)
+    )) togetherWith (slideOutHorizontally(
+        animationSpec = tween(300), targetOffsetX = { - slideDistance }) + fadeOut(
+        animationSpec = tween(300)
+    ))
+
+    val sharedAxisXBackward: ContentTransform = (slideInHorizontally(
+        animationSpec = tween(300), initialOffsetX = { - slideDistance }) + fadeIn(
+        animationSpec = tween(300)
+    )) togetherWith (slideOutHorizontally(
+        animationSpec = tween(300), targetOffsetX = { slideDistance }) + fadeOut(
+        animationSpec = tween(300)
+    ))
+
+    val fadeThrough: ContentTransform =
+        (fadeIn(animationSpec = tween(300))) togetherWith (fadeOut(animationSpec = tween(300)))
+
+    val fadeThroughTransition = metadata {
+        put(NavDisplay.TransitionKey) {
+            fadeThrough
+        }
+        put(NavDisplay.PopTransitionKey) {
+            fadeThrough
+        }
+        put(NavDisplay.PredictivePopTransitionKey) {
+            fadeThrough
+        }
+    }
+
+    val sharedAxisXTransition = metadata {
+        put(NavDisplay.TransitionKey) {
+            sharedAxisXForward
+        }
+        put(NavDisplay.PopTransitionKey) {
+            sharedAxisXBackward
+        }
+        put(NavDisplay.PredictivePopTransitionKey) {
+            sharedAxisXBackward
+        }
+    }
+
     val entryProvider = entryProvider {
-        entry<MainPages.Tv> {
+        entry<MainPages.Tv>(
+            metadata = DrawerSceneDecoratorStrategy.drawerScene() + fadeThroughTransition
+        ) {
             TvPage(
                 onNavigateToRemoteControl = { navigator.navigate(MainPages.RemoteControl) },
                 onNavigateToServiceEpg = { serviceReference, serviceName ->
@@ -77,7 +134,9 @@ fun NavigationDisplay(
                 drawerState
             )
         }
-        entry<MainPages.ServiceEpg> { backStackEntry ->
+        entry<MainPages.ServiceEpg>(
+            metadata = DrawerSceneDecoratorStrategy.drawerScene() + sharedAxisXTransition
+        ) { backStackEntry ->
             val serviceEpgViewModel: ServiceEpgViewModel = hiltViewModel()
             LaunchedEffect(backStackEntry) {
                 serviceEpgViewModel.initialize(backStackEntry.serviceReference)
@@ -88,7 +147,9 @@ fun NavigationDisplay(
                 serviceEpgViewModel
             )
         }
-        entry<MainPages.Movies> {
+        entry<MainPages.Movies>(
+            metadata = DrawerSceneDecoratorStrategy.drawerScene() + fadeThroughTransition
+        ) {
             MoviesPage(
                 onNavigateToRemoteControl = { navigator.navigate(MainPages.RemoteControl) },
                 onNavigateToDirectory = { path, preloadBatch ->
@@ -97,7 +158,9 @@ fun NavigationDisplay(
                 drawerState
             )
         }
-        entry<MainPages.MoviesDirectory> { backStackEntry ->
+        entry<MainPages.MoviesDirectory>(
+            metadata = DrawerSceneDecoratorStrategy.drawerScene() + sharedAxisXTransition
+        ) { backStackEntry ->
             val moviesViewModel: MoviesViewModel = hiltViewModel()
             LaunchedEffect(backStackEntry) {
                 moviesViewModel.initialize(backStackEntry.path, backStackEntry.preloadBatch)
@@ -116,19 +179,25 @@ fun NavigationDisplay(
                 moviesViewModel
             )
         }
-        entry<MainPages.TvEpg> {
+        entry<MainPages.TvEpg>(
+            metadata = DrawerSceneDecoratorStrategy.drawerScene() + fadeThroughTransition
+        ) {
             TvEpgPage(
                 onNavigateToRemoteControl = { navigator.navigate(MainPages.RemoteControl) },
                 drawerState
             )
         }
-        entry<MainPages.RadioEpg> {
+        entry<MainPages.RadioEpg>(
+            metadata = DrawerSceneDecoratorStrategy.drawerScene() + fadeThroughTransition
+        ) {
             RadioEpgPage(
                 onNavigateToRemoteControl = { navigator.navigate(MainPages.RemoteControl) },
                 drawerState
             )
         }
-        entry<MainPages.Current> {
+        entry<MainPages.Current>(
+            metadata = DrawerSceneDecoratorStrategy.drawerScene() + fadeThroughTransition
+        ) {
             CurrentPage(
                 onNavigateToRemoteControl = { navigator.navigate(MainPages.RemoteControl) },
                 onNavigateToServiceEpg = { serviceReference, serviceName ->
@@ -141,7 +210,9 @@ fun NavigationDisplay(
                 drawerState = drawerState
             )
         }
-        entry<MainPages.Radio> {
+        entry<MainPages.Radio>(
+            metadata = DrawerSceneDecoratorStrategy.drawerScene() + fadeThroughTransition
+        ) {
             RadioPage(
                 onNavigateToRemoteControl = { navigator.navigate(MainPages.RemoteControl) },
                 onNavigateToServiceEpg = { serviceReference, serviceName ->
@@ -154,78 +225,91 @@ fun NavigationDisplay(
                 drawerState
             )
         }
-        entry<MainPages.Timers> {
+        entry<MainPages.Timers>(
+            metadata = DrawerSceneDecoratorStrategy.drawerScene() + fadeThroughTransition
+        ) {
             TimersPage(
                 onNavigateToRemoteControl = { navigator.navigate(MainPages.RemoteControl) },
                 drawerState
             )
         }
-        entry<MainPages.Signal> {
+        entry<MainPages.Signal>(
+            metadata = DrawerSceneDecoratorStrategy.drawerScene() + fadeThroughTransition
+        ) {
             SignalPage(
                 onNavigateToRemoteControl = { navigator.navigate(MainPages.RemoteControl) },
                 drawerState
             )
         }
-        entry<MainPages.DeviceInfo> {
+        entry<MainPages.DeviceInfo>(
+            metadata = DrawerSceneDecoratorStrategy.drawerScene() + fadeThroughTransition
+        ) {
             DeviceInfoPage(
                 onNavigateToRemoteControl = { navigator.navigate(MainPages.RemoteControl) },
                 drawerState
             )
         }
-        entry<MainPages.Settings> {
+        entry<MainPages.Settings>(
+            metadata = DrawerSceneDecoratorStrategy.drawerScene() + fadeThroughTransition
+        ) {
             SettingsPage(
                 drawerState, onNavigateToSettingsPage = {
                     navigator.navigate(it)
                 })
         }
-        entry<SettingsPages.About> {
+        entry<SettingsPages.About>(
+            metadata = DrawerSceneDecoratorStrategy.drawerScene() + sharedAxisXTransition
+        ) {
             AboutPage(onNavigateBack = { navigator.goBack() }, onNavigateToLibraries = {
                 navigator.navigate(SettingsPages.Libraries)
             })
         }
-        entry<SettingsPages.Libraries> {
+        entry<SettingsPages.Libraries>(
+            metadata = DrawerSceneDecoratorStrategy.drawerScene() + sharedAxisXTransition
+        ) {
             LibrariesPage(
                 onNavigateBack = { navigator.goBack() })
         }
-        entry<SettingsPages.Devices> {
+        entry<SettingsPages.Devices>(
+            metadata = DrawerSceneDecoratorStrategy.drawerScene() + sharedAxisXTransition
+        ) {
             DevicesPage(
                 onNavigateBack = {
                     navigator.goBack()
                 })
         }
-        entry<SettingsPages.RemoteControl> {
+        entry<SettingsPages.RemoteControl>(
+            metadata = DrawerSceneDecoratorStrategy.drawerScene() + sharedAxisXTransition
+        ) {
             RemoteControlSettingsPage(
                 onNavigateBack = {
                     navigator.goBack()
                 })
         }
-        entry<SettingsPages.Search> {
+        entry<SettingsPages.Search>(
+            metadata = DrawerSceneDecoratorStrategy.drawerScene() + sharedAxisXTransition
+        ) {
             SearchSettingsPage(
                 onNavigateBack = {
                     navigator.goBack()
                 })
         }
-        entry<MainPages.RemoteControl>(
-            metadata = DialogSceneStrategy.dialog(
-                DialogProperties(
-                    dismissOnClickOutside = false,
-                    decorFitsSystemWindows = false,
-                    usePlatformDefaultWidth = false
-                )
-            ),
-        ) {
-            DialogSystemUiHelper()
+        entry<MainPages.RemoteControl>(metadata = sharedAxisXTransition) {
             RemoteControlPage(onNavigateBack = {
                 navigator.goBack()
             })
         }
     }
 
+    val sharedTransitionScope = LocalSharedTransitionScope.current
+
     Surface {
         NavDisplay(
-            entries = navigationState.toEntries(entryProvider),
+            entries = navigator.state.toEntries(entryProvider),
+            sharedTransitionScope = sharedTransitionScope,
             onBack = { navigator.goBack() },
             sceneStrategies = remember { listOf(DialogSceneStrategy()) },
+            sceneDecoratorStrategies = listOf(drawerSceneDecoratorStrategy),
             transitionSpec = {
                 fadeIn() togetherWith fadeOut()
             },

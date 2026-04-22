@@ -27,6 +27,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -36,7 +37,6 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Dvr
@@ -62,7 +62,6 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Speed
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -78,7 +77,6 @@ import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -91,22 +89,17 @@ import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.model.drawer.DrawerPage
 import io.github.deprec8.enigmadroid.model.drawer.DrawerPageGroup
 import io.github.deprec8.enigmadroid.model.navigation.MainPages
-import io.github.deprec8.enigmadroid.ui.components.navigation.NavigationState
-import kotlinx.coroutines.launch
 
 @Composable
 fun NavDrawerContent(
     currentDevice: Device?,
     loadingState: LoadingState,
+    currentTopLevelRoute: NavKey,
+    scrollState: ScrollState,
     onOpenOwif: () -> Unit,
     onUpdateDeviceStatus: () -> Unit,
-    onNavigate: (navKey: NavKey) -> Unit,
-    navigationState: NavigationState,
-    drawerState: DrawerState
+    onNavigate: (NavKey) -> Unit
 ) {
-    val scope = rememberCoroutineScope()
-    val scrollState = rememberScrollState()
-
     val drawerPageGroups = listOf(
         DrawerPageGroup(
             stringResource(R.string.content), listOf(
@@ -173,14 +166,6 @@ fun NavDrawerContent(
         )
     )
 
-    fun closeNavDrawer() {
-        scope.launch {
-            drawerState.apply {
-                close()
-            }
-        }
-    }
-
     Column(
         Modifier
             .verticalScroll(scrollState)
@@ -210,10 +195,9 @@ fun NavDrawerContent(
             group.pages.forEach { drawerPage ->
                 DrawerItem(
                     drawerPage,
-                    isSelected = navigationState.topLevelRoute == drawerPage.navKey,
+                    isSelected = currentTopLevelRoute == drawerPage.navKey,
                     onNavigate = {
                         onNavigate(drawerPage.navKey)
-                        closeNavDrawer()
                     })
             }
         }
