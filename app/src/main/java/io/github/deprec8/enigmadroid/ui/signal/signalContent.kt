@@ -34,7 +34,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,17 +41,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.model.api.SignalInfo
-import io.github.deprec8.enigmadroid.ui.components.NoResults
+import io.github.deprec8.enigmadroid.ui.components.isSmallScreenLayout
 
 @Composable
 fun SignalContent(
     modifier: Modifier = Modifier, signalInfo: SignalInfo, paddingValues: PaddingValues
 ) {
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     val scrollState = rememberScrollState()
+    val isExpandedScreenLayout = ! isSmallScreenLayout()
 
     if (signalInfo.inStandby == "false") {
         Column(
@@ -62,7 +60,7 @@ fun SignalContent(
                 .verticalScroll(scrollState)
                 .padding(paddingValues), verticalArrangement = Arrangement.Center
         ) {
-            if (windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)) {
+            if (isExpandedScreenLayout) {
                 Row {
                     Box(
                         contentAlignment = Alignment.Center,
@@ -157,10 +155,15 @@ fun SignalContent(
             }
         }
     } else {
-        NoResults(
-            Modifier
+        Box(
+            modifier = modifier
+                .fillMaxSize()
                 .consumeWindowInsets(paddingValues)
-                .padding(paddingValues)
-        )
+                .padding(paddingValues), contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = stringResource(R.string.standby), textAlign = TextAlign.Center
+            )
+        }
     }
 }

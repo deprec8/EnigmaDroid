@@ -99,7 +99,7 @@ fun SignalPage(
                 loadingState = loadingState,
                 onUpdateLoadingState = {
                     scope.launch {
-                        signalViewModel.updateLoadingState(false)
+                        signalViewModel.updateLoadingState(it)
                     }
                 })
         }
