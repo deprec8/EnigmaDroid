@@ -24,7 +24,6 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.DriveFileMove
 import androidx.compose.material.icons.filled.Error
-import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
@@ -116,29 +115,4 @@ fun MoveMovieDialog(
             onDismissRequest()
         }) { Text(stringResource(R.string.cancel)) }
     })
-}
-
-@Composable
-fun DeleteMovieDialog(onDismissRequest: () -> Unit, onConfirmRequest: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = {
-            onDismissRequest()
-        },
-        title = { Text(text = stringResource(R.string.delete_movie)) },
-        text = { Text(text = stringResource(R.string.delete_movie_warning)) },
-        icon = {
-            Icon(
-                Icons.Outlined.Delete, contentDescription = null
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = {
-                onConfirmRequest()
-            }) { Text(stringResource(R.string.confirm)) }
-        },
-        dismissButton = {
-            TextButton(onClick = {
-                onDismissRequest()
-            }) { Text(stringResource(R.string.cancel)) }
-        })
 }

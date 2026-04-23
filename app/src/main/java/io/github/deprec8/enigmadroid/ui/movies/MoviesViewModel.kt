@@ -205,10 +205,9 @@ class MoviesViewModel @Inject constructor(
         searchInput.value = input
     }
 
-    suspend fun buildMovieStreamUrl(serviceReference: String): String {
-        return apiRepository.buildMovieStreamUrl(serviceReference)
+    suspend fun buildMovieStreamUrl(fileName: String): String {
+        return apiRepository.buildMovieStreamUrl(fileName)
     }
-
 
     fun playOnDevice(serviceReference: String) {
         viewModelScope.launch {

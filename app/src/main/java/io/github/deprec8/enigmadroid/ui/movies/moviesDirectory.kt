@@ -95,7 +95,7 @@ fun MoviesDirectoryPage(
         FloatingReloadButton(loadingState) { moviesViewModel.fetchData() }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = movieBatch != MovieBatch() && loadingState == LoadingState.LOADED,
+            enabled = movieBatch?.movies?.isNotEmpty() == true && loadingState == LoadingState.LOADED,
             textFieldState = moviesViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_movies),
             content = {
