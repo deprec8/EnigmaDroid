@@ -21,6 +21,7 @@ package io.github.deprec8.enigmadroid.data.source.local.devices
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtonType
 
 @Entity
 data class Device(
@@ -33,4 +34,53 @@ data class Device(
     val password: String = "",
     val port: String = "",
     val livePort: String = "",
-)
+) {
+
+    fun buildUrl(endpoint: String) = buildString {
+        append(if (isHttps) "https://" else "http://")
+        if (isLogin) {
+            append("${user}:${password}@")
+        }
+        append("${ip}:${port}/api/${endpoint.replace(" ", "%20")}")
+    }
+
+    fun buildUrl(button: RemoteControlButtonType) = buildString {
+        append(if (isHttps) "https://" else "http://")
+        if (isLogin) {
+            append("${user}:${password}@")
+        }
+        append("${ip}:${port}/web/remotecontrol?command=${button.id}")
+    }
+
+    fun buildOwifUrl() = buildString {
+        append(if (isHttps) "https://" else "http://")
+        if (isLogin) {
+            append("${user}:${password}@")
+        }
+        append("${ip}:${port}")
+    }
+
+    fun buildMovieStreamUrl(file: String) = buildString {
+        append(if (isHttps) "https://" else "http://")
+        if (isLogin) {
+            append("${user}:${password}@")
+        }
+        append("${ip}:${port}/file?file=${file.replace(" ", "%20")}")
+    }
+
+    fun buildLiveStreamUrl(serviceReference: String) = buildString {
+        append("http://")
+        if (isLogin) {
+            append("${user}:${password}@")
+        }
+        append("${ip}:${livePort}/${serviceReference.replace(" ", "%20")}")
+    }
+
+    fun buildScreenshotUrl() = buildString {
+        append(if (isHttps) "https://" else "http://")
+        if (isLogin) {
+            append("${user}:${password}@")
+        }
+        append("${ip}:${port}/grab?format=png")
+    }
+}

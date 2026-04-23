@@ -83,52 +83,13 @@ class ApiRepository @Inject constructor(
         isLenient = true
     }
 
-    suspend fun buildOwifUrl(): String = withContext(Dispatchers.Default) {
-        getCurrentDevice()?.let { device ->
-            buildString {
-                append(if (device.isHttps) "https://" else "http://")
-                if (device.isLogin) {
-                    append("${device.user}:${device.password}@")
-                }
-                append("${device.ip}:${device.port}")
-            }
-        } ?: ""
-    }
+    suspend fun buildOwifUrl(): String = getCurrentDevice()?.buildOwifUrl() ?: ""
 
     suspend fun buildLiveStreamUrl(serviceReference: String): String =
-        withContext(Dispatchers.Default) {
-            getCurrentDevice()?.let { device ->
-                buildString {
-                    append("http://")
-                    if (device.isLogin) {
-                        append("${device.user}:${device.password}@")
-                    }
-                    append(
-                        "${device.ip}:${device.livePort}/${
-                            serviceReference.replace(
-                                " ", "%20"
-                            )
-                        }"
-                    )
-                }
-            } ?: ""
-        }
+        getCurrentDevice()?.buildLiveStreamUrl(serviceReference) ?: ""
 
-    suspend fun buildMovieStreamUrl(file: String): String = withContext(Dispatchers.Default) {
-        getCurrentDevice()?.let { device ->
-            buildString {
-                if (device.isHttps) {
-                    append("https://")
-                } else {
-                    append("http://")
-                }
-                if (device.isLogin) {
-                    append("${device.user}:${device.password}@")
-                }
-                append("${device.ip}:${device.port}/file?file=${file.replace(" ", "%20")}")
-            }
-        } ?: ""
-    }
+    suspend fun buildMovieStreamUrl(file: String): String =
+        getCurrentDevice()?.buildMovieStreamUrl(file) ?: ""
 
     private fun EntryType.shouldBeNumbered(): Boolean {
         return when (this) {

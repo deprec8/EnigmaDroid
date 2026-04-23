@@ -31,10 +31,8 @@ import io.github.deprec8.enigmadroid.data.objects.PreferenceKey
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.data.source.local.devices.DeviceDatabase
 import io.github.deprec8.enigmadroid.model.api.movies.Movie
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 
 class DownloadRepository(
     private val context: Context,
@@ -56,42 +54,14 @@ class DownloadRepository(
         }
     }
 
-    private suspend fun buildMovieDownloadUrl(
-        file: String,
-    ): String = withContext(Dispatchers.Default) {
-        getCurrentDevice()?.let { device ->
-            buildString {
-                append(if (device.isHttps) "https://" else "http://")
-                if (device.isLogin) {
-                    append("${device.user}:${device.password}@")
-                }
-                append("${device.ip}:${device.port}")
-                append("/file?file=${file.replace(" ", "%20")}")
-            }
-        }
-    } ?: ""
-
-    private suspend fun buildScreenshotUrl(): String = withContext(Dispatchers.Default) {
-        getCurrentDevice()?.let { device ->
-            buildString {
-                append(if (device.isHttps) "https://" else "http://")
-                if (device.isLogin) {
-                    append("${device.user}:${device.password}@")
-                }
-                append("${device.ip}:${device.port}")
-                append("/grab?format=png")
-            }
-        }
-    } ?: ""
-
     suspend fun downloadMovie(movie: Movie) {
-        val request = DownloadManager.Request(buildMovieDownloadUrl(movie.fileName).toUri()).apply {
+        val url = getCurrentDevice()?.buildMovieStreamUrl(movie.fileName) ?: return
+        val request = DownloadManager.Request(url.toUri()).apply {
             setTitle(context.getString(R.string.downloading, movie.eventName))
             setMimeType("video/mp4")
             setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
             setDestinationInExternalPublicDir(
-                Environment.DIRECTORY_MOVIES,
-                "${movie.eventName}.mp4"
+                Environment.DIRECTORY_MOVIES, "${movie.eventName}.mp4"
             )
         }
 
@@ -100,7 +70,8 @@ class DownloadRepository(
     }
 
     suspend fun fetchScreenshot() {
-        val request = DownloadManager.Request(buildScreenshotUrl().toUri()).apply {
+        val url = getCurrentDevice()?.buildScreenshotUrl() ?: return
+        val request = DownloadManager.Request(url.toUri()).apply {
             setTitle(context.getString(R.string.fetching_screenshot))
             setMimeType("image/png")
             setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)

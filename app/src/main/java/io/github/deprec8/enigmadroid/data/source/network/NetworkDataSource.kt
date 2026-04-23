@@ -39,11 +39,9 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpHeaders
 import io.ktor.utils.io.CancellationException
 import io.ktor.utils.io.ClosedByteChannelException
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 import okhttp3.ConnectionPool
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -132,33 +130,6 @@ class NetworkDataSource @Inject constructor(
         }
     }
 
-    private suspend fun buildUrl(endpoint: String): String = withContext(Dispatchers.Default) {
-        getCurrentDevice()?.let { device ->
-            buildString {
-                append(if (device.isHttps) "https://" else "http://")
-                if (device.isLogin) {
-                    append("${device.user}:${device.password}@")
-                }
-                append("${device.ip}:${device.port}")
-                append("/api/${endpoint.replace(" ", "%20")}")
-            }
-        }
-    } ?: ""
-
-    private suspend fun buildUrl(button: RemoteControlButtonType): String =
-        withContext(Dispatchers.Default) {
-            getCurrentDevice()?.let { device ->
-                buildString {
-                    append(if (device.isHttps) "https://" else "http://")
-
-                    if (device.isLogin) {
-                        append("${device.user}:${device.password}@")
-                    }
-                    append("${device.ip}:${device.port}/web/remotecontrol?command=${button.id}")
-                }
-            } ?: ""
-        }
-
     fun isNetworkAvailable(): Boolean {
         val connectivityManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -169,7 +140,8 @@ class NetworkDataSource @Inject constructor(
     }
 
     suspend fun isDeviceOnline(): Boolean = try {
-        checkClient.get(buildUrl("currenttime")) {
+        val url = getCurrentDevice()?.buildUrl("currenttime") ?: throw NullPointerException()
+        checkClient.get(url) {
             header(HttpHeaders.Connection, "close")
         }
         true
@@ -184,7 +156,8 @@ class NetworkDataSource @Inject constructor(
 
     suspend fun postApi(endpoint: String) {
         try {
-            client.get(buildUrl(endpoint)) {
+            val url = getCurrentDevice()?.buildUrl(endpoint) ?: throw NullPointerException()
+            client.get(url) {
                 header(HttpHeaders.Connection, "close")
             }
         } catch (e: Exception) {
@@ -198,7 +171,8 @@ class NetworkDataSource @Inject constructor(
 
     suspend fun postApi(button: RemoteControlButtonType) {
         try {
-            client.get(buildUrl(button)) {
+            val url = getCurrentDevice()?.buildUrl(button) ?: throw NullPointerException()
+            client.get(url) {
                 header(HttpHeaders.Connection, "close")
             }
         } catch (e: Exception) {
@@ -211,7 +185,8 @@ class NetworkDataSource @Inject constructor(
     }
 
     suspend fun fetchApi(endpoint: String): String = try {
-        client.get(buildUrl(endpoint)) {
+        val url = getCurrentDevice()?.buildUrl(endpoint) ?: throw NullPointerException()
+        client.get(url) {
             header(HttpHeaders.Connection, "close")
         }.bodyAsText()
     } catch (e: Exception) {

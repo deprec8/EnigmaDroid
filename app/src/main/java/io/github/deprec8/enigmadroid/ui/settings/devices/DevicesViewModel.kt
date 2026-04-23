@@ -54,13 +54,7 @@ class DevicesViewModel @Inject constructor(private val devicesRepository: Device
         }
     }
 
-    fun buildDeviceOwifUrl(device: Device) = buildString {
-        append(if (device.isHttps) "https://" else "http://")
-        if (device.isLogin) {
-            append("${device.user}:${device.password}@")
-        }
-        append("${device.ip}:${device.port}")
-    }
+    fun buildDeviceOwifUrl(device: Device) = device.buildOwifUrl()
 
     fun setCurrentDevice(listId: Int) {
         viewModelScope.launch {
