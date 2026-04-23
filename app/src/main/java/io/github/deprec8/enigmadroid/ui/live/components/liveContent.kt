@@ -19,7 +19,6 @@
 
 package io.github.deprec8.enigmadroid.ui.live.components
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,25 +34,16 @@ import androidx.compose.material.icons.automirrored.outlined.Dvr
 import androidx.compose.material.icons.filled.Cast
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Videocam
-import androidx.compose.material.icons.outlined.AutoAwesomeMosaic
-import androidx.compose.material.icons.outlined.Bookmark
 import androidx.compose.material.icons.outlined.Cast
-import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.Videocam
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.EntryType
@@ -62,6 +52,7 @@ import io.github.deprec8.enigmadroid.model.menu.MenuItem
 import io.github.deprec8.enigmadroid.model.menu.MenuItemGroup
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.content.ContentListItem
+import io.github.deprec8.enigmadroid.ui.components.content.EntryListItem
 import io.github.deprec8.enigmadroid.utils.IntentUtils
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
 import kotlinx.coroutines.launch
@@ -115,8 +106,8 @@ fun LiveContent(
                                 null
                             },
                             supportingText = event.title,
-                            additionalInfo = "${TimestampUtils.formatApiTimestampToTime(event.beginTimestamp)} - " + TimestampUtils.formatApiTimestampToTime(
-                                event.beginTimestamp + event.durationInSeconds
+                            additionalInfo = TimestampUtils.formatEventTimeRange(
+                                event.beginTimestamp, event.durationInSeconds
                             ),
                             menuItemGroups = listOf(
                                 MenuItemGroup(
@@ -167,64 +158,10 @@ fun LiveContent(
                             additionalDescription = event.genre
                         )
                     }
-                    EntryType.MARKER  -> {
-                        Column {
-                            ListItem(
-                                headlineContent = {
-                                    Text(
-                                        event.serviceName,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                },
-                                leadingContent = {
-                                    Icon(Icons.Outlined.Bookmark, stringResource(R.string.marker))
-                                },
-                                colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-                            )
-                            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-                        }
+                    EntryType.MARKER, EntryType.DIRECTORY, EntryType.GROUP -> {
+                        EntryListItem(event.serviceName, event.type)
                     }
-                    EntryType.DIRECTORY -> {
-                        Column {
-                            ListItem(
-                                headlineContent = {
-                                    Text(
-                                        event.serviceName,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                },
-                                leadingContent = {
-                                    Icon(Icons.Outlined.Folder, stringResource(R.string.directory))
-                                },
-                                colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-                            )
-                            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-                        }
-                    }
-                    EntryType.GROUP   -> {
-                        Column {
-                            ListItem(
-                                headlineContent = {
-                                    Text(
-                                        event.serviceName,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                },
-                                leadingContent = {
-                                    Icon(
-                                        Icons.Outlined.AutoAwesomeMosaic,
-                                        stringResource(R.string.group)
-                                    )
-                                },
-                                colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-                            )
-                            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-                        }
-                    }
-                    else              -> {}
+                    else -> {}
                 }
 
             }
