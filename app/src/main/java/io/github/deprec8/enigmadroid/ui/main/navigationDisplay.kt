@@ -118,9 +118,12 @@ fun NavigationDisplay(
         }
     }
 
+    val drawerFade = DrawerSceneDecoratorStrategy.drawerScene() + fadeThroughTransition
+    val drawerAxisX = DrawerSceneDecoratorStrategy.drawerScene() + sharedAxisXTransition
+
     val entryProvider = entryProvider {
         entry<MainPages.Tv>(
-            metadata = DrawerSceneDecoratorStrategy.drawerScene() + fadeThroughTransition
+            metadata = drawerFade
         ) {
             TvPage(
                 onNavigateToRemoteControl = { navigator.navigate(MainPages.RemoteControl) },
@@ -135,7 +138,7 @@ fun NavigationDisplay(
             )
         }
         entry<MainPages.ServiceEpg>(
-            metadata = DrawerSceneDecoratorStrategy.drawerScene() + sharedAxisXTransition
+            metadata = drawerAxisX
         ) { backStackEntry ->
             val serviceEpgViewModel: ServiceEpgViewModel = hiltViewModel()
             LaunchedEffect(backStackEntry) {
@@ -148,7 +151,7 @@ fun NavigationDisplay(
             )
         }
         entry<MainPages.Movies>(
-            metadata = DrawerSceneDecoratorStrategy.drawerScene() + fadeThroughTransition
+            metadata = drawerFade
         ) {
             MoviesPage(
                 onNavigateToRemoteControl = { navigator.navigate(MainPages.RemoteControl) },
@@ -159,7 +162,7 @@ fun NavigationDisplay(
             )
         }
         entry<MainPages.MoviesDirectory>(
-            metadata = DrawerSceneDecoratorStrategy.drawerScene() + sharedAxisXTransition
+            metadata = drawerAxisX
         ) { backStackEntry ->
             val moviesViewModel: MoviesViewModel = hiltViewModel()
             LaunchedEffect(backStackEntry) {
@@ -180,7 +183,7 @@ fun NavigationDisplay(
             )
         }
         entry<MainPages.TvEpg>(
-            metadata = DrawerSceneDecoratorStrategy.drawerScene() + fadeThroughTransition
+            metadata = drawerFade
         ) {
             TvEpgPage(
                 onNavigateToRemoteControl = { navigator.navigate(MainPages.RemoteControl) },
@@ -188,7 +191,7 @@ fun NavigationDisplay(
             )
         }
         entry<MainPages.RadioEpg>(
-            metadata = DrawerSceneDecoratorStrategy.drawerScene() + fadeThroughTransition
+            metadata = drawerFade
         ) {
             RadioEpgPage(
                 onNavigateToRemoteControl = { navigator.navigate(MainPages.RemoteControl) },
@@ -196,7 +199,7 @@ fun NavigationDisplay(
             )
         }
         entry<MainPages.Current>(
-            metadata = DrawerSceneDecoratorStrategy.drawerScene() + fadeThroughTransition
+            metadata = drawerFade
         ) {
             CurrentPage(
                 onNavigateToRemoteControl = { navigator.navigate(MainPages.RemoteControl) },
@@ -211,7 +214,7 @@ fun NavigationDisplay(
             )
         }
         entry<MainPages.Radio>(
-            metadata = DrawerSceneDecoratorStrategy.drawerScene() + fadeThroughTransition
+            metadata = drawerFade
         ) {
             RadioPage(
                 onNavigateToRemoteControl = { navigator.navigate(MainPages.RemoteControl) },
@@ -226,7 +229,7 @@ fun NavigationDisplay(
             )
         }
         entry<MainPages.Timers>(
-            metadata = DrawerSceneDecoratorStrategy.drawerScene() + fadeThroughTransition
+            metadata = drawerFade
         ) {
             TimersPage(
                 onNavigateToRemoteControl = { navigator.navigate(MainPages.RemoteControl) },
@@ -234,7 +237,7 @@ fun NavigationDisplay(
             )
         }
         entry<MainPages.Signal>(
-            metadata = DrawerSceneDecoratorStrategy.drawerScene() + fadeThroughTransition
+            metadata = drawerFade
         ) {
             SignalPage(
                 onNavigateToRemoteControl = { navigator.navigate(MainPages.RemoteControl) },
@@ -242,7 +245,7 @@ fun NavigationDisplay(
             )
         }
         entry<MainPages.DeviceInfo>(
-            metadata = DrawerSceneDecoratorStrategy.drawerScene() + fadeThroughTransition
+            metadata = drawerFade
         ) {
             DeviceInfoPage(
                 onNavigateToRemoteControl = { navigator.navigate(MainPages.RemoteControl) },
@@ -250,7 +253,7 @@ fun NavigationDisplay(
             )
         }
         entry<MainPages.Settings>(
-            metadata = DrawerSceneDecoratorStrategy.drawerScene() + fadeThroughTransition
+            metadata = drawerFade
         ) {
             SettingsPage(
                 drawerState, onNavigateToSettingsPage = {
@@ -258,20 +261,20 @@ fun NavigationDisplay(
                 })
         }
         entry<SettingsPages.About>(
-            metadata = DrawerSceneDecoratorStrategy.drawerScene() + sharedAxisXTransition
+            metadata = drawerAxisX
         ) {
             AboutPage(onNavigateBack = { navigator.goBack() }, onNavigateToLibraries = {
                 navigator.navigate(SettingsPages.Libraries)
             })
         }
         entry<SettingsPages.Libraries>(
-            metadata = DrawerSceneDecoratorStrategy.drawerScene() + sharedAxisXTransition
+            metadata = drawerAxisX
         ) {
             LibrariesPage(
                 onNavigateBack = { navigator.goBack() })
         }
         entry<SettingsPages.Devices>(
-            metadata = DrawerSceneDecoratorStrategy.drawerScene() + sharedAxisXTransition
+            metadata = drawerAxisX
         ) {
             DevicesPage(
                 onNavigateBack = {
@@ -279,7 +282,7 @@ fun NavigationDisplay(
                 })
         }
         entry<SettingsPages.RemoteControl>(
-            metadata = DrawerSceneDecoratorStrategy.drawerScene() + sharedAxisXTransition
+            metadata = drawerAxisX
         ) {
             RemoteControlSettingsPage(
                 onNavigateBack = {
@@ -287,7 +290,7 @@ fun NavigationDisplay(
                 })
         }
         entry<SettingsPages.Search>(
-            metadata = DrawerSceneDecoratorStrategy.drawerScene() + sharedAxisXTransition
+            metadata = drawerAxisX
         ) {
             SearchSettingsPage(
                 onNavigateBack = {
