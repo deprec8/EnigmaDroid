@@ -30,12 +30,16 @@ import androidx.compose.runtime.Composable
 import androidx.window.core.layout.WindowSizeClass
 
 @Composable
-fun contentWithDrawerWindowInsets(): WindowInsets {
+fun isSmallScreenLayout(): Boolean {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-    return if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || ! windowSizeClass.isHeightAtLeastBreakpoint(
-            WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
-        )
-    ) {
+    return ! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || ! windowSizeClass.isHeightAtLeastBreakpoint(
+        WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
+    )
+}
+
+@Composable
+fun contentWithDrawerWindowInsets(): WindowInsets {
+    return if (isSmallScreenLayout()) {
         ScaffoldDefaults.contentWindowInsets
     } else {
         ScaffoldDefaults.contentWindowInsets.only(WindowInsetsSides.Vertical).add(
@@ -46,10 +50,7 @@ fun contentWithDrawerWindowInsets(): WindowInsets {
 
 @Composable
 fun topAppBarWithDrawerWindowInsets(): WindowInsets {
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-    return if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) ||
-        ! windowSizeClass.isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
-    ) {
+    return if (isSmallScreenLayout()) {
         TopAppBarDefaults.windowInsets
     } else {
         TopAppBarDefaults.windowInsets.only(WindowInsetsSides.Vertical).add(
