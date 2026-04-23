@@ -57,7 +57,7 @@ class SearchSettingsViewModel @Inject constructor(
     val serviceEpgSearchHistory = _serviceEpgSearchHistory.asStateFlow()
 
     private val _useSearchHistory = MutableStateFlow<Boolean?>(null)
-    val useSearchHistories = _useSearchHistory.asStateFlow()
+    val useSearchHistory = _useSearchHistory.asStateFlow()
 
     private val _useSearchHighlighting = MutableStateFlow<Boolean?>(null)
     val useSearchHighlighting = _useSearchHighlighting.asStateFlow()

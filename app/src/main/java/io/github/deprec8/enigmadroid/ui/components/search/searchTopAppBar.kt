@@ -48,7 +48,6 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
@@ -58,9 +57,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.ui.components.NoResults
+import io.github.deprec8.enigmadroid.ui.components.isSmallScreenLayout
 import io.github.deprec8.enigmadroid.ui.components.navigation.ArrowNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
 import kotlinx.coroutines.launch
@@ -79,12 +78,8 @@ fun SearchTopAppBar(
 ) {
 
     val searchBarState = rememberSearchBarState()
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
-    val isSmallScreenLayout =
-        ! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || ! windowSizeClass.isHeightAtLeastBreakpoint(
-            WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
-        )
+    val isSmallScreenLayout = isSmallScreenLayout()
 
     Surface {
         Column(
@@ -161,12 +156,8 @@ fun SearchTopAppBar(
 fun SearchTopAppBarDrawerNavigationButton(
     drawerState: DrawerState, searchBarState: SearchBarState
 ) {
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     val scope = rememberCoroutineScope()
-    val isSmallScreenLayout =
-        ! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || ! windowSizeClass.isHeightAtLeastBreakpoint(
-            WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
-        )
+    val isSmallScreenLayout = isSmallScreenLayout()
 
     if (isSmallScreenLayout) {
         TooltipBox(
@@ -266,6 +257,7 @@ private fun SearchTopAppBarInputField(
                 ) {
                     IconButton(onClick = {
                         textFieldState.setTextAndPlaceCursorAtEnd("")
+                        onSearch()
                     }, enabled = textFieldState.text.isNotEmpty()) {
                         Icon(
                             Icons.Default.Clear, contentDescription = stringResource(R.string.clear)

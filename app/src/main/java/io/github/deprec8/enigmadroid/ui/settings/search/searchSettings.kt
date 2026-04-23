@@ -69,7 +69,7 @@ fun SearchSettingsPage(
     val tvEpgSearchHistory by searchSettingsViewModel.tvEpgSearchHistory.collectAsStateWithLifecycle()
     val radioEpgSearchHistory by searchSettingsViewModel.radioEpgSearchHistory.collectAsStateWithLifecycle()
     val serviceEpgSearchHistory by searchSettingsViewModel.serviceEpgSearchHistory.collectAsStateWithLifecycle()
-    val useSearchHistories by searchSettingsViewModel.useSearchHistories.collectAsStateWithLifecycle()
+    val useSearchHistory by searchSettingsViewModel.useSearchHistory.collectAsStateWithLifecycle()
     val useSearchHighlighting by searchSettingsViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
 
     var showSearchHistoriesDialog by rememberSaveable { mutableStateOf(false) }
@@ -99,7 +99,7 @@ fun SearchSettingsPage(
                 .verticalScroll(scrollState)
                 .padding(innerPadding)
         ) {
-            useSearchHistories?.let {
+            useSearchHistory?.let {
                 ListItem(headlineContent = {
                     Text(stringResource(R.string.use_search_histories))
                 }, supportingContent = {
@@ -109,6 +109,8 @@ fun SearchSettingsPage(
                         checked = it, onCheckedChange = { value ->
                             searchSettingsViewModel.setUseSearchHistory(value)
                         })
+                }, modifier = Modifier.clickable {
+                    searchSettingsViewModel.setUseSearchHistory(! it)
                 })
             }
             ListItem(
@@ -206,6 +208,9 @@ fun SearchSettingsPage(
             text = {
                 Column(Modifier.verticalScroll(searchHistoriesDialogScrollState)) {
                     ListItem(
+                        modifier = Modifier.clickable(enabled = isAnyEnabled()) {
+                            setAllEnabled(! getAllEnabled())
+                        },
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                         headlineContent = { Text(stringResource(R.string.all)) },
                         trailingContent = {
@@ -218,6 +223,9 @@ fun SearchSettingsPage(
                         })
                     HorizontalDivider(Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
                     ListItem(
+                        modifier = Modifier.clickable(enabled = tvSearchHistory.isNotEmpty()) {
+                            tv = ! tv
+                        },
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                         headlineContent = { Text(stringResource(R.string.tv)) },
                         trailingContent = {
@@ -227,6 +235,9 @@ fun SearchSettingsPage(
                                 onCheckedChange = { tv = it })
                         })
                     ListItem(
+                        modifier = Modifier.clickable(enabled = radioSearchHistory.isNotEmpty()) {
+                            radio = ! radio
+                        },
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                         headlineContent = { Text(stringResource(R.string.radio)) },
                         trailingContent = {
@@ -236,6 +247,9 @@ fun SearchSettingsPage(
                                 onCheckedChange = { radio = it })
                         })
                     ListItem(
+                        modifier = Modifier.clickable(enabled = moviesSearchHistory.isNotEmpty()) {
+                            movies = ! movies
+                        },
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                         headlineContent = { Text(stringResource(R.string.movies)) },
                         trailingContent = {
@@ -245,6 +259,9 @@ fun SearchSettingsPage(
                                 onCheckedChange = { movies = it })
                         })
                     ListItem(
+                        modifier = Modifier.clickable(enabled = timersSearchHistory.isNotEmpty()) {
+                            timers = ! timers
+                        },
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                         headlineContent = { Text(stringResource(R.string.timers)) },
                         trailingContent = {
@@ -254,6 +271,9 @@ fun SearchSettingsPage(
                                 onCheckedChange = { timers = it })
                         })
                     ListItem(
+                        modifier = Modifier.clickable(enabled = tvEpgSearchHistory.isNotEmpty()) {
+                            tvEpg = ! tvEpg
+                        },
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                         headlineContent = { Text(stringResource(R.string.tv_epg)) },
                         trailingContent = {
@@ -263,6 +283,9 @@ fun SearchSettingsPage(
                                 onCheckedChange = { tvEpg = it })
                         })
                     ListItem(
+                        modifier = Modifier.clickable(enabled = radioEpgSearchHistory.isNotEmpty()) {
+                            radioEpg = ! radioEpg
+                        },
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                         headlineContent = { Text(stringResource(R.string.radio_epg)) },
                         trailingContent = {
@@ -272,6 +295,9 @@ fun SearchSettingsPage(
                                 onCheckedChange = { radioEpg = it })
                         })
                     ListItem(
+                        modifier = Modifier.clickable(enabled = serviceEpgSearchHistory.isNotEmpty()) {
+                            serviceEpg = ! serviceEpg
+                        },
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                         headlineContent = { Text(stringResource(R.string.service_epg)) },
                         trailingContent = {

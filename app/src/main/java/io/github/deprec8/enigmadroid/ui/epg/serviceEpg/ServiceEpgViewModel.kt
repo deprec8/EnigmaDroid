@@ -88,7 +88,6 @@ class ServiceEpgViewModel @Inject constructor(
         viewModelScope.launch {
             combine(_eventBatch, searchInput) { eventBatch, searchInput ->
                 if (searchInput.isNotBlank() && eventBatch?.events?.isNotEmpty() == true) {
-                    searchHistoryRepository.addToServiceEpgSearchHistory(searchInput)
                     FilterUtils.filterEvents(searchInput, eventBatch.events)
                 } else {
                     null
@@ -134,6 +133,12 @@ class ServiceEpgViewModel @Inject constructor(
     }
 
     fun updateSearchInput() {
-        searchInput.value = searchFieldState.text.toString()
+        val input = searchFieldState.text.toString()
+        if (input.isNotBlank()) {
+            viewModelScope.launch {
+                searchHistoryRepository.addToServiceEpgSearchHistory(input)
+            }
+        }
+        searchInput.value = input
     }
 }

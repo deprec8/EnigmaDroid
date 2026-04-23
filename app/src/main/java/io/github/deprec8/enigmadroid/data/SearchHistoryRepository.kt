@@ -66,136 +66,63 @@ class SearchHistoryRepository @Inject constructor(private val dataStore: DataSto
         }
     }
 
-    fun getTvSearchHistory(): Flow<List<String>> = dataStore.data.map { preferences ->
-        (preferences[tvSearchHistoryKey] ?: emptySet()).reversed()
-    }
+    private fun getHistory(key: Preferences.Key<Set<String>>): Flow<List<String>> =
+        dataStore.data.map { preferences ->
+            (preferences[key] ?: emptySet()).reversed()
+        }
 
-    suspend fun addToTvSearchHistory(string: String) {
+    private suspend fun addToHistory(key: Preferences.Key<Set<String>>, string: String) {
         if (getUseSearchHistory().first()) {
             dataStore.edit { preferences ->
-                val strings = preferences[tvSearchHistoryKey] ?: emptySet()
-                preferences[tvSearchHistoryKey] = strings + string
+                val strings = preferences[key] ?: emptySet()
+                preferences[key] = strings + string
             }
         }
     }
 
-    suspend fun clearTvSearchHistory() {
+    private suspend fun clearHistory(key: Preferences.Key<Set<String>>) {
         dataStore.edit { preferences ->
-            preferences[tvSearchHistoryKey] = emptySet()
+            preferences[key] = emptySet()
         }
     }
 
-    fun getTimersSearchHistory(): Flow<List<String>> = dataStore.data.map { preferences ->
-        (preferences[timersSearchHistoryKey] ?: emptySet()).reversed()
-    }
+    fun getTvSearchHistory() = getHistory(tvSearchHistoryKey)
+    suspend fun addToTvSearchHistory(string: String) = addToHistory(tvSearchHistoryKey, string)
+    suspend fun clearTvSearchHistory() = clearHistory(tvSearchHistoryKey)
 
-    suspend fun addToTimersSearchHistory(string: String) {
-        if (getUseSearchHistory().first()) {
-            dataStore.edit { preferences ->
-                val strings = preferences[timersSearchHistoryKey] ?: emptySet()
-                preferences[timersSearchHistoryKey] = strings + string
-            }
-        }
-    }
+    fun getTimersSearchHistory() = getHistory(timersSearchHistoryKey)
+    suspend fun addToTimersSearchHistory(string: String) =
+        addToHistory(timersSearchHistoryKey, string)
 
-    suspend fun clearTimersSearchHistory() {
-        dataStore.edit { preferences ->
-            preferences[timersSearchHistoryKey] = emptySet()
-        }
-    }
+    suspend fun clearTimersSearchHistory() = clearHistory(timersSearchHistoryKey)
 
-    fun getRadioSearchHistory(): Flow<List<String>> = dataStore.data.map { preferences ->
-        (preferences[radioSearchHistoryKey] ?: emptySet()).reversed()
-    }
+    fun getRadioSearchHistory() = getHistory(radioSearchHistoryKey)
+    suspend fun addToRadioSearchHistory(string: String) =
+        addToHistory(radioSearchHistoryKey, string)
 
-    suspend fun addToRadioSearchHistory(string: String) {
-        if (getUseSearchHistory().first()) {
-            dataStore.edit { preferences ->
-                val strings = preferences[radioSearchHistoryKey] ?: emptySet()
-                preferences[radioSearchHistoryKey] = strings + string
-            }
-        }
-    }
+    suspend fun clearRadioSearchHistory() = clearHistory(radioSearchHistoryKey)
 
-    suspend fun clearRadioSearchHistory() {
-        dataStore.edit { preferences ->
-            preferences[radioSearchHistoryKey] = emptySet()
-        }
-    }
+    fun getTvEpgSearchHistory() = getHistory(tvEpgSearchHistoryKey)
+    suspend fun addToTvEpgSearchHistory(string: String) =
+        addToHistory(tvEpgSearchHistoryKey, string)
 
-    fun getTvEpgSearchHistory(): Flow<List<String>> = dataStore.data.map { preferences ->
-        (preferences[tvEpgSearchHistoryKey] ?: emptySet()).reversed()
-    }
+    suspend fun clearTvEpgSearchHistory() = clearHistory(tvEpgSearchHistoryKey)
 
-    suspend fun addToTvEpgSearchHistory(string: String) {
-        if (getUseSearchHistory().first()) {
-            dataStore.edit { preferences ->
-                val strings = preferences[tvEpgSearchHistoryKey] ?: emptySet()
-                preferences[tvEpgSearchHistoryKey] = strings + string
-            }
-        }
-    }
+    fun getRadioEpgSearchHistory() = getHistory(radioEpgSearchHistoryKey)
+    suspend fun addToRadioEpgSearchHistory(string: String) =
+        addToHistory(radioEpgSearchHistoryKey, string)
 
-    suspend fun clearTvEpgSearchHistory() {
-        dataStore.edit { preferences ->
-            preferences[tvEpgSearchHistoryKey] = emptySet()
-        }
-    }
+    suspend fun clearRadioEpgSearchHistory() = clearHistory(radioEpgSearchHistoryKey)
 
-    fun getRadioEpgSearchHistory(): Flow<List<String>> = dataStore.data.map { preferences ->
-        (preferences[radioEpgSearchHistoryKey] ?: emptySet()).reversed()
-    }
+    fun getMoviesSearchHistory() = getHistory(moviesSearchHistoryKey)
+    suspend fun addToMoviesSearchHistory(string: String) =
+        addToHistory(moviesSearchHistoryKey, string)
 
-    suspend fun addToRadioEpgSearchHistory(string: String) {
-        if (getUseSearchHistory().first()) {
-            dataStore.edit { preferences ->
-                val strings = preferences[radioEpgSearchHistoryKey] ?: emptySet()
-                preferences[radioEpgSearchHistoryKey] = strings + string
-            }
-        }
-    }
+    suspend fun clearMoviesSearchHistory() = clearHistory(moviesSearchHistoryKey)
 
-    suspend fun clearRadioEpgSearchHistory() {
-        dataStore.edit { preferences ->
-            preferences[radioEpgSearchHistoryKey] = emptySet()
-        }
-    }
+    fun getServiceEpgSearchHistory() = getHistory(serviceEpgSearchHistoryKey)
+    suspend fun addToServiceEpgSearchHistory(string: String) =
+        addToHistory(serviceEpgSearchHistoryKey, string)
 
-    fun getMoviesSearchHistory(): Flow<List<String>> = dataStore.data.map { preferences ->
-        (preferences[moviesSearchHistoryKey] ?: emptySet()).reversed()
-    }
-
-    suspend fun addToMoviesSearchHistory(string: String) {
-        if (getUseSearchHistory().first()) {
-            dataStore.edit { preferences ->
-                val strings = preferences[moviesSearchHistoryKey] ?: emptySet()
-                preferences[moviesSearchHistoryKey] = strings + string
-            }
-        }
-    }
-
-    suspend fun clearMoviesSearchHistory() {
-        dataStore.edit { preferences ->
-            preferences[moviesSearchHistoryKey] = emptySet()
-        }
-    }
-
-    fun getServiceEpgSearchHistory(): Flow<List<String>> = dataStore.data.map { preferences ->
-        (preferences[serviceEpgSearchHistoryKey] ?: emptySet()).reversed()
-    }
-
-    suspend fun addToServiceEpgSearchHistory(string: String) {
-        if (getUseSearchHistory().first()) {
-            dataStore.edit { preferences ->
-                val strings = preferences[serviceEpgSearchHistoryKey] ?: emptySet()
-                preferences[serviceEpgSearchHistoryKey] = strings + string
-            }
-        }
-    }
-
-    suspend fun clearServiceEpgSearchHistory() {
-        dataStore.edit { preferences ->
-            preferences[serviceEpgSearchHistoryKey] = emptySet()
-        }
-    }
+    suspend fun clearServiceEpgSearchHistory() = clearHistory(serviceEpgSearchHistoryKey)
 }

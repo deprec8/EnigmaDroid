@@ -92,7 +92,6 @@ class RadioViewModel @Inject constructor(
                 _eventBatches, searchInput, currentBouquetIndex
             ) { eventBatches, searchInput, currentBouquetIndex ->
                 if (searchInput.isNotBlank() && eventBatches?.isNotEmpty() == true) {
-                    searchHistoryRepository.addToRadioSearchHistory(searchInput)
                     FilterUtils.filterEvents(
                         searchInput,
                         eventBatches[currentBouquetIndex].events.filter { it.type == EntryType.CHANNEL })
@@ -147,8 +146,13 @@ class RadioViewModel @Inject constructor(
         }
     }
 
-    fun updateSearchInput(bouquetIndex: Int) {
-        currentBouquetIndex.value = bouquetIndex
-        searchInput.value = searchFieldState.text.toString()
+    fun updateSearchInput() {
+        val input = searchFieldState.text.toString()
+        if (input.isNotBlank()) {
+            viewModelScope.launch {
+                searchHistoryRepository.addToRadioSearchHistory(input)
+            }
+        }
+        searchInput.value = input
     }
 }

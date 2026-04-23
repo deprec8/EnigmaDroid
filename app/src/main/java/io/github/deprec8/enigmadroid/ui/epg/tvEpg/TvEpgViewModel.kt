@@ -96,7 +96,6 @@ class TvEpgViewModel @Inject constructor(
         viewModelScope.launch {
             combine(_eventBatchSet, searchInput) { eventBatchSet, searchInput ->
                 if (searchInput.isNotBlank() && eventBatchSet?.eventBatches?.isNotEmpty() == true) {
-                    searchHistoryRepository.addToTvEpgSearchHistory(searchInput)
                     FilterUtils.filterEvents(
                         searchInput, eventBatchSet.eventBatches.flatMap { it.events })
                 } else {
@@ -171,6 +170,12 @@ class TvEpgViewModel @Inject constructor(
     }
 
     fun updateSearchInput() {
-        searchInput.value = searchFieldState.text.toString()
+        val input = searchFieldState.text.toString()
+        if (input.isNotBlank()) {
+            viewModelScope.launch {
+                searchHistoryRepository.addToTvEpgSearchHistory(input)
+            }
+        }
+        searchInput.value = input
     }
 }

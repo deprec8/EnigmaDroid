@@ -90,7 +90,6 @@ class TimersViewModel @Inject constructor(
         viewModelScope.launch {
             combine(_timerBatch, searchInput) { timerBatch, searchInput ->
                 if (searchInput.isNotBlank() && timerBatch?.timers?.isNotEmpty() == true) {
-                    searchHistoryRepository.addToTimersSearchHistory(searchInput)
                     FilterUtils.filterTimers(searchInput, timerBatch.timers)
                 } else {
                     null
@@ -146,7 +145,13 @@ class TimersViewModel @Inject constructor(
     }
 
     fun updateSearchInput() {
-        searchInput.value = searchFieldState.text.toString()
+        val input = searchFieldState.text.toString()
+        if (input.isNotBlank()) {
+            viewModelScope.launch {
+                searchHistoryRepository.addToTimersSearchHistory(input)
+            }
+        }
+        searchInput.value = input
     }
 
     fun addTimer(newTimer: Timer) {

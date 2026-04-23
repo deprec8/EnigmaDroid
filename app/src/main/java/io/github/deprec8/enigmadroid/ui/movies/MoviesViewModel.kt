@@ -94,7 +94,6 @@ class MoviesViewModel @Inject constructor(
         viewModelScope.launch {
             combine(_movieBatch, searchInput) { movieBatch, searchInput ->
                 if (searchInput.isNotBlank() && movieBatch?.movies?.isNotEmpty() == true) {
-                    searchHistoryRepository.addToMoviesSearchHistory(searchInput)
                     FilterUtils.filterMovies(searchInput, movieBatch.movies)
                 } else {
                     null
@@ -197,7 +196,13 @@ class MoviesViewModel @Inject constructor(
     }
 
     fun updateSearchInput() {
-        searchInput.value = searchFieldState.text.toString()
+        val input = searchFieldState.text.toString()
+        if (input.isNotBlank()) {
+            viewModelScope.launch {
+                searchHistoryRepository.addToMoviesSearchHistory(input)
+            }
+        }
+        searchInput.value = input
     }
 
     suspend fun buildMovieStreamUrl(serviceReference: String): String {
