@@ -86,6 +86,10 @@ fun TvPage(
         }
     }
 
+    LaunchedEffect(selectedTabIndex) {
+        tvViewModel.updateCurrentBouquetIndex(selectedTabIndex)
+    }
+
     Scaffold(floatingActionButton = {
         FloatingReloadButton(loadingState) { tvViewModel.fetchData() }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
@@ -117,7 +121,7 @@ fun TvPage(
                 } ?: run {
                     SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
                         tvViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
-                        tvViewModel.updateSearchInput(selectedTabIndex)
+                        tvViewModel.updateSearchInput()
                     }, onTermInsertClick = {
                         tvViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
                             it
@@ -132,7 +136,7 @@ fun TvPage(
                 RemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
             },
             onSearch = {
-                tvViewModel.updateSearchInput(selectedTabIndex)
+                tvViewModel.updateSearchInput()
             },
             actionBar = {
                 if (eventBatches?.isNotEmpty() == true && loadingState == LoadingState.LOADED) {

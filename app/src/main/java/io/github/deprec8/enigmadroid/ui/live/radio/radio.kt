@@ -87,6 +87,10 @@ fun RadioPage(
         }
     }
 
+    LaunchedEffect(selectedTabIndex) {
+        radioViewModel.updateCurrentBouquetIndex(selectedTabIndex)
+    }
+
     Scaffold(floatingActionButton = {
         FloatingReloadButton(loadingState) { radioViewModel.fetchData() }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
@@ -118,7 +122,7 @@ fun RadioPage(
                 } ?: run {
                     SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
                         radioViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
-                        radioViewModel.updateSearchInput(selectedTabIndex)
+                        radioViewModel.updateSearchInput()
                     }, onTermInsertClick = {
                         radioViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
                             it
@@ -133,7 +137,7 @@ fun RadioPage(
                 RemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
             },
             onSearch = {
-                radioViewModel.updateSearchInput(selectedTabIndex)
+                radioViewModel.updateSearchInput()
             },
             actionBar = {
                 if (eventBatches?.isNotEmpty() == true && loadingState == LoadingState.LOADED) {

@@ -146,6 +146,10 @@ class TvViewModel @Inject constructor(
         }
     }
 
+    fun updateCurrentBouquetIndex(index: Int) {
+        currentBouquetIndex.value = index
+    }
+
     fun updateSearchInput() {
         val input = searchFieldState.text.toString()
         if (input.isNotBlank()) {
