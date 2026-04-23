@@ -45,6 +45,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -67,10 +68,12 @@ fun AboutPage(
     val info = context.packageManager.getPackageInfo(
         context.packageName, PackageManager.GET_ACTIVITIES
     )
-    val libraries = try {
-        Libs.Builder().withContext(context).build().libraries
-    } catch (_: Exception) {
-        null
+    val libraries = remember {
+        try {
+            Libs.Builder().withContext(context).build().libraries
+        } catch (_: Exception) {
+            null
+        }
     }
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val scrollState = rememberScrollState()
