@@ -26,26 +26,34 @@ import java.util.TimeZone
 
 object TimestampUtils {
 
-    fun formatApiTimestampToTime(timestamp: Long): String {
-        return SimpleDateFormat.getTimeInstance(SimpleDateFormat.SHORT, Locale.getDefault())
-            .format(timestamp * 1000)
-    }
+    fun formatApiTimestampToTime(timestamp: Long): String = formatTimestampToTime(timestamp * 1000)
 
     fun formatTimestampToTime(timestamp: Long): String {
         return SimpleDateFormat.getTimeInstance(SimpleDateFormat.SHORT, Locale.getDefault())
             .format(timestamp)
     }
 
-    fun formatApiTimestampToDate(timestamp: Long): String {
-        val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
-        dateFormat.timeZone = TimeZone.getDefault()
-        return dateFormat.format(timestamp * 1000)
-    }
+    fun formatApiTimestampToDate(timestamp: Long): String = formatTimestampToDate(timestamp * 1000)
 
     fun formatTimestampToDate(timestamp: Long): String {
         val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
         dateFormat.timeZone = TimeZone.getDefault()
         return dateFormat.format(timestamp)
+    }
+
+    fun formatApiTimestampToDateTime(timestamp: Long): String =
+        formatTimestampToDateTime(timestamp * 1000)
+
+    fun formatTimestampToDateTime(timestamp: Long): String {
+        return "${formatTimestampToDate(timestamp)} ${formatTimestampToTime(timestamp)}"
+    }
+
+    fun formatEventTimeRange(beginTimestamp: Long, durationInSeconds: Long): String {
+        return "${formatApiTimestampToTime(beginTimestamp)} - ${
+            formatApiTimestampToTime(
+                beginTimestamp + durationInSeconds
+            )
+        }"
     }
 
     fun combineDateTime(oldTimestamp: Long, newTimestamp: Long): Long {
