@@ -85,7 +85,7 @@ fun RemoteControlPage(
 
     val loadingState by remoteControlViewModel.loadingState.collectAsStateWithLifecycle()
     val currentDevice by remoteControlViewModel.currentDevice.collectAsStateWithLifecycle()
-    val remoteVibration by remoteControlViewModel.remoteVibration.collectAsStateWithLifecycle()
+    val remoteControlVibration by remoteControlViewModel.remoteControlVibration.collectAsStateWithLifecycle()
 
     var showNumbers by rememberSaveable {
         mutableStateOf(false)
@@ -106,7 +106,7 @@ fun RemoteControlPage(
     }
 
     fun performHaptic() {
-        if (remoteVibration) {
+        if (remoteControlVibration) {
             view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
         }
     }

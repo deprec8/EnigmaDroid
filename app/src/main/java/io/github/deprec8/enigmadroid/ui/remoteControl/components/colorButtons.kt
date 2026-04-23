@@ -19,17 +19,10 @@
 
 package io.github.deprec8.enigmadroid.ui.remoteControl.components
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.TripOrigin
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -73,30 +66,14 @@ fun ColorButtons(onButtonClicked: (RemoteControlButtonType) -> Unit, enabled: Bo
         Modifier.widthIn(0.dp, 500.dp)
     ) {
         colorButtons.forEach { button ->
-            FilledTonalButton(
-                onClick = {
-                    onButtonClicked(button.type)
-                },
-                contentPadding = PaddingValues(),
+            RemoteButton(
+                button = button,
+                onClick = { onButtonClicked(button.type) },
                 enabled = enabled,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .weight(1f)
-                    .aspectRatio(1.5f),
-                shape = MaterialTheme.shapes.extraLarge,
-            ) {
-                if (! enabled) {
-                    ButtonDefaults.buttonColors().disabledContentColor
-                } else {
-                    button.iconTint
-                }?.let {
-                    button.icon?.let { imageVector ->
-                        Icon(
-                            imageVector, contentDescription = button.iconLabel, tint = it
-                        )
-                    }
-                }
-            }
+                modifier = Modifier.weight(1f),
+                iconTint = button.iconTint,
+                aspectRatio = 1.5f
+            )
         }
     }
 }

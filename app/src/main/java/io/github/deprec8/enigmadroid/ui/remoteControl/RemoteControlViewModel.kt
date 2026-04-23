@@ -54,7 +54,7 @@ class RemoteControlViewModel @Inject constructor(
     val currentDevice: StateFlow<Device?> = _currentDevice.asStateFlow()
 
     private val _remoteControlVibration = MutableStateFlow(false)
-    val remoteVibration: StateFlow<Boolean> = _remoteControlVibration.asStateFlow()
+    val remoteControlVibration: StateFlow<Boolean> = _remoteControlVibration.asStateFlow()
 
     init {
         viewModelScope.launch {

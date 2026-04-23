@@ -19,6 +19,7 @@
 
 package io.github.deprec8.enigmadroid.ui.settings.remoteControl
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -52,7 +53,7 @@ fun RemoteControlSettingsPage(
     remoteControlSettingsViewModel: RemoteControlSettingsViewModel = hiltViewModel()
 ) {
 
-    val remoteVibration by remoteControlSettingsViewModel.remoteVibration.collectAsStateWithLifecycle()
+    val remoteControlVibration by remoteControlSettingsViewModel.remoteControlVibration.collectAsStateWithLifecycle()
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val scrollState = rememberScrollState()
@@ -79,16 +80,18 @@ fun RemoteControlSettingsPage(
                 .verticalScroll(scrollState)
                 .padding(innerPadding)
         ) {
-            remoteVibration?.let { remoteVibration ->
+            remoteControlVibration?.let { remoteControlVibration ->
                 ListItem(headlineContent = {
                     Text(stringResource(R.string.haptic_feedback))
                 }, supportingContent = {
                     Text(stringResource(R.string.vibrate_when_buttons_are_pressed))
                 }, trailingContent = {
                     Switch(
-                        checked = remoteVibration, onCheckedChange = {
-                            remoteControlSettingsViewModel.setRemoteVibration(it)
+                        checked = remoteControlVibration, onCheckedChange = {
+                            remoteControlSettingsViewModel.setRemoteControlVibration(it)
                         })
+                }, modifier = Modifier.clickable {
+                    remoteControlSettingsViewModel.setRemoteControlVibration(! remoteControlVibration)
                 })
             }
         }

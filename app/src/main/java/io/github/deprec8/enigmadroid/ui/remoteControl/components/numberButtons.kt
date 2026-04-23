@@ -20,17 +20,10 @@
 package io.github.deprec8.enigmadroid.ui.remoteControl.components
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtonType
 import io.github.deprec8.enigmadroid.model.RemoteControlButton
@@ -79,19 +72,12 @@ fun NumberButtons(
         numberButtons.forEach { column ->
             Column(Modifier.weight(1f)) {
                 column.forEach { button ->
-                    FilledTonalButton(
-                        onClick = {
-                            onButtonClicked(button.type)
-                        },
-                        contentPadding = PaddingValues(),
+                    RemoteButton(
+                        button = button,
+                        onClick = { onButtonClicked(button.type) },
                         enabled = enabled,
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .aspectRatio(2f),
-                        shape = MaterialTheme.shapes.extraLarge,
-                    ) {
-                        button.text?.let { Text(text = it, textAlign = TextAlign.Center) }
-                    }
+                        aspectRatio = 2f
+                    )
                 }
             }
         }

@@ -34,18 +34,18 @@ import javax.inject.Inject
 class RemoteControlSettingsViewModel @Inject constructor(private var settingsRepository: SettingsRepository) :
     ViewModel() {
 
-    private val _remoteVibration = MutableStateFlow<Boolean?>(null)
-    val remoteVibration: StateFlow<Boolean?> = _remoteVibration.asStateFlow()
+    private val _remoteControlVibration = MutableStateFlow<Boolean?>(null)
+    val remoteControlVibration: StateFlow<Boolean?> = _remoteControlVibration.asStateFlow()
 
     init {
         viewModelScope.launch {
             settingsRepository.getRemoteControlVibration().collectLatest {
-                _remoteVibration.value = it
+                _remoteControlVibration.value = it
             }
         }
     }
 
-    fun setRemoteVibration(value: Boolean) {
+    fun setRemoteControlVibration(value: Boolean) {
         viewModelScope.launch {
             settingsRepository.setRemoteControlVibration(value)
         }

@@ -19,22 +19,14 @@
 
 package io.github.deprec8.enigmadroid.ui.remoteControl.components
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtonType
@@ -67,29 +59,13 @@ fun BouquetButtons(
         Modifier.widthIn(0.dp, 500.dp)
     ) {
         bouquetButtons.forEach { button ->
-            FilledTonalButton(
-                onClick = {
-                    onButtonClicked(button.type)
-                },
-                contentPadding = PaddingValues(),
+            RemoteButton(
+                button = button,
+                onClick = { onButtonClicked(button.type) },
                 enabled = enabled,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .weight(1f)
-                    .aspectRatio(1.5f),
-                shape = MaterialTheme.shapes.extraLarge,
-            ) {
-                button.icon?.let { icon ->
-                    Icon(
-                        icon, contentDescription = button.iconLabel
-                    )
-                }
-                button.text?.let { text ->
-                    Text(
-                        text, textAlign = TextAlign.Center
-                    )
-                }
-            }
+                modifier = Modifier.weight(1f),
+                aspectRatio = 1.5f
+            )
         }
     }
 }
