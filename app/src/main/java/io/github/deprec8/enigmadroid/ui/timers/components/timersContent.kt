@@ -19,14 +19,11 @@
 
 package io.github.deprec8.enigmadroid.ui.timers.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -39,20 +36,15 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.TimerOff
-import androidx.compose.material.icons.outlined.Checklist
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Done
 import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.QuestionMark
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material.icons.outlined.TimerOff
-import androidx.compose.material.icons.outlined.Videocam
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -60,9 +52,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
@@ -73,6 +63,7 @@ import io.github.deprec8.enigmadroid.model.menu.MenuItem
 import io.github.deprec8.enigmadroid.model.menu.MenuItemGroup
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.content.ContentListItem
+import io.github.deprec8.enigmadroid.ui.components.dialogs.ConfirmDeleteDialog
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
 
 @Composable
@@ -113,92 +104,9 @@ fun TimersContent(
                         }
                     }",
                     leadingContent = {
-                        when (timer.state + timer.disabled) {
-                            TimerState.WAITING.id  -> Box(
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(MaterialTheme.shapes.medium)
-                                    .background(MaterialTheme.colorScheme.tertiaryContainer),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Timer,
-                                    contentDescription = stringResource(R.string.waiting),
-                                    tint = MaterialTheme.colorScheme.onTertiaryContainer
-                                )
-                            }
-                            TimerState.PREPARED.id -> Box(
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(MaterialTheme.shapes.medium)
-                                    .background(MaterialTheme.colorScheme.tertiaryContainer),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Checklist,
-                                    contentDescription = stringResource(R.string.prepared),
-                                    tint = MaterialTheme.colorScheme.onTertiaryContainer
-                                )
-                            }
-                            TimerState.RUNNING.id  -> Box(
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(MaterialTheme.shapes.medium)
-                                    .background(MaterialTheme.colorScheme.primaryContainer),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Videocam,
-                                    contentDescription = stringResource(R.string.running),
-                                    tint = MaterialTheme.colorScheme.onPrimaryContainer
-                                )
-                            }
-                            TimerState.ENDED.id    -> Box(
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(MaterialTheme.shapes.medium)
-                                    .background(MaterialTheme.colorScheme.secondaryContainer),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Done,
-                                    contentDescription = stringResource(R.string.ended),
-                                    tint = MaterialTheme.colorScheme.onSecondaryContainer
-                                )
-                            }
-                            TimerState.DISABLED.id -> Box(
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(MaterialTheme.shapes.medium)
-                                    .background(MaterialTheme.colorScheme.secondaryContainer),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Outlined.TimerOff,
-                                    contentDescription = stringResource(R.string.disabled),
-                                    tint = MaterialTheme.colorScheme.onSecondaryContainer
-                                )
-                            }
-                            else                   -> {
-                                Box(
-                                    modifier = Modifier
-                                        .size(40.dp)
-                                        .clip(MaterialTheme.shapes.medium)
-                                        .background(MaterialTheme.colorScheme.errorContainer),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.QuestionMark,
-                                        contentDescription = stringResource(R.string.unknown),
-                                        tint = MaterialTheme.colorScheme.onErrorContainer
-                                    )
-                                }
-                            }
-                        }
+                        TimerStateIcon(timer)
                     },
-                    supportingText = TimestampUtils.formatApiTimestampToDate(timer.beginTimestamp) + " " + TimestampUtils.formatApiTimestampToTime(
-                        timer.beginTimestamp
-                    ) + " - " + TimestampUtils.formatApiTimestampToDate(timer.beginTimestamp) + " " + TimestampUtils.formatApiTimestampToTime(
+                    supportingText = TimestampUtils.formatApiTimestampToDateTime(timer.beginTimestamp) + " - " + TimestampUtils.formatApiTimestampToDateTime(
                         timer.endTimestamp
                     ),
                     shortDescription = timer.shortDescription,
@@ -252,10 +160,14 @@ fun TimersContent(
                 }
 
                 if (showDeleteDialog) {
-                    DeleteTimerDialog({ showDeleteDialog = false }, {
-                        onDeleteTimer(timer)
-                        showDeleteDialog = false
-                    })
+                    ConfirmDeleteDialog(
+                        title = stringResource(R.string.delete_timer),
+                        text = stringResource(R.string.delete_timer_warning),
+                        onDismissRequest = { showDeleteDialog = false },
+                        onConfirmRequest = {
+                            onDeleteTimer(timer)
+                            showDeleteDialog = false
+                        })
                 }
                 if (showEditDialog) {
                     TimerSetupDialog(
@@ -296,27 +208,6 @@ private fun Timer.getState(): String {
 }
 
 @Composable
-private fun DeleteTimerDialog(onDismissRequest: () -> Unit, onConfirmRequest: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = {
-            onDismissRequest()
-        },
-        title = { Text(text = stringResource(R.string.delete_timer)) },
-        text = { Text(text = stringResource(R.string.delete_timer_warning)) },
-        icon = { Icon(Icons.Outlined.Delete, contentDescription = null) },
-        confirmButton = {
-            TextButton(onClick = {
-                onConfirmRequest()
-            }) { Text(stringResource(R.string.confirm)) }
-        },
-        dismissButton = {
-            TextButton(onClick = {
-                onDismissRequest()
-            }) { Text(stringResource(R.string.cancel)) }
-        })
-}
-
-@Composable
 private fun TimerLogDialog(timer: Timer, onDismissRequest: () -> Unit) {
     AlertDialog(onDismissRequest = {
         onDismissRequest()
@@ -329,11 +220,7 @@ private fun TimerLogDialog(timer: Timer, onDismissRequest: () -> Unit) {
                     },
                     headlineContent = {
                         Text(
-                            text = TimestampUtils.formatApiTimestampToDate(
-                                it.timestamp
-                            ) + " " + TimestampUtils.formatApiTimestampToTime(
-                                it.timestamp
-                            )
+                            text = TimestampUtils.formatApiTimestampToDateTime(it.timestamp)
                         )
                     },
                     supportingContent = {
