@@ -22,7 +22,6 @@ package io.github.deprec8.enigmadroid.ui.main
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -35,8 +34,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
-import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.model.navigation.MainPages
+import io.github.deprec8.enigmadroid.ui.components.isSmallScreenLayout
 import io.github.deprec8.enigmadroid.ui.components.navigation.DrawerSceneDecoratorStrategy
 import io.github.deprec8.enigmadroid.ui.components.navigation.LocalSharedTransitionScope
 import io.github.deprec8.enigmadroid.ui.components.navigation.ModalNavigationDrawerWrapper
@@ -55,11 +54,7 @@ fun MainPage(
     val loadingState by mainViewModel.loadingState.collectAsStateWithLifecycle()
     val isOnboardingNeeded by mainViewModel.isOnboardingNeeded.collectAsStateWithLifecycle()
 
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-    val isSmallScreenLayout =
-        ! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || ! windowSizeClass.isHeightAtLeastBreakpoint(
-            WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
-        )
+    val isSmallScreenLayout = isSmallScreenLayout()
 
     val navigationState = rememberNavigationState(
         startRoute = MainPages.Tv,
