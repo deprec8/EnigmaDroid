@@ -30,12 +30,12 @@ plugins {
 
 android {
     namespace = "io.github.deprec8.enigmadroid"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "io.github.deprec8.enigmadroid"
         minSdk = 28
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 16
         versionName = "1.8.0"
 
