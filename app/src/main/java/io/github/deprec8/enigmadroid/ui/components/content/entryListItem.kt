@@ -40,7 +40,7 @@ import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.enums.EntryType
 
 @Composable
-fun EntryListItem(name: String, type: EntryType) {
+fun EntryTypeListItem(name: String, type: EntryType) {
     val icon = when (type) {
         EntryType.MARKER    -> Icons.Outlined.Bookmark
         EntryType.DIRECTORY -> Icons.Outlined.Folder

@@ -46,8 +46,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.outlined.AutoAwesomeMosaic
-import androidx.compose.material.icons.outlined.Bookmark
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
@@ -100,6 +98,7 @@ import io.github.deprec8.enigmadroid.model.api.timers.Timer
 import io.github.deprec8.enigmadroid.model.api.timers.services.Service
 import io.github.deprec8.enigmadroid.model.api.timers.services.ServiceBatch
 import io.github.deprec8.enigmadroid.model.api.timers.services.ServiceBatchSet
+import io.github.deprec8.enigmadroid.ui.components.content.EntryTypeListItem
 import io.github.deprec8.enigmadroid.ui.components.dialogs.AdaptiveDialog
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
 
@@ -444,6 +443,7 @@ fun TimerSetupDialog(
                         onDismissRequest = { showServicePicker = false },
                         onServiceClicked = {
                             serviceReference = it.serviceReference
+                            showServicePicker = false
                         },
                         currentServiceReference = serviceReference
                     )
@@ -453,6 +453,9 @@ fun TimerSetupDialog(
                     SetupDatePickerDialog(timestamp = beginTimestamp, onDismissRequest = {
                         showBeginDatePicker = false
                     }, onSaveRequest = {
+                        if (endTimestamp <= it) {
+                            endTimestamp = it + (endTimestamp - beginTimestamp)
+                        }
                         beginTimestamp = it
                         showBeginDatePicker = false
                     })
@@ -472,6 +475,9 @@ fun TimerSetupDialog(
                         timestamp = beginTimestamp,
                         onDismissRequest = { showBeginTimePicker = false },
                         onSaveRequest = {
+                            if (endTimestamp <= it) {
+                                endTimestamp = it + (endTimestamp - beginTimestamp)
+                            }
                             beginTimestamp = it
                             showBeginTimePicker = false
                         })
@@ -524,7 +530,7 @@ private fun ServicePickerDialog(
                 LazyColumn {
                     items(currentServiceBatch?.services ?: emptyList()) { service ->
                         when (service.type) {
-                            EntryType.CHANNEL -> {
+                            EntryType.CHANNEL                                      -> {
                                 ListItem(
                                     headlineContent = {
                                         Text(service.serviceName)
@@ -553,58 +559,10 @@ private fun ServicePickerDialog(
                                     colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                                 )
                             }
-                            EntryType.MARKER  -> {
-                                Column {
-                                    ListItem(
-                                        headlineContent = {
-                                            Text(service.serviceName)
-                                        },
-                                        leadingContent = {
-                                            Icon(
-                                                Icons.Outlined.Bookmark,
-                                                stringResource(R.string.marker)
-                                            )
-                                        },
-                                        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-                                    )
-                                    HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-                                }
+                            EntryType.MARKER, EntryType.DIRECTORY, EntryType.GROUP -> {
+                                EntryTypeListItem(service.serviceName, service.type)
                             }
-                            EntryType.DIRECTORY -> {
-                                Column {
-                                    ListItem(
-                                        headlineContent = {
-                                            Text(service.serviceName)
-                                        },
-                                        leadingContent = {
-                                            Icon(
-                                                Icons.Outlined.Folder,
-                                                stringResource(R.string.directory)
-                                            )
-                                        },
-                                        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-                                    )
-                                    HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-                                }
-                            }
-                            EntryType.GROUP   -> {
-                                Column {
-                                    ListItem(
-                                        headlineContent = {
-                                            Text(service.serviceName)
-                                        },
-                                        leadingContent = {
-                                            Icon(
-                                                Icons.Outlined.AutoAwesomeMosaic,
-                                                stringResource(R.string.group)
-                                            )
-                                        },
-                                        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-                                    )
-                                    HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-                                }
-                            }
-                            else              -> {}
+                            else                                                   -> {}
                         }
                     }
                 }

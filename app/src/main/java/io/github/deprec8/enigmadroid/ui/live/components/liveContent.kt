@@ -52,7 +52,7 @@ import io.github.deprec8.enigmadroid.model.menu.MenuItem
 import io.github.deprec8.enigmadroid.model.menu.MenuItemGroup
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.content.ContentListItem
-import io.github.deprec8.enigmadroid.ui.components.content.EntryListItem
+import io.github.deprec8.enigmadroid.ui.components.content.EntryTypeListItem
 import io.github.deprec8.enigmadroid.utils.IntentUtils
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
 import kotlinx.coroutines.launch
@@ -159,7 +159,7 @@ fun LiveContent(
                         )
                     }
                     EntryType.MARKER, EntryType.DIRECTORY, EntryType.GROUP -> {
-                        EntryListItem(event.serviceName, event.type)
+                        EntryTypeListItem(event.serviceName, event.type)
                     }
                     else -> {}
                 }
