@@ -38,67 +38,35 @@ import io.github.deprec8.enigmadroid.model.api.events.Event
 object IntentUtils {
 
     fun addReminder(context: Context, event: Event) {
+        val calendarIntent = Intent(Intent.ACTION_INSERT).apply {
+            data = CalendarContract.Events.CONTENT_URI
+            putExtra(CalendarContract.Events.TITLE, event.title)
+            putExtra(CalendarContract.Events.DESCRIPTION, event.shortDescription)
+            putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, event.beginTimestamp * 1000)
+            putExtra(
+                CalendarContract.EXTRA_EVENT_END_TIME,
+                (event.beginTimestamp + event.durationInSeconds) * 1000
+            )
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val intent = Intent(Intent.ACTION_CREATE_REMINDER).apply {
+            val reminderIntent = Intent(Intent.ACTION_CREATE_REMINDER).apply {
                 putExtra(Intent.EXTRA_TITLE, event.title)
-                putExtra(
-                    Intent.EXTRA_TEXT, event.shortDescription
-                )
-                putExtra(
-                    Intent.EXTRA_TIME, event.beginTimestamp * 1000
-                )
+                putExtra(Intent.EXTRA_TEXT, event.shortDescription)
+                putExtra(Intent.EXTRA_TIME, event.beginTimestamp * 1000)
             }
-            if (intent.resolveActivity(context.packageManager) != null) {
-                context.startActivity(intent)
-            } else {
-                val intent = Intent(Intent.ACTION_INSERT).apply {
-                    data = CalendarContract.Events.CONTENT_URI
-                    putExtra(
-                        CalendarContract.Events.TITLE, event.title
-                    )
-                    putExtra(
-                        CalendarContract.Events.DESCRIPTION, event.shortDescription
-                    )
-                    putExtra(
-                        CalendarContract.EXTRA_EVENT_BEGIN_TIME, event.beginTimestamp * 1000
-                    )
-                    putExtra(
-                        CalendarContract.EXTRA_EVENT_END_TIME,
-                        (event.beginTimestamp + event.durationInSeconds) * 1000
-                    )
-                }
-                if (intent.resolveActivity(context.packageManager) != null) {
-                    context.startActivity(intent)
-                } else {
-                    Toast.makeText(
-                        context, R.string.no_calendar_found, Toast.LENGTH_SHORT
-                    ).show()
-                }
+            if (reminderIntent.resolveActivity(context.packageManager) != null) {
+                context.startActivity(reminderIntent)
+                return
             }
+        }
+
+        if (calendarIntent.resolveActivity(context.packageManager) != null) {
+            context.startActivity(calendarIntent)
         } else {
-            val intent = Intent(Intent.ACTION_INSERT).apply {
-                data = CalendarContract.Events.CONTENT_URI
-                putExtra(
-                    CalendarContract.Events.TITLE, event.title
-                )
-                putExtra(
-                    CalendarContract.Events.DESCRIPTION, event.shortDescription
-                )
-                putExtra(
-                    CalendarContract.EXTRA_EVENT_BEGIN_TIME, event.beginTimestamp * 1000
-                )
-                putExtra(
-                    CalendarContract.EXTRA_EVENT_END_TIME,
-                    (event.beginTimestamp + event.durationInSeconds) * 1000
-                )
-            }
-            if (intent.resolveActivity(context.packageManager) != null) {
-                context.startActivity(intent)
-            } else {
-                Toast.makeText(
-                    context, R.string.no_calendar_found, Toast.LENGTH_SHORT
-                ).show()
-            }
+            Toast.makeText(
+                context, R.string.no_calendar_found, Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
