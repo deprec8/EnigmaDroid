@@ -41,7 +41,6 @@ import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -54,8 +53,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
+import io.github.deprec8.enigmadroid.ui.components.isSmallScreenLayout
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,14 +65,10 @@ fun AdaptiveDialog(
     title: String
 ) {
 
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     var showCancelDialog by rememberSaveable { mutableStateOf(false) }
     val fullScrollState = rememberScrollState()
     val dialogScrollState = rememberScrollState()
-    val isSmallScreenLayout =
-        ! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || ! windowSizeClass.isHeightAtLeastBreakpoint(
-            WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
-        )
+    val isSmallScreenLayout = isSmallScreenLayout()
 
     if (showCancelDialog) {
         AlertDialog(onDismissRequest = { showCancelDialog = false }, dismissButton = {
