@@ -91,7 +91,7 @@ fun TvPage(
     }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(loadingState) { tvViewModel.fetchData() }
+        FloatingReloadButton(loadingState) { tvViewModel.fetchData(isForced = true) }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
             textFieldState = tvViewModel.searchFieldState,

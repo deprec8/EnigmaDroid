@@ -23,6 +23,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.deprec8.enigmadroid.data.ApiRepository
+import io.github.deprec8.enigmadroid.data.DevicesRepository
 import io.github.deprec8.enigmadroid.data.LoadingRepository
 import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.model.api.device.DeviceInfo
@@ -31,12 +32,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class DeviceInfoViewModel @Inject constructor(
-    private val apiRepository: ApiRepository, private val loadingRepository: LoadingRepository
+    private val apiRepository: ApiRepository,
+    private val loadingRepository: LoadingRepository,
+    private val devicesRepository: DevicesRepository
 ) : ViewModel() {
 
     private val _deviceInfo = MutableStateFlow<DeviceInfo?>(null)
@@ -46,6 +50,8 @@ class DeviceInfoViewModel @Inject constructor(
     val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
 
     private var fetchJob: Job? = null
+
+    private var loadedDeviceId: Int? = null
 
     init {
         viewModelScope.launch {
@@ -59,11 +65,20 @@ class DeviceInfoViewModel @Inject constructor(
         loadingRepository.updateLoadingState(isForcedUpdate)
     }
 
-    fun fetchData() {
-        fetchJob?.cancel()
-        _deviceInfo.value = null
-        fetchJob = viewModelScope.launch {
-            _deviceInfo.value = apiRepository.fetchDeviceInfo()
+    fun fetchData(isForced: Boolean = false) {
+        viewModelScope.launch {
+            val currentDeviceId = devicesRepository.getCurrentDeviceId().first()
+            if (currentDeviceId != loadedDeviceId || isForced) {
+                _deviceInfo.value = null
+                loadedDeviceId = currentDeviceId
+            }
+
+            if (_deviceInfo.value == null) {
+                fetchJob?.cancel()
+                fetchJob = launch {
+                    _deviceInfo.value = apiRepository.fetchDeviceInfo()
+                }
+            }
         }
     }
 }

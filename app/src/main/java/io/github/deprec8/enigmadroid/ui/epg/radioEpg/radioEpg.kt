@@ -94,7 +94,7 @@ fun RadioEpgPage(
 
     Scaffold(floatingActionButton = {
         FloatingReloadButton(loadingState) {
-            radioEpgViewModel.fetchData()
+            radioEpgViewModel.fetchData(isForced = true)
         }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(

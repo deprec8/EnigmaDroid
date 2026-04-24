@@ -74,7 +74,7 @@ fun CurrentPage(
     }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(loadingState) { currentViewModel.fetchData() }
+        FloatingReloadButton(loadingState) { currentViewModel.fetchData(isForced = true) }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         TopAppBar(
             title = {

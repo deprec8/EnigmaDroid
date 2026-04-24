@@ -73,7 +73,7 @@ fun DeviceInfoPage(
     }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(loadingState) { deviceInfoViewModel.fetchData() }
+        FloatingReloadButton(loadingState) { deviceInfoViewModel.fetchData(isForced = true) }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         TopAppBar(windowInsets = topAppBarWithDrawerWindowInsets(), title = {
             Text(

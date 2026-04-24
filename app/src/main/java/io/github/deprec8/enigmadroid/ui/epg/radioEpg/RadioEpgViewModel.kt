@@ -24,6 +24,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.deprec8.enigmadroid.data.ApiRepository
+import io.github.deprec8.enigmadroid.data.DevicesRepository
 import io.github.deprec8.enigmadroid.data.LoadingRepository
 import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.data.SettingsRepository
@@ -41,6 +42,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -50,7 +52,8 @@ class RadioEpgViewModel @Inject constructor(
     private val apiRepository: ApiRepository,
     private val loadingRepository: LoadingRepository,
     private val searchHistoryRepository: SearchHistoryRepository,
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val devicesRepository: DevicesRepository
 ) : ViewModel() {
 
     private val _eventBatchSet = MutableStateFlow<EventBatchSet?>(null)
@@ -87,6 +90,8 @@ class RadioEpgViewModel @Inject constructor(
 
     private var fetchedEventBatchSetMap = emptyMap<String, EventBatchSet>()
 
+    private var loadedDeviceId: Int? = null
+
     init {
         viewModelScope.launch {
             loadingRepository.getLoadingState().collectLatest { state ->
@@ -121,14 +126,23 @@ class RadioEpgViewModel @Inject constructor(
         loadingRepository.updateLoadingState(isForcedUpdate)
     }
 
-    fun fetchData() {
-        fetchJob?.cancel()
-        _eventBatchSet.value = null
-        _bouquets.value = null
-        fetchedEventBatchSetMap = emptyMap()
-        fetchJob = viewModelScope.launch {
-            fetchBouquets()
-            fetchEpgBatchSet()
+    fun fetchData(isForced: Boolean = false) {
+        viewModelScope.launch {
+            val currentDeviceId = devicesRepository.getCurrentDeviceId().first()
+            if (currentDeviceId != loadedDeviceId || isForced) {
+                _eventBatchSet.value = null
+                _bouquets.value = null
+                fetchedEventBatchSetMap = emptyMap()
+                loadedDeviceId = currentDeviceId
+            }
+
+            if (_eventBatchSet.value == null || _bouquets.value == null) {
+                fetchJob?.cancel()
+                fetchJob = launch {
+                    fetchBouquets()
+                    fetchEpgBatchSet()
+                }
+            }
         }
     }
 

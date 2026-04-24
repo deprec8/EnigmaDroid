@@ -157,7 +157,7 @@ fun TimersPage(
                     )
                 ) {
                     SmallFloatingActionButton(onClick = {
-                        timersViewModel.fetchData()
+                        timersViewModel.fetchData(isForced = true)
                     }) {
                         Icon(
                             Icons.Default.Refresh,

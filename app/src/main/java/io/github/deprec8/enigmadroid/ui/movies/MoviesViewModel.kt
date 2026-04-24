@@ -24,6 +24,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.deprec8.enigmadroid.data.ApiRepository
+import io.github.deprec8.enigmadroid.data.DevicesRepository
 import io.github.deprec8.enigmadroid.data.DownloadRepository
 import io.github.deprec8.enigmadroid.data.LoadingRepository
 import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
@@ -41,6 +42,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -51,7 +53,8 @@ class MoviesViewModel @Inject constructor(
     private val loadingRepository: LoadingRepository,
     private val downloadRepository: DownloadRepository,
     private val searchHistoryRepository: SearchHistoryRepository,
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val devicesRepository: DevicesRepository
 ) : ViewModel() {
 
     private val _filteredMovies = MutableStateFlow<List<Movie>?>(null)
@@ -84,6 +87,8 @@ class MoviesViewModel @Inject constructor(
         )
 
     private var fetchJob: Job? = null
+
+    private var loadedDeviceId: Int? = null
 
     init {
         viewModelScope.launch {
@@ -123,25 +128,34 @@ class MoviesViewModel @Inject constructor(
         loadingRepository.updateLoadingState(isForcedUpdate)
     }
 
-    fun fetchData() {
-        fetchJob?.cancel()
-        _movieBatch.value = null
-        _preloadBatches.value = emptyMap()
-        fetchJob = viewModelScope.launch {
-            val batch = apiRepository.fetchMovieBatch(path)
-            _movieBatch.value = batch
+    fun fetchData(isForced: Boolean = false) {
+        viewModelScope.launch {
+            val currentDeviceId = devicesRepository.getCurrentDeviceId().first()
+            if (currentDeviceId != loadedDeviceId || isForced) {
+                _movieBatch.value = null
+                _preloadBatches.value = emptyMap()
+                loadedDeviceId = currentDeviceId
+            }
 
-            val directory = batch.directory
+            if (_movieBatch.value == null || _preloadBatches.value.isEmpty()) {
+                fetchJob?.cancel()
+                fetchJob = launch {
+                    val batch = apiRepository.fetchMovieBatch(path)
+                    _movieBatch.value = batch
 
-            batch.bookmarks.asSequence()
-                .filter { bookmark -> _preloadBatches.value[bookmark] == null }
-                .forEach { bookmark ->
-                    ensureActive()
+                    val directory = batch.directory
 
-                    val result = apiRepository.fetchMovieBatch("$directory$bookmark")
+                    batch.bookmarks.asSequence()
+                        .filter { bookmark -> _preloadBatches.value[bookmark] == null }
+                        .forEach { bookmark ->
+                            ensureActive()
 
-                    _preloadBatches.value += (bookmark to result)
+                            val result = apiRepository.fetchMovieBatch("$directory$bookmark")
+
+                            _preloadBatches.value += (bookmark to result)
+                        }
                 }
+            }
         }
     }
 

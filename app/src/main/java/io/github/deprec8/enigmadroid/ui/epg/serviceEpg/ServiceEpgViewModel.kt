@@ -24,6 +24,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.deprec8.enigmadroid.data.ApiRepository
+import io.github.deprec8.enigmadroid.data.DevicesRepository
 import io.github.deprec8.enigmadroid.data.LoadingRepository
 import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.data.SettingsRepository
@@ -39,6 +40,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -48,7 +50,8 @@ class ServiceEpgViewModel @Inject constructor(
     private val apiRepository: ApiRepository,
     private val loadingRepository: LoadingRepository,
     private val searchHistoryRepository: SearchHistoryRepository,
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val devicesRepository: DevicesRepository
 ) : ViewModel() {
 
     private val _eventBatch = MutableStateFlow<EventBatch?>(null)
@@ -78,6 +81,8 @@ class ServiceEpgViewModel @Inject constructor(
     private var fetchJob: Job? = null
 
     private var serviceReference = ""
+
+    private var loadedDeviceId: Int? = null
 
     init {
         viewModelScope.launch {
@@ -116,11 +121,20 @@ class ServiceEpgViewModel @Inject constructor(
         loadingRepository.updateLoadingState(isForcedUpdate)
     }
 
-    fun fetchData() {
-        fetchJob?.cancel()
-        _eventBatch.value = null
-        fetchJob = viewModelScope.launch {
-            _eventBatch.value = apiRepository.fetchServiceEpgBatch(serviceReference)
+    fun fetchData(isForced: Boolean = false) {
+        viewModelScope.launch {
+            val currentDeviceId = devicesRepository.getCurrentDeviceId().first()
+            if (currentDeviceId != loadedDeviceId || isForced) {
+                _eventBatch.value = null
+                loadedDeviceId = currentDeviceId
+            }
+
+            if (_eventBatch.value == null) {
+                fetchJob?.cancel()
+                fetchJob = launch {
+                    _eventBatch.value = apiRepository.fetchServiceEpgBatch(serviceReference)
+                }
+            }
         }
     }
 

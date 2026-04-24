@@ -72,7 +72,7 @@ fun SignalPage(
     }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(loadingState) { signalViewModel.fetchData() }
+        FloatingReloadButton(loadingState) { signalViewModel.fetchData(isForced = true) }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         TopAppBar(
             windowInsets = topAppBarWithDrawerWindowInsets(),

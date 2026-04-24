@@ -24,6 +24,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.deprec8.enigmadroid.data.ApiRepository
+import io.github.deprec8.enigmadroid.data.DevicesRepository
 import io.github.deprec8.enigmadroid.data.LoadingRepository
 import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.data.SettingsRepository
@@ -41,6 +42,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -50,7 +52,8 @@ class TvViewModel @Inject constructor(
     private val apiRepository: ApiRepository,
     private val loadingRepository: LoadingRepository,
     private val searchHistoryRepository: SearchHistoryRepository,
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val devicesRepository: DevicesRepository
 ) : ViewModel() {
 
     private val _filteredEvents = MutableStateFlow<List<Event>?>(null)
@@ -80,6 +83,8 @@ class TvViewModel @Inject constructor(
         )
 
     private var fetchJob: Job? = null
+
+    private var loadedDeviceId: Int? = null
 
     init {
         viewModelScope.launch {
@@ -122,12 +127,21 @@ class TvViewModel @Inject constructor(
         return apiRepository.buildLiveStreamUrl(serviceReference)
     }
 
-    fun fetchData() {
-        fetchJob?.cancel()
-        _eventBatches.value = null
-        fetchJob = viewModelScope.launch {
-            apiRepository.fetchEventBatches(ApiType.TV).collect { events ->
-                _eventBatches.value = _eventBatches.value?.plus(events) ?: listOf(events)
+    fun fetchData(isForced: Boolean = false) {
+        viewModelScope.launch {
+            val currentDeviceId = devicesRepository.getCurrentDeviceId().first()
+            if (currentDeviceId != loadedDeviceId || isForced) {
+                _eventBatches.value = null
+                loadedDeviceId = currentDeviceId
+            }
+
+            if (_eventBatches.value == null) {
+                fetchJob?.cancel()
+                fetchJob = launch {
+                    apiRepository.fetchEventBatches(ApiType.TV).collect { events ->
+                        _eventBatches.value = _eventBatches.value?.plus(events) ?: listOf(events)
+                    }
+                }
             }
         }
     }

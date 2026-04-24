@@ -71,7 +71,7 @@ fun ServiceEpgPage(
     }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(loadingState) { serviceEpgViewModel.fetchData() }
+        FloatingReloadButton(loadingState) { serviceEpgViewModel.fetchData(isForced = true) }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
             enabled = eventBatch?.events?.isNotEmpty() == true && loadingState == LoadingState.LOADED,
