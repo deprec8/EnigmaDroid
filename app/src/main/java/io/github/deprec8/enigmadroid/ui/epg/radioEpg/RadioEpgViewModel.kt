@@ -23,16 +23,16 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.deprec8.enigmadroid.common.enums.ContentType
+import io.github.deprec8.enigmadroid.common.enums.LoadingState
 import io.github.deprec8.enigmadroid.data.ApiRepository
 import io.github.deprec8.enigmadroid.data.DevicesRepository
 import io.github.deprec8.enigmadroid.data.LoadingRepository
 import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.data.SettingsRepository
-import io.github.deprec8.enigmadroid.data.enums.ApiType
-import io.github.deprec8.enigmadroid.data.enums.LoadingState
 import io.github.deprec8.enigmadroid.model.api.Bouquet
-import io.github.deprec8.enigmadroid.model.api.events.Event
-import io.github.deprec8.enigmadroid.model.api.events.EventBatchSet
+import io.github.deprec8.enigmadroid.model.api.Event
+import io.github.deprec8.enigmadroid.model.api.EventBatchSet
 import io.github.deprec8.enigmadroid.ui.components.search.asHighlightedWords
 import io.github.deprec8.enigmadroid.utils.FilterUtils
 import kotlinx.coroutines.Job
@@ -147,7 +147,7 @@ class RadioEpgViewModel @Inject constructor(
     }
 
     private suspend fun fetchBouquets() {
-        val bouquets = apiRepository.fetchBouquets(ApiType.RADIO)
+        val bouquets = apiRepository.fetchBouquets(ContentType.RADIO)
         _bouquets.value = bouquets
         val firstBRef = bouquets.firstOrNull()?.reference ?: ""
         if (_currentBouquetReference.value.isBlank() || bouquets.find { it.reference == _currentBouquetReference.value } == null) {

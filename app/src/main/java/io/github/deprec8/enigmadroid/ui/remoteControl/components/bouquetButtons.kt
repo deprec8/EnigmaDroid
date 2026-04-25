@@ -29,30 +29,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtonType
+import io.github.deprec8.enigmadroid.common.enums.RCButton
 import io.github.deprec8.enigmadroid.model.RemoteControlButton
 
 @Composable
 fun BouquetButtons(
-    onButtonClicked: (RemoteControlButtonType) -> Unit, enabled: Boolean
+    onButtonClicked: (RCButton) -> Unit, enabled: Boolean
 ) {
 
     val bouquetButtons = listOf(
         RemoteControlButton(
             icon = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
             iconLabel = stringResource(R.string.bouquet_down),
-            type = RemoteControlButtonType.PREVIOUS_BOUQUET
+            button = RCButton.PREVIOUS_BOUQUET
         ),
         RemoteControlButton(
-            text = "INFO", type = RemoteControlButtonType.INFO
+            text = "INFO", button = RCButton.INFO
         ),
         RemoteControlButton(
-            text = "TEXT", type = RemoteControlButtonType.TEXT
+            text = "TEXT", button = RCButton.TEXT
         ),
         RemoteControlButton(
             icon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             iconLabel = stringResource(R.string.bouquet_up),
-            type = RemoteControlButtonType.NEXT_BOUQUET
+            button = RCButton.NEXT_BOUQUET
         ),
     )
     Row(
@@ -61,7 +61,7 @@ fun BouquetButtons(
         bouquetButtons.forEach { button ->
             RemoteButton(
                 button = button,
-                onClick = { onButtonClicked(button.type) },
+                onClick = { onButtonClicked(button.button) },
                 enabled = enabled,
                 modifier = Modifier.weight(1f),
                 aspectRatio = 1.5f

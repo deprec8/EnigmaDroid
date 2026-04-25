@@ -19,153 +19,141 @@
 
 package io.github.deprec8.enigmadroid.utils
 
-import io.github.deprec8.enigmadroid.model.api.events.Event
-import io.github.deprec8.enigmadroid.model.api.movies.Movie
-import io.github.deprec8.enigmadroid.model.api.timers.Timer
+import io.github.deprec8.enigmadroid.model.api.Event
+import io.github.deprec8.enigmadroid.model.api.Movie
+import io.github.deprec8.enigmadroid.model.api.Timer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 object FilterUtils {
 
     suspend fun filterMovies(
-        filter: String,
-        movies: List<Movie>
+        filter: String, movies: List<Movie>
     ): List<Movie> = withContext(Dispatchers.Default) {
         if (filter.isBlank() || movies.isEmpty()) return@withContext emptyList()
 
         val filterTerms = filter.lowercase().split(" ").filter { it.isNotBlank() }
 
-        movies
-            .asSequence()
-            .map { movie ->
-                val lcService = movie.serviceName.lowercase()
-                val lcLongDesc = movie.longDescription.lowercase()
-                val lcShortDesc = movie.shortDescription.lowercase()
-                val lcTags = movie.tags.lowercase()
-                val lcBegin = movie.begin.lowercase()
-                val lcEventName = movie.eventName.lowercase()
+        movies.asSequence().map { movie ->
+            val lcService = movie.serviceName.lowercase()
+            val lcLongDesc = movie.longDescription.lowercase()
+            val lcShortDesc = movie.shortDescription.lowercase()
+            val lcTags = movie.tags.lowercase()
+            val lcBegin = movie.begin.lowercase()
+            val lcEventName = movie.eventName.lowercase()
 
-                val matches = filterTerms.all { term ->
-                    lcService.contains(term) ||
-                            lcLongDesc.contains(term) ||
-                            lcShortDesc.contains(term) ||
-                            lcTags.contains(term) ||
-                            lcBegin.contains(term) ||
-                            lcEventName.contains(term)
-                }
-
-                val score = if (matches) {
-                    filterTerms.count { lcService.contains(it) } * 6 +
-                            filterTerms.count { lcLongDesc.contains(it) } * 5 +
-                            filterTerms.count { lcShortDesc.contains(it) } * 4 +
-                            filterTerms.count { lcTags.contains(it) } * 3 +
-                            filterTerms.count { lcBegin.contains(it) } * 2 +
-                            filterTerms.count { lcEventName.contains(it) } * 1
-                } else 0
-
-                Triple(movie, matches, score)
+            val matches = filterTerms.all { term ->
+                lcService.contains(term) || lcLongDesc.contains(term) || lcShortDesc.contains(
+                    term
+                ) || lcTags.contains(term) || lcBegin.contains(term) || lcEventName.contains(
+                    term
+                )
             }
-            .filter { it.second }
-            .sortedByDescending { it.third }
-            .map { it.first }
-            .toList()
+
+            val score = if (matches) {
+                filterTerms.count { lcService.contains(it) } * 6 + filterTerms.count {
+                    lcLongDesc.contains(
+                        it
+                    )
+                } * 5 + filterTerms.count { lcShortDesc.contains(it) } * 4 + filterTerms.count {
+                    lcTags.contains(
+                        it
+                    )
+                } * 3 + filterTerms.count { lcBegin.contains(it) } * 2 + filterTerms.count {
+                    lcEventName.contains(
+                        it
+                    )
+                } * 1
+            } else 0
+
+            Triple(movie, matches, score)
+        }.filter { it.second }.sortedByDescending { it.third }.map { it.first }.toList()
     }
 
     suspend fun filterTimers(
-        filter: String,
-        timers: List<Timer>
+        filter: String, timers: List<Timer>
     ): List<Timer> = withContext(Dispatchers.Default) {
         if (filter.isBlank() || timers.isEmpty()) return@withContext emptyList()
 
         val filterTerms = filter.lowercase().split(" ").filter { it.isNotBlank() }
 
-        timers
-            .asSequence()
-            .map { timer ->
-                val lcTitle = timer.title.lowercase()
-                val lcExtDesc = timer.descriptionextended.lowercase()
-                val lcShortDesc = timer.shortDescription.lowercase()
-                val lcService = timer.serviceName.lowercase()
-                val lcTags = timer.tags.lowercase()
-                val lcBegin = timer.begin.lowercase()
-                val lcEnd = timer.end.lowercase()
+        timers.asSequence().map { timer ->
+            val lcTitle = timer.title.lowercase()
+            val lcExtDesc = timer.descriptionextended.lowercase()
+            val lcShortDesc = timer.shortDescription.lowercase()
+            val lcService = timer.serviceName.lowercase()
+            val lcTags = timer.tags.lowercase()
+            val lcBegin = timer.begin.lowercase()
+            val lcEnd = timer.end.lowercase()
 
-                val matches = filterTerms.all { term ->
-                    lcTitle.contains(term) ||
-                            lcExtDesc.contains(term) ||
-                            lcShortDesc.contains(term) ||
-                            lcService.contains(term) ||
-                            lcTags.contains(term) ||
-                            lcBegin.contains(term) ||
-                            lcEnd.contains(term)
-                }
-
-                val score = if (matches) {
-                    filterTerms.count { lcTitle.contains(it) } * 7 +
-                            filterTerms.count { lcExtDesc.contains(it) } * 6 +
-                            filterTerms.count { lcShortDesc.contains(it) } * 5 +
-                            filterTerms.count { lcService.contains(it) } * 4 +
-                            filterTerms.count { lcTags.contains(it) } * 3 +
-                            filterTerms.count { lcBegin.contains(it) } * 2 +
-                            filterTerms.count { lcEnd.contains(it) } * 1
-                } else 0
-
-                Triple(timer, matches, score)
+            val matches = filterTerms.all { term ->
+                lcTitle.contains(term) || lcExtDesc.contains(term) || lcShortDesc.contains(term) || lcService.contains(
+                    term
+                ) || lcTags.contains(term) || lcBegin.contains(term) || lcEnd.contains(term)
             }
-            .filter { it.second }
-            .sortedByDescending { it.third }
-            .map { it.first }
-            .toList()
+
+            val score = if (matches) {
+                filterTerms.count { lcTitle.contains(it) } * 7 + filterTerms.count {
+                    lcExtDesc.contains(
+                        it
+                    )
+                } * 6 + filterTerms.count { lcShortDesc.contains(it) } * 5 + filterTerms.count {
+                    lcService.contains(
+                        it
+                    )
+                } * 4 + filterTerms.count { lcTags.contains(it) } * 3 + filterTerms.count {
+                    lcBegin.contains(
+                        it
+                    )
+                } * 2 + filterTerms.count { lcEnd.contains(it) } * 1
+            } else 0
+
+            Triple(timer, matches, score)
+        }.filter { it.second }.sortedByDescending { it.third }.map { it.first }.toList()
     }
 
 
     suspend fun filterEvents(
-        filter: String,
-        events: List<Event>
+        filter: String, events: List<Event>
     ): List<Event> = withContext(Dispatchers.Default) {
         if (filter.isBlank() || events.isEmpty()) return@withContext emptyList()
 
         val filterTerms = filter.lowercase().split(" ").filter { it.isNotBlank() }
 
-        events
-            .asSequence()
-            .map { event ->
-                val lcService = event.serviceName.lowercase()
-                val lcTitle = event.title.lowercase()
-                val lcLongDesc = event.longDescription.lowercase()
-                val lcShortDesc = event.shortDescription.lowercase()
-                val lcGenre = event.genre.lowercase()
-                val lcBegin =
-                    TimestampUtils.formatApiTimestampToTime(event.beginTimestamp).lowercase()
-                val lcEnd = TimestampUtils
-                    .formatApiTimestampToTime(event.beginTimestamp + event.durationInSeconds)
-                    .lowercase()
+        events.asSequence().map { event ->
+            val lcService = event.serviceName.lowercase()
+            val lcTitle = event.title.lowercase()
+            val lcLongDesc = event.longDescription.lowercase()
+            val lcShortDesc = event.shortDescription.lowercase()
+            val lcGenre = event.genre.lowercase()
+            val lcBegin = TimestampUtils.formatApiTimestampToTime(event.beginTimestamp).lowercase()
+            val lcEnd = TimestampUtils
+                .formatApiTimestampToTime(event.beginTimestamp + event.durationInSeconds)
+                .lowercase()
 
-                val matches = filterTerms.all { term ->
-                    lcService.contains(term) ||
-                            lcTitle.contains(term) ||
-                            lcLongDesc.contains(term) ||
-                            lcShortDesc.contains(term) ||
-                            lcGenre.contains(term) ||
-                            lcBegin.contains(term) ||
-                            lcEnd.contains(term)
-                }
-
-                val score = if (matches) {
-                    filterTerms.count { lcService.contains(it) } * 7 +
-                            filterTerms.count { lcTitle.contains(it) } * 6 +
-                            filterTerms.count { lcLongDesc.contains(it) } * 5 +
-                            filterTerms.count { lcShortDesc.contains(it) } * 4 +
-                            filterTerms.count { lcGenre.contains(it) } * 3 +
-                            filterTerms.count { lcBegin.contains(it) } * 2 +
-                            filterTerms.count { lcEnd.contains(it) }
-                } else 0
-
-                Triple(event, matches, score)
+            val matches = filterTerms.all { term ->
+                lcService.contains(term) || lcTitle.contains(term) || lcLongDesc.contains(term) || lcShortDesc.contains(
+                    term
+                ) || lcGenre.contains(term) || lcBegin.contains(term) || lcEnd.contains(term)
             }
-            .filter { it.second }
-            .sortedByDescending { it.third }
-            .map { it.first }
-            .toList()
+
+            val score = if (matches) {
+                filterTerms.count { lcService.contains(it) } * 7 + filterTerms.count {
+                    lcTitle.contains(
+                        it
+                    )
+                } * 6 + filterTerms.count { lcLongDesc.contains(it) } * 5 + filterTerms.count {
+                    lcShortDesc.contains(
+                        it
+                    )
+                } * 4 + filterTerms.count { lcGenre.contains(it) } * 3 + filterTerms.count {
+                    lcBegin.contains(
+                        it
+                    )
+                } * 2 + filterTerms.count { lcEnd.contains(it) }
+            } else 0
+
+            Triple(event, matches, score)
+        }.filter { it.second }.sortedByDescending { it.third }.map { it.first }.toList()
     }
 }

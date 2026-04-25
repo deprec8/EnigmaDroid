@@ -24,27 +24,27 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.data.enums.ApiType
-import io.github.deprec8.enigmadroid.data.enums.EntryType
-import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtonType
-import io.github.deprec8.enigmadroid.data.enums.RemoteControlPowerButtonType
-import io.github.deprec8.enigmadroid.data.objects.DefaultBouquet
-import io.github.deprec8.enigmadroid.data.objects.PreferenceKey
+import io.github.deprec8.enigmadroid.common.constant.DefaultBouquets
+import io.github.deprec8.enigmadroid.common.constant.PreferenceKeys
+import io.github.deprec8.enigmadroid.common.enums.ContentFlag
+import io.github.deprec8.enigmadroid.common.enums.ContentType
+import io.github.deprec8.enigmadroid.common.enums.RCButton
+import io.github.deprec8.enigmadroid.common.enums.RCPowerButton
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.data.source.local.devices.DeviceDatabase
 import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
 import io.github.deprec8.enigmadroid.model.api.Bouquet
 import io.github.deprec8.enigmadroid.model.api.BouquetBatch
+import io.github.deprec8.enigmadroid.model.api.CurrentInfo
+import io.github.deprec8.enigmadroid.model.api.DeviceInfo
+import io.github.deprec8.enigmadroid.model.api.EventBatch
+import io.github.deprec8.enigmadroid.model.api.EventBatchSet
+import io.github.deprec8.enigmadroid.model.api.MovieBatch
+import io.github.deprec8.enigmadroid.model.api.ServiceBatch
+import io.github.deprec8.enigmadroid.model.api.ServiceBatchSet
 import io.github.deprec8.enigmadroid.model.api.SignalInfo
-import io.github.deprec8.enigmadroid.model.api.current.CurrentInfo
-import io.github.deprec8.enigmadroid.model.api.device.DeviceInfo
-import io.github.deprec8.enigmadroid.model.api.events.EventBatch
-import io.github.deprec8.enigmadroid.model.api.events.EventBatchSet
-import io.github.deprec8.enigmadroid.model.api.movies.MovieBatch
-import io.github.deprec8.enigmadroid.model.api.timers.Timer
-import io.github.deprec8.enigmadroid.model.api.timers.TimerBatch
-import io.github.deprec8.enigmadroid.model.api.timers.services.ServiceBatch
-import io.github.deprec8.enigmadroid.model.api.timers.services.ServiceBatchSet
+import io.github.deprec8.enigmadroid.model.api.Timer
+import io.github.deprec8.enigmadroid.model.api.TimerBatch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -63,7 +63,7 @@ class ApiRepository @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) {
 
-    private val currentDeviceKey = intPreferencesKey(PreferenceKey.CURRENT_DEVICE)
+    private val currentDeviceKey = intPreferencesKey(PreferenceKeys.CURRENT_DEVICE)
 
     private suspend fun getCurrentDevice(): Device? {
         val listId = dataStore.data.map { preferences ->
@@ -91,17 +91,17 @@ class ApiRepository @Inject constructor(
     suspend fun buildMovieStreamUrl(file: String): String =
         getCurrentDevice()?.buildMovieStreamUrl(file) ?: ""
 
-    private fun EntryType.shouldBeNumbered(): Boolean {
+    private fun ContentFlag.shouldBeNumbered(): Boolean {
         return when (this) {
-            EntryType.CHANNEL, EntryType.NUMBERED_MARKER, EntryType.INVISIBLE_NUMBERED_MARKER -> true
-            else                                                                              -> false
+            ContentFlag.CHANNEL, ContentFlag.NUMBERED_MARKER, ContentFlag.INVISIBLE_NUMBERED_MARKER -> true
+            else                                                                                    -> false
         }
     }
 
-    private fun String.toEntryType(): EntryType {
-        val flag = split(":").getOrNull(1)?.toIntOrNull() ?: return EntryType.CHANNEL
+    private fun String.toEntryType(): ContentFlag {
+        val flag = split(":").getOrNull(1)?.toIntOrNull() ?: return ContentFlag.CHANNEL
 
-        return EntryType.entries.firstOrNull { it.flag == flag } ?: EntryType.CHANNEL
+        return ContentFlag.entries.firstOrNull { it.flag == flag } ?: ContentFlag.CHANNEL
     }
 
     suspend fun fetchCurrentInfo(): CurrentInfo {
@@ -224,8 +224,8 @@ class ApiRepository @Inject constructor(
         }
     }
 
-    fun fetchEventBatches(apiType: ApiType): Flow<EventBatch> = flow {
-        fetchBouquets(apiType).forEach { bouquet ->
+    fun fetchEventBatches(contentType: ContentType): Flow<EventBatch> = flow {
+        fetchBouquets(contentType).forEach { bouquet ->
             val newBouquetReference = bouquet.reference.replace("\\\"", "\"")
 
             val rawJson = networkDataSource.fetchApi("epgnow?bRef=$newBouquetReference")
@@ -257,14 +257,14 @@ class ApiRepository @Inject constructor(
         emit(EventBatch())
     }
 
-    suspend fun fetchBouquets(apiType: ApiType): List<Bouquet> {
+    suspend fun fetchBouquets(contentType: ContentType): List<Bouquet> {
         val rawUserJson =
-            networkDataSource.fetchApi("bouquets?stype=${if (apiType == ApiType.TV) "tv" else "radio"}")
+            networkDataSource.fetchApi("bouquets?stype=${if (contentType == ContentType.TV) "tv" else "radio"}")
         val rawProviderJson = networkDataSource.fetchApi(
-            if (apiType == ApiType.TV) {
-                "epgnow?bRef=${DefaultBouquet.ALL_PROVIDERS_TV}"
+            if (contentType == ContentType.TV) {
+                "epgnow?bRef=${DefaultBouquets.ALL_PROVIDERS_TV}"
             } else {
-                "epgnow?bRef=${DefaultBouquet.ALL_PROVIDERS_RADIO}"
+                "epgnow?bRef=${DefaultBouquets.ALL_PROVIDERS_RADIO}"
             }
         )
 
@@ -274,7 +274,7 @@ class ApiRepository @Inject constructor(
                 json.decodeFromString(
                     BouquetBatch.serializer(), rawUserJson
                 ).bouquets.forEach { bouquet ->
-                    if (bouquet[0].toEntryType() != EntryType.INVISIBLE_DIRECTORY) {
+                    if (bouquet[0].toEntryType() != ContentFlag.INVISIBLE_DIRECTORY) {
                         bouquets.add(
                             Bouquet(
                                 reference = bouquet[0], name = bouquet[1]
@@ -284,17 +284,17 @@ class ApiRepository @Inject constructor(
                 }
                 bouquets.add(
                     Bouquet(
-                        if (apiType == ApiType.TV) {
-                            DefaultBouquet.ALL_SERVICES_TV
+                        if (contentType == ContentType.TV) {
+                            DefaultBouquets.ALL_SERVICES_TV
                         } else {
-                            DefaultBouquet.ALL_SERVICES_RADIO
+                            DefaultBouquets.ALL_SERVICES_RADIO
                         }, context.getString(R.string.all_services)
                     )
                 )
                 json.decodeFromString(
                     EventBatch.serializer(), rawProviderJson
                 ).events.forEach { provider ->
-                    if (provider.serviceReference.toEntryType() != EntryType.INVISIBLE_DIRECTORY) {
+                    if (provider.serviceReference.toEntryType() != ContentFlag.INVISIBLE_DIRECTORY) {
                         bouquets.add(
                             Bouquet(
                                 provider.serviceReference, provider.serviceName
@@ -367,11 +367,11 @@ class ApiRepository @Inject constructor(
         }
     }
 
-    suspend fun remoteControlCall(type: RemoteControlButtonType) {
-        networkDataSource.postApi(type)
+    suspend fun remoteControlCall(button: RCButton) {
+        networkDataSource.postApi(button)
     }
 
-    suspend fun setPowerState(type: RemoteControlPowerButtonType) {
+    suspend fun setPowerState(type: RCPowerButton) {
         networkDataSource.postApi("powerstate?newstate=${type.id}")
     }
 }

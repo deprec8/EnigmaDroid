@@ -17,11 +17,11 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.model.api.events
+package io.github.deprec8.enigmadroid.common.constant
 
-import androidx.compose.runtime.Immutable
+object DefaultPorts {
 
-@Immutable
-data class EventBatchSet(
-    val eventBatches: List<EventBatch> = emptyList()
-)
+    const val HTTP = "80"
+    const val HTTPS = "443"
+    const val LIVE = "8001"
+}

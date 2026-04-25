@@ -28,9 +28,9 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.deprec8.enigmadroid.common.constant.DefaultPorts
 import io.github.deprec8.enigmadroid.data.DevicesRepository
 import io.github.deprec8.enigmadroid.data.OnboardingRepository
-import io.github.deprec8.enigmadroid.data.objects.DefaultPort
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -49,9 +49,9 @@ class OnboardingViewModel @Inject constructor(
 
     val ipState = TextFieldState("")
 
-    val portState = TextFieldState(DefaultPort.HTTP)
+    val portState = TextFieldState(DefaultPorts.HTTP)
 
-    val livePortState = TextFieldState(DefaultPort.LIVE)
+    val livePortState = TextFieldState(DefaultPorts.LIVE)
 
     var isHttps by mutableStateOf(false)
         private set
@@ -93,10 +93,10 @@ class OnboardingViewModel @Inject constructor(
 
     fun toggleHttps() {
         isHttps = ! isHttps
-        if (portState.text == DefaultPort.HTTP && isHttps) {
-            portState.setTextAndPlaceCursorAtEnd(DefaultPort.HTTPS)
-        } else if (portState.text == DefaultPort.HTTPS && ! isHttps) {
-            portState.setTextAndPlaceCursorAtEnd(DefaultPort.HTTP)
+        if (portState.text == DefaultPorts.HTTP && isHttps) {
+            portState.setTextAndPlaceCursorAtEnd(DefaultPorts.HTTPS)
+        } else if (portState.text == DefaultPorts.HTTPS && ! isHttps) {
+            portState.setTextAndPlaceCursorAtEnd(DefaultPorts.HTTP)
 
         }
     }

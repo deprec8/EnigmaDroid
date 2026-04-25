@@ -31,52 +31,52 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtonType
+import io.github.deprec8.enigmadroid.common.enums.RCButton
 import io.github.deprec8.enigmadroid.model.RemoteControlButton
 
 @Composable
 fun ArrowButtons(
-    onButtonClicked: (RemoteControlButtonType) -> Unit, enabled: Boolean
+    onButtonClicked: (RCButton) -> Unit, enabled: Boolean
 ) {
 
     val arrowButtons = listOf(
         listOf(
             RemoteControlButton(
-                text = "PVR", type = RemoteControlButtonType.PVR
+                text = "PVR", button = RCButton.PVR
             ),
             RemoteControlButton(
                 icon = Icons.Default.KeyboardArrowUp,
                 iconLabel = stringResource(R.string.arrow_up),
-                type = RemoteControlButtonType.ARROW_UP
+                button = RCButton.ARROW_UP
             ),
             RemoteControlButton(
-                text = "MENU", type = RemoteControlButtonType.MENU
+                text = "MENU", button = RCButton.MENU
             ),
         ), listOf(
             RemoteControlButton(
                 icon = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                 iconLabel = stringResource(R.string.arrow_left),
-                type = RemoteControlButtonType.ARROW_LEFT
+                button = RCButton.ARROW_LEFT
             ),
             RemoteControlButton(
-                text = "OK", type = RemoteControlButtonType.OK
+                text = "OK", button = RCButton.OK
             ),
             RemoteControlButton(
                 icon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 iconLabel = stringResource(R.string.arrow_right),
-                type = RemoteControlButtonType.ARROW_RIGHT
+                button = RCButton.ARROW_RIGHT
             ),
         ), listOf(
             RemoteControlButton(
-                text = "EPG", type = RemoteControlButtonType.EPG
+                text = "EPG", button = RCButton.EPG
             ),
             RemoteControlButton(
                 icon = Icons.Default.KeyboardArrowDown,
                 iconLabel = stringResource(R.string.arrow_down),
-                type = RemoteControlButtonType.ARROW_DOWN
+                button = RCButton.ARROW_DOWN
             ),
             RemoteControlButton(
-                text = "EXIT", type = RemoteControlButtonType.EXIT
+                text = "EXIT", button = RCButton.EXIT
             ),
         )
     )
@@ -87,7 +87,7 @@ fun ArrowButtons(
             row.forEach { button ->
                 RemoteButton(
                     button = button,
-                    onClick = { onButtonClicked(button.type) },
+                    onClick = { onButtonClicked(button.button) },
                     enabled = enabled,
                     modifier = Modifier.weight(1f)
                 )

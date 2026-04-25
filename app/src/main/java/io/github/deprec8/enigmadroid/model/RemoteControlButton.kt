@@ -22,7 +22,7 @@ package io.github.deprec8.enigmadroid.model
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtonType
+import io.github.deprec8.enigmadroid.common.enums.RCButton
 
 @Immutable
 data class RemoteControlButton(
@@ -30,5 +30,5 @@ data class RemoteControlButton(
     val icon: ImageVector? = null,
     val iconLabel: String? = null,
     val iconTint: Color? = null,
-    val type: RemoteControlButtonType
+    val button: RCButton
 )

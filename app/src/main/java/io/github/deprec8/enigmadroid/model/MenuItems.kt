@@ -17,16 +17,20 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.model.api.device
+package io.github.deprec8.enigmadroid.model
 
 import androidx.compose.runtime.Immutable
-import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import androidx.compose.ui.graphics.vector.ImageVector
 
 @Immutable
-@Serializable
-data class Interface(
-    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("ip") val ip: String = "N/A",
-    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("name") val name: String = "N/A"
+data class MenuItem(
+    val text: String,
+    val outlinedIcon: ImageVector,
+    val filledIcon: ImageVector,
+    val action: () -> Unit,
+)
+
+@Immutable
+data class MenuItemGroup(
+    val menuItems: List<MenuItem>,
 )

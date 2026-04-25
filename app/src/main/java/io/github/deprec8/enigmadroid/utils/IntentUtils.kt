@@ -33,7 +33,7 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
-import io.github.deprec8.enigmadroid.model.api.events.Event
+import io.github.deprec8.enigmadroid.model.api.Event
 
 object IntentUtils {
 
@@ -102,28 +102,28 @@ object IntentUtils {
     fun pinDevice(context: Context, device: Device, deviceId: Int) {
         context.getSystemService(ShortcutManager::class.java).requestPinShortcut(
             ShortcutInfo.Builder(context, "device_${device.id}").setIcon(
-                    Icon.createWithResource(
-                        context, R.mipmap.ic_shortcut_device
-                    )
+                Icon.createWithResource(
+                    context, R.mipmap.ic_shortcut_device
+                )
             ).setShortLabel(device.name).setIntent(
-                    Intent(
-                        "io.github.deprec8.enigmadroid.OPEN_WITH_DEVICE",
-                    ).putExtra("device_id", deviceId)
-                ).build(), null
+                Intent(
+                    "io.github.deprec8.enigmadroid.OPEN_WITH_DEVICE",
+                ).putExtra("device_id", deviceId)
+            ).build(), null
         )
     }
 
     fun pinOwifDevice(context: Context, device: Device, url: String) {
         context.getSystemService(ShortcutManager::class.java).requestPinShortcut(
             ShortcutInfo.Builder(context, "openwebif_${device.id}").setIcon(
-                    Icon.createWithResource(
-                        context, R.mipmap.ic_shortcut_owif
-                    )
+                Icon.createWithResource(
+                    context, R.mipmap.ic_shortcut_owif
+                )
             ).setShortLabel(device.name + " (Web)").setIntent(
-                    Intent(
-                        Intent.ACTION_DEFAULT, url.toUri()
-                    )
-                ).build(), null
+                Intent(
+                    Intent.ACTION_DEFAULT, url.toUri()
+                )
+            ).build(), null
         )
     }
 

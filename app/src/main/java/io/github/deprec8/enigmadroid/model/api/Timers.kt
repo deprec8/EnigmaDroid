@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.model.api.timers
+package io.github.deprec8.enigmadroid.model.api
 
 import androidx.compose.runtime.Immutable
 import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
@@ -48,4 +48,16 @@ data class Timer(
     @SerialName("state") val state: Int = 0,
     @SerialName("cancelled") val cancelled: Boolean = false,
     @Serializable(with = LogEntrySerializer::class) @SerialName("logentries") val logEntries: List<LogEntry> = emptyList()
+)
+
+@Immutable
+@Serializable
+data class TimerBatch(
+    @SerialName("timers") val timers: List<Timer> = emptyList()
+)
+
+@Immutable
+@Serializable
+data class LogEntry(
+    val timestamp: Long, val code: Int, val message: String
 )

@@ -17,17 +17,22 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.model.api.timers.services
+package io.github.deprec8.enigmadroid.model
 
 import androidx.compose.runtime.Immutable
-import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation3.runtime.NavKey
 
 @Immutable
-@Serializable
-data class ServiceBatch(
-    @SerialName("subservices") val services: List<Service> = emptyList(),
-    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("servicename") val name: String = "",
-    @SerialName("servicereference") val reference: String = ""
+data class DrawerPage(
+    val name: String,
+    val navKey: NavKey,
+    val icon: ImageVector,
+    val selectedIcon: ImageVector
+)
+
+@Immutable
+data class DrawerPageGroup(
+    val name: String,
+    val pages: List<DrawerPage>
 )

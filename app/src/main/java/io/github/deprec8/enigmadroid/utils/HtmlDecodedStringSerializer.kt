@@ -34,8 +34,7 @@ object HtmlDecodedStringSerializer : KSerializer<String> {
         val raw = decoder.decodeString()
         return Parser.unescapeEntities(raw, false).map { ch ->
             if (ch.code in 0x80 .. 0x9F) ' ' else ch
-        }
-            .joinToString("")
+        }.joinToString("")
     }
 
     override fun serialize(encoder: Encoder, value: String) {

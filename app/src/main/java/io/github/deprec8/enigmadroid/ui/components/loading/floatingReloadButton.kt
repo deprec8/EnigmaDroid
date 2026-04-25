@@ -37,7 +37,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.data.enums.LoadingState
+import io.github.deprec8.enigmadroid.common.enums.LoadingState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

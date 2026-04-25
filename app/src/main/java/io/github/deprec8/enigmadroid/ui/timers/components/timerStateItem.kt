@@ -40,8 +40,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.data.enums.TimerState
-import io.github.deprec8.enigmadroid.model.api.timers.Timer
+import io.github.deprec8.enigmadroid.common.enums.TimerState
+import io.github.deprec8.enigmadroid.model.api.Timer
 
 @Composable
 fun TimerStateIcon(timer: Timer) {

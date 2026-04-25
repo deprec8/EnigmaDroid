@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.model.api.device
+package io.github.deprec8.enigmadroid.model.api
 
 import androidx.compose.runtime.Immutable
 import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
@@ -38,4 +38,27 @@ data class DeviceInfo(
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("webifver") val webifVersion: String = "N/A",
     @SerialName("hdd") val hdds: List<HDD> = emptyList(),
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("model") val model: String = "N/A",
+)
+
+@Immutable
+@Serializable
+data class HDD(
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("capacity") val capacity: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("mount") val mount: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("free") val free: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("model") val model: String = "N/A"
+)
+
+@Immutable
+@Serializable
+data class Interface(
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("ip") val ip: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("name") val name: String = "N/A"
+)
+
+@Immutable
+@Serializable
+data class Tuner(
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("type") val type: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("name") val name: String = "N/A"
 )

@@ -24,7 +24,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringSetPreferencesKey
-import io.github.deprec8.enigmadroid.data.objects.PreferenceKey
+import io.github.deprec8.enigmadroid.common.constant.PreferenceKeys
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -34,18 +34,19 @@ import javax.inject.Singleton
 @Singleton
 class SearchHistoryRepository @Inject constructor(private val dataStore: DataStore<Preferences>) {
 
-    private val tvSearchHistoryKey = stringSetPreferencesKey(PreferenceKey.TV_SEARCH_HISTORY)
-    private val radioSearchHistoryKey = stringSetPreferencesKey(PreferenceKey.RADIO_SEARCH_HISTORY)
-    private val tvEpgSearchHistoryKey = stringSetPreferencesKey(PreferenceKey.TV_EPG_SEARCH_HISTORY)
+    private val tvSearchHistoryKey = stringSetPreferencesKey(PreferenceKeys.TV_SEARCH_HISTORY)
+    private val radioSearchHistoryKey = stringSetPreferencesKey(PreferenceKeys.RADIO_SEARCH_HISTORY)
+    private val tvEpgSearchHistoryKey =
+        stringSetPreferencesKey(PreferenceKeys.TV_EPG_SEARCH_HISTORY)
     private val radioEpgSearchHistoryKey =
-        stringSetPreferencesKey(PreferenceKey.RADIO_EPG_SEARCH_HISTORY)
+        stringSetPreferencesKey(PreferenceKeys.RADIO_EPG_SEARCH_HISTORY)
     private val moviesSearchHistoryKey =
-        stringSetPreferencesKey(PreferenceKey.MOVIES_SEARCH_HISTORY)
+        stringSetPreferencesKey(PreferenceKeys.MOVIES_SEARCH_HISTORY)
     private val timersSearchHistoryKey =
-        stringSetPreferencesKey(PreferenceKey.TIMERS_SEARCH_HISTORY)
+        stringSetPreferencesKey(PreferenceKeys.TIMERS_SEARCH_HISTORY)
     private val serviceEpgSearchHistoryKey =
-        stringSetPreferencesKey(PreferenceKey.SERVICE_EPG_SEARCH_HISTORY)
-    private val useSearchHistoryKey = booleanPreferencesKey(PreferenceKey.USE_SEARCH_HISTORY)
+        stringSetPreferencesKey(PreferenceKeys.SERVICE_EPG_SEARCH_HISTORY)
+    private val useSearchHistoryKey = booleanPreferencesKey(PreferenceKeys.USE_SEARCH_HISTORY)
 
     fun getUseSearchHistory(): Flow<Boolean> = dataStore.data.map { preferences ->
         preferences[useSearchHistoryKey] ?: true

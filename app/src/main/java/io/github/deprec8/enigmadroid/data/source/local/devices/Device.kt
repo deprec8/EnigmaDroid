@@ -21,7 +21,7 @@ package io.github.deprec8.enigmadroid.data.source.local.devices
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtonType
+import io.github.deprec8.enigmadroid.common.enums.RCButton
 
 @Entity
 data class Device(
@@ -44,7 +44,7 @@ data class Device(
         append("${ip}:${port}/api/${endpoint.replace(" ", "%20")}")
     }
 
-    fun buildUrl(button: RemoteControlButtonType) = buildString {
+    fun buildUrl(button: RCButton) = buildString {
         append(if (isHttps) "https://" else "http://")
         if (isLogin) {
             append("${user}:${password}@")

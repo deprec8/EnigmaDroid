@@ -29,36 +29,36 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtonType
+import io.github.deprec8.enigmadroid.common.enums.RCButton
 import io.github.deprec8.enigmadroid.model.RemoteControlButton
 
 @Composable
-fun ColorButtons(onButtonClicked: (RemoteControlButtonType) -> Unit, enabled: Boolean) {
+fun ColorButtons(onButtonClicked: (RCButton) -> Unit, enabled: Boolean) {
 
     val colorButtons = listOf(
         RemoteControlButton(
             icon = Icons.Default.TripOrigin,
             iconLabel = stringResource(R.string.red),
             iconTint = Color.Red,
-            type = RemoteControlButtonType.COLOR_RED
+            button = RCButton.COLOR_RED
         ),
         RemoteControlButton(
             icon = Icons.Default.TripOrigin,
             iconLabel = stringResource(R.string.green),
             iconTint = Color.Green,
-            type = RemoteControlButtonType.COLOR_GREEN
+            button = RCButton.COLOR_GREEN
         ),
         RemoteControlButton(
             icon = Icons.Default.TripOrigin,
             iconLabel = stringResource(R.string.yellow),
             iconTint = Color.Yellow,
-            type = RemoteControlButtonType.COLOR_YELLOW
+            button = RCButton.COLOR_YELLOW
         ),
         RemoteControlButton(
             icon = Icons.Default.TripOrigin,
             iconLabel = stringResource(R.string.blue),
             iconTint = Color.Blue,
-            type = RemoteControlButtonType.COLOR_BLUE
+            button = RCButton.COLOR_BLUE
         ),
     )
 
@@ -68,7 +68,7 @@ fun ColorButtons(onButtonClicked: (RemoteControlButtonType) -> Unit, enabled: Bo
         colorButtons.forEach { button ->
             RemoteButton(
                 button = button,
-                onClick = { onButtonClicked(button.type) },
+                onClick = { onButtonClicked(button.button) },
                 enabled = enabled,
                 modifier = Modifier.weight(1f),
                 iconTint = button.iconTint,

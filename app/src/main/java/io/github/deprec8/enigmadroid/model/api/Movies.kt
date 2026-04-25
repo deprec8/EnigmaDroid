@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.model.api.movies
+package io.github.deprec8.enigmadroid.model.api
 
 import androidx.compose.runtime.Immutable
 import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
@@ -37,4 +37,12 @@ data class Movie(
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("begintime") val begin: String = "N/A",
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("descriptionExtended") val longDescription: String = "",
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("filesize_readable") val filesizeReadable: String = "N/A"
+)
+
+@Immutable
+@Serializable
+data class MovieBatch(
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("directory") val directory: String = "",
+    @SerialName("movies") val movies: List<Movie> = emptyList(),
+    @SerialName("bookmarks") val bookmarks: List<String> = emptyList()
 )

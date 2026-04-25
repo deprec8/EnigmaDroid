@@ -25,45 +25,45 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtonType
+import io.github.deprec8.enigmadroid.common.enums.RCButton
 import io.github.deprec8.enigmadroid.model.RemoteControlButton
 
 @Composable
 fun NumberButtons(
-    onButtonClicked: (RemoteControlButtonType) -> Unit, enabled: Boolean
+    onButtonClicked: (RCButton) -> Unit, enabled: Boolean
 ) {
 
     val numberButtons = listOf(
         listOf(
             RemoteControlButton(
-                text = "1", type = RemoteControlButtonType.ONE
+                text = "1", button = RCButton.ONE
             ), RemoteControlButton(
-                text = "4 ghi", type = RemoteControlButtonType.FOUR
+                text = "4 ghi", button = RCButton.FOUR
             ), RemoteControlButton(
-                text = "7 pqrs", type = RemoteControlButtonType.SEVEN
+                text = "7 pqrs", button = RCButton.SEVEN
             )
         ), listOf(
             RemoteControlButton(
-                text = "2 abc", type = RemoteControlButtonType.TWO
+                text = "2 abc", button = RCButton.TWO
             ),
             RemoteControlButton(
-                text = "5 jkl", type = RemoteControlButtonType.FIVE
+                text = "5 jkl", button = RCButton.FIVE
             ),
             RemoteControlButton(
-                text = "8 tuv", type = RemoteControlButtonType.EIGHT
+                text = "8 tuv", button = RCButton.EIGHT
             ),
             RemoteControlButton(
-                text = "0", type = RemoteControlButtonType.ZERO
+                text = "0", button = RCButton.ZERO
             ),
         ), listOf(
             RemoteControlButton(
-                text = "3 def", type = RemoteControlButtonType.THREE
+                text = "3 def", button = RCButton.THREE
             ),
             RemoteControlButton(
-                text = "6 mno", type = RemoteControlButtonType.SIX
+                text = "6 mno", button = RCButton.SIX
             ),
             RemoteControlButton(
-                text = "9 wxyz", type = RemoteControlButtonType.NINE
+                text = "9 wxyz", button = RCButton.NINE
             ),
         )
     )
@@ -74,7 +74,7 @@ fun NumberButtons(
                 column.forEach { button ->
                     RemoteButton(
                         button = button,
-                        onClick = { onButtonClicked(button.type) },
+                        onClick = { onButtonClicked(button.button) },
                         enabled = enabled,
                         aspectRatio = 2f
                     )

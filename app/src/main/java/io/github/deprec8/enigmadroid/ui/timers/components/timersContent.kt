@@ -56,11 +56,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.data.enums.TimerState
-import io.github.deprec8.enigmadroid.model.api.timers.Timer
-import io.github.deprec8.enigmadroid.model.api.timers.services.ServiceBatchSet
-import io.github.deprec8.enigmadroid.model.menu.MenuItem
-import io.github.deprec8.enigmadroid.model.menu.MenuItemGroup
+import io.github.deprec8.enigmadroid.common.enums.TimerState
+import io.github.deprec8.enigmadroid.model.MenuItem
+import io.github.deprec8.enigmadroid.model.MenuItemGroup
+import io.github.deprec8.enigmadroid.model.api.ServiceBatchSet
+import io.github.deprec8.enigmadroid.model.api.Timer
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.content.ContentListItem
 import io.github.deprec8.enigmadroid.ui.components.dialogs.ConfirmDeleteDialog
@@ -196,12 +196,12 @@ fun TimersContent(
 @Composable
 private fun Timer.getState(): String {
     return when (this.state + this.disabled) {
-        TimerState.WAITING.id  -> stringResource(R.string.waiting)
+        TimerState.WAITING.id -> stringResource(R.string.waiting)
         TimerState.PREPARED.id -> stringResource(R.string.prepared)
-        TimerState.RUNNING.id  -> stringResource(R.string.running)
-        TimerState.ENDED.id    -> stringResource(R.string.ended)
+        TimerState.RUNNING.id -> stringResource(R.string.running)
+        TimerState.ENDED.id   -> stringResource(R.string.ended)
         TimerState.DISABLED.id -> stringResource(R.string.disabled)
-        else                   -> {
+        else                  -> {
             stringResource(R.string.unknown)
         }
     }

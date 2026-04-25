@@ -19,7 +19,7 @@
 
 package io.github.deprec8.enigmadroid.utils
 
-import io.github.deprec8.enigmadroid.model.api.timers.LogEntry
+import io.github.deprec8.enigmadroid.model.api.LogEntry
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer

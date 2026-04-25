@@ -33,12 +33,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtonType
+import io.github.deprec8.enigmadroid.common.enums.RCButton
 import io.github.deprec8.enigmadroid.model.RemoteControlButton
 
 @Composable
 fun ControlButtons(
-    onButtonClicked: (RemoteControlButtonType) -> Unit, enabled: Boolean
+    onButtonClicked: (RCButton) -> Unit, enabled: Boolean
 ) {
 
     val controlButtons = listOf(
@@ -46,39 +46,39 @@ fun ControlButtons(
             RemoteControlButton(
                 icon = Icons.Default.FastRewind,
                 iconLabel = stringResource(R.string.rewind),
-                type = RemoteControlButtonType.REWIND
+                button = RCButton.REWIND
             ),
             RemoteControlButton(
                 icon = Icons.Default.PlayArrow,
                 iconLabel = stringResource(R.string.play),
-                type = RemoteControlButtonType.PLAY
+                button = RCButton.PLAY
             ),
             RemoteControlButton(
                 icon = Icons.Default.Pause,
                 iconLabel = stringResource(R.string.pause),
-                type = RemoteControlButtonType.PAUSE
+                button = RCButton.PAUSE
             ),
             RemoteControlButton(
                 icon = Icons.Default.FastForward,
                 iconLabel = stringResource(R.string.forward),
-                type = RemoteControlButtonType.FORWARD
+                button = RCButton.FORWARD
             ),
         ), listOf(
             RemoteControlButton(
-                text = "TV", type = RemoteControlButtonType.TV
+                text = "TV", button = RCButton.TV
             ),
             RemoteControlButton(
                 icon = Icons.Default.Circle,
                 iconLabel = stringResource(R.string.record),
-                type = RemoteControlButtonType.RECORD
+                button = RCButton.RECORD
             ),
             RemoteControlButton(
                 icon = Icons.Default.Stop,
                 iconLabel = stringResource(R.string.stop),
-                type = RemoteControlButtonType.STOP
+                button = RCButton.STOP
             ),
             RemoteControlButton(
-                text = "RADIO", type = RemoteControlButtonType.RADIO
+                text = "RADIO", button = RCButton.RADIO
             ),
         )
     )
@@ -88,7 +88,7 @@ fun ControlButtons(
             row.forEach { button ->
                 RemoteButton(
                     button = button,
-                    onClick = { onButtonClicked(button.type) },
+                    onClick = { onButtonClicked(button.button) },
                     enabled = enabled,
                     modifier = Modifier.weight(1f),
                     aspectRatio = 1.5f

@@ -17,10 +17,10 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.model.api.timers.services
+package io.github.deprec8.enigmadroid.model.api
 
 import androidx.compose.runtime.Immutable
-import io.github.deprec8.enigmadroid.data.enums.EntryType
+import io.github.deprec8.enigmadroid.common.enums.ContentFlag
 import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -31,5 +31,19 @@ data class Service(
     @SerialName("servicereference") val serviceReference: String = "",
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("servicename") val serviceName: String = "N/A",
     val displayIndex: Int? = null,
-    val type: EntryType = EntryType.CHANNEL
+    val type: ContentFlag = ContentFlag.CHANNEL
+)
+
+@Immutable
+@Serializable
+data class ServiceBatch(
+    @SerialName("subservices") val services: List<Service> = emptyList(),
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("servicename") val name: String = "",
+    @SerialName("servicereference") val reference: String = ""
+)
+
+@Immutable
+@Serializable
+data class ServiceBatchSet(
+    @SerialName("services") val serviceBatches: List<ServiceBatch> = emptyList()
 )

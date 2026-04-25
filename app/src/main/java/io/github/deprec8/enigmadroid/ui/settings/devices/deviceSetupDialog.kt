@@ -32,7 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.data.objects.DefaultPort
+import io.github.deprec8.enigmadroid.common.constant.DefaultPorts
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.ui.components.DeviceSetupCard
 import io.github.deprec8.enigmadroid.ui.components.dialogs.AdaptiveDialog
@@ -49,8 +49,8 @@ fun DeviceSetupDialog(
 
     val nameState = rememberTextFieldState(oldDevice?.name ?: "")
     val ipState = rememberTextFieldState(oldDevice?.ip ?: "")
-    val portState = rememberTextFieldState(oldDevice?.port ?: DefaultPort.HTTP)
-    val livePortState = rememberTextFieldState(oldDevice?.livePort ?: DefaultPort.LIVE)
+    val portState = rememberTextFieldState(oldDevice?.port ?: DefaultPorts.HTTP)
+    val livePortState = rememberTextFieldState(oldDevice?.livePort ?: DefaultPorts.LIVE)
     val userState = rememberTextFieldState(oldDevice?.user ?: "")
     val passwordState = rememberTextFieldState(oldDevice?.password ?: "")
 
@@ -125,10 +125,10 @@ fun DeviceSetupDialog(
                 passwordState = passwordState,
                 onHttpsChange = {
                     isHttps = ! isHttps
-                    if (portState.text == DefaultPort.HTTP && isHttps) {
-                        portState.setTextAndPlaceCursorAtEnd(DefaultPort.HTTPS)
-                    } else if (portState.text == DefaultPort.HTTPS && ! isHttps) {
-                        portState.setTextAndPlaceCursorAtEnd(DefaultPort.HTTP)
+                    if (portState.text == DefaultPorts.HTTP && isHttps) {
+                        portState.setTextAndPlaceCursorAtEnd(DefaultPorts.HTTPS)
+                    } else if (portState.text == DefaultPorts.HTTPS && ! isHttps) {
+                        portState.setTextAndPlaceCursorAtEnd(DefaultPorts.HTTP)
 
                     }
                 },

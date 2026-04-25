@@ -27,10 +27,10 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.data.objects.PreferenceKey
+import io.github.deprec8.enigmadroid.common.constant.PreferenceKeys
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.data.source.local.devices.DeviceDatabase
-import io.github.deprec8.enigmadroid.model.api.movies.Movie
+import io.github.deprec8.enigmadroid.model.api.Movie
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 
@@ -40,7 +40,7 @@ class DownloadRepository(
     private val dataStore: DataStore<Preferences>
 ) {
 
-    private val currentDeviceKey = intPreferencesKey(PreferenceKey.CURRENT_DEVICE)
+    private val currentDeviceKey = intPreferencesKey(PreferenceKeys.CURRENT_DEVICE)
 
     private suspend fun getCurrentDevice(): Device? {
         val listId = dataStore.data.map { preferences ->

@@ -47,14 +47,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.data.enums.RemoteControlPowerButtonType
+import io.github.deprec8.enigmadroid.common.enums.RCPowerButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ActionMenu(
     enabled: Boolean,
     onFetchScreenshot: () -> Unit,
-    onPowerButtonClicked: (RemoteControlPowerButtonType) -> Unit
+    onPowerButtonClicked: (RCPowerButton) -> Unit
 ) {
     var showMenu by rememberSaveable { mutableStateOf(false) }
     TooltipBox(
@@ -101,7 +101,7 @@ fun ActionMenu(
                 }, onClick = {
                     showMenu = false
                     onPowerButtonClicked(
-                        RemoteControlPowerButtonType.TOGGLE_STANDBY
+                        RCPowerButton.TOGGLE_STANDBY
                     )
                 }, leadingIcon = {
                     Icon(
@@ -117,7 +117,7 @@ fun ActionMenu(
                 }, onClick = {
                     showMenu = false
                     onPowerButtonClicked(
-                        RemoteControlPowerButtonType.RESTART
+                        RCPowerButton.RESTART
                     )
                 }, leadingIcon = {
                     Icon(
@@ -133,7 +133,7 @@ fun ActionMenu(
                 }, onClick = {
                     showMenu = false
                     onPowerButtonClicked(
-                        RemoteControlPowerButtonType.RESTART_GUI
+                        RCPowerButton.RESTART_GUI
                     )
                 }, leadingIcon = {
                     Icon(
@@ -149,7 +149,7 @@ fun ActionMenu(
                 }, onClick = {
                     showMenu = false
                     onPowerButtonClicked(
-                        RemoteControlPowerButtonType.SHUTDOWN
+                        RCPowerButton.SHUTDOWN
                     )
                 }, leadingIcon = {
                     Icon(

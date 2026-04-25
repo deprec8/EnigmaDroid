@@ -17,9 +17,28 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.data.enums
+package io.github.deprec8.enigmadroid.common.enums
 
-enum class RemoteControlButtonType(val id: Int) {
+enum class ContentType {
+    RADIO, TV
+}
+
+enum class ContentFlag(val flag: Int) {
+    CHANNEL(0),
+    MARKER(64),
+    NUMBERED_MARKER(320),
+    DIRECTORY(7),
+    GROUP(128),
+    INVISIBLE(512),
+    INVISIBLE_NUMBERED_MARKER(832),
+    INVISIBLE_DIRECTORY(519)
+}
+
+enum class TimerState(val id: Int) {
+    WAITING(0), PREPARED(1), RUNNING(2), ENDED(3), DISABLED(4)
+}
+
+enum class RCButton(val id: Int) {
     PREVIOUS_CHANNEL(403),
     NEXT_CHANNEL(402),
     VOLUME_UP(115),
@@ -62,4 +81,11 @@ enum class RemoteControlButtonType(val id: Int) {
     EIGHT(9),
     NINE(10),
     ZERO(11)
+}
+
+enum class RCPowerButton(val id: Int) {
+    RESTART(2),
+    TOGGLE_STANDBY(0),
+    RESTART_GUI(3),
+    SHUTDOWN(1)
 }

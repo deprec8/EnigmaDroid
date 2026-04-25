@@ -24,8 +24,8 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
-import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.data.objects.PreferenceKey
+import io.github.deprec8.enigmadroid.common.constant.PreferenceKeys
+import io.github.deprec8.enigmadroid.common.enums.LoadingState
 import io.github.deprec8.enigmadroid.data.source.local.devices.DeviceDatabase
 import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
 import kotlinx.coroutines.flow.Flow
@@ -41,8 +41,9 @@ class OnboardingRepository @Inject constructor(
     private val deviceDatabase: DeviceDatabase,
     private val networkDataSource: NetworkDataSource
 ) {
-    private val onboardingKey = booleanPreferencesKey(PreferenceKey.ONBOARDING_NEEDED)
-    private val loadingStateKey = intPreferencesKey(PreferenceKey.LOADING_STATE)
+
+    private val onboardingKey = booleanPreferencesKey(PreferenceKeys.ONBOARDING_NEEDED)
+    private val loadingStateKey = intPreferencesKey(PreferenceKeys.LOADING_STATE)
 
     fun getOnboardingNeeded(): Flow<Boolean> {
         return dataStore.data.map { preferences ->

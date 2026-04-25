@@ -55,10 +55,10 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.model.api.movies.Movie
-import io.github.deprec8.enigmadroid.model.api.movies.MovieBatch
-import io.github.deprec8.enigmadroid.model.menu.MenuItem
-import io.github.deprec8.enigmadroid.model.menu.MenuItemGroup
+import io.github.deprec8.enigmadroid.model.MenuItem
+import io.github.deprec8.enigmadroid.model.MenuItemGroup
+import io.github.deprec8.enigmadroid.model.api.Movie
+import io.github.deprec8.enigmadroid.model.api.MovieBatch
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.content.ContentListItem
 import io.github.deprec8.enigmadroid.ui.components.dialogs.ConfirmDeleteDialog

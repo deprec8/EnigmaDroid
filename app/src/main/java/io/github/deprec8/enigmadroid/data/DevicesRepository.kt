@@ -23,8 +23,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
-import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.data.objects.PreferenceKey
+import io.github.deprec8.enigmadroid.common.constant.PreferenceKeys
+import io.github.deprec8.enigmadroid.common.enums.LoadingState
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.data.source.local.devices.DeviceDatabase
 import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
@@ -41,8 +41,8 @@ class DevicesRepository @Inject constructor(
     private val networkDataSource: NetworkDataSource
 ) {
 
-    private val currentDeviceKey = intPreferencesKey(PreferenceKey.CURRENT_DEVICE)
-    private val loadingStateKey = intPreferencesKey(PreferenceKey.LOADING_STATE)
+    private val currentDeviceKey = intPreferencesKey(PreferenceKeys.CURRENT_DEVICE)
+    private val loadingStateKey = intPreferencesKey(PreferenceKeys.LOADING_STATE)
 
     private suspend fun updateLoadingState() {
         dataStore.edit { preferences ->

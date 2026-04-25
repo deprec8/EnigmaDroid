@@ -46,10 +46,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.data.enums.EntryType
-import io.github.deprec8.enigmadroid.model.api.events.Event
-import io.github.deprec8.enigmadroid.model.menu.MenuItem
-import io.github.deprec8.enigmadroid.model.menu.MenuItemGroup
+import io.github.deprec8.enigmadroid.common.enums.ContentFlag
+import io.github.deprec8.enigmadroid.model.MenuItem
+import io.github.deprec8.enigmadroid.model.MenuItemGroup
+import io.github.deprec8.enigmadroid.model.api.Event
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.content.ContentListItem
 import io.github.deprec8.enigmadroid.ui.components.content.EntryTypeListItem
@@ -82,16 +82,16 @@ fun LiveContent(
         ) {
             items(events, span = { event ->
                 when (event.type) {
-                    EntryType.CHANNEL -> GridItemSpan(
+                    ContentFlag.CHANNEL -> GridItemSpan(
                         1
                     )
-                    else              -> GridItemSpan(
+                    else                -> GridItemSpan(
                         maxLineSpan
                     )
                 }
             }) { event ->
                 when (event.type) {
-                    EntryType.CHANNEL -> {
+                    ContentFlag.CHANNEL                                          -> {
                         ContentListItem(
                             highlightedWords = highlightedWords,
                             headlineText = event.serviceName,
@@ -158,10 +158,10 @@ fun LiveContent(
                             additionalDescription = event.genre
                         )
                     }
-                    EntryType.MARKER, EntryType.DIRECTORY, EntryType.GROUP -> {
+                    ContentFlag.MARKER, ContentFlag.DIRECTORY, ContentFlag.GROUP -> {
                         EntryTypeListItem(event.serviceName, event.type)
                     }
-                    else -> {}
+                    else                                                         -> {}
                 }
 
             }

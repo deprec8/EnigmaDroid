@@ -37,21 +37,21 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.data.enums.EntryType
+import io.github.deprec8.enigmadroid.common.enums.ContentFlag
 
 @Composable
-fun EntryTypeListItem(name: String, type: EntryType) {
+fun EntryTypeListItem(name: String, type: ContentFlag) {
     val icon = when (type) {
-        EntryType.MARKER    -> Icons.Outlined.Bookmark
-        EntryType.DIRECTORY -> Icons.Outlined.Folder
-        EntryType.GROUP     -> Icons.Outlined.AutoAwesomeMosaic
-        else                -> null
+        ContentFlag.MARKER    -> Icons.Outlined.Bookmark
+        ContentFlag.DIRECTORY -> Icons.Outlined.Folder
+        ContentFlag.GROUP     -> Icons.Outlined.AutoAwesomeMosaic
+        else                  -> null
     }
     val contentDescription = when (type) {
-        EntryType.MARKER    -> stringResource(R.string.marker)
-        EntryType.DIRECTORY -> stringResource(R.string.directory)
-        EntryType.GROUP     -> stringResource(R.string.group)
-        else                -> ""
+        ContentFlag.MARKER    -> stringResource(R.string.marker)
+        ContentFlag.DIRECTORY -> stringResource(R.string.directory)
+        ContentFlag.GROUP     -> stringResource(R.string.group)
+        else                  -> ""
     }
 
     if (icon != null) {

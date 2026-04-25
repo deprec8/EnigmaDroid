@@ -22,14 +22,14 @@ package io.github.deprec8.enigmadroid.ui.remoteControl
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.common.enums.RCButton
+import io.github.deprec8.enigmadroid.common.enums.RCPowerButton
 import io.github.deprec8.enigmadroid.data.ApiRepository
 import io.github.deprec8.enigmadroid.data.DevicesRepository
 import io.github.deprec8.enigmadroid.data.DownloadRepository
 import io.github.deprec8.enigmadroid.data.LoadingRepository
 import io.github.deprec8.enigmadroid.data.SettingsRepository
-import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtonType
-import io.github.deprec8.enigmadroid.data.enums.RemoteControlPowerButtonType
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -84,13 +84,13 @@ class RemoteControlViewModel @Inject constructor(
         }
     }
 
-    fun onButtonClicked(type: RemoteControlButtonType) {
+    fun onButtonClicked(type: RCButton) {
         viewModelScope.launch {
             apiRepository.remoteControlCall(type)
         }
     }
 
-    fun onPowerButtonClicked(type: RemoteControlPowerButtonType) {
+    fun onPowerButtonClicked(type: RCPowerButton) {
         viewModelScope.launch {
             apiRepository.setPowerState(type)
             updateLoadingState(true)

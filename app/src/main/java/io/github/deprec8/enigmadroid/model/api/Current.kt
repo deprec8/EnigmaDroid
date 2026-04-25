@@ -17,11 +17,31 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.model.api.current
+package io.github.deprec8.enigmadroid.model.api
 
 import androidx.compose.runtime.Immutable
+import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+
+@Immutable
+@Serializable
+data class Current(
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("sname") val serviceName: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("title") val title: String = "N/A",
+    @SerialName("begin_timestamp") val beginTimestamp: Long = 0L,
+    @SerialName("now_timestamp") val nowTimestamp: Long = 0L,
+    @SerialName("sref") val serviceReference: String = "",
+    @SerialName("duration_sec") val durationInSeconds: Int = 0,
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("provider") val provider: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("shortdesc") val shortDescription: String = "N/A",
+)
+
+@Immutable
+@Serializable
+data class CurrentDetails(
+    @SerialName("result") val result: Boolean? = null,
+)
 
 @Immutable
 @Serializable

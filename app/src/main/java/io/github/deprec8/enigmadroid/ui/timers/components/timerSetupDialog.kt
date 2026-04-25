@@ -93,11 +93,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.data.enums.EntryType
-import io.github.deprec8.enigmadroid.model.api.timers.Timer
-import io.github.deprec8.enigmadroid.model.api.timers.services.Service
-import io.github.deprec8.enigmadroid.model.api.timers.services.ServiceBatch
-import io.github.deprec8.enigmadroid.model.api.timers.services.ServiceBatchSet
+import io.github.deprec8.enigmadroid.common.enums.ContentFlag
+import io.github.deprec8.enigmadroid.model.api.Service
+import io.github.deprec8.enigmadroid.model.api.ServiceBatch
+import io.github.deprec8.enigmadroid.model.api.ServiceBatchSet
+import io.github.deprec8.enigmadroid.model.api.Timer
 import io.github.deprec8.enigmadroid.ui.components.content.EntryTypeListItem
 import io.github.deprec8.enigmadroid.ui.components.dialogs.AdaptiveDialog
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
@@ -530,7 +530,7 @@ private fun ServicePickerDialog(
                 LazyColumn {
                     items(currentServiceBatch?.services ?: emptyList()) { service ->
                         when (service.type) {
-                            EntryType.CHANNEL                                      -> {
+                            ContentFlag.CHANNEL                                          -> {
                                 ListItem(
                                     headlineContent = {
                                         Text(service.serviceName)
@@ -559,10 +559,10 @@ private fun ServicePickerDialog(
                                     colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                                 )
                             }
-                            EntryType.MARKER, EntryType.DIRECTORY, EntryType.GROUP -> {
+                            ContentFlag.MARKER, ContentFlag.DIRECTORY, ContentFlag.GROUP -> {
                                 EntryTypeListItem(service.serviceName, service.type)
                             }
-                            else                                                   -> {}
+                            else                                                         -> {}
                         }
                     }
                 }

@@ -17,15 +17,20 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.data.enums
+package io.github.deprec8.enigmadroid.model.api
 
-enum class EntryType(val flag: Int) {
-    CHANNEL(0),
-    MARKER(64),
-    NUMBERED_MARKER(320),
-    DIRECTORY(7),
-    GROUP(128),
-    INVISIBLE(512),
-    INVISIBLE_NUMBERED_MARKER(832),
-    INVISIBLE_DIRECTORY(519)
-}
+import androidx.compose.runtime.Immutable
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Immutable
+data class Bouquet(
+    val reference: String,
+    val name: String
+)
+
+@Immutable
+@Serializable
+data class BouquetBatch(
+    @SerialName("bouquets") val bouquets: List<List<String>> = emptyList(),
+)

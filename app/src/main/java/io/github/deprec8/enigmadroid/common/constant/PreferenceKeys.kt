@@ -17,9 +17,9 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.data.objects
+package io.github.deprec8.enigmadroid.common.constant
 
-object PreferenceKey {
+object PreferenceKeys {
 
     const val CURRENT_DEVICE = "current_device"
     const val LOADING_STATE = "loading_state"
