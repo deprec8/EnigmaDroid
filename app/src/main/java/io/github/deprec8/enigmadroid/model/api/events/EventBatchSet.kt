@@ -19,6 +19,9 @@
 
 package io.github.deprec8.enigmadroid.model.api.events
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class EventBatchSet(
     val eventBatches: List<EventBatch> = emptyList()
 )

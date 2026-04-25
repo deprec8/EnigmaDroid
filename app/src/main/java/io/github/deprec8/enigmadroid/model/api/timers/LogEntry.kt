@@ -19,8 +19,10 @@
 
 package io.github.deprec8.enigmadroid.model.api.timers
 
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
 
+@Immutable
 @Serializable
 data class LogEntry(
     val timestamp: Long,

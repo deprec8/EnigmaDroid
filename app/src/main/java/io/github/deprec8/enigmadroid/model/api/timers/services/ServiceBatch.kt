@@ -19,10 +19,12 @@
 
 package io.github.deprec8.enigmadroid.model.api.timers.services
 
+import androidx.compose.runtime.Immutable
 import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@Immutable
 @Serializable
 data class ServiceBatch(
     @SerialName("subservices") val services: List<Service> = emptyList(),

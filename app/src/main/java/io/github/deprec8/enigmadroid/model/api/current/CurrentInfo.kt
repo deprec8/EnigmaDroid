@@ -19,9 +19,11 @@
 
 package io.github.deprec8.enigmadroid.model.api.current
 
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@Immutable
 @Serializable
 data class CurrentInfo(
     @SerialName("info") val info: CurrentDetails = CurrentDetails(),

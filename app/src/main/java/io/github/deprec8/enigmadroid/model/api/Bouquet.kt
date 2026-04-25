@@ -19,6 +19,9 @@
 
 package io.github.deprec8.enigmadroid.model.api
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class Bouquet(
     val reference: String,
     val name: String

@@ -19,9 +19,11 @@
 
 package io.github.deprec8.enigmadroid.model.api
 
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@Immutable
 @Serializable
 data class BouquetBatch(
     @SerialName("bouquets") val bouquets: List<List<String>> = emptyList(),

@@ -19,8 +19,10 @@
 
 package io.github.deprec8.enigmadroid.model.menu
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.vector.ImageVector
 
+@Immutable
 data class MenuItem(
     val text: String,
     val outlinedIcon: ImageVector,

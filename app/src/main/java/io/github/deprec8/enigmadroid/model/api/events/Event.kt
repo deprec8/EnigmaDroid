@@ -19,11 +19,13 @@
 
 package io.github.deprec8.enigmadroid.model.api.events
 
+import androidx.compose.runtime.Immutable
 import io.github.deprec8.enigmadroid.data.enums.EntryType
 import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@Immutable
 @Serializable
 data class Event(
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("sname") val serviceName: String = "N/A",

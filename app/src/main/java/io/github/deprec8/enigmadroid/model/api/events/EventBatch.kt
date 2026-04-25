@@ -19,10 +19,12 @@
 
 package io.github.deprec8.enigmadroid.model.api.events
 
+import androidx.compose.runtime.Immutable
 import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@Immutable
 @Serializable
 data class EventBatch(
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("bouquetName") val name: String = "N/A",

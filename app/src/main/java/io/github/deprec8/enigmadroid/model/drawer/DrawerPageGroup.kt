@@ -19,6 +19,9 @@
 
 package io.github.deprec8.enigmadroid.model.drawer
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class DrawerPageGroup(
     val name: String,
     val pages: List<DrawerPage>
