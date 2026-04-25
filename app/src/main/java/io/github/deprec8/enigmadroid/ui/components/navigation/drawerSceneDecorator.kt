@@ -52,14 +52,15 @@ class DrawerSceneDecoratorStrategy<T : Any>(
         scene: Scene<T>
     ): Scene<T> {
 
-        if (isSmallScreenLayout || ! scene.hasDrawer()) return scene
+        if (isSmallScreenLayout || !scene.hasDrawer()) return scene
 
         return DrawerDecoratingScene(
             scene = scene, drawerContent = drawerContent
         )
     }
 
-    companion object { object DrawerSceneMetadataKey : NavMetadataKey<Unit>
+    companion object {
+        object DrawerSceneMetadataKey : NavMetadataKey<Unit>
 
         fun drawerScene() = metadata {
             put(DrawerSceneMetadataKey, Unit)
@@ -117,7 +118,7 @@ fun ModalNavigationDrawerWrapper(
     content: @Composable () -> Unit,
 ) {
     LaunchedEffect(enabled) {
-        if (! enabled) {
+        if (!enabled) {
             drawerState.snapTo(DrawerValue.Closed)
         }
     }

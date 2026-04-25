@@ -71,7 +71,7 @@ fun LoadingScreen(
             }, label = ""
         ) {
             when (it) {
-                LoadingState.LOADED                  -> {
+                LoadingState.LOADED -> {
                     Column {
                         CircularProgressIndicator(
                             modifier = Modifier
@@ -81,7 +81,8 @@ fun LoadingScreen(
                         )
                     }
                 }
-                LoadingState.DEVICE_NOT_ONLINE       -> {
+
+                LoadingState.DEVICE_NOT_ONLINE -> {
                     Column {
                         Text(
                             text = stringResource(R.string.device_not_connected),
@@ -100,7 +101,8 @@ fun LoadingScreen(
                         }
                     }
                 }
-                LoadingState.NO_DEVICE_AVAILABLE     -> {
+
+                LoadingState.NO_DEVICE_AVAILABLE -> {
                     Column {
                         Text(
                             text = stringResource(R.string.no_device_available),
@@ -119,7 +121,8 @@ fun LoadingScreen(
                         }
                     }
                 }
-                LoadingState.LOADING                 -> {
+
+                LoadingState.LOADING -> {
                     Column {
                         CircularProgressIndicator(
                             modifier = Modifier
@@ -136,7 +139,8 @@ fun LoadingScreen(
                         )
                     }
                 }
-                LoadingState.NO_NETWORK_AVAILABLE    -> {
+
+                LoadingState.NO_NETWORK_AVAILABLE -> {
                     Column {
                         Text(
                             text = stringResource(R.string.no_network_available),
@@ -155,6 +159,7 @@ fun LoadingScreen(
                         }
                     }
                 }
+
                 LoadingState.INVALID_DEVICE_RESPONSE -> {
                     Column {
                         Text(

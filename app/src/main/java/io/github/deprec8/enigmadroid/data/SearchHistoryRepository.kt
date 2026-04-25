@@ -53,7 +53,7 @@ class SearchHistoryRepository @Inject constructor(private val dataStore: DataSto
     }
 
     suspend fun setUseSearchHistory(useSearchHistory: Boolean) {
-        if (! useSearchHistory) {
+        if (!useSearchHistory) {
             clearTvSearchHistory()
             clearRadioSearchHistory()
             clearTvEpgSearchHistory()

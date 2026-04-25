@@ -47,37 +47,42 @@ import io.github.deprec8.enigmadroid.model.api.Timer
 fun TimerStateIcon(timer: Timer) {
     val stateId = timer.state + timer.disabled
     val (icon, descriptionRes, containerColor, contentColor) = when (stateId) {
-        TimerState.WAITING.id  -> StateConfig(
+        TimerState.WAITING.id -> StateConfig(
             Icons.Outlined.Timer,
             R.string.waiting,
             MaterialTheme.colorScheme.tertiaryContainer,
             MaterialTheme.colorScheme.onTertiaryContainer
         )
+
         TimerState.PREPARED.id -> StateConfig(
             Icons.Outlined.Checklist,
             R.string.prepared,
             MaterialTheme.colorScheme.tertiaryContainer,
             MaterialTheme.colorScheme.onTertiaryContainer
         )
-        TimerState.RUNNING.id  -> StateConfig(
+
+        TimerState.RUNNING.id -> StateConfig(
             Icons.Outlined.Videocam,
             R.string.running,
             MaterialTheme.colorScheme.primaryContainer,
             MaterialTheme.colorScheme.onPrimaryContainer
         )
-        TimerState.ENDED.id    -> StateConfig(
+
+        TimerState.ENDED.id -> StateConfig(
             Icons.Outlined.Done,
             R.string.ended,
             MaterialTheme.colorScheme.secondaryContainer,
             MaterialTheme.colorScheme.onSecondaryContainer
         )
+
         TimerState.DISABLED.id -> StateConfig(
             Icons.Outlined.TimerOff,
             R.string.disabled,
             MaterialTheme.colorScheme.secondaryContainer,
             MaterialTheme.colorScheme.onSecondaryContainer
         )
-        else                   -> StateConfig(
+
+        else -> StateConfig(
             Icons.Outlined.QuestionMark,
             R.string.unknown,
             MaterialTheme.colorScheme.errorContainer,

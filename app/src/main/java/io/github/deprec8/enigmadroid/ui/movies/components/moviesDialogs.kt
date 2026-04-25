@@ -55,12 +55,12 @@ fun RenameMovieDialog(
             Text(
                 text = stringResource(R.string.new_name)
             )
-        }, isError = ! isCorrect, supportingText = {
-            if (! isCorrect) {
+        }, isError = !isCorrect, supportingText = {
+            if (!isCorrect) {
                 Text(stringResource(R.string.name_must_be_changed_and_can_t_be_blank))
             }
         }, trailingIcon = {
-            if (! isCorrect) {
+            if (!isCorrect) {
                 Icon(Icons.Default.Error, null)
             }
         })
@@ -93,12 +93,12 @@ fun MoveMovieDialog(
             Text(
                 text = stringResource(R.string.new_directory)
             )
-        }, isError = ! isCorrect, supportingText = {
-            if (! isCorrect) {
+        }, isError = !isCorrect, supportingText = {
+            if (!isCorrect) {
                 Text(stringResource(R.string.directory_must_be_changed_and_must_start_and_end_with))
             }
         }, trailingIcon = {
-            if (! isCorrect) {
+            if (!isCorrect) {
                 Icon(Icons.Default.Error, null)
             }
         }, lineLimits = TextFieldLineLimits.SingleLine)

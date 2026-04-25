@@ -91,7 +91,7 @@ fun SearchTopAppBar(
                 searchBarState,
                 modifier = Modifier
                     .padding(top = 8.dp, start = 16.dp, end = 16.dp)
-                    .then(if (! isSmallScreenLayout) Modifier.align(Alignment.End) else Modifier.fillMaxWidth()),
+                    .then(if (!isSmallScreenLayout) Modifier.align(Alignment.End) else Modifier.fillMaxWidth()),
                 inputField = {
                     SearchTopAppBarInputField(
                         searchBarState = searchBarState,

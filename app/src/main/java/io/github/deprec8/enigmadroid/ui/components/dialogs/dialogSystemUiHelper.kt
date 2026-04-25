@@ -36,8 +36,8 @@ fun DialogSystemUiHelper() {
 
         window?.let { win ->
             val controller = WindowCompat.getInsetsController(win, view)
-            controller.isAppearanceLightStatusBars = ! isDarkTheme
-            controller.isAppearanceLightNavigationBars = ! isDarkTheme
+            controller.isAppearanceLightStatusBars = !isDarkTheme
+            controller.isAppearanceLightNavigationBars = !isDarkTheme
 
             win.setWindowAnimations(0)
         }

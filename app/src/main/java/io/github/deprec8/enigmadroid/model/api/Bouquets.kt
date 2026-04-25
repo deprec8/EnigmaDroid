@@ -25,8 +25,7 @@ import kotlinx.serialization.Serializable
 
 @Immutable
 data class Bouquet(
-    val reference: String,
-    val name: String
+    val reference: String, val name: String
 )
 
 @Immutable

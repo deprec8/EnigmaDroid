@@ -18,5 +18,5 @@
   -->
 
 <network-security-config>
-    <base-config cleartextTrafficPermitted="true"/>
+    <base-config cleartextTrafficPermitted="true" />
 </network-security-config>

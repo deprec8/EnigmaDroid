@@ -80,7 +80,7 @@ class OnboardingViewModel @Inject constructor(
                 snapshotFlow { userState.text },
                 snapshotFlow { passwordState.text },
                 snapshotFlow { isLogin }) { user, password, isLogin ->
-                ! isLogin || (user.isNotBlank() && password.isNotBlank())
+                !isLogin || (user.isNotBlank() && password.isNotBlank())
             }
 
             combine(baseFlow, loginFlow) { baseFilled, loginFilled ->
@@ -92,17 +92,17 @@ class OnboardingViewModel @Inject constructor(
     }
 
     fun toggleHttps() {
-        isHttps = ! isHttps
+        isHttps = !isHttps
         if (portState.text == DefaultPorts.HTTP && isHttps) {
             portState.setTextAndPlaceCursorAtEnd(DefaultPorts.HTTPS)
-        } else if (portState.text == DefaultPorts.HTTPS && ! isHttps) {
+        } else if (portState.text == DefaultPorts.HTTPS && !isHttps) {
             portState.setTextAndPlaceCursorAtEnd(DefaultPorts.HTTP)
 
         }
     }
 
     fun toggleLogin() {
-        isLogin = ! isLogin
+        isLogin = !isLogin
     }
 
     fun completeOnboardingWithDevice() {

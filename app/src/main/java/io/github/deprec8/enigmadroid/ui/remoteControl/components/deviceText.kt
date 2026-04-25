@@ -77,13 +77,15 @@ fun DeviceText(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
+
                 LoadingState.LOADING -> CircularProgressIndicator(
                     Modifier
                         .padding(12.dp)
                         .size(24.dp)
                         .align(Alignment.Center)
                 )
-                else                 -> TooltipBox(
+
+                else -> TooltipBox(
                     tooltip = {
                         PlainTooltip {
                             Text(stringResource(id = R.string.retry))

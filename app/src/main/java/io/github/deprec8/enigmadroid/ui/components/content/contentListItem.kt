@@ -89,7 +89,7 @@ fun ContentListItem(
                 )
             },
             leadingContent = leadingContent,
-            overlineContent = if (! overlineText.isNullOrEmpty()) {
+            overlineContent = if (!overlineText.isNullOrEmpty()) {
                 {
                     HighlightedText(
                         text = overlineText,
@@ -109,7 +109,7 @@ fun ContentListItem(
                         overflow = TextOverflow.Ellipsis,
                         highlightedWords
                     )
-                    if (! additionalInfo.isNullOrEmpty()) {
+                    if (!additionalInfo.isNullOrEmpty()) {
                         HighlightedText(
                             text = additionalInfo,
                             maxLines = 1,
@@ -120,7 +120,7 @@ fun ContentListItem(
                 }
             },
             trailingContent = {
-                if (! menuItemGroups.isNullOrEmpty() || editMenuItemGroup != null) {
+                if (!menuItemGroups.isNullOrEmpty() || editMenuItemGroup != null) {
                     TooltipBox(
                         tooltip = {
                             PlainTooltip {
@@ -141,7 +141,7 @@ fun ContentListItem(
                             DropdownMenu(
                                 expanded = showDropDownMenu,
                                 onDismissRequest = { showDropDownMenu = false }) {
-                                if (! menuItemGroups.isNullOrEmpty()) {
+                                if (!menuItemGroups.isNullOrEmpty()) {
                                     menuItemGroups.forEachIndexed { index, menuSection ->
                                         if (index != 0) {
                                             HorizontalDivider()
@@ -165,7 +165,7 @@ fun ContentListItem(
                                     }
                                 }
                                 if (editMenuItemGroup != null) {
-                                    if (! menuItemGroups.isNullOrEmpty()) {
+                                    if (!menuItemGroups.isNullOrEmpty()) {
                                         HorizontalDivider()
                                     }
                                     editMenuItemGroup.menuItems.forEach { menuItem ->

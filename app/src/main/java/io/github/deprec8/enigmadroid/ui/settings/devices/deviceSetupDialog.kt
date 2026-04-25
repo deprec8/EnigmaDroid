@@ -124,16 +124,16 @@ fun DeviceSetupDialog(
                 userState = userState,
                 passwordState = passwordState,
                 onHttpsChange = {
-                    isHttps = ! isHttps
+                    isHttps = !isHttps
                     if (portState.text == DefaultPorts.HTTP && isHttps) {
                         portState.setTextAndPlaceCursorAtEnd(DefaultPorts.HTTPS)
-                    } else if (portState.text == DefaultPorts.HTTPS && ! isHttps) {
+                    } else if (portState.text == DefaultPorts.HTTPS && !isHttps) {
                         portState.setTextAndPlaceCursorAtEnd(DefaultPorts.HTTP)
 
                     }
                 },
                 onLoginChange = {
-                    isLogin = ! isLogin
+                    isLogin = !isLogin
                 })
         })
 }

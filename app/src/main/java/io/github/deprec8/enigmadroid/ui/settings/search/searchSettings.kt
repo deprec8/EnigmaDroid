@@ -110,7 +110,7 @@ fun SearchSettingsPage(
                             searchSettingsViewModel.setUseSearchHistory(value)
                         })
                 }, modifier = Modifier.clickable {
-                    searchSettingsViewModel.setUseSearchHistory(! it)
+                    searchSettingsViewModel.setUseSearchHistory(!it)
                 })
             }
             ListItem(
@@ -173,7 +173,7 @@ fun SearchSettingsPage(
         }
 
         fun getAllEnabled(): Boolean {
-            if (! isAnyEnabled()) {
+            if (!isAnyEnabled()) {
                 return false
             }
             var allEnabled = true
@@ -209,7 +209,7 @@ fun SearchSettingsPage(
                 Column(Modifier.verticalScroll(searchHistoriesDialogScrollState)) {
                     ListItem(
                         modifier = Modifier.clickable(enabled = isAnyEnabled()) {
-                            setAllEnabled(! getAllEnabled())
+                            setAllEnabled(!getAllEnabled())
                         },
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                         headlineContent = { Text(stringResource(R.string.all)) },
@@ -224,7 +224,7 @@ fun SearchSettingsPage(
                     HorizontalDivider(Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
                     ListItem(
                         modifier = Modifier.clickable(enabled = tvSearchHistory.isNotEmpty()) {
-                            tv = ! tv
+                            tv = !tv
                         },
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                         headlineContent = { Text(stringResource(R.string.tv)) },
@@ -236,7 +236,7 @@ fun SearchSettingsPage(
                         })
                     ListItem(
                         modifier = Modifier.clickable(enabled = radioSearchHistory.isNotEmpty()) {
-                            radio = ! radio
+                            radio = !radio
                         },
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                         headlineContent = { Text(stringResource(R.string.radio)) },
@@ -248,7 +248,7 @@ fun SearchSettingsPage(
                         })
                     ListItem(
                         modifier = Modifier.clickable(enabled = moviesSearchHistory.isNotEmpty()) {
-                            movies = ! movies
+                            movies = !movies
                         },
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                         headlineContent = { Text(stringResource(R.string.movies)) },
@@ -260,7 +260,7 @@ fun SearchSettingsPage(
                         })
                     ListItem(
                         modifier = Modifier.clickable(enabled = timersSearchHistory.isNotEmpty()) {
-                            timers = ! timers
+                            timers = !timers
                         },
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                         headlineContent = { Text(stringResource(R.string.timers)) },
@@ -272,7 +272,7 @@ fun SearchSettingsPage(
                         })
                     ListItem(
                         modifier = Modifier.clickable(enabled = tvEpgSearchHistory.isNotEmpty()) {
-                            tvEpg = ! tvEpg
+                            tvEpg = !tvEpg
                         },
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                         headlineContent = { Text(stringResource(R.string.tv_epg)) },
@@ -284,7 +284,7 @@ fun SearchSettingsPage(
                         })
                     ListItem(
                         modifier = Modifier.clickable(enabled = radioEpgSearchHistory.isNotEmpty()) {
-                            radioEpg = ! radioEpg
+                            radioEpg = !radioEpg
                         },
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                         headlineContent = { Text(stringResource(R.string.radio_epg)) },
@@ -296,7 +296,7 @@ fun SearchSettingsPage(
                         })
                     ListItem(
                         modifier = Modifier.clickable(enabled = serviceEpgSearchHistory.isNotEmpty()) {
-                            serviceEpg = ! serviceEpg
+                            serviceEpg = !serviceEpg
                         },
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                         headlineContent = { Text(stringResource(R.string.service_epg)) },

@@ -167,7 +167,7 @@ fun ContentDetails(
                 )
             }
         }
-        if (! menuItemGroups.isNullOrEmpty()) {
+        if (!menuItemGroups.isNullOrEmpty()) {
             Spacer(modifier = Modifier.size(16.dp))
             menuItemGroups.forEachIndexed { index, menuSection ->
                 if (index != 0) {
@@ -202,7 +202,7 @@ fun ContentDetails(
             }
         }
 
-        if (shortDescription.isNotBlank() || longDescription.isNotBlank() || ! additionalDescription.isNullOrBlank()) {
+        if (shortDescription.isNotBlank() || longDescription.isNotBlank() || !additionalDescription.isNullOrBlank()) {
             Spacer(modifier = Modifier.size(16.dp))
             SelectionContainer {
                 LazyColumn(
@@ -228,12 +228,12 @@ fun ContentDetails(
                             )
                         }
                     }
-                    if ((shortDescription.isNotBlank() || longDescription.isNotBlank()) && ! additionalDescription.isNullOrBlank()) {
+                    if ((shortDescription.isNotBlank() || longDescription.isNotBlank()) && !additionalDescription.isNullOrBlank()) {
                         item {
                             HorizontalDivider()
                         }
                     }
-                    if (! additionalDescription.isNullOrBlank()) {
+                    if (!additionalDescription.isNullOrBlank()) {
                         item {
                             HighlightedText(
                                 text = additionalDescription, highlightedWords = highlightedWords

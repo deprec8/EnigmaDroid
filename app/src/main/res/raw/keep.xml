@@ -18,4 +18,4 @@
   -->
 
 <resources xmlns:tools="http://schemas.android.com/tools"
-    tools:keep="@raw/aboutlibraries"/>
+    tools:keep="@raw/aboutlibraries" />

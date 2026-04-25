@@ -74,7 +74,8 @@ class NetworkDataSource @Inject constructor(
                     preferences[loadingStateKey] = LoadingState.INVALID_DEVICE_RESPONSE.id
                 }
             }
-            else                          -> {
+
+            else -> {
                 val currentLoadingState = dataStore.data.map { preferences ->
                     LoadingState.entries[preferences[loadingStateKey] ?: 3]
                 }.first()

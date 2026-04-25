@@ -118,8 +118,8 @@ fun EnigmaDroidTheme(
             )
         }
 
-        isSystemInDarkTheme()                          -> darkScheme
-        else                                           -> lightScheme
+        isSystemInDarkTheme() -> darkScheme
+        else -> lightScheme
     }
 
     val typography = Typography()

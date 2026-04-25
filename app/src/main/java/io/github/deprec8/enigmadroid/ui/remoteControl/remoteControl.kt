@@ -97,9 +97,9 @@ fun RemoteControlPage(
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val view = LocalView.current
     val isSmallScreenLayout =
-        ! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) || (windowSizeClass.isHeightAtLeastBreakpoint(
+        !windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) || (windowSizeClass.isHeightAtLeastBreakpoint(
             WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
-        ) && ! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND))
+        ) && !windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND))
 
     LaunchedEffect(Unit) {
         remoteControlViewModel.updateLoadingState(false)
@@ -128,7 +128,7 @@ fun RemoteControlPage(
                             remoteControlViewModel.updateLoadingState(true)
                         }
                     }
-                    if (! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)) {
+                    if (!windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)) {
                         TooltipBox(
                             tooltip = {
                                 PlainTooltip {

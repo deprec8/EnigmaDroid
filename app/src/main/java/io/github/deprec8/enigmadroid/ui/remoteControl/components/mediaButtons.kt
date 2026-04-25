@@ -70,7 +70,7 @@ fun MediaButtons(
                 .padding(8.dp),
             shape = MaterialTheme.shapes.extraLarge,
             colors = CardDefaults.cardColors(
-                containerColor = if (! enabled) {
+                containerColor = if (!enabled) {
                     ButtonDefaults.buttonColors().disabledContainerColor
                 } else {
                     MaterialTheme.colorScheme.secondaryContainer
@@ -102,7 +102,7 @@ fun MediaButtons(
                 )
             }
             Text(
-                text = "VOL", textAlign = TextAlign.Center, color = if (! enabled) {
+                text = "VOL", textAlign = TextAlign.Center, color = if (!enabled) {
                     ButtonDefaults.buttonColors().disabledContentColor
                 } else {
                     MaterialTheme.colorScheme.onSecondaryContainer
@@ -194,7 +194,7 @@ fun MediaButtons(
                 .padding(8.dp),
             shape = MaterialTheme.shapes.extraLarge,
             colors = CardDefaults.cardColors(
-                containerColor = if (! enabled) {
+                containerColor = if (!enabled) {
                     ButtonDefaults.buttonColors().disabledContainerColor
                 } else {
                     MaterialTheme.colorScheme.secondaryContainer
@@ -227,7 +227,7 @@ fun MediaButtons(
                 )
             }
             Text(
-                text = "CH", textAlign = TextAlign.Center, color = if (! enabled) {
+                text = "CH", textAlign = TextAlign.Center, color = if (!enabled) {
                     ButtonDefaults.buttonColors().disabledContentColor
                 } else {
                     MaterialTheme.colorScheme.onSecondaryContainer

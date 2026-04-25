@@ -11,11 +11,11 @@
     "translation": "/app/src/main/res/values-%android_code%/strings.xml",
     "languages_mapping": {
       "android_code": {
-      "de": "de",
-      "ru": "ru",
-      "fr": "fr",
-      "es-ES": "es",
-      "it": "it"
+        "de": "de",
+        "ru": "ru",
+        "fr": "fr",
+        "es-ES": "es",
+        "it": "it"
       }
     }
   },
@@ -25,11 +25,11 @@
     "type": "html",
     "languages_mapping": {
       "locale": {
-      "de": "de-DE",
-      "ru": "ru",
-      "fr": "fr-FR",
-      "es-ES": "es-ES",
-      "it": "it"
+        "de": "de-DE",
+        "ru": "ru",
+        "fr": "fr-FR",
+        "es-ES": "es-ES",
+        "it": "it"
       }
     }
   },
@@ -38,11 +38,11 @@
     "translation": "/fastlane/metadata/android/%locale%/short_description.txt",
     "languages_mapping": {
       "locale": {
-      "de": "de-DE",
-      "ru": "ru",
-      "fr": "fr-FR",
-      "es-ES": "es-ES",
-      "it": "it"
+        "de": "de-DE",
+        "ru": "ru",
+        "fr": "fr-FR",
+        "es-ES": "es-ES",
+        "it": "it"
       }
     }
   }

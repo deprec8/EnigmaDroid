@@ -79,12 +79,12 @@ fun NavigationDisplay(
         animationSpec = tween(300), initialOffsetX = { slideDistance }) + fadeIn(
         animationSpec = tween(300)
     )) togetherWith (slideOutHorizontally(
-        animationSpec = tween(300), targetOffsetX = { - slideDistance }) + fadeOut(
+        animationSpec = tween(300), targetOffsetX = { -slideDistance }) + fadeOut(
         animationSpec = tween(300)
     ))
 
     val sharedAxisXBackward: ContentTransform = (slideInHorizontally(
-        animationSpec = tween(300), initialOffsetX = { - slideDistance }) + fadeIn(
+        animationSpec = tween(300), initialOffsetX = { -slideDistance }) + fadeIn(
         animationSpec = tween(300)
     )) togetherWith (slideOutHorizontally(
         animationSpec = tween(300), targetOffsetX = { slideDistance }) + fadeOut(

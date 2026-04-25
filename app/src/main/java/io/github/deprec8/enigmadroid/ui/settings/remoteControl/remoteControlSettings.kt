@@ -91,7 +91,7 @@ fun RemoteControlSettingsPage(
                             remoteControlSettingsViewModel.setRemoteControlVibration(it)
                         })
                 }, modifier = Modifier.clickable {
-                    remoteControlSettingsViewModel.setRemoteControlVibration(! remoteControlVibration)
+                    remoteControlSettingsViewModel.setRemoteControlVibration(!remoteControlVibration)
                 })
             }
         }

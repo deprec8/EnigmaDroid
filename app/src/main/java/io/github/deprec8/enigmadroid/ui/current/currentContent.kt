@@ -65,7 +65,7 @@ fun CurrentContent(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val scrollState = rememberScrollState()
-    val isExpandedScreenLayout = ! isSmallScreenLayout()
+    val isExpandedScreenLayout = !isSmallScreenLayout()
 
     if (currentEventInfo.info.result == true) {
         Column(

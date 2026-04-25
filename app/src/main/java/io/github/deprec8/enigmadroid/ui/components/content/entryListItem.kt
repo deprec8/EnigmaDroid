@@ -42,16 +42,16 @@ import io.github.deprec8.enigmadroid.common.enums.ContentFlag
 @Composable
 fun EntryTypeListItem(name: String, type: ContentFlag) {
     val icon = when (type) {
-        ContentFlag.MARKER    -> Icons.Outlined.Bookmark
+        ContentFlag.MARKER -> Icons.Outlined.Bookmark
         ContentFlag.DIRECTORY -> Icons.Outlined.Folder
-        ContentFlag.GROUP     -> Icons.Outlined.AutoAwesomeMosaic
-        else                  -> null
+        ContentFlag.GROUP -> Icons.Outlined.AutoAwesomeMosaic
+        else -> null
     }
     val contentDescription = when (type) {
-        ContentFlag.MARKER    -> stringResource(R.string.marker)
+        ContentFlag.MARKER -> stringResource(R.string.marker)
         ContentFlag.DIRECTORY -> stringResource(R.string.directory)
-        ContentFlag.GROUP     -> stringResource(R.string.group)
-        else                  -> ""
+        ContentFlag.GROUP -> stringResource(R.string.group)
+        else -> ""
     }
 
     if (icon != null) {

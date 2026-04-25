@@ -23,20 +23,20 @@
     <cloud-backup>
         <include
             domain="database"
-            path="."/>
+            path="." />
 
         <include
             domain="file"
-            path="datastore/"/>
+            path="datastore/" />
     </cloud-backup>
 
     <device-transfer>
         <include
             domain="database"
-            path="."/>
+            path="." />
 
         <include
             domain="file"
-            path="datastore/"/>
+            path="datastore/" />
     </device-transfer>
 </data-extraction-rules>

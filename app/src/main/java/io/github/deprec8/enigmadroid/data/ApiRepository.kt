@@ -94,7 +94,7 @@ class ApiRepository @Inject constructor(
     private fun ContentFlag.shouldBeNumbered(): Boolean {
         return when (this) {
             ContentFlag.CHANNEL, ContentFlag.NUMBERED_MARKER, ContentFlag.INVISIBLE_NUMBERED_MARKER -> true
-            else                                                                                    -> false
+            else -> false
         }
     }
 
@@ -204,7 +204,7 @@ class ApiRepository @Inject constructor(
 
                     val uiServices = serviceBatch.services.map { service ->
                         val type = service.serviceReference.toEntryType()
-                        val displayIndex = if (type.shouldBeNumbered()) counter ++ else null
+                        val displayIndex = if (type.shouldBeNumbered()) counter++ else null
 
                         service.copy(
                             displayIndex = displayIndex, type = type
@@ -239,7 +239,7 @@ class ApiRepository @Inject constructor(
             val uiEvents = rawBatch.events.map { event ->
                 val type = event.serviceReference.toEntryType()
 
-                val displayIndex = if (type.shouldBeNumbered()) counter ++ else null
+                val displayIndex = if (type.shouldBeNumbered()) counter++ else null
 
                 event.copy(
                     displayIndex = displayIndex, type = type

@@ -85,13 +85,14 @@ fun LiveContent(
                     ContentFlag.CHANNEL -> GridItemSpan(
                         1
                     )
-                    else                -> GridItemSpan(
+
+                    else -> GridItemSpan(
                         maxLineSpan
                     )
                 }
             }) { event ->
                 when (event.type) {
-                    ContentFlag.CHANNEL                                          -> {
+                    ContentFlag.CHANNEL -> {
                         ContentListItem(
                             highlightedWords = highlightedWords,
                             headlineText = event.serviceName,
@@ -158,10 +159,12 @@ fun LiveContent(
                             additionalDescription = event.genre
                         )
                     }
+
                     ContentFlag.MARKER, ContentFlag.DIRECTORY, ContentFlag.GROUP -> {
                         EntryTypeListItem(event.serviceName, event.type)
                     }
-                    else                                                         -> {}
+
+                    else -> {}
                 }
 
             }

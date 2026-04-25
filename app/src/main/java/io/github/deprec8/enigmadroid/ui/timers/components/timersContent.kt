@@ -199,9 +199,9 @@ private fun Timer.getState(): String {
         TimerState.WAITING.id -> stringResource(R.string.waiting)
         TimerState.PREPARED.id -> stringResource(R.string.prepared)
         TimerState.RUNNING.id -> stringResource(R.string.running)
-        TimerState.ENDED.id   -> stringResource(R.string.ended)
+        TimerState.ENDED.id -> stringResource(R.string.ended)
         TimerState.DISABLED.id -> stringResource(R.string.disabled)
-        else                  -> {
+        else -> {
             stringResource(R.string.unknown)
         }
     }

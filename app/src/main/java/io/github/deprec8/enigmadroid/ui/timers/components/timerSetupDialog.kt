@@ -361,9 +361,11 @@ fun TimerSetupDialog(
                             2 -> {
                                 stringResource(R.string.shutdown)
                             }
+
                             1 -> {
                                 stringResource(R.string.standby)
                             }
+
                             else -> {
                                 stringResource(R.string.automatic)
                             }
@@ -530,7 +532,7 @@ private fun ServicePickerDialog(
                 LazyColumn {
                     items(currentServiceBatch?.services ?: emptyList()) { service ->
                         when (service.type) {
-                            ContentFlag.CHANNEL                                          -> {
+                            ContentFlag.CHANNEL -> {
                                 ListItem(
                                     headlineContent = {
                                         Text(service.serviceName)
@@ -559,10 +561,12 @@ private fun ServicePickerDialog(
                                     colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                                 )
                             }
+
                             ContentFlag.MARKER, ContentFlag.DIRECTORY, ContentFlag.GROUP -> {
                                 EntryTypeListItem(service.serviceName, service.type)
                             }
-                            else                                                         -> {}
+
+                            else -> {}
                         }
                     }
                 }

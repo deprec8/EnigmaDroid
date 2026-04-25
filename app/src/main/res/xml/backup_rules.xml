@@ -20,9 +20,9 @@
 <full-backup-content>
     <include
         domain="database"
-        path="."/>
+        path="." />
 
     <include
         domain="file"
-        path="datastore/"/>
+        path="datastore/" />
 </full-backup-content>

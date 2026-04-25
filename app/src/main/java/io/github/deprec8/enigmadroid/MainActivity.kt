@@ -71,15 +71,16 @@ class MainActivity : ComponentActivity() {
 
         when (intent.action) {
             "io.github.deprec8.enigmadroid.OPEN_WITH_DEVICE" -> {
-                val deviceId = intent.getIntExtra("device_id", - 1)
-                if (deviceId != - 1) {
+                val deviceId = intent.getIntExtra("device_id", -1)
+                if (deviceId != -1) {
                     val current = devicesRepository.getCurrentDeviceId().first()
                     if (deviceId != current) {
                         devicesRepository.setCurrentDeviceId(deviceId)
                     }
                 }
             }
-            Intent.ACTION_VIEW                               -> {
+
+            Intent.ACTION_VIEW -> {
                 isRemoteControlDeepLink = intent.data?.toString() == "enigmadroid://remotecontrol"
             }
         }

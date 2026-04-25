@@ -167,7 +167,7 @@ fun DeviceSetupCard(
                         )
                     }, keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Done
-                    ), textObfuscationMode = if (! passwordVisible) {
+                    ), textObfuscationMode = if (!passwordVisible) {
                         TextObfuscationMode.Hidden
                     } else {
                         TextObfuscationMode.Visible
@@ -255,7 +255,7 @@ fun DeviceSetupCard(
                     )
                 }, keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Done
-                ), textObfuscationMode = if (! passwordVisible) {
+                ), textObfuscationMode = if (!passwordVisible) {
                     TextObfuscationMode.Hidden
                 } else {
                     TextObfuscationMode.Visible
@@ -347,7 +347,7 @@ private fun FormPortSettings(
             state = livePortState,
             lineLimits = TextFieldLineLimits.SingleLine,
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number, imeAction = if (! isLogin) {
+                keyboardType = KeyboardType.Number, imeAction = if (!isLogin) {
                     ImeAction.Done
                 } else {
                     ImeAction.Next
@@ -387,16 +387,17 @@ private fun PasswordVisibilityToggleButton(
         )
     ) {
         IconButton(
-            onClick = { onVisibilityChange(! passwordVisible) }, enabled = isLogin
+            onClick = { onVisibilityChange(!passwordVisible) }, enabled = isLogin
         ) {
             when (passwordVisible) {
-                true  -> {
+                true -> {
 
                     Icon(
                         Icons.Default.VisibilityOff,
                         contentDescription = stringResource(R.string.hide_password)
                     )
                 }
+
                 false -> {
 
                     Icon(

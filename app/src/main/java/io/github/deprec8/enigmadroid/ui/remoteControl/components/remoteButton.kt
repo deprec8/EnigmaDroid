@@ -69,7 +69,7 @@ fun RemoteButton(
         }
         button.icon?.let { icon ->
             Icon(
-                icon, contentDescription = button.iconLabel, tint = if (! enabled) {
+                icon, contentDescription = button.iconLabel, tint = if (!enabled) {
                     ButtonDefaults.filledTonalButtonColors().disabledContentColor
                 } else {
                     iconTint ?: LocalContentColor.current

@@ -32,7 +32,7 @@ import androidx.window.core.layout.WindowSizeClass
 @Composable
 fun isSmallScreenLayout(): Boolean {
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-    return ! windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || ! windowSizeClass.isHeightAtLeastBreakpoint(
+    return !windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || !windowSizeClass.isHeightAtLeastBreakpoint(
         WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
     )
 }

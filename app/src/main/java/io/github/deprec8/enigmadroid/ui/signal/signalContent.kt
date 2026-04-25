@@ -50,7 +50,7 @@ fun SignalContent(
     modifier: Modifier = Modifier, signalInfo: SignalInfo, paddingValues: PaddingValues
 ) {
     val scrollState = rememberScrollState()
-    val isExpandedScreenLayout = ! isSmallScreenLayout()
+    val isExpandedScreenLayout = !isSmallScreenLayout()
 
     if (signalInfo.inStandby == "false") {
         Column(
