@@ -75,8 +75,7 @@ fun NumberButtons(
                     RemoteButton(
                         button = button,
                         onClick = { onButtonClicked(button.button) },
-                        enabled = enabled,
-                        aspectRatio = 2f
+                        enabled = enabled
                     )
                 }
             }

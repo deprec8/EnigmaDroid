@@ -72,8 +72,8 @@ class TimersViewModel @Inject constructor(
 
     val searchFieldState = TextFieldState()
 
-    val searchInput = MutableStateFlow("")
-    val useSearchHighlighting = MutableStateFlow(true)
+    private val searchInput = MutableStateFlow("")
+    private val useSearchHighlighting = MutableStateFlow(true)
 
     val highlightedWords: StateFlow<List<String>> =
         searchInput.asHighlightedWords(useSearchHighlighting).stateIn(

@@ -43,8 +43,8 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var devicesRepository: DevicesRepository
 
-    var isRemoteControlDeepLink by mutableStateOf(false)
-    var isIntentBeingHandled by mutableStateOf(true)
+    private var isRemoteControlDeepLink by mutableStateOf(false)
+    private var isIntentBeingHandled by mutableStateOf(true)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen().setKeepOnScreenCondition {
