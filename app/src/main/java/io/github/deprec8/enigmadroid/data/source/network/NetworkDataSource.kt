@@ -155,7 +155,7 @@ class NetworkDataSource @Inject constructor(
         false
     }
 
-    suspend fun postApi(endpoint: String) {
+    suspend fun post(endpoint: String) {
         try {
             val url = getCurrentDevice()?.buildUrl(endpoint) ?: throw NullPointerException()
             client.get(url) {
@@ -170,7 +170,7 @@ class NetworkDataSource @Inject constructor(
         }
     }
 
-    suspend fun postApi(key: RemoteControlKey) {
+    suspend fun post(key: RemoteControlKey) {
         try {
             val url = getCurrentDevice()?.buildUrl(key) ?: throw NullPointerException()
             client.get(url) {
@@ -185,7 +185,7 @@ class NetworkDataSource @Inject constructor(
         }
     }
 
-    suspend fun fetchApi(endpoint: String): String = try {
+    suspend fun fetchJson(endpoint: String): String = try {
         val url = getCurrentDevice()?.buildUrl(endpoint) ?: throw NullPointerException()
         client.get(url) {
             header(HttpHeaders.Connection, "close")
