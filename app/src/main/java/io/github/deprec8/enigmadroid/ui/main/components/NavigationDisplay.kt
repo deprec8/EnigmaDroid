@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.main
+package io.github.deprec8.enigmadroid.ui.main.components
 
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.core.tween

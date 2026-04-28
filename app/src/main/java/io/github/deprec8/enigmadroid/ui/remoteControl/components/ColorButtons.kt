@@ -22,10 +22,10 @@ package io.github.deprec8.enigmadroid.ui.remoteControl.components
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.TripOrigin
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
@@ -33,37 +33,45 @@ import io.github.deprec8.enigmadroid.common.enums.RCButton
 import io.github.deprec8.enigmadroid.model.RemoteControlButton
 
 @Composable
-fun BouquetButtons(
-    onButtonClicked: (RCButton) -> Unit, enabled: Boolean
-) {
+fun ColorButtons(onButtonClicked: (RCButton) -> Unit, enabled: Boolean) {
 
-    val bouquetButtons = listOf(
+    val colorButtons = listOf(
         RemoteControlButton(
-            icon = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-            iconLabel = stringResource(R.string.bouquet_down),
-            button = RCButton.PREVIOUS_BOUQUET
+            icon = Icons.Default.TripOrigin,
+            iconLabel = stringResource(R.string.red),
+            iconTint = Color.Red,
+            button = RCButton.COLOR_RED
         ),
         RemoteControlButton(
-            text = "INFO", button = RCButton.INFO
+            icon = Icons.Default.TripOrigin,
+            iconLabel = stringResource(R.string.green),
+            iconTint = Color.Green,
+            button = RCButton.COLOR_GREEN
         ),
         RemoteControlButton(
-            text = "TEXT", button = RCButton.TEXT
+            icon = Icons.Default.TripOrigin,
+            iconLabel = stringResource(R.string.yellow),
+            iconTint = Color.Yellow,
+            button = RCButton.COLOR_YELLOW
         ),
         RemoteControlButton(
-            icon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-            iconLabel = stringResource(R.string.bouquet_up),
-            button = RCButton.NEXT_BOUQUET
+            icon = Icons.Default.TripOrigin,
+            iconLabel = stringResource(R.string.blue),
+            iconTint = Color.Blue,
+            button = RCButton.COLOR_BLUE
         ),
     )
+
     Row(
         Modifier.widthIn(0.dp, 500.dp)
     ) {
-        bouquetButtons.forEach { button ->
-            RemoteButton(
+        colorButtons.forEach { button ->
+            RemoteControlButton(
                 button = button,
                 onClick = { onButtonClicked(button.button) },
                 enabled = enabled,
                 modifier = Modifier.weight(1f),
+                iconTint = button.iconTint,
                 aspectRatio = 1.5f
             )
         }

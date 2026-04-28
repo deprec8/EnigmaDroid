@@ -17,9 +17,10 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.live.tv
+package io.github.deprec8.enigmadroid.ui.epg.tvEpg
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -42,88 +43,78 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.common.enums.LoadingState
-import io.github.deprec8.enigmadroid.ui.components.ContentTab
-import io.github.deprec8.enigmadroid.ui.components.ContentTabRow
+import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
+import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
+import io.github.deprec8.enigmadroid.ui.components.NoResults
+import io.github.deprec8.enigmadroid.ui.components.content.ContentTab
+import io.github.deprec8.enigmadroid.ui.components.content.ContentTabRow
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.loading.FloatingReloadButton
-import io.github.deprec8.enigmadroid.ui.components.loading.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarDrawerNavigationButton
-import io.github.deprec8.enigmadroid.ui.live.components.LiveContent
+import io.github.deprec8.enigmadroid.ui.epg.components.BouquetMenu
+import io.github.deprec8.enigmadroid.ui.epg.components.EpgContent
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TvPage(
+fun TvEpgPage(
     onNavigateToRemoteControl: () -> Unit,
-    onNavigateToServiceEpg: (serviceReference: String, serviceName: String) -> Unit,
     drawerState: DrawerState,
-    tvViewModel: TvViewModel = hiltViewModel()
+    tvEpgViewModel: TvEpgViewModel = hiltViewModel()
 ) {
-
-    val filteredEvents by tvViewModel.filteredEvents.collectAsStateWithLifecycle()
-    val eventBatches by tvViewModel.eventBatches.collectAsStateWithLifecycle()
-    val loadingState by tvViewModel.loadingState.collectAsStateWithLifecycle()
-    val searchHistory by tvViewModel.searchHistory.collectAsStateWithLifecycle()
-    val highlightedWords by tvViewModel.highlightedWords.collectAsStateWithLifecycle()
+    val eventBatchSet by tvEpgViewModel.eventBatchSet.collectAsStateWithLifecycle()
+    val bouquets by tvEpgViewModel.bouquets.collectAsStateWithLifecycle()
+    val currentBouquetReference by tvEpgViewModel.currentBouquetReference.collectAsStateWithLifecycle()
+    val filteredEvents by tvEpgViewModel.filteredEvents.collectAsStateWithLifecycle()
+    val searchHistory by tvEpgViewModel.searchHistory.collectAsStateWithLifecycle()
+    val loadingState by tvEpgViewModel.loadingState.collectAsStateWithLifecycle()
+    val highlightedWords by tvEpgViewModel.highlightedWords.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
-    val pagerState = rememberPagerState(pageCount = { eventBatches?.size ?: 0 })
+    val pagerState = rememberPagerState(pageCount = { eventBatchSet?.eventBatches?.size ?: 0 })
     val selectedTabIndex by remember {
         derivedStateOf {
-            pagerState.currentPage.coerceIn(0, ((eventBatches?.size ?: 0) - 1).coerceAtLeast(0))
+            pagerState.currentPage.coerceIn(
+                0, ((eventBatchSet?.eventBatches?.size ?: 0) - 1).coerceAtLeast(0)
+            )
         }
     }
 
     LaunchedEffect(Unit) {
-        tvViewModel.updateLoadingState(false)
+        tvEpgViewModel.updateLoadingState(false)
     }
+
     LaunchedEffect(loadingState) {
         if (loadingState == LoadingState.LOADED) {
-            tvViewModel.fetchData()
+            tvEpgViewModel.fetchData()
         }
     }
 
-    LaunchedEffect(selectedTabIndex) {
-        tvViewModel.updateCurrentBouquetIndex(selectedTabIndex)
-    }
-
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(loadingState) { tvViewModel.fetchData(isForced = true) }
+        FloatingReloadButton(loadingState) {
+            tvEpgViewModel.fetchData(isForced = true)
+        }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            textFieldState = tvViewModel.searchFieldState,
-            enabled = eventBatches?.isNotEmpty() == true && loadingState == LoadingState.LOADED,
-            placeholder = stringResource(R.string.search_events),
+            enabled = eventBatchSet?.eventBatches?.isNotEmpty() == true && loadingState == LoadingState.LOADED,
+            textFieldState = tvEpgViewModel.searchFieldState,
+            placeholder = stringResource(R.string.search_epg),
             content = {
-                filteredEvents?.let { filterEvents ->
-                    LiveContent(
-                        events = filterEvents,
+                filteredEvents?.let {
+                    EpgContent(
+                        events = it,
                         paddingValues = PaddingValues(0.dp),
-                        showChannelNumbers = false,
+                        showChannelName = true,
                         highlightedWords = highlightedWords,
-                        onNavigateToServiceEpg = { serviceReference, serviceName ->
-                            onNavigateToServiceEpg(
-                                serviceReference, serviceName
-                            )
-                        },
-                        onPlayOnDevice = {
-                            tvViewModel.playOnDevice(it)
-                        },
-                        onAddTimerForEvent = {
-                            tvViewModel.addTimerForEvent(it)
-                        },
-                        buildLiveStreamUrl = {
-                            tvViewModel.buildLiveStreamUrl(it)
-                        })
+                        onAddTimerForEvent = { event -> tvEpgViewModel.addTimerForEvent(event) })
                 } ?: run {
                     SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
-                        tvViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
-                        tvViewModel.updateSearchInput()
+                        tvEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
+                        tvEpgViewModel.updateSearchInput()
                     }, onTermInsertClick = {
-                        tvViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
+                        tvEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
                             it
                         )
                     })
@@ -133,15 +124,20 @@ fun TvPage(
                 SearchTopAppBarDrawerNavigationButton(drawerState, searchBarState)
             },
             actionButtons = {
-                RemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
+                Row {
+                    BouquetMenu(
+                        bouquets, currentBouquetReference, loadingState
+                    ) { bouquetReference -> tvEpgViewModel.setCurrentBouquet(bouquetReference) }
+                    RemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
+                }
             },
             onSearch = {
-                tvViewModel.updateSearchInput()
+                tvEpgViewModel.updateSearchInput()
             },
             actionBar = {
-                if (eventBatches?.isNotEmpty() == true && loadingState == LoadingState.LOADED) {
+                if (eventBatchSet?.eventBatches?.isNotEmpty() == true && loadingState == LoadingState.LOADED) {
                     ContentTabRow(selectedTabIndex) {
-                        eventBatches?.forEachIndexed { index, eventBatch ->
+                        eventBatchSet?.eventBatches?.forEachIndexed { index, eventBatch ->
                             ContentTab(
                                 name = eventBatch.name, selected = index == selectedTabIndex
                             ) {
@@ -153,29 +149,26 @@ fun TvPage(
                     }
                 }
             })
+    }
 
-    }) { innerPadding ->
-        if (eventBatches != null && loadingState == LoadingState.LOADED) {
-            HorizontalPager(
-                modifier = Modifier.fillMaxSize(), state = pagerState
-            ) { index ->
-                LiveContent(
-                    events = eventBatches?.get(index)?.events ?: emptyList(),
-                    paddingValues = innerPadding,
-                    onNavigateToServiceEpg = { serviceReference, serviceName ->
-                        onNavigateToServiceEpg(
-                            serviceReference, serviceName
-                        )
-                    },
-                    onPlayOnDevice = {
-                        tvViewModel.playOnDevice(it)
-                    },
-                    onAddTimerForEvent = {
-                        tvViewModel.addTimerForEvent(it)
-                    },
-                    buildLiveStreamUrl = {
-                        tvViewModel.buildLiveStreamUrl(it)
-                    })
+    ) { innerPadding ->
+        if (eventBatchSet != null && loadingState == LoadingState.LOADED) {
+            if (eventBatchSet?.eventBatches?.isNotEmpty() == true) {
+                HorizontalPager(
+                    modifier = Modifier.fillMaxSize(),
+                    state = pagerState,
+                ) { service ->
+                    EpgContent(
+                        events = eventBatchSet?.eventBatches[service]?.events ?: emptyList(),
+                        innerPadding,
+                        onAddTimerForEvent = { tvEpgViewModel.addTimerForEvent(it) })
+                }
+            } else {
+                NoResults(
+                    Modifier
+                        .consumeWindowInsets(innerPadding)
+                        .padding(innerPadding)
+                )
             }
         } else {
             LoadingScreen(
@@ -184,7 +177,7 @@ fun TvPage(
                     .padding(innerPadding),
                 onUpdateLoadingState = {
                     scope.launch {
-                        tvViewModel.updateLoadingState(
+                        tvEpgViewModel.updateLoadingState(
                             it
                         )
                     }

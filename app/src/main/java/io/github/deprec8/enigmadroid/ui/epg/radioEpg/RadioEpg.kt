@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.epg.tvEpg
+package io.github.deprec8.enigmadroid.ui.epg.radioEpg
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -43,12 +43,12 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.common.enums.LoadingState
-import io.github.deprec8.enigmadroid.ui.components.ContentTab
-import io.github.deprec8.enigmadroid.ui.components.ContentTabRow
+import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
+import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
+import io.github.deprec8.enigmadroid.ui.components.content.ContentTab
+import io.github.deprec8.enigmadroid.ui.components.content.ContentTabRow
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.loading.FloatingReloadButton
-import io.github.deprec8.enigmadroid.ui.components.loading.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
@@ -59,18 +59,18 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TvEpgPage(
+fun RadioEpgPage(
     onNavigateToRemoteControl: () -> Unit,
     drawerState: DrawerState,
-    tvEpgViewModel: TvEpgViewModel = hiltViewModel()
+    radioEpgViewModel: RadioEpgViewModel = hiltViewModel()
 ) {
-    val eventBatchSet by tvEpgViewModel.eventBatchSet.collectAsStateWithLifecycle()
-    val bouquets by tvEpgViewModel.bouquets.collectAsStateWithLifecycle()
-    val currentBouquetReference by tvEpgViewModel.currentBouquetReference.collectAsStateWithLifecycle()
-    val filteredEvents by tvEpgViewModel.filteredEvents.collectAsStateWithLifecycle()
-    val searchHistory by tvEpgViewModel.searchHistory.collectAsStateWithLifecycle()
-    val loadingState by tvEpgViewModel.loadingState.collectAsStateWithLifecycle()
-    val highlightedWords by tvEpgViewModel.highlightedWords.collectAsStateWithLifecycle()
+    val eventBatchSet by radioEpgViewModel.eventBatchSet.collectAsStateWithLifecycle()
+    val filteredEvents by radioEpgViewModel.filteredEvents.collectAsStateWithLifecycle()
+    val searchHistory by radioEpgViewModel.searchHistory.collectAsStateWithLifecycle()
+    val highlightedWords by radioEpgViewModel.highlightedWords.collectAsStateWithLifecycle()
+    val loadingState by radioEpgViewModel.loadingState.collectAsStateWithLifecycle()
+    val bouquets by radioEpgViewModel.bouquets.collectAsStateWithLifecycle()
+    val currentBouquetReference by radioEpgViewModel.currentBouquetReference.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { eventBatchSet?.eventBatches?.size ?: 0 })
@@ -83,23 +83,23 @@ fun TvEpgPage(
     }
 
     LaunchedEffect(Unit) {
-        tvEpgViewModel.updateLoadingState(false)
+        radioEpgViewModel.updateLoadingState(false)
     }
 
     LaunchedEffect(loadingState) {
         if (loadingState == LoadingState.LOADED) {
-            tvEpgViewModel.fetchData()
+            radioEpgViewModel.fetchData()
         }
     }
 
     Scaffold(floatingActionButton = {
         FloatingReloadButton(loadingState) {
-            tvEpgViewModel.fetchData(isForced = true)
+            radioEpgViewModel.fetchData(isForced = true)
         }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
             enabled = eventBatchSet?.eventBatches?.isNotEmpty() == true && loadingState == LoadingState.LOADED,
-            textFieldState = tvEpgViewModel.searchFieldState,
+            textFieldState = radioEpgViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_epg),
             content = {
                 filteredEvents?.let {
@@ -108,13 +108,13 @@ fun TvEpgPage(
                         paddingValues = PaddingValues(0.dp),
                         showChannelName = true,
                         highlightedWords = highlightedWords,
-                        onAddTimerForEvent = { event -> tvEpgViewModel.addTimerForEvent(event) })
+                        onAddTimerForEvent = { event -> radioEpgViewModel.addTimerForEvent(event) })
                 } ?: run {
                     SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
-                        tvEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
-                        tvEpgViewModel.updateSearchInput()
+                        radioEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
+                        radioEpgViewModel.updateSearchInput()
                     }, onTermInsertClick = {
-                        tvEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
+                        radioEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
                             it
                         )
                     })
@@ -127,12 +127,12 @@ fun TvEpgPage(
                 Row {
                     BouquetMenu(
                         bouquets, currentBouquetReference, loadingState
-                    ) { bouquetReference -> tvEpgViewModel.setCurrentBouquet(bouquetReference) }
+                    ) { bouquetReference -> radioEpgViewModel.setCurrentBouquet(bouquetReference) }
                     RemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
                 }
             },
             onSearch = {
-                tvEpgViewModel.updateSearchInput()
+                radioEpgViewModel.updateSearchInput()
             },
             actionBar = {
                 if (eventBatchSet?.eventBatches?.isNotEmpty() == true && loadingState == LoadingState.LOADED) {
@@ -161,7 +161,7 @@ fun TvEpgPage(
                     EpgContent(
                         events = eventBatchSet?.eventBatches[service]?.events ?: emptyList(),
                         innerPadding,
-                        onAddTimerForEvent = { tvEpgViewModel.addTimerForEvent(it) })
+                        onAddTimerForEvent = { radioEpgViewModel.addTimerForEvent(it) })
                 }
             } else {
                 NoResults(
@@ -177,7 +177,7 @@ fun TvEpgPage(
                     .padding(innerPadding),
                 onUpdateLoadingState = {
                     scope.launch {
-                        tvEpgViewModel.updateLoadingState(
+                        radioEpgViewModel.updateLoadingState(
                             it
                         )
                     }

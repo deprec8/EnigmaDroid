@@ -17,9 +17,10 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.components.loading
+package io.github.deprec8.enigmadroid.ui.components
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
@@ -28,14 +29,26 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -181,5 +194,47 @@ fun LoadingScreen(
                 }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FloatingReloadButton(loadingState: LoadingState, onReload: () -> Unit) {
+    AnimatedVisibility(
+        loadingState == LoadingState.LOADED, enter = scaleIn(), exit = scaleOut()
+    ) {
+        TooltipBox(
+            tooltip = {
+                PlainTooltip {
+                    Text(stringResource(id = R.string.reload))
+                }
+            },
+            state = rememberTooltipState(),
+            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                TooltipAnchorPosition.Above, 4.dp
+            )
+        ) {
+            FloatingActionButton(onClick = {
+                onReload()
+            }) {
+                Icon(
+                    Icons.Default.Refresh, contentDescription = stringResource(R.string.reload)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun NoResults(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .imePadding(), contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = stringResource(R.string.no_results),
+            textAlign = TextAlign.Center
+        )
     }
 }

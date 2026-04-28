@@ -86,7 +86,7 @@ fun ControlButtons(
     controlButtons.forEach { row ->
         Row(Modifier.widthIn(0.dp, 500.dp)) {
             row.forEach { button ->
-                RemoteButton(
+                RemoteControlButton(
                     button = button,
                     onClick = { onButtonClicked(button.button) },
                     enabled = enabled,

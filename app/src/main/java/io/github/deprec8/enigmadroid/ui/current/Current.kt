@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.deviceInfo
+package io.github.deprec8.enigmadroid.ui.current
 
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
@@ -39,10 +39,10 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.common.enums.LoadingState
-import io.github.deprec8.enigmadroid.model.api.DeviceInfo
+import io.github.deprec8.enigmadroid.model.api.CurrentInfo
+import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
+import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.loading.FloatingReloadButton
-import io.github.deprec8.enigmadroid.ui.components.loading.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.navigation.DrawerNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
@@ -50,57 +50,70 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DeviceInfoPage(
+fun CurrentPage(
     onNavigateToRemoteControl: () -> Unit,
+    onNavigateToServiceEpg: (serviceReference: String, serviceName: String) -> Unit,
     drawerState: DrawerState,
-    deviceInfoViewModel: DeviceInfoViewModel = hiltViewModel()
+    currentViewModel: CurrentViewModel = hiltViewModel()
 ) {
 
-    val loadingState by deviceInfoViewModel.loadingState.collectAsStateWithLifecycle()
-    val deviceInfo by deviceInfoViewModel.deviceInfo.collectAsStateWithLifecycle()
+    val currentEventInfo by currentViewModel.currentInfo.collectAsStateWithLifecycle()
+    val loadingState by currentViewModel.loadingState.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     LaunchedEffect(Unit) {
-        deviceInfoViewModel.updateLoadingState(false)
+        currentViewModel.updateLoadingState(false)
     }
 
     LaunchedEffect(loadingState) {
         if (loadingState == LoadingState.LOADED) {
-            deviceInfoViewModel.fetchData()
+            currentViewModel.fetchData()
         }
     }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(loadingState) { deviceInfoViewModel.fetchData(isForced = true) }
+        FloatingReloadButton(loadingState) { currentViewModel.fetchData(isForced = true) }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
-        TopAppBar(windowInsets = topAppBarWithDrawerWindowInsets(), title = {
-            Text(
-                text = stringResource(id = R.string.device_info),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }, scrollBehavior = scrollBehavior, navigationIcon = {
-            DrawerNavigationButton(drawerState)
-        }, actions = {
-            RemoteControlActionButton { onNavigateToRemoteControl() }
-        })
+        TopAppBar(
+            title = {
+                Text(
+                    text = stringResource(id = R.string.current),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            },
+            windowInsets = topAppBarWithDrawerWindowInsets(),
+            scrollBehavior = scrollBehavior,
+            navigationIcon = {
+                DrawerNavigationButton(drawerState)
+            },
+            actions = {
+                RemoteControlActionButton { onNavigateToRemoteControl() }
+            })
     }) { innerPadding ->
-        if (deviceInfo != null && loadingState == LoadingState.LOADED) {
-            DeviceInfoContent(
+        if (currentEventInfo != null && loadingState == LoadingState.LOADED) {
+            CurrentContent(
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                deviceInfo ?: DeviceInfo(),
-                innerPadding
-            )
+                currentEventInfo ?: CurrentInfo(),
+                innerPadding,
+                onBuildLiveStreamUrl = {
+                    currentViewModel.buildLiveStreamUrl(it)
+                },
+                onNavigateToServiceEpg = { serviceReference, serviceName ->
+                    onNavigateToServiceEpg(
+                        serviceReference, serviceName
+                    )
+                })
         } else {
             LoadingScreen(
                 Modifier
-                    .padding(innerPadding)
-                    .consumeWindowInsets(innerPadding),
+                    .consumeWindowInsets(innerPadding)
+                    .padding(innerPadding),
                 onUpdateLoadingState = {
                     scope.launch {
-                        deviceInfoViewModel.updateLoadingState(
+                        currentViewModel.updateLoadingState(
                             it
                         )
                     }

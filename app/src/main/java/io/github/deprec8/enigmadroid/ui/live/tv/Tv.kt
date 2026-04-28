@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.live.radio
+package io.github.deprec8.enigmadroid.ui.live.tv
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -42,11 +42,11 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.common.enums.LoadingState
-import io.github.deprec8.enigmadroid.ui.components.ContentTab
-import io.github.deprec8.enigmadroid.ui.components.ContentTabRow
+import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
+import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
+import io.github.deprec8.enigmadroid.ui.components.content.ContentTab
+import io.github.deprec8.enigmadroid.ui.components.content.ContentTabRow
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.loading.FloatingReloadButton
-import io.github.deprec8.enigmadroid.ui.components.loading.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
@@ -56,18 +56,18 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RadioPage(
+fun TvPage(
     onNavigateToRemoteControl: () -> Unit,
     onNavigateToServiceEpg: (serviceReference: String, serviceName: String) -> Unit,
     drawerState: DrawerState,
-    radioViewModel: RadioViewModel = hiltViewModel()
+    tvViewModel: TvViewModel = hiltViewModel()
 ) {
 
-    val filteredEvents by radioViewModel.filteredEvents.collectAsStateWithLifecycle()
-    val eventBatches by radioViewModel.eventBatches.collectAsStateWithLifecycle()
-    val searchHistory by radioViewModel.searchHistory.collectAsStateWithLifecycle()
-    val loadingState by radioViewModel.loadingState.collectAsStateWithLifecycle()
-    val highlightedWords by radioViewModel.highlightedWords.collectAsStateWithLifecycle()
+    val filteredEvents by tvViewModel.filteredEvents.collectAsStateWithLifecycle()
+    val eventBatches by tvViewModel.eventBatches.collectAsStateWithLifecycle()
+    val loadingState by tvViewModel.loadingState.collectAsStateWithLifecycle()
+    val searchHistory by tvViewModel.searchHistory.collectAsStateWithLifecycle()
+    val highlightedWords by tvViewModel.highlightedWords.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { eventBatches?.size ?: 0 })
@@ -78,25 +78,24 @@ fun RadioPage(
     }
 
     LaunchedEffect(Unit) {
-        radioViewModel.updateLoadingState(false)
+        tvViewModel.updateLoadingState(false)
     }
-
     LaunchedEffect(loadingState) {
         if (loadingState == LoadingState.LOADED) {
-            radioViewModel.fetchData()
+            tvViewModel.fetchData()
         }
     }
 
     LaunchedEffect(selectedTabIndex) {
-        radioViewModel.updateCurrentBouquetIndex(selectedTabIndex)
+        tvViewModel.updateCurrentBouquetIndex(selectedTabIndex)
     }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(loadingState) { radioViewModel.fetchData(isForced = true) }
+        FloatingReloadButton(loadingState) { tvViewModel.fetchData(isForced = true) }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
+            textFieldState = tvViewModel.searchFieldState,
             enabled = eventBatches?.isNotEmpty() == true && loadingState == LoadingState.LOADED,
-            textFieldState = radioViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_events),
             content = {
                 filteredEvents?.let { filterEvents ->
@@ -111,20 +110,20 @@ fun RadioPage(
                             )
                         },
                         onPlayOnDevice = {
-                            radioViewModel.playOnDevice(it)
+                            tvViewModel.playOnDevice(it)
                         },
                         onAddTimerForEvent = {
-                            radioViewModel.addTimerForEvent(it)
+                            tvViewModel.addTimerForEvent(it)
                         },
                         buildLiveStreamUrl = {
-                            radioViewModel.buildLiveStreamUrl(it)
+                            tvViewModel.buildLiveStreamUrl(it)
                         })
                 } ?: run {
                     SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
-                        radioViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
-                        radioViewModel.updateSearchInput()
+                        tvViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
+                        tvViewModel.updateSearchInput()
                     }, onTermInsertClick = {
-                        radioViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
+                        tvViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
                             it
                         )
                     })
@@ -137,7 +136,7 @@ fun RadioPage(
                 RemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
             },
             onSearch = {
-                radioViewModel.updateSearchInput()
+                tvViewModel.updateSearchInput()
             },
             actionBar = {
                 if (eventBatches?.isNotEmpty() == true && loadingState == LoadingState.LOADED) {
@@ -155,13 +154,10 @@ fun RadioPage(
                 }
             })
 
-    }
-
-    ) { innerPadding ->
+    }) { innerPadding ->
         if (eventBatches != null && loadingState == LoadingState.LOADED) {
             HorizontalPager(
-                modifier = Modifier.fillMaxSize(),
-                state = pagerState,
+                modifier = Modifier.fillMaxSize(), state = pagerState
             ) { index ->
                 LiveContent(
                     events = eventBatches?.get(index)?.events ?: emptyList(),
@@ -172,13 +168,13 @@ fun RadioPage(
                         )
                     },
                     onPlayOnDevice = {
-                        radioViewModel.playOnDevice(it)
+                        tvViewModel.playOnDevice(it)
                     },
                     onAddTimerForEvent = {
-                        radioViewModel.addTimerForEvent(it)
+                        tvViewModel.addTimerForEvent(it)
                     },
                     buildLiveStreamUrl = {
-                        radioViewModel.buildLiveStreamUrl(it)
+                        tvViewModel.buildLiveStreamUrl(it)
                     })
             }
         } else {
@@ -188,7 +184,7 @@ fun RadioPage(
                     .padding(innerPadding),
                 onUpdateLoadingState = {
                     scope.launch {
-                        radioViewModel.updateLoadingState(
+                        tvViewModel.updateLoadingState(
                             it
                         )
                     }
@@ -197,5 +193,4 @@ fun RadioPage(
             )
         }
     }
-
 }

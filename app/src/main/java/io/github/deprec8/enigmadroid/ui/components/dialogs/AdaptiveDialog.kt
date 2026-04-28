@@ -19,6 +19,7 @@
 
 package io.github.deprec8.enigmadroid.ui.components.dialogs
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.imePadding
@@ -43,16 +44,20 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.window.DialogWindowProvider
+import androidx.core.view.WindowCompat
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.ui.components.isSmallScreenLayout
 
@@ -69,6 +74,7 @@ fun AdaptiveDialog(
     val fullScrollState = rememberScrollState()
     val dialogScrollState = rememberScrollState()
     val isSmallScreenLayout = isSmallScreenLayout()
+    val isDarkTheme = isSystemInDarkTheme()
 
     if (showCancelDialog) {
         AlertDialog(onDismissRequest = { showCancelDialog = false }, dismissButton = {
@@ -96,7 +102,18 @@ fun AdaptiveDialog(
             ), onDismissRequest = {
                 showCancelDialog = true
             }) {
-            DialogSystemUiHelper()
+            val view = LocalView.current
+            DisposableEffect(view, isDarkTheme) {
+                val window = (view.parent as? DialogWindowProvider)?.window
+
+                window?.let { win ->
+                    val controller = WindowCompat.getInsetsController(win, view)
+                    controller.isAppearanceLightStatusBars = !isDarkTheme
+                    controller.isAppearanceLightNavigationBars = !isDarkTheme
+                    win.setWindowAnimations(0)
+                }
+                onDispose {}
+            }
             Scaffold(
                 containerColor = if (fullScrollState.maxValue == 0) {
                     MaterialTheme.colorScheme.surface

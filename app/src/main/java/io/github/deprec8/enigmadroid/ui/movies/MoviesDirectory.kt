@@ -20,12 +20,22 @@
 package io.github.deprec8.enigmadroid.ui.movies
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
-import androidx.compose.material3.DrawerState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -39,13 +49,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.common.enums.LoadingState
 import io.github.deprec8.enigmadroid.model.api.MovieBatch
+import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
+import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.loading.FloatingReloadButton
-import io.github.deprec8.enigmadroid.ui.components.loading.LoadingScreen
+import io.github.deprec8.enigmadroid.ui.components.navigation.ArrowNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
-import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarDrawerNavigationButton
 import io.github.deprec8.enigmadroid.ui.movies.components.MoviesActionBar
 import io.github.deprec8.enigmadroid.ui.movies.components.MoviesContent
 import io.github.deprec8.enigmadroid.utils.IntentUtils
@@ -53,10 +63,11 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MoviesPage(
+fun MoviesDirectoryPage(
     onNavigateToRemoteControl: () -> Unit,
     onNavigateToDirectory: (String, MovieBatch?) -> Unit,
-    drawerState: DrawerState,
+    onNavigateBack: () -> Unit,
+    onNavigateToTop: () -> Unit,
     moviesViewModel: MoviesViewModel = hiltViewModel()
 ) {
 
@@ -127,11 +138,29 @@ fun MoviesPage(
                     })
                 }
             },
-            navigationButton = { searchBarState ->
-                SearchTopAppBarDrawerNavigationButton(drawerState, searchBarState)
+            navigationButton = {
+                ArrowNavigationButton { onNavigateBack() }
             },
             actionButtons = {
-                RemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
+                Row {
+                    TooltipBox(
+                        tooltip = {
+                            PlainTooltip {
+                                Text(stringResource(R.string.go_top))
+                            }
+                        },
+                        state = rememberTooltipState(),
+                        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                            TooltipAnchorPosition.Below, 4.dp
+                        )
+                    ) {
+                        IconButton(
+                            onClick = { onNavigateToTop() }) {
+                            Icon(Icons.Filled.ArrowUpward, stringResource(R.string.go_top))
+                        }
+                    }
+                    RemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
+                }
             },
             onSearch = {
                 moviesViewModel.updateSearchInput()

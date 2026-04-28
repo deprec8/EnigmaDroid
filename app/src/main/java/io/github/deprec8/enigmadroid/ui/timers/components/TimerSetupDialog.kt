@@ -98,7 +98,7 @@ import io.github.deprec8.enigmadroid.model.api.Service
 import io.github.deprec8.enigmadroid.model.api.ServiceBatch
 import io.github.deprec8.enigmadroid.model.api.ServiceBatchSet
 import io.github.deprec8.enigmadroid.model.api.Timer
-import io.github.deprec8.enigmadroid.ui.components.content.EntryTypeListItem
+import io.github.deprec8.enigmadroid.ui.components.content.ContentFlagListItem
 import io.github.deprec8.enigmadroid.ui.components.dialogs.AdaptiveDialog
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
 
@@ -563,7 +563,7 @@ private fun ServicePickerDialog(
                             }
 
                             ContentFlag.MARKER, ContentFlag.DIRECTORY, ContentFlag.GROUP -> {
-                                EntryTypeListItem(service.serviceName, service.type)
+                                ContentFlagListItem(service.serviceName, service.type)
                             }
 
                             else -> {}

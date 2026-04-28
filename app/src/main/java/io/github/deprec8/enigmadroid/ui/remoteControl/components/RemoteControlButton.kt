@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.model.RemoteControlButton
 
 @Composable
-fun RemoteButton(
+fun RemoteControlButton(
     button: RemoteControlButton,
     onClick: () -> Unit,
     enabled: Boolean,

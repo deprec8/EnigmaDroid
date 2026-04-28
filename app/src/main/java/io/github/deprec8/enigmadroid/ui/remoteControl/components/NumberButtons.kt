@@ -72,7 +72,7 @@ fun NumberButtons(
         numberButtons.forEach { column ->
             Column(Modifier.weight(1f)) {
                 column.forEach { button ->
-                    RemoteButton(
+                    RemoteControlButton(
                         button = button,
                         onClick = { onButtonClicked(button.button) },
                         enabled = enabled

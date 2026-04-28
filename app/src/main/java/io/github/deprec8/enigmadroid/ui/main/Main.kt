@@ -41,6 +41,8 @@ import io.github.deprec8.enigmadroid.ui.components.navigation.LocalSharedTransit
 import io.github.deprec8.enigmadroid.ui.components.navigation.ModalNavigationDrawerWrapper
 import io.github.deprec8.enigmadroid.ui.components.navigation.Navigator
 import io.github.deprec8.enigmadroid.ui.components.navigation.rememberNavigationState
+import io.github.deprec8.enigmadroid.ui.main.components.NavDrawerContent
+import io.github.deprec8.enigmadroid.ui.main.components.NavigationDisplay
 import io.github.deprec8.enigmadroid.ui.onboarding.OnboardingPage
 import io.github.deprec8.enigmadroid.utils.IntentUtils
 import kotlinx.coroutines.launch
