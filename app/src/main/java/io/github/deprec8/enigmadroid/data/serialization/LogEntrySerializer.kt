@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.utils
+package io.github.deprec8.enigmadroid.data.serialization
 
 import io.github.deprec8.enigmadroid.model.api.LogEntry
 import kotlinx.serialization.ExperimentalSerializationApi

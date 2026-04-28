@@ -21,7 +21,7 @@ package io.github.deprec8.enigmadroid.model.api
 
 import androidx.compose.runtime.Immutable
 import io.github.deprec8.enigmadroid.common.enums.ContentFlag
-import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
+import io.github.deprec8.enigmadroid.data.serialization.HtmlDecodedStringSerializer
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
