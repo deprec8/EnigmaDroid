@@ -26,42 +26,22 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.RCButton
-import io.github.deprec8.enigmadroid.model.RemoteControlButton
+import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
+import io.github.deprec8.enigmadroid.model.RemoteControlButtonData
 
 @Composable
 fun BouquetButtons(
-    onButtonClicked: (RCButton) -> Unit, enabled: Boolean
+    onButtonClicked: (RemoteControlKey) -> Unit, enabled: Boolean
 ) {
-
-    val bouquetButtons = listOf(
-        RemoteControlButton(
-            icon = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-            iconLabel = stringResource(R.string.bouquet_down),
-            button = RCButton.PREVIOUS_BOUQUET
-        ),
-        RemoteControlButton(
-            text = "INFO", button = RCButton.INFO
-        ),
-        RemoteControlButton(
-            text = "TEXT", button = RCButton.TEXT
-        ),
-        RemoteControlButton(
-            icon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-            iconLabel = stringResource(R.string.bouquet_up),
-            button = RCButton.NEXT_BOUQUET
-        ),
-    )
     Row(
         Modifier.widthIn(0.dp, 500.dp)
     ) {
         bouquetButtons.forEach { button ->
             RemoteControlButton(
                 button = button,
-                onClick = { onButtonClicked(button.button) },
+                onClick = { onButtonClicked(button.key) },
                 enabled = enabled,
                 modifier = Modifier.weight(1f),
                 aspectRatio = 1.5f
@@ -69,3 +49,22 @@ fun BouquetButtons(
         }
     }
 }
+
+private val bouquetButtons = listOf(
+    RemoteControlButtonData(
+        icon = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+        iconLabelRes = R.string.bouquet_down,
+        key = RemoteControlKey.PreviousBouquet
+    ),
+    RemoteControlButtonData(
+        text = "INFO", key = RemoteControlKey.Info
+    ),
+    RemoteControlButtonData(
+        text = "TEXT", key = RemoteControlKey.Text
+    ),
+    RemoteControlButtonData(
+        icon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+        iconLabelRes = R.string.bouquet_up,
+        key = RemoteControlKey.NextBouquet
+    ),
+)

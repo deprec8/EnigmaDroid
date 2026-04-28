@@ -32,13 +32,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import io.github.deprec8.enigmadroid.model.RemoteControlButton
+import io.github.deprec8.enigmadroid.model.RemoteControlButtonData
 
 @Composable
 fun RemoteControlButton(
-    button: RemoteControlButton,
+    button: RemoteControlButtonData,
     onClick: () -> Unit,
     enabled: Boolean,
     modifier: Modifier = Modifier,
@@ -69,7 +70,11 @@ fun RemoteControlButton(
         }
         button.icon?.let { icon ->
             Icon(
-                icon, contentDescription = button.iconLabel, tint = if (!enabled) {
+                icon, contentDescription = button.iconLabel ?: if (button.iconLabelRes != null) {
+                    stringResource(button.iconLabelRes)
+                } else {
+                    null
+                }, tint = if (!enabled) {
                     ButtonDefaults.filledTonalButtonColors().disabledContentColor
                 } else {
                     iconTint ?: LocalContentColor.current

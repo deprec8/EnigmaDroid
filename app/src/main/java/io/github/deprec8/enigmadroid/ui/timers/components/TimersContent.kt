@@ -62,7 +62,7 @@ import io.github.deprec8.enigmadroid.model.MenuItemGroup
 import io.github.deprec8.enigmadroid.model.api.ServiceBatchSet
 import io.github.deprec8.enigmadroid.model.api.Timer
 import io.github.deprec8.enigmadroid.ui.components.NoResults
-import io.github.deprec8.enigmadroid.ui.components.content.ContentListItem
+import io.github.deprec8.enigmadroid.ui.components.content.ContentItem
 import io.github.deprec8.enigmadroid.ui.components.dialogs.ConfirmDeleteDialog
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
 
@@ -91,7 +91,7 @@ fun TimersContent(
                 var showEditDialog by rememberSaveable { mutableStateOf(false) }
                 var showLogDialog by rememberSaveable { mutableStateOf(false) }
 
-                ContentListItem(
+                ContentItem(
                     highlightedWords = highlightedWords,
                     headlineText = timer.title,
                     overlineText = "${timer.serviceName} - ${timer.getState()}${
@@ -196,11 +196,11 @@ fun TimersContent(
 @Composable
 private fun Timer.getState(): String {
     return when (this.state + this.disabled) {
-        TimerState.WAITING.id -> stringResource(R.string.waiting)
-        TimerState.PREPARED.id -> stringResource(R.string.prepared)
-        TimerState.RUNNING.id -> stringResource(R.string.running)
-        TimerState.ENDED.id -> stringResource(R.string.ended)
-        TimerState.DISABLED.id -> stringResource(R.string.disabled)
+        TimerState.Waiting.id -> stringResource(R.string.waiting)
+        TimerState.Prepared.id -> stringResource(R.string.prepared)
+        TimerState.Running.id -> stringResource(R.string.running)
+        TimerState.Ended.id -> stringResource(R.string.ended)
+        TimerState.Disabled.id -> stringResource(R.string.disabled)
         else -> {
             stringResource(R.string.unknown)
         }

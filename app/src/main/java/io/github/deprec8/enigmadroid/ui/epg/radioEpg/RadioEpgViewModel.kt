@@ -147,7 +147,7 @@ class RadioEpgViewModel @Inject constructor(
     }
 
     private suspend fun fetchBouquets() {
-        val bouquets = apiRepository.fetchBouquets(ContentType.RADIO)
+        val bouquets = apiRepository.fetchBouquets(ContentType.Radio)
         _bouquets.value = bouquets
         val firstBRef = bouquets.firstOrNull()?.reference ?: ""
         if (_currentBouquetReference.value.isBlank() || bouquets.find { it.reference == _currentBouquetReference.value } == null) {

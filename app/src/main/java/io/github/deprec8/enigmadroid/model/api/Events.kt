@@ -39,7 +39,7 @@ data class Event(
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("genre") val genre: String = "",
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("longdesc") val longDescription: String = "",
     val displayIndex: Int? = null,
-    val type: ContentFlag = ContentFlag.CHANNEL
+    val flag: ContentFlag = ContentFlag.Channel
 )
 
 @Immutable

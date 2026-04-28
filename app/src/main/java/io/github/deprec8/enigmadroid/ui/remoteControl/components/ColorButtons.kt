@@ -26,49 +26,20 @@ import androidx.compose.material.icons.filled.TripOrigin
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.RCButton
-import io.github.deprec8.enigmadroid.model.RemoteControlButton
+import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
+import io.github.deprec8.enigmadroid.model.RemoteControlButtonData
 
 @Composable
-fun ColorButtons(onButtonClicked: (RCButton) -> Unit, enabled: Boolean) {
-
-    val colorButtons = listOf(
-        RemoteControlButton(
-            icon = Icons.Default.TripOrigin,
-            iconLabel = stringResource(R.string.red),
-            iconTint = Color.Red,
-            button = RCButton.COLOR_RED
-        ),
-        RemoteControlButton(
-            icon = Icons.Default.TripOrigin,
-            iconLabel = stringResource(R.string.green),
-            iconTint = Color.Green,
-            button = RCButton.COLOR_GREEN
-        ),
-        RemoteControlButton(
-            icon = Icons.Default.TripOrigin,
-            iconLabel = stringResource(R.string.yellow),
-            iconTint = Color.Yellow,
-            button = RCButton.COLOR_YELLOW
-        ),
-        RemoteControlButton(
-            icon = Icons.Default.TripOrigin,
-            iconLabel = stringResource(R.string.blue),
-            iconTint = Color.Blue,
-            button = RCButton.COLOR_BLUE
-        ),
-    )
-
+fun ColorButtons(onKeyClicked: (RemoteControlKey) -> Unit, enabled: Boolean) {
     Row(
         Modifier.widthIn(0.dp, 500.dp)
     ) {
         colorButtons.forEach { button ->
             RemoteControlButton(
                 button = button,
-                onClick = { onButtonClicked(button.button) },
+                onClick = { onKeyClicked(button.key) },
                 enabled = enabled,
                 modifier = Modifier.weight(1f),
                 iconTint = button.iconTint,
@@ -77,3 +48,30 @@ fun ColorButtons(onButtonClicked: (RCButton) -> Unit, enabled: Boolean) {
         }
     }
 }
+
+private val colorButtons = listOf(
+    RemoteControlButtonData(
+        icon = Icons.Default.TripOrigin,
+        iconLabelRes = R.string.red,
+        iconTint = Color.Red,
+        key = RemoteControlKey.Red
+    ),
+    RemoteControlButtonData(
+        icon = Icons.Default.TripOrigin,
+        iconLabelRes = R.string.green,
+        iconTint = Color.Green,
+        key = RemoteControlKey.Green
+    ),
+    RemoteControlButtonData(
+        icon = Icons.Default.TripOrigin,
+        iconLabelRes = R.string.yellow,
+        iconTint = Color.Yellow,
+        key = RemoteControlKey.Yellow
+    ),
+    RemoteControlButtonData(
+        icon = Icons.Default.TripOrigin,
+        iconLabelRes = R.string.blue,
+        iconTint = Color.Blue,
+        key = RemoteControlKey.Blue
+    ),
+)

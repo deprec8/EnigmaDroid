@@ -147,7 +147,7 @@ class TvEpgViewModel @Inject constructor(
     }
 
     private suspend fun fetchBouquets() {
-        val bouquets = apiRepository.fetchBouquets(ContentType.TV)
+        val bouquets = apiRepository.fetchBouquets(ContentType.Tv)
         _bouquets.value = bouquets
         val firstBRef = bouquets.firstOrNull()?.reference ?: ""
         if (_currentBouquetReference.value.isBlank() || bouquets.find { it.reference == _currentBouquetReference.value } == null) {

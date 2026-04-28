@@ -27,7 +27,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import io.github.deprec8.enigmadroid.common.constant.PreferenceKeys
 import io.github.deprec8.enigmadroid.common.enums.LoadingState
-import io.github.deprec8.enigmadroid.common.enums.RCButton
+import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.data.source.local.devices.DeviceDatabase
 import io.ktor.client.HttpClient
@@ -170,9 +170,9 @@ class NetworkDataSource @Inject constructor(
         }
     }
 
-    suspend fun postApi(button: RCButton) {
+    suspend fun postApi(key: RemoteControlKey) {
         try {
-            val url = getCurrentDevice()?.buildUrl(button) ?: throw NullPointerException()
+            val url = getCurrentDevice()?.buildUrl(key) ?: throw NullPointerException()
             client.get(url) {
                 header(HttpHeaders.Connection, "close")
             }

@@ -51,8 +51,8 @@ import io.github.deprec8.enigmadroid.model.MenuItem
 import io.github.deprec8.enigmadroid.model.MenuItemGroup
 import io.github.deprec8.enigmadroid.model.api.Event
 import io.github.deprec8.enigmadroid.ui.components.NoResults
-import io.github.deprec8.enigmadroid.ui.components.content.ContentFlagListItem
-import io.github.deprec8.enigmadroid.ui.components.content.ContentListItem
+import io.github.deprec8.enigmadroid.ui.components.content.ContentFlagItem
+import io.github.deprec8.enigmadroid.ui.components.content.ContentItem
 import io.github.deprec8.enigmadroid.utils.IntentUtils
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
 import kotlinx.coroutines.launch
@@ -81,8 +81,8 @@ fun LiveContent(
             contentPadding = paddingValues
         ) {
             items(events, span = { event ->
-                when (event.type) {
-                    ContentFlag.CHANNEL -> GridItemSpan(
+                when (event.flag) {
+                    ContentFlag.Channel -> GridItemSpan(
                         1
                     )
 
@@ -91,9 +91,9 @@ fun LiveContent(
                     )
                 }
             }) { event ->
-                when (event.type) {
-                    ContentFlag.CHANNEL -> {
-                        ContentListItem(
+                when (event.flag) {
+                    ContentFlag.Channel -> {
+                        ContentItem(
                             highlightedWords = highlightedWords,
                             headlineText = event.serviceName,
                             leadingContent = if (showChannelNumbers) {
@@ -125,23 +125,20 @@ fun LiveContent(
                                                         event.serviceName
                                                     )
                                                 }
-                                            }),
-                                        MenuItem(
+                                            }), MenuItem(
                                             text = stringResource(R.string.switch_channel),
                                             outlinedIcon = Icons.Outlined.PlayArrow,
                                             filledIcon = Icons.Filled.PlayArrow,
                                             action = {
                                                 onPlayOnDevice(event.serviceReference)
-                                            }),
-                                        MenuItem(
+                                            }), MenuItem(
                                             text = stringResource(R.string.record),
                                             outlinedIcon = Icons.Outlined.Videocam,
                                             filledIcon = Icons.Filled.Videocam,
                                             action = {
                                                 onAddTimerForEvent(event)
 
-                                            }),
-                                        MenuItem(
+                                            }), MenuItem(
                                             text = stringResource(R.string.view_epg),
                                             outlinedIcon = Icons.AutoMirrored.Outlined.Dvr,
                                             filledIcon = Icons.AutoMirrored.Filled.Dvr,
@@ -160,8 +157,8 @@ fun LiveContent(
                         )
                     }
 
-                    ContentFlag.MARKER, ContentFlag.DIRECTORY, ContentFlag.GROUP -> {
-                        ContentFlagListItem(event.serviceName, event.type)
+                    ContentFlag.Marker, ContentFlag.Directory, ContentFlag.Group -> {
+                        ContentFlagItem(event.serviceName, event.flag)
                     }
 
                     else -> {}

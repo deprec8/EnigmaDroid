@@ -99,7 +99,7 @@ class RadioViewModel @Inject constructor(
                 if (searchInput.isNotBlank() && eventBatches?.isNotEmpty() == true) {
                     FilterUtils.filterEvents(
                         searchInput,
-                        eventBatches[currentBouquetIndex].events.filter { it.type == ContentFlag.CHANNEL })
+                        eventBatches[currentBouquetIndex].events.filter { it.flag == ContentFlag.Channel })
                 } else {
                     null
                 }
@@ -138,7 +138,7 @@ class RadioViewModel @Inject constructor(
             if (_eventBatches.value == null) {
                 fetchJob?.cancel()
                 fetchJob = launch {
-                    apiRepository.fetchEventBatches(ContentType.RADIO).collect { events ->
+                    apiRepository.fetchEventBatches(ContentType.Radio).collect { events ->
                         _eventBatches.value = _eventBatches.value?.plus(events) ?: listOf(events)
                     }
                 }

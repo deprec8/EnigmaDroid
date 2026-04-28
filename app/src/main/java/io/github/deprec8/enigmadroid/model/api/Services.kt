@@ -31,7 +31,7 @@ data class Service(
     @SerialName("servicereference") val serviceReference: String = "",
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("servicename") val serviceName: String = "N/A",
     val displayIndex: Int? = null,
-    val type: ContentFlag = ContentFlag.CHANNEL
+    val flag: ContentFlag = ContentFlag.Channel
 )
 
 @Immutable

@@ -28,8 +28,8 @@ import io.github.deprec8.enigmadroid.common.constant.DefaultBouquets
 import io.github.deprec8.enigmadroid.common.constant.PreferenceKeys
 import io.github.deprec8.enigmadroid.common.enums.ContentFlag
 import io.github.deprec8.enigmadroid.common.enums.ContentType
-import io.github.deprec8.enigmadroid.common.enums.RCButton
-import io.github.deprec8.enigmadroid.common.enums.RCPowerButton
+import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
+import io.github.deprec8.enigmadroid.common.enums.RemoteControlPowerKey
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.data.source.local.devices.DeviceDatabase
 import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
@@ -93,15 +93,15 @@ class ApiRepository @Inject constructor(
 
     private fun ContentFlag.shouldBeNumbered(): Boolean {
         return when (this) {
-            ContentFlag.CHANNEL, ContentFlag.NUMBERED_MARKER, ContentFlag.INVISIBLE_NUMBERED_MARKER -> true
+            ContentFlag.Channel, ContentFlag.NumberedMarker, ContentFlag.InvisibleNumberedMarker -> true
             else -> false
         }
     }
 
     private fun String.toEntryType(): ContentFlag {
-        val flag = split(":").getOrNull(1)?.toIntOrNull() ?: return ContentFlag.CHANNEL
+        val flag = split(":").getOrNull(1)?.toIntOrNull() ?: return ContentFlag.Channel
 
-        return ContentFlag.entries.firstOrNull { it.flag == flag } ?: ContentFlag.CHANNEL
+        return ContentFlag.entries.firstOrNull { it.flag == flag } ?: ContentFlag.Channel
     }
 
     suspend fun fetchCurrentInfo(): CurrentInfo {
@@ -207,7 +207,7 @@ class ApiRepository @Inject constructor(
                         val displayIndex = if (type.shouldBeNumbered()) counter++ else null
 
                         service.copy(
-                            displayIndex = displayIndex, type = type
+                            displayIndex = displayIndex, flag = type
                         )
                     }
 
@@ -242,7 +242,7 @@ class ApiRepository @Inject constructor(
                 val displayIndex = if (type.shouldBeNumbered()) counter++ else null
 
                 event.copy(
-                    displayIndex = displayIndex, type = type
+                    displayIndex = displayIndex, flag = type
                 )
             }
 
@@ -259,9 +259,9 @@ class ApiRepository @Inject constructor(
 
     suspend fun fetchBouquets(contentType: ContentType): List<Bouquet> {
         val rawUserJson =
-            networkDataSource.fetchApi("bouquets?stype=${if (contentType == ContentType.TV) "tv" else "radio"}")
+            networkDataSource.fetchApi("bouquets?stype=${if (contentType == ContentType.Tv) "tv" else "radio"}")
         val rawProviderJson = networkDataSource.fetchApi(
-            if (contentType == ContentType.TV) {
+            if (contentType == ContentType.Tv) {
                 "epgnow?bRef=${DefaultBouquets.ALL_PROVIDERS_TV}"
             } else {
                 "epgnow?bRef=${DefaultBouquets.ALL_PROVIDERS_RADIO}"
@@ -274,7 +274,7 @@ class ApiRepository @Inject constructor(
                 json.decodeFromString(
                     BouquetBatch.serializer(), rawUserJson
                 ).bouquets.forEach { bouquet ->
-                    if (bouquet[0].toEntryType() != ContentFlag.INVISIBLE_DIRECTORY) {
+                    if (bouquet[0].toEntryType() != ContentFlag.InvisibleDirectory) {
                         bouquets.add(
                             Bouquet(
                                 reference = bouquet[0], name = bouquet[1]
@@ -284,7 +284,7 @@ class ApiRepository @Inject constructor(
                 }
                 bouquets.add(
                     Bouquet(
-                        if (contentType == ContentType.TV) {
+                        if (contentType == ContentType.Tv) {
                             DefaultBouquets.ALL_SERVICES_TV
                         } else {
                             DefaultBouquets.ALL_SERVICES_RADIO
@@ -294,7 +294,7 @@ class ApiRepository @Inject constructor(
                 json.decodeFromString(
                     EventBatch.serializer(), rawProviderJson
                 ).events.forEach { provider ->
-                    if (provider.serviceReference.toEntryType() != ContentFlag.INVISIBLE_DIRECTORY) {
+                    if (provider.serviceReference.toEntryType() != ContentFlag.InvisibleDirectory) {
                         bouquets.add(
                             Bouquet(
                                 provider.serviceReference, provider.serviceName
@@ -367,11 +367,11 @@ class ApiRepository @Inject constructor(
         }
     }
 
-    suspend fun remoteControlCall(button: RCButton) {
-        networkDataSource.postApi(button)
+    suspend fun remoteControlCall(key: RemoteControlKey) {
+        networkDataSource.postApi(key)
     }
 
-    suspend fun setPowerState(type: RCPowerButton) {
-        networkDataSource.postApi("powerstate?newstate=${type.id}")
+    suspend fun setPowerState(powerKey: RemoteControlPowerKey) {
+        networkDataSource.postApi("powerstate?newstate=${powerKey.id}")
     }
 }

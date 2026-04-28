@@ -154,7 +154,7 @@ fun RemoteControlPage(
                     ActionMenu(
                         loadingState == LoadingState.LOADED,
                         { remoteControlViewModel.fetchScreenshot() },
-                        { remoteControlViewModel.onPowerButtonClicked(it) })
+                        { remoteControlViewModel.onPowerKeyClicked(it) })
                 }
             })
         }, modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
@@ -177,31 +177,31 @@ fun RemoteControlPage(
                 ) {
                     ColorButtons(
                         {
-                            remoteControlViewModel.onButtonClicked(it)
+                            remoteControlViewModel.onKeyClicked(it)
                             performHaptic()
                         }, loadingState == LoadingState.LOADED
                     )
                     ArrowButtons(
                         {
-                            remoteControlViewModel.onButtonClicked(it)
+                            remoteControlViewModel.onKeyClicked(it)
                             performHaptic()
                         }, loadingState == LoadingState.LOADED
                     )
                     BouquetButtons(
                         {
-                            remoteControlViewModel.onButtonClicked(it)
+                            remoteControlViewModel.onKeyClicked(it)
                             performHaptic()
                         }, loadingState == LoadingState.LOADED
                     )
                     MediaButtons(
                         {
-                            remoteControlViewModel.onButtonClicked(it)
+                            remoteControlViewModel.onKeyClicked(it)
                             performHaptic()
                         }, loadingState == LoadingState.LOADED
                     )
                     ControlButtons(
                         {
-                            remoteControlViewModel.onButtonClicked(it)
+                            remoteControlViewModel.onKeyClicked(it)
                             performHaptic()
                         }, loadingState == LoadingState.LOADED
                     )
@@ -219,7 +219,7 @@ fun RemoteControlPage(
                         ) {
                             NumberButtons(
                                 {
-                                    remoteControlViewModel.onButtonClicked(it)
+                                    remoteControlViewModel.onKeyClicked(it)
                                     performHaptic()
                                 }, loadingState == LoadingState.LOADED
                             )
@@ -246,19 +246,19 @@ fun RemoteControlPage(
                         ) {
                             ColorButtons(
                                 {
-                                    remoteControlViewModel.onButtonClicked(it)
+                                    remoteControlViewModel.onKeyClicked(it)
                                     performHaptic()
                                 }, loadingState == LoadingState.LOADED
                             )
                             ArrowButtons(
                                 {
-                                    remoteControlViewModel.onButtonClicked(it)
+                                    remoteControlViewModel.onKeyClicked(it)
                                     performHaptic()
                                 }, loadingState == LoadingState.LOADED
                             )
                             MediaButtons(
                                 {
-                                    remoteControlViewModel.onButtonClicked(it)
+                                    remoteControlViewModel.onKeyClicked(it)
                                     performHaptic()
                                 }, loadingState == LoadingState.LOADED
                             )
@@ -272,19 +272,19 @@ fun RemoteControlPage(
                         ) {
                             BouquetButtons(
                                 {
-                                    remoteControlViewModel.onButtonClicked(it)
+                                    remoteControlViewModel.onKeyClicked(it)
                                     performHaptic()
                                 }, loadingState == LoadingState.LOADED
                             )
                             NumberButtons(
                                 {
-                                    remoteControlViewModel.onButtonClicked(it)
+                                    remoteControlViewModel.onKeyClicked(it)
                                     performHaptic()
                                 }, loadingState == LoadingState.LOADED
                             )
                             ControlButtons(
                                 {
-                                    remoteControlViewModel.onButtonClicked(it)
+                                    remoteControlViewModel.onKeyClicked(it)
                                     performHaptic()
                                 }, loadingState == LoadingState.LOADED
                             )

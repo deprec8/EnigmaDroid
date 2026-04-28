@@ -51,11 +51,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.RCButton
+import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
 
 @Composable
 fun MediaButtons(
-    onButtonClicked: (RCButton) -> Unit, enabled: Boolean
+    onKeyClicked: (RemoteControlKey) -> Unit, enabled: Boolean
 ) {
 
     Row(
@@ -87,7 +87,7 @@ fun MediaButtons(
                     },
                 ),
                 onClick = {
-                    onButtonClicked(RCButton.VOLUME_UP)
+                    onKeyClicked(RemoteControlKey.VolumeUp)
                 },
                 shape = MaterialTheme.shapes.extraLarge,
                 contentPadding = PaddingValues(),
@@ -120,7 +120,7 @@ fun MediaButtons(
                     },
                 ),
                 onClick = {
-                    onButtonClicked(RCButton.VOLUME_DOWN)
+                    onKeyClicked(RemoteControlKey.VolumeDown)
                 },
                 shape = MaterialTheme.shapes.extraLarge,
                 contentPadding = PaddingValues(),
@@ -142,7 +142,7 @@ fun MediaButtons(
         ) {
             FilledTonalButton(
                 onClick = {
-                    onButtonClicked(RCButton.AUDIO)
+                    onKeyClicked(RemoteControlKey.Audio)
                 },
                 shape = MaterialTheme.shapes.extraLarge,
                 contentPadding = PaddingValues(),
@@ -153,11 +153,11 @@ fun MediaButtons(
 
                     .aspectRatio(2f)
             ) {
-                Text(text = "AUDIO", textAlign = TextAlign.Center)
+                Text(text = "Audio", textAlign = TextAlign.Center)
             }
             FilledTonalButton(
                 onClick = {
-                    onButtonClicked(RCButton.VOLUME_MUTE)
+                    onKeyClicked(RemoteControlKey.Mute)
                 },
                 shape = MaterialTheme.shapes.extraLarge,
                 contentPadding = PaddingValues(),
@@ -174,7 +174,7 @@ fun MediaButtons(
             }
             FilledTonalButton(
                 onClick = {
-                    onButtonClicked(RCButton.HELP)
+                    onKeyClicked(RemoteControlKey.Help)
                 },
                 shape = MaterialTheme.shapes.extraLarge,
                 contentPadding = PaddingValues(),
@@ -184,7 +184,7 @@ fun MediaButtons(
                     .weight(1f)
                     .aspectRatio(2f)
             ) {
-                Text(text = "HELP", textAlign = TextAlign.Center)
+                Text(text = "Help", textAlign = TextAlign.Center)
             }
         }
         Card(
@@ -211,7 +211,7 @@ fun MediaButtons(
                     },
                 ),
                 onClick = {
-                    onButtonClicked(RCButton.NEXT_CHANNEL)
+                    onKeyClicked(RemoteControlKey.NextChannel)
                 },
                 contentPadding = PaddingValues(),
                 enabled = enabled,
@@ -245,7 +245,7 @@ fun MediaButtons(
                     },
                 ),
                 onClick = {
-                    onButtonClicked(RCButton.PREVIOUS_CHANNEL)
+                    onKeyClicked(RemoteControlKey.PreviousChannel)
                 },
                 contentPadding = PaddingValues(),
                 enabled = enabled,

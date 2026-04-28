@@ -58,7 +58,7 @@ import io.github.deprec8.enigmadroid.ui.components.search.HighlightedText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ContentListItem(
+fun ContentItem(
     headlineText: String,
     leadingContent: @Composable (() -> Unit)? = null,
     supportingText: String,

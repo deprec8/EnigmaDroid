@@ -23,8 +23,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.deprec8.enigmadroid.common.enums.LoadingState
-import io.github.deprec8.enigmadroid.common.enums.RCButton
-import io.github.deprec8.enigmadroid.common.enums.RCPowerButton
+import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
+import io.github.deprec8.enigmadroid.common.enums.RemoteControlPowerKey
 import io.github.deprec8.enigmadroid.data.ApiRepository
 import io.github.deprec8.enigmadroid.data.DevicesRepository
 import io.github.deprec8.enigmadroid.data.DownloadRepository
@@ -84,15 +84,15 @@ class RemoteControlViewModel @Inject constructor(
         }
     }
 
-    fun onButtonClicked(type: RCButton) {
+    fun onKeyClicked(key: RemoteControlKey) {
         viewModelScope.launch {
-            apiRepository.remoteControlCall(type)
+            apiRepository.remoteControlCall(key)
         }
     }
 
-    fun onPowerButtonClicked(type: RCPowerButton) {
+    fun onPowerKeyClicked(powerKey: RemoteControlPowerKey) {
         viewModelScope.launch {
-            apiRepository.setPowerState(type)
+            apiRepository.setPowerState(powerKey)
             updateLoadingState(true)
         }
     }

@@ -60,7 +60,7 @@ import io.github.deprec8.enigmadroid.model.MenuItemGroup
 import io.github.deprec8.enigmadroid.model.api.Movie
 import io.github.deprec8.enigmadroid.model.api.MovieBatch
 import io.github.deprec8.enigmadroid.ui.components.NoResults
-import io.github.deprec8.enigmadroid.ui.components.content.ContentListItem
+import io.github.deprec8.enigmadroid.ui.components.content.ContentItem
 import io.github.deprec8.enigmadroid.ui.components.dialogs.ConfirmDeleteDialog
 
 @Composable
@@ -106,7 +106,7 @@ fun MoviesContent(
                 var showRenameDialog by rememberSaveable { mutableStateOf(false) }
                 var showMoveDialog by rememberSaveable { mutableStateOf(false) }
 
-                ContentListItem(
+                ContentItem(
                     highlightedWords = highlightedWords,
                     headlineText = movie.eventName,
                     overlineText = "${movie.serviceName} - ${movie.begin}",

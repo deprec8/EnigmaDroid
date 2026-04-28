@@ -30,65 +30,21 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.RCButton
-import io.github.deprec8.enigmadroid.model.RemoteControlButton
+import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
+import io.github.deprec8.enigmadroid.model.RemoteControlButtonData
 
 @Composable
 fun ControlButtons(
-    onButtonClicked: (RCButton) -> Unit, enabled: Boolean
+    onKeyClicked: (RemoteControlKey) -> Unit, enabled: Boolean
 ) {
-
-    val controlButtons = listOf(
-        listOf(
-            RemoteControlButton(
-                icon = Icons.Default.FastRewind,
-                iconLabel = stringResource(R.string.rewind),
-                button = RCButton.REWIND
-            ),
-            RemoteControlButton(
-                icon = Icons.Default.PlayArrow,
-                iconLabel = stringResource(R.string.play),
-                button = RCButton.PLAY
-            ),
-            RemoteControlButton(
-                icon = Icons.Default.Pause,
-                iconLabel = stringResource(R.string.pause),
-                button = RCButton.PAUSE
-            ),
-            RemoteControlButton(
-                icon = Icons.Default.FastForward,
-                iconLabel = stringResource(R.string.forward),
-                button = RCButton.FORWARD
-            ),
-        ), listOf(
-            RemoteControlButton(
-                text = "TV", button = RCButton.TV
-            ),
-            RemoteControlButton(
-                icon = Icons.Default.Circle,
-                iconLabel = stringResource(R.string.record),
-                button = RCButton.RECORD
-            ),
-            RemoteControlButton(
-                icon = Icons.Default.Stop,
-                iconLabel = stringResource(R.string.stop),
-                button = RCButton.STOP
-            ),
-            RemoteControlButton(
-                text = "RADIO", button = RCButton.RADIO
-            ),
-        )
-    )
-
     controlButtons.forEach { row ->
         Row(Modifier.widthIn(0.dp, 500.dp)) {
             row.forEach { button ->
                 RemoteControlButton(
                     button = button,
-                    onClick = { onButtonClicked(button.button) },
+                    onClick = { onKeyClicked(button.key) },
                     enabled = enabled,
                     modifier = Modifier.weight(1f),
                     aspectRatio = 1.5f
@@ -97,3 +53,41 @@ fun ControlButtons(
         }
     }
 }
+
+private val controlButtons = listOf(
+    listOf(
+        RemoteControlButtonData(
+            icon = Icons.Default.FastRewind,
+            iconLabelRes = R.string.rewind,
+            key = RemoteControlKey.Rewind
+        ),
+        RemoteControlButtonData(
+            icon = Icons.Default.PlayArrow,
+            iconLabelRes = R.string.play,
+            key = RemoteControlKey.Play
+        ),
+        RemoteControlButtonData(
+            icon = Icons.Default.Pause, iconLabelRes = R.string.pause, key = RemoteControlKey.Pause
+        ),
+        RemoteControlButtonData(
+            icon = Icons.Default.FastForward,
+            iconLabelRes = R.string.forward,
+            key = RemoteControlKey.Forward
+        ),
+    ), listOf(
+        RemoteControlButtonData(
+            text = "Tv", key = RemoteControlKey.Tv
+        ),
+        RemoteControlButtonData(
+            icon = Icons.Default.Circle,
+            iconLabelRes = R.string.record,
+            key = RemoteControlKey.Record
+        ),
+        RemoteControlButtonData(
+            icon = Icons.Default.Stop, iconLabelRes = R.string.stop, key = RemoteControlKey.Stop
+        ),
+        RemoteControlButtonData(
+            text = "Radio", key = RemoteControlKey.Radio
+        ),
+    )
+)

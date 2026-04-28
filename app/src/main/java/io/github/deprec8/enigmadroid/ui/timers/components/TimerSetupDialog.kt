@@ -98,7 +98,7 @@ import io.github.deprec8.enigmadroid.model.api.Service
 import io.github.deprec8.enigmadroid.model.api.ServiceBatch
 import io.github.deprec8.enigmadroid.model.api.ServiceBatchSet
 import io.github.deprec8.enigmadroid.model.api.Timer
-import io.github.deprec8.enigmadroid.ui.components.content.ContentFlagListItem
+import io.github.deprec8.enigmadroid.ui.components.content.ContentFlagItem
 import io.github.deprec8.enigmadroid.ui.components.dialogs.AdaptiveDialog
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
 
@@ -531,8 +531,8 @@ private fun ServicePickerDialog(
                 HorizontalDivider()
                 LazyColumn {
                     items(currentServiceBatch?.services ?: emptyList()) { service ->
-                        when (service.type) {
-                            ContentFlag.CHANNEL -> {
+                        when (service.flag) {
+                            ContentFlag.Channel -> {
                                 ListItem(
                                     headlineContent = {
                                         Text(service.serviceName)
@@ -562,8 +562,8 @@ private fun ServicePickerDialog(
                                 )
                             }
 
-                            ContentFlag.MARKER, ContentFlag.DIRECTORY, ContentFlag.GROUP -> {
-                                ContentFlagListItem(service.serviceName, service.type)
+                            ContentFlag.Marker, ContentFlag.Directory, ContentFlag.Group -> {
+                                ContentFlagItem(service.serviceName, service.flag)
                             }
 
                             else -> {}

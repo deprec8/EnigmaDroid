@@ -28,58 +28,15 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.RCButton
-import io.github.deprec8.enigmadroid.model.RemoteControlButton
+import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
+import io.github.deprec8.enigmadroid.model.RemoteControlButtonData
 
 @Composable
 fun ArrowButtons(
-    onButtonClicked: (RCButton) -> Unit, enabled: Boolean
+    onKeyClicked: (RemoteControlKey) -> Unit, enabled: Boolean
 ) {
-
-    val arrowButtons = listOf(
-        listOf(
-            RemoteControlButton(
-                text = "PVR", button = RCButton.PVR
-            ),
-            RemoteControlButton(
-                icon = Icons.Default.KeyboardArrowUp,
-                iconLabel = stringResource(R.string.arrow_up),
-                button = RCButton.ARROW_UP
-            ),
-            RemoteControlButton(
-                text = "MENU", button = RCButton.MENU
-            ),
-        ), listOf(
-            RemoteControlButton(
-                icon = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                iconLabel = stringResource(R.string.arrow_left),
-                button = RCButton.ARROW_LEFT
-            ),
-            RemoteControlButton(
-                text = "OK", button = RCButton.OK
-            ),
-            RemoteControlButton(
-                icon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                iconLabel = stringResource(R.string.arrow_right),
-                button = RCButton.ARROW_RIGHT
-            ),
-        ), listOf(
-            RemoteControlButton(
-                text = "EPG", button = RCButton.EPG
-            ),
-            RemoteControlButton(
-                icon = Icons.Default.KeyboardArrowDown,
-                iconLabel = stringResource(R.string.arrow_down),
-                button = RCButton.ARROW_DOWN
-            ),
-            RemoteControlButton(
-                text = "EXIT", button = RCButton.EXIT
-            ),
-        )
-    )
     arrowButtons.forEach { row ->
         Row(
             Modifier.widthIn(0.dp, 500.dp)
@@ -87,7 +44,7 @@ fun ArrowButtons(
             row.forEach { button ->
                 RemoteControlButton(
                     button = button,
-                    onClick = { onButtonClicked(button.button) },
+                    onClick = { onKeyClicked(button.key) },
                     enabled = enabled,
                     modifier = Modifier.weight(1f)
                 )
@@ -96,3 +53,45 @@ fun ArrowButtons(
     }
 
 }
+
+private val arrowButtons = listOf(
+    listOf(
+        RemoteControlButtonData(
+            text = "Pvr", key = RemoteControlKey.Pvr
+        ),
+        RemoteControlButtonData(
+            icon = Icons.Default.KeyboardArrowUp,
+            iconLabelRes = R.string.arrow_up,
+            key = RemoteControlKey.Up
+        ),
+        RemoteControlButtonData(
+            text = "Menu", key = RemoteControlKey.Menu
+        ),
+    ), listOf(
+        RemoteControlButtonData(
+            icon = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+            iconLabelRes = R.string.arrow_left,
+            key = RemoteControlKey.Left
+        ),
+        RemoteControlButtonData(
+            text = "Ok", key = RemoteControlKey.Ok
+        ),
+        RemoteControlButtonData(
+            icon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            iconLabelRes = R.string.arrow_right,
+            key = RemoteControlKey.Right
+        ),
+    ), listOf(
+        RemoteControlButtonData(
+            text = "Epg", key = RemoteControlKey.Epg
+        ),
+        RemoteControlButtonData(
+            icon = Icons.Default.KeyboardArrowDown,
+            iconLabelRes = R.string.arrow_down,
+            key = RemoteControlKey.Down
+        ),
+        RemoteControlButtonData(
+            text = "EXIT", key = RemoteControlKey.Exit
+        ),
+    )
+)

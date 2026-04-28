@@ -47,14 +47,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.RCPowerButton
+import io.github.deprec8.enigmadroid.common.enums.RemoteControlPowerKey
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ActionMenu(
     enabled: Boolean,
     onFetchScreenshot: () -> Unit,
-    onPowerButtonClicked: (RCPowerButton) -> Unit
+    onPowerKeyClicked: (RemoteControlPowerKey) -> Unit
 ) {
     var showMenu by rememberSaveable { mutableStateOf(false) }
     TooltipBox(
@@ -100,8 +100,8 @@ fun ActionMenu(
                     )
                 }, onClick = {
                     showMenu = false
-                    onPowerButtonClicked(
-                        RCPowerButton.TOGGLE_STANDBY
+                    onPowerKeyClicked(
+                        RemoteControlPowerKey.ToggleStandby
                     )
                 }, leadingIcon = {
                     Icon(
@@ -116,8 +116,8 @@ fun ActionMenu(
                     )
                 }, onClick = {
                     showMenu = false
-                    onPowerButtonClicked(
-                        RCPowerButton.RESTART
+                    onPowerKeyClicked(
+                        RemoteControlPowerKey.Restart
                     )
                 }, leadingIcon = {
                     Icon(
@@ -132,8 +132,8 @@ fun ActionMenu(
                     )
                 }, onClick = {
                     showMenu = false
-                    onPowerButtonClicked(
-                        RCPowerButton.RESTART_GUI
+                    onPowerKeyClicked(
+                        RemoteControlPowerKey.RestartGui
                     )
                 }, leadingIcon = {
                     Icon(
@@ -148,8 +148,8 @@ fun ActionMenu(
                     )
                 }, onClick = {
                     showMenu = false
-                    onPowerButtonClicked(
-                        RCPowerButton.SHUTDOWN
+                    onPowerKeyClicked(
+                        RemoteControlPowerKey.Shutdown
                     )
                 }, leadingIcon = {
                     Icon(

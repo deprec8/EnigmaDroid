@@ -25,56 +25,20 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.github.deprec8.enigmadroid.common.enums.RCButton
-import io.github.deprec8.enigmadroid.model.RemoteControlButton
+import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
+import io.github.deprec8.enigmadroid.model.RemoteControlButtonData
 
 @Composable
 fun NumberButtons(
-    onButtonClicked: (RCButton) -> Unit, enabled: Boolean
+    onKeyClicked: (RemoteControlKey) -> Unit, enabled: Boolean
 ) {
-
-    val numberButtons = listOf(
-        listOf(
-            RemoteControlButton(
-                text = "1", button = RCButton.ONE
-            ), RemoteControlButton(
-                text = "4 ghi", button = RCButton.FOUR
-            ), RemoteControlButton(
-                text = "7 pqrs", button = RCButton.SEVEN
-            )
-        ), listOf(
-            RemoteControlButton(
-                text = "2 abc", button = RCButton.TWO
-            ),
-            RemoteControlButton(
-                text = "5 jkl", button = RCButton.FIVE
-            ),
-            RemoteControlButton(
-                text = "8 tuv", button = RCButton.EIGHT
-            ),
-            RemoteControlButton(
-                text = "0", button = RCButton.ZERO
-            ),
-        ), listOf(
-            RemoteControlButton(
-                text = "3 def", button = RCButton.THREE
-            ),
-            RemoteControlButton(
-                text = "6 mno", button = RCButton.SIX
-            ),
-            RemoteControlButton(
-                text = "9 wxyz", button = RCButton.NINE
-            ),
-        )
-    )
-
     Row(Modifier.widthIn(0.dp, 500.dp)) {
         numberButtons.forEach { column ->
             Column(Modifier.weight(1f)) {
                 column.forEach { button ->
                     RemoteControlButton(
                         button = button,
-                        onClick = { onButtonClicked(button.button) },
+                        onClick = { onKeyClicked(button.key) },
                         enabled = enabled
                     )
                 }
@@ -82,3 +46,38 @@ fun NumberButtons(
         }
     }
 }
+
+private val numberButtons = listOf(
+    listOf(
+        RemoteControlButtonData(
+            text = "1", key = RemoteControlKey.One
+        ), RemoteControlButtonData(
+            text = "4 ghi", key = RemoteControlKey.Four
+        ), RemoteControlButtonData(
+            text = "7 pqrs", key = RemoteControlKey.Seven
+        )
+    ), listOf(
+        RemoteControlButtonData(
+            text = "2 abc", key = RemoteControlKey.Two
+        ),
+        RemoteControlButtonData(
+            text = "5 jkl", key = RemoteControlKey.Five
+        ),
+        RemoteControlButtonData(
+            text = "8 tuv", key = RemoteControlKey.Eight
+        ),
+        RemoteControlButtonData(
+            text = "0", key = RemoteControlKey.Zero
+        ),
+    ), listOf(
+        RemoteControlButtonData(
+            text = "3 def", key = RemoteControlKey.Three
+        ),
+        RemoteControlButtonData(
+            text = "6 mno", key = RemoteControlKey.Six
+        ),
+        RemoteControlButtonData(
+            text = "9 wxyz", key = RemoteControlKey.Nine
+        ),
+    )
+)
