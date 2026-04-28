@@ -58,7 +58,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun RadioPage(
     onNavigateToRemoteControl: () -> Unit,
-    onNavigateToServiceEpg: (serviceReference: String, serviceName: String) -> Unit,
+    onNavigateToServiceEpg: (String, String) -> Unit,
     drawerState: DrawerState,
     radioViewModel: RadioViewModel = hiltViewModel()
 ) {
@@ -185,15 +185,13 @@ fun RadioPage(
             LoadingScreen(
                 Modifier
                     .consumeWindowInsets(innerPadding)
-                    .padding(innerPadding),
-                onUpdateLoadingState = {
+                    .padding(innerPadding), onReload = {
                     scope.launch {
                         radioViewModel.updateLoadingState(
                             it
                         )
                     }
-                },
-                loadingState = loadingState
+                }, loadingState = loadingState
             )
         }
     }

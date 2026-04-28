@@ -52,7 +52,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun CurrentPage(
     onNavigateToRemoteControl: () -> Unit,
-    onNavigateToServiceEpg: (serviceReference: String, serviceName: String) -> Unit,
+    onNavigateToServiceEpg: (String, String) -> Unit,
     drawerState: DrawerState,
     currentViewModel: CurrentViewModel = hiltViewModel()
 ) {
@@ -110,15 +110,13 @@ fun CurrentPage(
             LoadingScreen(
                 Modifier
                     .consumeWindowInsets(innerPadding)
-                    .padding(innerPadding),
-                onUpdateLoadingState = {
+                    .padding(innerPadding), onReload = {
                     scope.launch {
                         currentViewModel.updateLoadingState(
                             it
                         )
                     }
-                },
-                loadingState = loadingState
+                }, loadingState = loadingState
             )
         }
     }

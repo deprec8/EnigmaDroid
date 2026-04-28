@@ -100,72 +100,6 @@ fun NavDrawerContent(
     onUpdateDeviceStatus: () -> Unit,
     onNavigate: (NavKey) -> Unit
 ) {
-    val drawerPageGroups = listOf(
-        DrawerPageGroup(
-            stringResource(R.string.content), listOf(
-                DrawerPage(
-                    stringResource(R.string.tv),
-                    MainPages.Tv,
-                    Icons.Outlined.LiveTv,
-                    Icons.Filled.LiveTv
-                ), DrawerPage(
-                    stringResource(R.string.radio),
-                    MainPages.Radio,
-                    Icons.Outlined.Radio,
-                    Icons.Filled.Radio
-                ), DrawerPage(
-                    stringResource(R.string.current),
-                    MainPages.Current,
-                    Icons.AutoMirrored.Outlined.PlaylistPlay,
-                    Icons.AutoMirrored.Filled.PlaylistPlay
-                ), DrawerPage(
-                    stringResource(R.string.movies),
-                    MainPages.Movies,
-                    Icons.Outlined.Movie,
-                    Icons.Filled.Movie
-                ), DrawerPage(
-                    stringResource(R.string.timers),
-                    MainPages.Timers,
-                    Icons.Outlined.Timer,
-                    Icons.Filled.Timer
-                ), DrawerPage(
-                    stringResource(R.string.tv_epg),
-                    MainPages.TvEpg,
-                    Icons.AutoMirrored.Outlined.Dvr,
-                    Icons.AutoMirrored.Filled.Dvr,
-                ), DrawerPage(
-                    stringResource(R.string.radio_epg),
-                    MainPages.RadioEpg,
-                    Icons.AutoMirrored.Outlined.LibraryBooks,
-                    Icons.AutoMirrored.Filled.LibraryBooks,
-                )
-            )
-        ), DrawerPageGroup(
-            stringResource(R.string.device), listOf(
-                DrawerPage(
-                    stringResource(R.string.device_info),
-                    MainPages.DeviceInfo,
-                    Icons.Outlined.DeveloperBoard,
-                    Icons.Filled.DeveloperBoard
-                ), DrawerPage(
-                    stringResource(R.string.signal),
-                    MainPages.Signal,
-                    Icons.Outlined.Speed,
-                    Icons.Filled.Speed
-                )
-            )
-        ), DrawerPageGroup(
-            stringResource(R.string.settings), listOf(
-                DrawerPage(
-                    stringResource(R.string.settings),
-                    MainPages.Settings,
-                    Icons.Outlined.Settings,
-                    Icons.Filled.Settings
-                ),
-            )
-        )
-    )
-
     Column(
         Modifier
             .verticalScroll(scrollState)
@@ -188,7 +122,7 @@ fun NavDrawerContent(
                 )
             )
             Text(
-                text = group.name,
+                text = stringResource(group.nameRes),
                 modifier = Modifier.padding(horizontal = 28.dp, vertical = 16.dp),
                 style = MaterialTheme.typography.titleSmall
             )
@@ -206,10 +140,10 @@ fun NavDrawerContent(
 
 @Composable
 fun DrawerItem(
-    drawerPage: DrawerPage, isSelected: Boolean, onNavigate: (navKey: NavKey) -> Unit
+    drawerPage: DrawerPage, isSelected: Boolean, onNavigate: (NavKey) -> Unit
 ) {
     NavigationDrawerItem(
-        label = { Text(text = drawerPage.name) }, icon = {
+        label = { Text(text = stringResource(drawerPage.nameRes)) }, icon = {
             if (isSelected) {
                 Icon(drawerPage.selectedIcon, contentDescription = null)
             } else {
@@ -360,3 +294,54 @@ fun DeviceItem(
         )
     )
 }
+
+private val drawerPageGroups = listOf(
+    DrawerPageGroup(
+        R.string.content, listOf(
+            DrawerPage(
+                R.string.tv, MainPages.Tv, Icons.Outlined.LiveTv, Icons.Filled.LiveTv
+            ), DrawerPage(
+                R.string.radio, MainPages.Radio, Icons.Outlined.Radio, Icons.Filled.Radio
+            ), DrawerPage(
+                R.string.current,
+                MainPages.Current,
+                Icons.AutoMirrored.Outlined.PlaylistPlay,
+                Icons.AutoMirrored.Filled.PlaylistPlay
+            ), DrawerPage(
+                R.string.movies, MainPages.Movies, Icons.Outlined.Movie, Icons.Filled.Movie
+            ), DrawerPage(
+                R.string.timers, MainPages.Timers, Icons.Outlined.Timer, Icons.Filled.Timer
+            ), DrawerPage(
+                R.string.tv_epg,
+                MainPages.TvEpg,
+                Icons.AutoMirrored.Outlined.Dvr,
+                Icons.AutoMirrored.Filled.Dvr,
+            ), DrawerPage(
+                R.string.radio_epg,
+                MainPages.RadioEpg,
+                Icons.AutoMirrored.Outlined.LibraryBooks,
+                Icons.AutoMirrored.Filled.LibraryBooks,
+            )
+        )
+    ), DrawerPageGroup(
+        R.string.device, listOf(
+            DrawerPage(
+                R.string.device_info,
+                MainPages.DeviceInfo,
+                Icons.Outlined.DeveloperBoard,
+                Icons.Filled.DeveloperBoard
+            ), DrawerPage(
+                R.string.signal, MainPages.Signal, Icons.Outlined.Speed, Icons.Filled.Speed
+            )
+        )
+    ), DrawerPageGroup(
+        R.string.settings, listOf(
+            DrawerPage(
+                R.string.settings,
+                MainPages.Settings,
+                Icons.Outlined.Settings,
+                Icons.Filled.Settings
+            ),
+        )
+    )
+)

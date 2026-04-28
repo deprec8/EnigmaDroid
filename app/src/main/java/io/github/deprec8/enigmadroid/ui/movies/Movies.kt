@@ -179,7 +179,7 @@ fun MoviesPage(
                 Modifier
                     .consumeWindowInsets(innerPadding)
                     .padding(innerPadding),
-                onUpdateLoadingState = {
+                onReload = {
                     scope.launch {
                         moviesViewModel.updateLoadingState(
                             it

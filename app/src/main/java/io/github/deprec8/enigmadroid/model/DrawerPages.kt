@@ -25,7 +25,7 @@ import androidx.navigation3.runtime.NavKey
 
 @Immutable
 data class DrawerPage(
-    val name: String,
+    val nameRes: Int,
     val navKey: NavKey,
     val icon: ImageVector,
     val selectedIcon: ImageVector
@@ -33,6 +33,6 @@ data class DrawerPage(
 
 @Immutable
 data class DrawerPageGroup(
-    val name: String,
+    val nameRes: Int,
     val pages: List<DrawerPage>
 )

@@ -69,12 +69,12 @@ import kotlinx.coroutines.launch
 fun SearchTopAppBar(
     textFieldState: TextFieldState,
     placeholder: String,
-    navigationButton: @Composable ((searchBarState: SearchBarState) -> Unit),
+    navigationButton: @Composable (SearchBarState) -> Unit,
     actionButtons: @Composable (() -> Unit)? = null,
-    content: @Composable (() -> Unit)? = null,
     actionBar: @Composable (() -> Unit)? = null,
     onSearch: () -> Unit,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    content: @Composable (() -> Unit)? = null,
 ) {
 
     val searchBarState = rememberSearchBarState()

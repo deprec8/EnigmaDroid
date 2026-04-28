@@ -63,10 +63,10 @@ fun LiveContent(
     paddingValues: PaddingValues,
     showChannelNumbers: Boolean = true,
     highlightedWords: List<String> = emptyList(),
-    onPlayOnDevice: (serviceReference: String) -> Unit,
-    onAddTimerForEvent: (event: Event) -> Unit,
-    onNavigateToServiceEpg: (serviceReference: String, serviceName: String) -> Unit,
-    buildLiveStreamUrl: suspend (serviceReference: String) -> String,
+    onPlayOnDevice: (String) -> Unit,
+    onAddTimerForEvent: (Event) -> Unit,
+    onNavigateToServiceEpg: (String, String) -> Unit,
+    buildLiveStreamUrl: suspend (String) -> String,
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current

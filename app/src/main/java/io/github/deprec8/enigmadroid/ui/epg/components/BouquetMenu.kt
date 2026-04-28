@@ -50,7 +50,7 @@ fun BouquetMenu(
     bouquets: List<Bouquet>?,
     currentBouquetReference: String,
     loadingState: LoadingState,
-    onBouquetChange: (bouquetReference: String) -> Unit
+    onBouquetChange: (String) -> Unit
 ) {
     var showMenu by rememberSaveable { mutableStateOf(false) }
 

@@ -113,7 +113,7 @@ fun ServiceEpgPage(
                 Modifier
                     .padding(innerPadding)
                     .consumeWindowInsets(innerPadding),
-                onUpdateLoadingState = {
+                onReload = {
                     scope.launch {
                         serviceEpgViewModel.updateLoadingState(
                             it

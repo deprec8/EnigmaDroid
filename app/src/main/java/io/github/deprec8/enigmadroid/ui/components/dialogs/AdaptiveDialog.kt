@@ -64,10 +64,10 @@ import io.github.deprec8.enigmadroid.ui.components.isSmallScreenLayout
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdaptiveDialog(
+    title: String,
     onDismissRequest: () -> Unit,
-    content: @Composable (isContentScrollable: Boolean) -> Unit,
     actionButton: @Composable () -> Unit,
-    title: String
+    content: @Composable (Boolean) -> Unit
 ) {
 
     var showCancelDialog by rememberSaveable { mutableStateOf(false) }

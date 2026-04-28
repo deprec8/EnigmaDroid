@@ -175,7 +175,7 @@ fun TvEpgPage(
                 Modifier
                     .consumeWindowInsets(innerPadding)
                     .padding(innerPadding),
-                onUpdateLoadingState = {
+                onReload = {
                     scope.launch {
                         tvEpgViewModel.updateLoadingState(
                             it

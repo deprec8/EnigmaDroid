@@ -62,7 +62,7 @@ import io.github.deprec8.enigmadroid.common.enums.LoadingState
 @Composable
 fun LoadingScreen(
     modifier: Modifier,
-    onUpdateLoadingState: (isForcedUpdate: Boolean) -> Unit,
+    onReload: (Boolean) -> Unit,
     loadingState: LoadingState,
 ) {
     val scrollState = rememberScrollState()
@@ -105,7 +105,7 @@ fun LoadingScreen(
                                 .padding(16.dp)
                         )
                         FilledTonalButton(
-                            onClick = { onUpdateLoadingState(true) },
+                            onClick = { onReload(true) },
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
                                 .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
@@ -125,7 +125,7 @@ fun LoadingScreen(
                                 .padding(16.dp),
                         )
                         FilledTonalButton(
-                            onClick = { onUpdateLoadingState(true) },
+                            onClick = { onReload(true) },
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
                                 .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
@@ -163,7 +163,7 @@ fun LoadingScreen(
                                 .padding(16.dp),
                         )
                         FilledTonalButton(
-                            onClick = { onUpdateLoadingState(true) },
+                            onClick = { onReload(true) },
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
                                 .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
@@ -183,7 +183,7 @@ fun LoadingScreen(
                                 .padding(16.dp)
                         )
                         FilledTonalButton(
-                            onClick = { onUpdateLoadingState(true) },
+                            onClick = { onReload(true) },
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
                                 .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)

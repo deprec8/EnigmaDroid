@@ -175,7 +175,7 @@ fun RadioEpgPage(
                 Modifier
                     .consumeWindowInsets(innerPadding)
                     .padding(innerPadding),
-                onUpdateLoadingState = {
+                onReload = {
                     scope.launch {
                         radioEpgViewModel.updateLoadingState(
                             it

@@ -108,7 +108,7 @@ fun TimerSetupDialog(
     oldTimer: Timer? = null,
     serviceBatchSet: ServiceBatchSet?,
     onDismissRequest: () -> Unit,
-    onSaveRequest: (newTimer: Timer, oldTimer: Timer?) -> Unit,
+    onSaveRequest: (Timer, Timer?) -> Unit,
 ) {
     val titleState = rememberTextFieldState(oldTimer?.title ?: "")
     val shortDescriptionState = rememberTextFieldState(oldTimer?.shortDescription ?: "")
@@ -190,312 +190,314 @@ fun TimerSetupDialog(
                     }
                 )
             }
-        }, content = { isContentScrollable ->
-            Column {
+        }) { isContentScrollable ->
+        Column {
+            ListItem(
+                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                headlineContent = { Text(text = stringResource(R.string.service)) },
+                supportingContent = {
+                    if (serviceBatchSet != null) {
+                        Text(text = serviceBatchSet.serviceBatches.flatMap { it.services }
+                            .firstOrNull {
+                                it.serviceReference == serviceReference
+                            }?.serviceName ?: serviceReference.ifBlank {
+                            stringResource(R.string.no_service_selected)
+                        })
+                    } else {
+                        LinearProgressIndicator(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp)
+                        )
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(serviceBatchSet != null) { showServicePicker = true })
+            Spacer(Modifier.size(8.dp))
+            OutlinedTextField(
+                state = titleState,
+                lineLimits = TextFieldLineLimits.SingleLine,
+                label = { Text(text = stringResource(R.string.title)) },
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Next
+                )
+            )
+            Spacer(Modifier.size(8.dp))
+            OutlinedTextField(
+                state = shortDescriptionState,
+                lineLimits = TextFieldLineLimits.SingleLine,
+                label = { Text(text = stringResource(R.string.description)) },
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Done
+                )
+            )
+            Spacer(Modifier.size(8.dp))
+            Row {
                 ListItem(
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                    headlineContent = { Text(text = stringResource(R.string.service)) },
+                    headlineContent = { Text(text = stringResource(R.string.begin_date)) },
                     supportingContent = {
-                        if (serviceBatchSet != null) {
-                            Text(text = serviceBatchSet.serviceBatches.flatMap { it.services }
-                                .firstOrNull {
-                                    it.serviceReference == serviceReference
-                                }?.serviceName ?: serviceReference.ifBlank {
-                                stringResource(R.string.no_service_selected)
-                            })
-                        } else {
-                            LinearProgressIndicator(
-                                Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 8.dp)
-                            )
-                        }
+                        Text(
+                            text = TimestampUtils.formatTimestampToDate(beginTimestamp)
+                        )
                     },
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(serviceBatchSet != null) { showServicePicker = true })
-                Spacer(Modifier.size(8.dp))
-                OutlinedTextField(
-                    state = titleState,
-                    lineLimits = TextFieldLineLimits.SingleLine,
-                    label = { Text(text = stringResource(R.string.title)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Next
+                        .weight(1f)
+                        .clickable { showBeginDatePicker = true })
+                ListItem(
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    headlineContent = { Text(text = stringResource(R.string.begin_time)) },
+                    supportingContent = {
+                        Text(
+                            text = TimestampUtils.formatTimestampToTime(beginTimestamp)
+                        )
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable { showBeginTimePicker = true })
+            }
+            Row {
+                ListItem(
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    headlineContent = { Text(text = stringResource(R.string.end_date)) },
+                    supportingContent = {
+                        Text(
+                            text = TimestampUtils.formatTimestampToDate(endTimestamp)
+                        )
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable { showEndDatePicker = true })
+                ListItem(
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    headlineContent = { Text(text = stringResource(R.string.end_time)) },
+                    supportingContent = {
+                        Text(
+                            text = TimestampUtils.formatTimestampToTime(endTimestamp)
+                        )
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable { showEndTimePicker = true })
+            }
+            Spacer(Modifier.size(8.dp))
+            Row(
+                Modifier.horizontalScroll(toggleScrollState)
+            ) {
+                FilterChip(selected = disabled == 0, onClick = {
+                    disabled = if (disabled == 0) {
+                        1
+                    } else {
+                        0
+                    }
+                }, label = {
+                    Text(
+                        text = stringResource(R.string.enabled)
                     )
-                )
-                Spacer(Modifier.size(8.dp))
-                OutlinedTextField(
-                    state = shortDescriptionState,
-                    lineLimits = TextFieldLineLimits.SingleLine,
-                    label = { Text(text = stringResource(R.string.description)) },
-                    modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Done
-                    )
-                )
-                Spacer(Modifier.size(8.dp))
-                Row {
-                    ListItem(
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        headlineContent = { Text(text = stringResource(R.string.begin_date)) },
-                        supportingContent = {
-                            Text(
-                                text = TimestampUtils.formatTimestampToDate(beginTimestamp)
+                }, leadingIcon = {
+                    AnimatedVisibility(disabled == 0) {
+                        Icon(
+                            Icons.Default.Check, contentDescription = null, Modifier.size(
+                                FilterChipDefaults.IconSize
                             )
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .clickable { showBeginDatePicker = true })
-                    ListItem(
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        headlineContent = { Text(text = stringResource(R.string.begin_time)) },
-                        supportingContent = {
-                            Text(
-                                text = TimestampUtils.formatTimestampToTime(beginTimestamp)
-                            )
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .clickable { showBeginTimePicker = true })
-                }
-                Row {
-                    ListItem(
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        headlineContent = { Text(text = stringResource(R.string.end_date)) },
-                        supportingContent = {
-                            Text(
-                                text = TimestampUtils.formatTimestampToDate(endTimestamp)
-                            )
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .clickable { showEndDatePicker = true })
-                    ListItem(
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        headlineContent = { Text(text = stringResource(R.string.end_time)) },
-                        supportingContent = {
-                            Text(
-                                text = TimestampUtils.formatTimestampToTime(endTimestamp)
-                            )
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .clickable { showEndTimePicker = true })
-                }
-                Spacer(Modifier.size(8.dp))
-                Row(
-                    Modifier.horizontalScroll(toggleScrollState)
-                ) {
-                    FilterChip(selected = disabled == 0, onClick = {
-                        disabled = if (disabled == 0) {
+                        )
+                    }
+                })
+                FilterChip(
+                    selected = justPlay == 1, onClick = {
+                        justPlay = if (justPlay == 0) {
                             1
                         } else {
                             0
                         }
                     }, label = {
                         Text(
-                            text = stringResource(R.string.enabled)
+                            text = stringResource(R.string.justplay)
                         )
                     }, leadingIcon = {
-                        AnimatedVisibility(disabled == 0) {
+                        AnimatedVisibility(justPlay == 1) {
                             Icon(
                                 Icons.Default.Check, contentDescription = null, Modifier.size(
                                     FilterChipDefaults.IconSize
                                 )
                             )
                         }
-                    })
-                    FilterChip(
-                        selected = justPlay == 1, onClick = {
-                            justPlay = if (justPlay == 0) {
-                                1
-                            } else {
-                                0
-                            }
-                        }, label = {
-                            Text(
-                                text = stringResource(R.string.justplay)
-                            )
-                        }, leadingIcon = {
-                            AnimatedVisibility(justPlay == 1) {
-                                Icon(
-                                    Icons.Default.Check, contentDescription = null, Modifier.size(
-                                        FilterChipDefaults.IconSize
-                                    )
-                                )
-                            }
-                        }, modifier = Modifier.padding(start = 8.dp)
-                    )
-                    FilterChip(
-                        selected = alwaysZap == 1, onClick = {
-                            alwaysZap = if (alwaysZap == 0) {
-                                1
-                            } else {
-                                0
-                            }
-                        }, label = {
-                            Text(
-                                text = stringResource(R.string.switch_channel)
-                            )
-                        }, leadingIcon = {
-                            AnimatedVisibility(alwaysZap == 1) {
-                                Icon(
-                                    Icons.Default.Check, contentDescription = null, Modifier.size(
-                                        FilterChipDefaults.IconSize
-                                    )
-                                )
-                            }
-                        }, modifier = Modifier.padding(start = 8.dp)
-                    )
-                }
-                ExposedDropdownMenuBox(
-                    expanded = showAftereventMenu, onExpandedChange = {
-                        showAftereventMenu = it
-                    }, modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                ) {
-                    OutlinedTextField(
-                        value = when (afterevent) {
-                            2 -> {
-                                stringResource(R.string.shutdown)
-                            }
-
-                            1 -> {
-                                stringResource(R.string.standby)
-                            }
-
-                            else -> {
-                                stringResource(R.string.automatic)
-                            }
-                        },
-                        onValueChange = { },
-                        readOnly = true,
-                        singleLine = true,
-                        label = { Text(stringResource(R.string.after_event)) },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = showAftereventMenu) },
-                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-                        modifier = Modifier
-                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable, true)
-                            .fillMaxWidth()
-                    )
-                    ExposedDropdownMenu(
-                        expanded = showAftereventMenu,
-                        scrollState = rememberScrollState(),
-                        onDismissRequest = { showAftereventMenu = false },
-                        containerColor = if (isContentScrollable) {
-                            MaterialTheme.colorScheme.surfaceContainerHigh
+                    }, modifier = Modifier.padding(start = 8.dp)
+                )
+                FilterChip(
+                    selected = alwaysZap == 1, onClick = {
+                        alwaysZap = if (alwaysZap == 0) {
+                            1
                         } else {
-                            MenuDefaults.containerColor
+                            0
                         }
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text(text = stringResource(R.string.automatic)) },
-                            onClick = {
-                                afterevent = 3
-                                showAftereventMenu = false
-                            })
-                        DropdownMenuItem(
-                            text = { Text(text = stringResource(R.string.shutdown)) },
-                            onClick = {
-                                afterevent = 2
-                                showAftereventMenu = false
-                            })
-                        DropdownMenuItem(
-                            text = { Text(text = stringResource(R.string.standby)) },
-                            onClick = {
-                                afterevent = 1
-                                showAftereventMenu = false
-                            })
-                    }
-
-                }
-                Spacer(Modifier.size(8.dp))
-                Text(stringResource(R.string.repeats_on))
-                Spacer(Modifier.size(8.dp))
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    days.forEach { (bitmask, stringResId) ->
-                        FilterChip(
-                            label = { Text(text = stringResource(stringResId)) },
-                            selected = (repeated and bitmask) != 0,
-                            onClick = {
-                                repeated = if ((repeated and bitmask) == 0) {
-                                    repeated or bitmask
-                                } else {
-                                    repeated and bitmask.inv()
-                                }
-                            },
-                            leadingIcon = {
-                                AnimatedVisibility(visible = (repeated and bitmask) != 0) {
-                                    Icon(
-                                        Icons.Default.Check,
-                                        contentDescription = null,
-                                        Modifier.size(FilterChipDefaults.IconSize)
-                                    )
-                                }
-                            },
+                    }, label = {
+                        Text(
+                            text = stringResource(R.string.switch_channel)
                         )
+                    }, leadingIcon = {
+                        AnimatedVisibility(alwaysZap == 1) {
+                            Icon(
+                                Icons.Default.Check, contentDescription = null, Modifier.size(
+                                    FilterChipDefaults.IconSize
+                                )
+                            )
+                        }
+                    }, modifier = Modifier.padding(start = 8.dp)
+                )
+            }
+            ExposedDropdownMenuBox(
+                expanded = showAftereventMenu, onExpandedChange = {
+                    showAftereventMenu = it
+                }, modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            ) {
+                OutlinedTextField(
+                    value = when (afterevent) {
+                        2 -> {
+                            stringResource(R.string.shutdown)
+                        }
+
+                        1 -> {
+                            stringResource(R.string.standby)
+                        }
+
+                        else -> {
+                            stringResource(R.string.automatic)
+                        }
+                    },
+                    onValueChange = { },
+                    readOnly = true,
+                    singleLine = true,
+                    label = { Text(stringResource(R.string.after_event)) },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = showAftereventMenu) },
+                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                    modifier = Modifier
+                        .menuAnchor(
+                            ExposedDropdownMenuAnchorType.PrimaryEditable, true
+                        )
+                        .fillMaxWidth()
+                )
+                ExposedDropdownMenu(
+                    expanded = showAftereventMenu,
+                    scrollState = rememberScrollState(),
+                    onDismissRequest = { showAftereventMenu = false },
+                    containerColor = if (isContentScrollable) {
+                        MaterialTheme.colorScheme.surfaceContainerHigh
+                    } else {
+                        MenuDefaults.containerColor
                     }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text(text = stringResource(R.string.automatic)) },
+                        onClick = {
+                            afterevent = 3
+                            showAftereventMenu = false
+                        })
+                    DropdownMenuItem(
+                        text = { Text(text = stringResource(R.string.shutdown)) },
+                        onClick = {
+                            afterevent = 2
+                            showAftereventMenu = false
+                        })
+                    DropdownMenuItem(
+                        text = { Text(text = stringResource(R.string.standby)) },
+                        onClick = {
+                            afterevent = 1
+                            showAftereventMenu = false
+                        })
                 }
 
-                if (showServicePicker) {
-                    ServicePickerDialog(
-                        serviceBatchSet = serviceBatchSet,
-                        onDismissRequest = { showServicePicker = false },
-                        onServiceClicked = {
-                            serviceReference = it.serviceReference
-                            showServicePicker = false
+            }
+            Spacer(Modifier.size(8.dp))
+            Text(stringResource(R.string.repeats_on))
+            Spacer(Modifier.size(8.dp))
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                days.forEach { (bitmask, stringResId) ->
+                    FilterChip(
+                        label = { Text(text = stringResource(stringResId)) },
+                        selected = (repeated and bitmask) != 0,
+                        onClick = {
+                            repeated = if ((repeated and bitmask) == 0) {
+                                repeated or bitmask
+                            } else {
+                                repeated and bitmask.inv()
+                            }
                         },
-                        currentServiceReference = serviceReference
+                        leadingIcon = {
+                            AnimatedVisibility(visible = (repeated and bitmask) != 0) {
+                                Icon(
+                                    Icons.Default.Check,
+                                    contentDescription = null,
+                                    Modifier.size(FilterChipDefaults.IconSize)
+                                )
+                            }
+                        },
                     )
                 }
+            }
 
-                if (showBeginDatePicker) {
-                    SetupDatePickerDialog(timestamp = beginTimestamp, onDismissRequest = {
-                        showBeginDatePicker = false
-                    }, onSaveRequest = {
+            if (showServicePicker) {
+                ServicePickerDialog(
+                    serviceBatchSet = serviceBatchSet,
+                    onDismissRequest = { showServicePicker = false },
+                    onServiceClicked = {
+                        serviceReference = it.serviceReference
+                        showServicePicker = false
+                    },
+                    currentServiceReference = serviceReference
+                )
+            }
+
+            if (showBeginDatePicker) {
+                SetupDatePickerDialog(timestamp = beginTimestamp, onDismissRequest = {
+                    showBeginDatePicker = false
+                }, onSaveRequest = {
+                    if (endTimestamp <= it) {
+                        endTimestamp = it + (endTimestamp - beginTimestamp)
+                    }
+                    beginTimestamp = it
+                    showBeginDatePicker = false
+                })
+            }
+
+            if (showEndDatePicker) {
+                SetupDatePickerDialog(timestamp = endTimestamp, onDismissRequest = {
+                    showEndDatePicker = false
+                }, onSaveRequest = {
+                    endTimestamp = it
+                    showEndDatePicker = false
+                })
+            }
+
+            if (showBeginTimePicker) {
+                SetupTimePickerDialog(
+                    timestamp = beginTimestamp,
+                    onDismissRequest = { showBeginTimePicker = false },
+                    onSaveRequest = {
                         if (endTimestamp <= it) {
                             endTimestamp = it + (endTimestamp - beginTimestamp)
                         }
                         beginTimestamp = it
-                        showBeginDatePicker = false
+                        showBeginTimePicker = false
                     })
-                }
-
-                if (showEndDatePicker) {
-                    SetupDatePickerDialog(timestamp = endTimestamp, onDismissRequest = {
-                        showEndDatePicker = false
-                    }, onSaveRequest = {
-                        endTimestamp = it
-                        showEndDatePicker = false
-                    })
-                }
-
-                if (showBeginTimePicker) {
-                    SetupTimePickerDialog(
-                        timestamp = beginTimestamp,
-                        onDismissRequest = { showBeginTimePicker = false },
-                        onSaveRequest = {
-                            if (endTimestamp <= it) {
-                                endTimestamp = it + (endTimestamp - beginTimestamp)
-                            }
-                            beginTimestamp = it
-                            showBeginTimePicker = false
-                        })
-                }
-
-                if (showEndTimePicker) {
-                    SetupTimePickerDialog(
-                        timestamp = endTimestamp,
-                        onDismissRequest = { showEndTimePicker = false },
-                        onSaveRequest = {
-                            endTimestamp = it
-                            showEndTimePicker = false
-                        })
-                }
             }
-        })
+
+            if (showEndTimePicker) {
+                SetupTimePickerDialog(
+                    timestamp = endTimestamp,
+                    onDismissRequest = { showEndTimePicker = false },
+                    onSaveRequest = {
+                        endTimestamp = it
+                        showEndTimePicker = false
+                    })
+            }
+        }
+    }
 }
 
 @Composable

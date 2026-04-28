@@ -45,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.navigation3.runtime.NavKey
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.model.navigation.SettingsPages
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
@@ -56,7 +57,7 @@ import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInse
 @Composable
 fun SettingsPage(
     drawerState: DrawerState,
-    onNavigateToSettingsPage: (SettingsPages) -> Unit,
+    onNavigateToSettingsPage: (NavKey) -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val scrollState = rememberScrollState()

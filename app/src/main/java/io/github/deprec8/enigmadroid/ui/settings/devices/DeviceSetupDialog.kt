@@ -40,9 +40,7 @@ import io.github.deprec8.enigmadroid.ui.components.dialogs.AdaptiveDialog
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeviceSetupDialog(
-    oldDevice: Device? = null,
-    onDismissRequest: () -> Unit,
-    onSave: (newDevice: Device, oldDevice: Device?) -> Unit
+    oldDevice: Device? = null, onDismissRequest: () -> Unit, onSave: (Device, Device?) -> Unit
 ) {
     var isHttps by rememberSaveable { mutableStateOf(oldDevice?.isHttps == true) }
     var isLogin by rememberSaveable { mutableStateOf(oldDevice?.isLogin == true) }
@@ -112,28 +110,28 @@ fun DeviceSetupDialog(
                     }
                 )
             }
-        }, content = {
-            DeviceSetupCard(
-                modifier = Modifier,
-                nameState = nameState,
-                ipState = ipState,
-                portState = portState,
-                livePortState = livePortState,
-                isHttps = isHttps,
-                isLogin = isLogin,
-                userState = userState,
-                passwordState = passwordState,
-                onHttpsChange = {
-                    isHttps = !isHttps
-                    if (portState.text == DefaultPorts.HTTP && isHttps) {
-                        portState.setTextAndPlaceCursorAtEnd(DefaultPorts.HTTPS)
-                    } else if (portState.text == DefaultPorts.HTTPS && !isHttps) {
-                        portState.setTextAndPlaceCursorAtEnd(DefaultPorts.HTTP)
+        }) {
+        DeviceSetupCard(
+            modifier = Modifier,
+            nameState = nameState,
+            ipState = ipState,
+            portState = portState,
+            livePortState = livePortState,
+            isHttps = isHttps,
+            isLogin = isLogin,
+            userState = userState,
+            passwordState = passwordState,
+            onHttpsChange = {
+                isHttps = !isHttps
+                if (portState.text == DefaultPorts.HTTP && isHttps) {
+                    portState.setTextAndPlaceCursorAtEnd(DefaultPorts.HTTPS)
+                } else if (portState.text == DefaultPorts.HTTPS && !isHttps) {
+                    portState.setTextAndPlaceCursorAtEnd(DefaultPorts.HTTP)
 
-                    }
-                },
-                onLoginChange = {
-                    isLogin = !isLogin
-                })
-        })
+                }
+            },
+            onLoginChange = {
+                isLogin = !isLogin
+            })
+    }
 }

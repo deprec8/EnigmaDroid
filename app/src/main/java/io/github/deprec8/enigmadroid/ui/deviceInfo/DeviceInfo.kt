@@ -98,7 +98,7 @@ fun DeviceInfoPage(
                 Modifier
                     .padding(innerPadding)
                     .consumeWindowInsets(innerPadding),
-                onUpdateLoadingState = {
+                onReload = {
                     scope.launch {
                         deviceInfoViewModel.updateLoadingState(
                             it

@@ -208,7 +208,7 @@ fun TimersPage(
                 Modifier
                     .consumeWindowInsets(innerPadding)
                     .padding(innerPadding),
-                onUpdateLoadingState = {
+                onReload = {
                     scope.launch {
                         timersViewModel.updateLoadingState(
                             it

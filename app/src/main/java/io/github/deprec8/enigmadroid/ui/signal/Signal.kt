@@ -97,7 +97,7 @@ fun SignalPage(
                     .consumeWindowInsets(innerPadding)
                     .padding(innerPadding),
                 loadingState = loadingState,
-                onUpdateLoadingState = {
+                onReload = {
                     scope.launch {
                         signalViewModel.updateLoadingState(it)
                     }

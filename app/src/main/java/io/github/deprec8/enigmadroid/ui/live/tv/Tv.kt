@@ -58,7 +58,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun TvPage(
     onNavigateToRemoteControl: () -> Unit,
-    onNavigateToServiceEpg: (serviceReference: String, serviceName: String) -> Unit,
+    onNavigateToServiceEpg: (String, String) -> Unit,
     drawerState: DrawerState,
     tvViewModel: TvViewModel = hiltViewModel()
 ) {
@@ -182,7 +182,7 @@ fun TvPage(
                 Modifier
                     .consumeWindowInsets(innerPadding)
                     .padding(innerPadding),
-                onUpdateLoadingState = {
+                onReload = {
                     scope.launch {
                         tvViewModel.updateLoadingState(
                             it
