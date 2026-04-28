@@ -30,10 +30,6 @@ enum class ContentFlag(val flag: Int) {
     InvisibleDirectory(519)
 }
 
-enum class TimerState(val id: Int) {
-    Waiting(0), Prepared(1), Running(2), Ended(3), Disabled(4)
-}
-
 enum class RemoteControlKey(val id: Int) {
     PreviousChannel(403), NextChannel(402), VolumeUp(115), VolumeDown(114), Mute(113), NextBouquet(
         407

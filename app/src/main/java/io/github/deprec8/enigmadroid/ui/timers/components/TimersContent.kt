@@ -56,7 +56,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.TimerState
 import io.github.deprec8.enigmadroid.model.MenuItem
 import io.github.deprec8.enigmadroid.model.MenuItemGroup
 import io.github.deprec8.enigmadroid.model.api.ServiceBatchSet
@@ -196,11 +195,11 @@ fun TimersContent(
 @Composable
 private fun Timer.getState(): String {
     return when (this.state + this.disabled) {
-        TimerState.Waiting.id -> stringResource(R.string.waiting)
-        TimerState.Prepared.id -> stringResource(R.string.prepared)
-        TimerState.Running.id -> stringResource(R.string.running)
-        TimerState.Ended.id -> stringResource(R.string.ended)
-        TimerState.Disabled.id -> stringResource(R.string.disabled)
+        0 -> stringResource(R.string.waiting)
+        1 -> stringResource(R.string.prepared)
+        2 -> stringResource(R.string.running)
+        3 -> stringResource(R.string.ended)
+        4 -> stringResource(R.string.disabled)
         else -> {
             stringResource(R.string.unknown)
         }

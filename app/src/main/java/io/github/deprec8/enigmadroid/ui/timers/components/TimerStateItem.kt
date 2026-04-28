@@ -40,42 +40,41 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.TimerState
 import io.github.deprec8.enigmadroid.model.api.Timer
 
 @Composable
 fun TimerStateIcon(timer: Timer) {
     val stateId = timer.state + timer.disabled
     val (icon, descriptionRes, containerColor, contentColor) = when (stateId) {
-        TimerState.Waiting.id -> StateConfig(
+        0 -> StateConfig(
             Icons.Outlined.Timer,
             R.string.waiting,
             MaterialTheme.colorScheme.tertiaryContainer,
             MaterialTheme.colorScheme.onTertiaryContainer
         )
 
-        TimerState.Prepared.id -> StateConfig(
+        1 -> StateConfig(
             Icons.Outlined.Checklist,
             R.string.prepared,
             MaterialTheme.colorScheme.tertiaryContainer,
             MaterialTheme.colorScheme.onTertiaryContainer
         )
 
-        TimerState.Running.id -> StateConfig(
+        2 -> StateConfig(
             Icons.Outlined.Videocam,
             R.string.running,
             MaterialTheme.colorScheme.primaryContainer,
             MaterialTheme.colorScheme.onPrimaryContainer
         )
 
-        TimerState.Ended.id -> StateConfig(
+        3 -> StateConfig(
             Icons.Outlined.Done,
             R.string.ended,
             MaterialTheme.colorScheme.secondaryContainer,
             MaterialTheme.colorScheme.onSecondaryContainer
         )
 
-        TimerState.Disabled.id -> StateConfig(
+        4 -> StateConfig(
             Icons.Outlined.TimerOff,
             R.string.disabled,
             MaterialTheme.colorScheme.secondaryContainer,

@@ -24,7 +24,6 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.constant.DefaultBouquets
 import io.github.deprec8.enigmadroid.common.constant.PreferenceKeys
 import io.github.deprec8.enigmadroid.common.enums.ContentFlag
 import io.github.deprec8.enigmadroid.common.enums.ContentType
@@ -262,9 +261,9 @@ class ApiRepository @Inject constructor(
             networkDataSource.fetchApi("bouquets?stype=${if (contentType == ContentType.Tv) "tv" else "radio"}")
         val rawProviderJson = networkDataSource.fetchApi(
             if (contentType == ContentType.Tv) {
-                "epgnow?bRef=${DefaultBouquets.ALL_PROVIDERS_TV}"
+                "epgnow?bRef=$ALL_PROVIDERS_TV"
             } else {
-                "epgnow?bRef=${DefaultBouquets.ALL_PROVIDERS_RADIO}"
+                "epgnow?bRef=$ALL_PROVIDERS_RADIO"
             }
         )
 
@@ -285,9 +284,9 @@ class ApiRepository @Inject constructor(
                 bouquets.add(
                     Bouquet(
                         if (contentType == ContentType.Tv) {
-                            DefaultBouquets.ALL_SERVICES_TV
+                            ALL_SERVICES_TV
                         } else {
-                            DefaultBouquets.ALL_SERVICES_RADIO
+                            ALL_SERVICES_RADIO
                         }, context.getString(R.string.all_services)
                     )
                 )
@@ -373,5 +372,16 @@ class ApiRepository @Inject constructor(
 
     suspend fun setPowerState(powerKey: RemoteControlPowerKey) {
         networkDataSource.postApi("powerstate?newstate=${powerKey.id}")
+    }
+
+    companion object {
+        private const val ALL_SERVICES_TV =
+            "1:7:1:0:0:0:0:0:0:0:(type%20==%201)%20||%20(type%20==%2017)%20||%20(type%20==%20195)%20||%20(type%20==%2025)%20ORDER%20BY%20name"
+        private const val ALL_SERVICES_RADIO =
+            "1:7:2:0:0:0:0:0:0:0:(type%20==%202)%20ORDER%20BY%20name"
+        private const val ALL_PROVIDERS_TV =
+            "1:7:1:0:0:0:0:0:0:0:(type%20==%201)%20||%20(type%20==%2017)%20||%20(type%20==%20195)%20||%20(type%20==%2025)%20FROM%20PROVIDERS%20ORDER%20BY%20name"
+        private const val ALL_PROVIDERS_RADIO =
+            "1:7:2:0:0:0:0:0:0:0:(type%20==%202)%20FROM%20PROVIDERS%20ORDER%20BY%20name"
     }
 }

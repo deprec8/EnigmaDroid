@@ -20,7 +20,6 @@
 package io.github.deprec8.enigmadroid.common.constant
 
 object DefaultPorts {
-
     const val HTTP = "80"
     const val HTTPS = "443"
     const val LIVE = "8001"
