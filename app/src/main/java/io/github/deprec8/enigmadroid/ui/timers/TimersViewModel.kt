@@ -32,8 +32,8 @@ import io.github.deprec8.enigmadroid.data.SettingsRepository
 import io.github.deprec8.enigmadroid.model.api.ServiceBatchSet
 import io.github.deprec8.enigmadroid.model.api.Timer
 import io.github.deprec8.enigmadroid.model.api.TimerBatch
+import io.github.deprec8.enigmadroid.model.api.search
 import io.github.deprec8.enigmadroid.ui.components.search.asHighlightedWords
-import io.github.deprec8.enigmadroid.utils.FilterUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -94,11 +94,7 @@ class TimersViewModel @Inject constructor(
         }
         viewModelScope.launch {
             combine(_timerBatch, searchInput) { timerBatch, searchInput ->
-                if (searchInput.isNotBlank() && timerBatch?.timers?.isNotEmpty() == true) {
-                    FilterUtils.filterTimers(searchInput, timerBatch.timers)
-                } else {
-                    null
-                }
+                timerBatch?.timers?.search(searchInput)
             }.collectLatest {
                 _filteredTimers.value = it
             }

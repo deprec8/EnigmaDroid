@@ -23,7 +23,6 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.github.deprec8.enigmadroid.common.enums.ContentFlag
 import io.github.deprec8.enigmadroid.common.enums.ContentType
 import io.github.deprec8.enigmadroid.common.enums.LoadingState
 import io.github.deprec8.enigmadroid.data.ApiRepository
@@ -33,8 +32,8 @@ import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.data.SettingsRepository
 import io.github.deprec8.enigmadroid.model.api.Event
 import io.github.deprec8.enigmadroid.model.api.EventBatch
+import io.github.deprec8.enigmadroid.model.api.search
 import io.github.deprec8.enigmadroid.ui.components.search.asHighlightedWords
-import io.github.deprec8.enigmadroid.utils.FilterUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -96,13 +95,7 @@ class RadioViewModel @Inject constructor(
             combine(
                 _eventBatches, searchInput, currentBouquetIndex
             ) { eventBatches, searchInput, currentBouquetIndex ->
-                if (searchInput.isNotBlank() && eventBatches?.isNotEmpty() == true) {
-                    FilterUtils.filterEvents(
-                        searchInput,
-                        eventBatches[currentBouquetIndex].events.filter { it.flag == ContentFlag.Channel })
-                } else {
-                    null
-                }
+                eventBatches?.getOrNull(currentBouquetIndex)?.events?.search(searchInput)
             }.collectLatest {
                 _filteredEvents.value = it
             }

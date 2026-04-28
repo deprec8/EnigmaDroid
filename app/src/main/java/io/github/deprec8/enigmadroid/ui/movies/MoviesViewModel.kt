@@ -32,8 +32,8 @@ import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.data.SettingsRepository
 import io.github.deprec8.enigmadroid.model.api.Movie
 import io.github.deprec8.enigmadroid.model.api.MovieBatch
+import io.github.deprec8.enigmadroid.model.api.search
 import io.github.deprec8.enigmadroid.ui.components.search.asHighlightedWords
-import io.github.deprec8.enigmadroid.utils.FilterUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -98,11 +98,7 @@ class MoviesViewModel @Inject constructor(
         }
         viewModelScope.launch {
             combine(_movieBatch, searchInput) { movieBatch, searchInput ->
-                if (searchInput.isNotBlank() && movieBatch?.movies?.isNotEmpty() == true) {
-                    FilterUtils.filterMovies(searchInput, movieBatch.movies)
-                } else {
-                    null
-                }
+                movieBatch?.movies?.search(searchInput)
             }.collectLatest {
                 _filteredMovies.value = it
             }

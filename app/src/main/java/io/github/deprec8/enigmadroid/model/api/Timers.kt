@@ -22,6 +22,8 @@ package io.github.deprec8.enigmadroid.model.api
 import androidx.compose.runtime.Immutable
 import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
 import io.github.deprec8.enigmadroid.utils.LogEntrySerializer
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -61,3 +63,47 @@ data class TimerBatch(
 data class LogEntry(
     val timestamp: Long, val code: Int, val message: String
 )
+
+suspend fun List<Timer>.search(filter: String): List<Timer>? {
+    val timers = this
+
+    return withContext(Dispatchers.Default) {
+        if (filter.isBlank() || timers.isEmpty()) return@withContext null
+
+        val filterTerms = filter.lowercase().split(" ").filter { it.isNotBlank() }
+
+        return@withContext timers.asSequence().map { timer ->
+            val lcTitle = timer.title.lowercase()
+            val lcExtDesc = timer.descriptionextended.lowercase()
+            val lcShortDesc = timer.shortDescription.lowercase()
+            val lcService = timer.serviceName.lowercase()
+            val lcTags = timer.tags.lowercase()
+            val lcBegin = timer.begin.lowercase()
+            val lcEnd = timer.end.lowercase()
+
+            val matches = filterTerms.all { term ->
+                lcTitle.contains(term) || lcExtDesc.contains(term) || lcShortDesc.contains(term) || lcService.contains(
+                    term
+                ) || lcTags.contains(term) || lcBegin.contains(term) || lcEnd.contains(term)
+            }
+
+            val score = if (matches) {
+                filterTerms.count { lcTitle.contains(it) } * 7 + filterTerms.count {
+                    lcExtDesc.contains(
+                        it
+                    )
+                } * 6 + filterTerms.count { lcShortDesc.contains(it) } * 5 + filterTerms.count {
+                    lcService.contains(
+                        it
+                    )
+                } * 4 + filterTerms.count { lcTags.contains(it) } * 3 + filterTerms.count {
+                    lcBegin.contains(
+                        it
+                    )
+                } * 2 + filterTerms.count { lcEnd.contains(it) } * 1
+            } else 0
+
+            Triple(timer, matches, score)
+        }.filter { it.second }.sortedByDescending { it.third }.map { it.first }.toList()
+    }
+}

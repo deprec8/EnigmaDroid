@@ -33,8 +33,8 @@ import io.github.deprec8.enigmadroid.data.SettingsRepository
 import io.github.deprec8.enigmadroid.model.api.Bouquet
 import io.github.deprec8.enigmadroid.model.api.Event
 import io.github.deprec8.enigmadroid.model.api.EventBatchSet
+import io.github.deprec8.enigmadroid.model.api.search
 import io.github.deprec8.enigmadroid.ui.components.search.asHighlightedWords
-import io.github.deprec8.enigmadroid.utils.FilterUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -100,12 +100,7 @@ class RadioEpgViewModel @Inject constructor(
         }
         viewModelScope.launch {
             combine(_eventBatchSet, searchInput) { eventBatchSet, searchInput ->
-                if (searchInput.isNotBlank() && eventBatchSet?.eventBatches?.isNotEmpty() == true) {
-                    FilterUtils.filterEvents(
-                        searchInput, eventBatchSet.eventBatches.flatMap { it.events })
-                } else {
-                    null
-                }
+                eventBatchSet?.eventBatches?.flatMap { it.events }?.search(searchInput)
             }.collectLatest {
                 _filteredEvents.value = it
             }

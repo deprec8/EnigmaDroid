@@ -21,6 +21,8 @@ package io.github.deprec8.enigmadroid.model.api
 
 import androidx.compose.runtime.Immutable
 import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -46,3 +48,48 @@ data class MovieBatch(
     @SerialName("movies") val movies: List<Movie> = emptyList(),
     @SerialName("bookmarks") val bookmarks: List<String> = emptyList()
 )
+
+suspend fun List<Movie>.search(filter: String): List<Movie>? {
+    val movies = this
+
+    return withContext(Dispatchers.Default) {
+        if (filter.isBlank() || movies.isEmpty()) return@withContext null
+
+        val filterTerms = filter.lowercase().split(" ").filter { it.isNotBlank() }
+
+        return@withContext movies.asSequence().map { movie ->
+            val lcService = movie.serviceName.lowercase()
+            val lcLongDesc = movie.longDescription.lowercase()
+            val lcShortDesc = movie.shortDescription.lowercase()
+            val lcTags = movie.tags.lowercase()
+            val lcBegin = movie.begin.lowercase()
+            val lcEventName = movie.eventName.lowercase()
+
+            val matches = filterTerms.all { term ->
+                lcService.contains(term) || lcLongDesc.contains(term) || lcShortDesc.contains(
+                    term
+                ) || lcTags.contains(term) || lcBegin.contains(term) || lcEventName.contains(
+                    term
+                )
+            }
+
+            val score = if (matches) {
+                filterTerms.count { lcService.contains(it) } * 6 + filterTerms.count {
+                    lcLongDesc.contains(
+                        it
+                    )
+                } * 5 + filterTerms.count { lcShortDesc.contains(it) } * 4 + filterTerms.count {
+                    lcTags.contains(
+                        it
+                    )
+                } * 3 + filterTerms.count { lcBegin.contains(it) } * 2 + filterTerms.count {
+                    lcEventName.contains(
+                        it
+                    )
+                } * 1
+            } else 0
+
+            Triple(movie, matches, score)
+        }.filter { it.second }.sortedByDescending { it.third }.map { it.first }.toList()
+    }
+}

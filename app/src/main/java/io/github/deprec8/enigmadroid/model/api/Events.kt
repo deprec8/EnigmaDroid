@@ -22,6 +22,9 @@ package io.github.deprec8.enigmadroid.model.api
 import androidx.compose.runtime.Immutable
 import io.github.deprec8.enigmadroid.common.enums.ContentFlag
 import io.github.deprec8.enigmadroid.utils.HtmlDecodedStringSerializer
+import io.github.deprec8.enigmadroid.utils.TimestampUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -53,3 +56,49 @@ data class EventBatch(
 data class EventBatchSet(
     val eventBatches: List<EventBatch> = emptyList()
 )
+
+suspend fun List<Event>.search(filter: String): List<Event>? {
+    val events = this
+
+    return withContext(Dispatchers.Default) {
+        if (filter.isBlank() || events.isEmpty()) return@withContext null
+
+        val filterTerms = filter.lowercase().split(" ").filter { it.isNotBlank() }
+
+        events.filter { it.flag == ContentFlag.Channel }.asSequence().map { event ->
+            val lcService = event.serviceName.lowercase()
+            val lcTitle = event.title.lowercase()
+            val lcLongDesc = event.longDescription.lowercase()
+            val lcShortDesc = event.shortDescription.lowercase()
+            val lcGenre = event.genre.lowercase()
+            val lcBegin = TimestampUtils.formatApiTimestampToTime(event.beginTimestamp).lowercase()
+            val lcEnd =
+                TimestampUtils.formatApiTimestampToTime(event.beginTimestamp + event.durationInSeconds)
+                    .lowercase()
+
+            val matches = filterTerms.all { term ->
+                lcService.contains(term) || lcTitle.contains(term) || lcLongDesc.contains(term) || lcShortDesc.contains(
+                    term
+                ) || lcGenre.contains(term) || lcBegin.contains(term) || lcEnd.contains(term)
+            }
+
+            val score = if (matches) {
+                filterTerms.count { lcService.contains(it) } * 7 + filterTerms.count {
+                    lcTitle.contains(
+                        it
+                    )
+                } * 6 + filterTerms.count { lcLongDesc.contains(it) } * 5 + filterTerms.count {
+                    lcShortDesc.contains(
+                        it
+                    )
+                } * 4 + filterTerms.count { lcGenre.contains(it) } * 3 + filterTerms.count {
+                    lcBegin.contains(
+                        it
+                    )
+                } * 2 + filterTerms.count { lcEnd.contains(it) }
+            } else 0
+
+            Triple(event, matches, score)
+        }.filter { it.second }.sortedByDescending { it.third }.map { it.first }.toList()
+    }
+}

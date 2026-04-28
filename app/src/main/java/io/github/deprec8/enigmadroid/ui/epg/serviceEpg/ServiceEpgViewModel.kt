@@ -31,8 +31,8 @@ import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.data.SettingsRepository
 import io.github.deprec8.enigmadroid.model.api.Event
 import io.github.deprec8.enigmadroid.model.api.EventBatch
+import io.github.deprec8.enigmadroid.model.api.search
 import io.github.deprec8.enigmadroid.ui.components.search.asHighlightedWords
-import io.github.deprec8.enigmadroid.utils.FilterUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -92,11 +92,7 @@ class ServiceEpgViewModel @Inject constructor(
         }
         viewModelScope.launch {
             combine(_eventBatch, searchInput) { eventBatch, searchInput ->
-                if (searchInput.isNotBlank() && eventBatch?.events?.isNotEmpty() == true) {
-                    FilterUtils.filterEvents(searchInput, eventBatch.events)
-                } else {
-                    null
-                }
+                eventBatch?.events?.search(searchInput)
             }.collectLatest {
                 _filteredEvents.value = it
             }
