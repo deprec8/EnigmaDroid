@@ -20,7 +20,7 @@
 package io.github.deprec8.enigmadroid.model.navigation
 
 import androidx.navigation3.runtime.NavKey
-import io.github.deprec8.enigmadroid.model.api.movies.MovieBatch
+import io.github.deprec8.enigmadroid.model.api.MovieBatch
 import kotlinx.serialization.Serializable
 
 @Serializable

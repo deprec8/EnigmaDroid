@@ -25,9 +25,9 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
-import io.github.deprec8.enigmadroid.data.enums.LoadingState
-import io.github.deprec8.enigmadroid.data.enums.RemoteControlButtonType
-import io.github.deprec8.enigmadroid.data.objects.PreferenceKey
+import io.github.deprec8.enigmadroid.common.constant.PreferenceKeys
+import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.data.source.local.devices.DeviceDatabase
 import io.ktor.client.HttpClient
@@ -52,8 +52,8 @@ class NetworkDataSource @Inject constructor(
     private val context: Context
 ) {
 
-    private val currentDeviceKey = intPreferencesKey(PreferenceKey.CURRENT_DEVICE)
-    private val loadingStateKey = intPreferencesKey(PreferenceKey.LOADING_STATE)
+    private val currentDeviceKey = intPreferencesKey(PreferenceKeys.CURRENT_DEVICE)
+    private val loadingStateKey = intPreferencesKey(PreferenceKeys.LOADING_STATE)
 
     private suspend fun getCurrentDevice(): Device? {
         val listId = dataStore.data.map { preferences ->
@@ -74,7 +74,8 @@ class NetworkDataSource @Inject constructor(
                     preferences[loadingStateKey] = LoadingState.INVALID_DEVICE_RESPONSE.id
                 }
             }
-            else                          -> {
+
+            else -> {
                 val currentLoadingState = dataStore.data.map { preferences ->
                     LoadingState.entries[preferences[loadingStateKey] ?: 3]
                 }.first()
@@ -154,7 +155,7 @@ class NetworkDataSource @Inject constructor(
         false
     }
 
-    suspend fun postApi(endpoint: String) {
+    suspend fun post(endpoint: String) {
         try {
             val url = getCurrentDevice()?.buildUrl(endpoint) ?: throw NullPointerException()
             client.get(url) {
@@ -169,9 +170,9 @@ class NetworkDataSource @Inject constructor(
         }
     }
 
-    suspend fun postApi(button: RemoteControlButtonType) {
+    suspend fun post(key: RemoteControlKey) {
         try {
-            val url = getCurrentDevice()?.buildUrl(button) ?: throw NullPointerException()
+            val url = getCurrentDevice()?.buildUrl(key) ?: throw NullPointerException()
             client.get(url) {
                 header(HttpHeaders.Connection, "close")
             }
@@ -184,7 +185,7 @@ class NetworkDataSource @Inject constructor(
         }
     }
 
-    suspend fun fetchApi(endpoint: String): String = try {
+    suspend fun fetchJson(endpoint: String): String = try {
         val url = getCurrentDevice()?.buildUrl(endpoint) ?: throw NullPointerException()
         client.get(url) {
             header(HttpHeaders.Connection, "close")

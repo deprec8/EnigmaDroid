@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * 5'
-    
+
 jobs:
   synchronize-with-crowdin:
     runs-on: ubuntu-latest
@@ -27,7 +27,7 @@ jobs:
           pull_request_base_branch_name: "main"
           pull_request_labels: "translation, ui, metadata"
           pull_request_assignees: deprec8
-          
+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}

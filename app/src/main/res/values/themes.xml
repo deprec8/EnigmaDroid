@@ -19,7 +19,7 @@
 
 <resources>
 
-    <style name="Theme.EnigmaDroid" parent="android:Theme.Material.Light.NoActionBar"/>
+    <style name="Theme.EnigmaDroid" parent="android:Theme.Material.Light.NoActionBar" />
 
     <style name="Theme.Loading" parent="Theme.SplashScreen">
         <item name="postSplashScreenTheme">@style/Theme.EnigmaDroid</item>

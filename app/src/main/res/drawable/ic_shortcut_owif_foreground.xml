@@ -37,7 +37,7 @@
                     android:startColor="#0d86ca"
                     android:startX="0"
                     android:startY="0"
-                    android:type="linear"/>
+                    android:type="linear" />
             </aapt:attr>
         </path>
     </group>
