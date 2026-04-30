@@ -17,20 +17,22 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.epg.serviceEpg
+package io.github.deprec8.enigmadroid.ui.epg.radio
 
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.deprec8.enigmadroid.common.enums.ContentType
 import io.github.deprec8.enigmadroid.common.enums.LoadingState
 import io.github.deprec8.enigmadroid.data.ApiRepository
 import io.github.deprec8.enigmadroid.data.DevicesRepository
 import io.github.deprec8.enigmadroid.data.LoadingRepository
 import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.data.SettingsRepository
+import io.github.deprec8.enigmadroid.model.api.Bouquet
 import io.github.deprec8.enigmadroid.model.api.Event
-import io.github.deprec8.enigmadroid.model.api.EventBatch
+import io.github.deprec8.enigmadroid.model.api.EventBatchSet
 import io.github.deprec8.enigmadroid.model.api.search
 import io.github.deprec8.enigmadroid.ui.components.search.asHighlightedWords
 import kotlinx.coroutines.Job
@@ -46,7 +48,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ServiceEpgViewModel @Inject constructor(
+class RadioEpgViewModel @Inject constructor(
     private val apiRepository: ApiRepository,
     private val loadingRepository: LoadingRepository,
     private val searchHistoryRepository: SearchHistoryRepository,
@@ -54,17 +56,23 @@ class ServiceEpgViewModel @Inject constructor(
     private val devicesRepository: DevicesRepository
 ) : ViewModel() {
 
-    private val _eventBatch = MutableStateFlow<EventBatch?>(null)
-    val eventBatch: StateFlow<EventBatch?> = _eventBatch.asStateFlow()
-
-    private val _loadingState = MutableStateFlow(LoadingState.LOADING)
-    val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
+    private val _eventBatchSet = MutableStateFlow<EventBatchSet?>(null)
+    val eventBatchSet: StateFlow<EventBatchSet?> = _eventBatchSet.asStateFlow()
 
     private val _filteredEvents = MutableStateFlow<List<Event>?>(null)
     val filteredEvents: StateFlow<List<Event>?> = _filteredEvents.asStateFlow()
 
+    private val _loadingState = MutableStateFlow(LoadingState.LOADING)
+    val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
+
     private val _searchHistory = MutableStateFlow<List<String>>(emptyList())
     val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()
+
+    private val _currentBouquetReference = MutableStateFlow("")
+    val currentBouquetReference: StateFlow<String> = _currentBouquetReference.asStateFlow()
+
+    private val _bouquets = MutableStateFlow<List<Bouquet>?>(null)
+    val bouquets: StateFlow<List<Bouquet>?> = _bouquets.asStateFlow()
 
     val searchFieldState = TextFieldState()
 
@@ -80,7 +88,7 @@ class ServiceEpgViewModel @Inject constructor(
 
     private var fetchJob: Job? = null
 
-    private var serviceReference = ""
+    private var fetchedEventBatchSetMap = emptyMap<String, EventBatchSet>()
 
     private var loadedDeviceId: Int? = null
 
@@ -91,14 +99,14 @@ class ServiceEpgViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            combine(_eventBatch, searchInput) { eventBatch, searchInput ->
-                eventBatch?.events?.search(searchInput)
+            combine(_eventBatchSet, searchInput) { eventBatchSet, searchInput ->
+                eventBatchSet?.eventBatches?.flatMap { it.events }?.search(searchInput)
             }.collectLatest {
                 _filteredEvents.value = it
             }
         }
         viewModelScope.launch {
-            searchHistoryRepository.getServiceEpgSearchHistory().collectLatest {
+            searchHistoryRepository.getRadioEpgSearchHistory().collectLatest {
                 _searchHistory.value = it
             }
         }
@@ -109,10 +117,6 @@ class ServiceEpgViewModel @Inject constructor(
         }
     }
 
-    fun initialize(serviceReference: String) {
-        this.serviceReference = serviceReference
-    }
-
     suspend fun updateLoadingState(isForcedUpdate: Boolean) {
         loadingRepository.updateLoadingState(isForcedUpdate)
     }
@@ -121,17 +125,40 @@ class ServiceEpgViewModel @Inject constructor(
         viewModelScope.launch {
             val currentDeviceId = devicesRepository.getCurrentDeviceId().first()
             if (currentDeviceId != loadedDeviceId || isForced) {
-                _eventBatch.value = null
+                _eventBatchSet.value = null
+                _bouquets.value = null
+                fetchedEventBatchSetMap = emptyMap()
                 loadedDeviceId = currentDeviceId
             }
 
-            if (_eventBatch.value == null) {
+            if (_eventBatchSet.value == null || _bouquets.value == null) {
                 fetchJob?.cancel()
                 fetchJob = launch {
-                    _eventBatch.value = apiRepository.fetchServiceEpgBatch(serviceReference)
+                    fetchBouquets()
+                    fetchEpgBatchSet()
                 }
             }
         }
+    }
+
+    private suspend fun fetchBouquets() {
+        val bouquets = apiRepository.fetchBouquets(ContentType.Radio)
+        _bouquets.value = bouquets
+        val firstBRef = bouquets.firstOrNull()?.reference ?: ""
+        if (_currentBouquetReference.value.isBlank() || bouquets.find { it.reference == _currentBouquetReference.value } == null) {
+            _currentBouquetReference.value = firstBRef
+        }
+    }
+
+    private suspend fun fetchEpgBatchSet() {
+        val cached = fetchedEventBatchSetMap[_currentBouquetReference.value]
+        if (cached != null) {
+            _eventBatchSet.value = cached
+            return
+        }
+        val epgBatchSet = apiRepository.fetchEpgEventBatchSet(_currentBouquetReference.value)
+        _eventBatchSet.value = epgBatchSet
+        fetchedEventBatchSetMap += _currentBouquetReference.value to epgBatchSet
     }
 
     fun addTimerForEvent(event: Event) {
@@ -142,11 +169,20 @@ class ServiceEpgViewModel @Inject constructor(
         }
     }
 
+    fun setCurrentBouquet(bouquetReference: String) {
+        fetchJob?.cancel()
+        _currentBouquetReference.value = bouquetReference
+        _eventBatchSet.value = null
+        fetchJob = viewModelScope.launch {
+            fetchEpgBatchSet()
+        }
+    }
+
     fun updateSearchInput() {
         val input = searchFieldState.text.toString()
         if (input.isNotBlank()) {
             viewModelScope.launch {
-                searchHistoryRepository.addToServiceEpgSearchHistory(input)
+                searchHistoryRepository.addToRadioEpgSearchHistory(input)
             }
         }
         searchInput.value = input

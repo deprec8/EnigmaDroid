@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.remoteControl.components
+package io.github.deprec8.enigmadroid.ui.remotecontrol.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert

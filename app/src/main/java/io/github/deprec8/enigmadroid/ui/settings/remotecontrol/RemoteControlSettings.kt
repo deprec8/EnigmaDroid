@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.settings.remoteControl
+package io.github.deprec8.enigmadroid.ui.settings.remotecontrol
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column

@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.remoteControl
+package io.github.deprec8.enigmadroid.ui.remotecontrol
 
 import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.layout.Arrangement
@@ -67,14 +67,14 @@ import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.common.enums.LoadingState
 import io.github.deprec8.enigmadroid.ui.components.navigation.ArrowNavigationButton
-import io.github.deprec8.enigmadroid.ui.remoteControl.components.ActionMenu
-import io.github.deprec8.enigmadroid.ui.remoteControl.components.ArrowButtons
-import io.github.deprec8.enigmadroid.ui.remoteControl.components.BouquetButtons
-import io.github.deprec8.enigmadroid.ui.remoteControl.components.ColorButtons
-import io.github.deprec8.enigmadroid.ui.remoteControl.components.ControlButtons
-import io.github.deprec8.enigmadroid.ui.remoteControl.components.DeviceText
-import io.github.deprec8.enigmadroid.ui.remoteControl.components.MediaButtons
-import io.github.deprec8.enigmadroid.ui.remoteControl.components.NumberButtons
+import io.github.deprec8.enigmadroid.ui.remotecontrol.components.ActionMenu
+import io.github.deprec8.enigmadroid.ui.remotecontrol.components.ArrowButtons
+import io.github.deprec8.enigmadroid.ui.remotecontrol.components.BouquetButtons
+import io.github.deprec8.enigmadroid.ui.remotecontrol.components.ColorButtons
+import io.github.deprec8.enigmadroid.ui.remotecontrol.components.ControlButtons
+import io.github.deprec8.enigmadroid.ui.remotecontrol.components.DeviceText
+import io.github.deprec8.enigmadroid.ui.remotecontrol.components.MediaButtons
+import io.github.deprec8.enigmadroid.ui.remotecontrol.components.NumberButtons
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

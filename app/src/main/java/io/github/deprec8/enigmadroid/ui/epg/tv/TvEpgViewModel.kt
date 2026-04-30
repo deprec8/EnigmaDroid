@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.epg.radioEpg
+package io.github.deprec8.enigmadroid.ui.epg.tv
 
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.lifecycle.ViewModel
@@ -48,7 +48,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RadioEpgViewModel @Inject constructor(
+class TvEpgViewModel @Inject constructor(
     private val apiRepository: ApiRepository,
     private val loadingRepository: LoadingRepository,
     private val searchHistoryRepository: SearchHistoryRepository,
@@ -106,7 +106,7 @@ class RadioEpgViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            searchHistoryRepository.getRadioEpgSearchHistory().collectLatest {
+            searchHistoryRepository.getTvEpgSearchHistory().collectLatest {
                 _searchHistory.value = it
             }
         }
@@ -142,7 +142,7 @@ class RadioEpgViewModel @Inject constructor(
     }
 
     private suspend fun fetchBouquets() {
-        val bouquets = apiRepository.fetchBouquets(ContentType.Radio)
+        val bouquets = apiRepository.fetchBouquets(ContentType.Tv)
         _bouquets.value = bouquets
         val firstBRef = bouquets.firstOrNull()?.reference ?: ""
         if (_currentBouquetReference.value.isBlank() || bouquets.find { it.reference == _currentBouquetReference.value } == null) {
@@ -182,7 +182,7 @@ class RadioEpgViewModel @Inject constructor(
         val input = searchFieldState.text.toString()
         if (input.isNotBlank()) {
             viewModelScope.launch {
-                searchHistoryRepository.addToRadioEpgSearchHistory(input)
+                searchHistoryRepository.addToTvEpgSearchHistory(input)
             }
         }
         searchInput.value = input
