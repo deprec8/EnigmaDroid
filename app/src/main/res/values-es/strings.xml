@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~ Copyright (C) 2025-2026 deprec8
   ~
   ~ This file is part of EnigmaDroid.
@@ -63,9 +64,9 @@
     <string name="restart_gui">Reiniciar interfaz</string>
     <string name="shutdown">Apagar</string>
     <string name="close">Cerrar</string>
-    <string name="setup_device_creation_info">Let’s get you started by setting up your first device.</string>
-    <string name="finish">Finish</string>
-    <string name="welcome_to_enigmadroid">Welcome to EnigmaDroid!</string>
+    <string name="setup_device_creation_info">Comencemos configurando su primer dispositivo.</string>
+    <string name="finish">Finalizar</string>
+    <string name="welcome_to_enigmadroid">¡Bienvenido a EnigmaDroid!</string>
     <string name="live_port">Puerto Live</string>
     <string name="current">Actual</string>
     <string name="kernel">Kernel</string>
@@ -88,7 +89,7 @@
     <string name="rename_movie">Renombrar película</string>
     <string name="new_name">Nuevo nombre</string>
     <string name="move_movie">Mover película</string>
-    <string name="new_directory">New directory</string>
+    <string name="new_directory">Nueva carpeta</string>
     <string name="rename">Renombrar</string>
     <string name="move">Mover</string>
     <string name="channel">Canal</string>
@@ -226,13 +227,13 @@
     <string name="view_epg_from">Ver EPG de \"%1$s\"</string>
     <string name="starting_at">A partir de las %1$s</string>
     <string name="until">Hasta las %1$s</string>
-    <string name="setup_skip_title">Not ready to set up a device?</string>
-    <string name="setup_skip_text">Most features require at least one device to be set up. You can add one whenever you’re ready.</string>
-    <string name="go_top">Go top</string>
-    <string name="name_must_be_changed_and_can_t_be_blank">Name must be changed and can\'t be blank.</string>
-    <string name="directory_must_be_changed_and_must_start_and_end_with">Directory must be changed and must start and end with \"/\".</string>
+    <string name="setup_skip_title">¿No está listo para configurar un dispositivo?</string>
+    <string name="setup_skip_text">La mayoría de las características requieren al menos un dispositivo para ser configurado. Puedes añadir uno cuando estés listo.</string>
+    <string name="go_top">Ir arriba</string>
+    <string name="name_must_be_changed_and_can_t_be_blank">El nombre debe ser cambiado y no puede estar en blanco.</string>
+    <string name="directory_must_be_changed_and_must_start_and_end_with">El directorio debe ser cambiado y debe comenzar y terminar con \"/\".</string>
     <plurals name="files">
-        <item quantity="one">%1$d file</item>
-        <item quantity="other">%1$d files</item>
+        <item quantity="one">%1$d archivo</item>
+        <item quantity="other">%1$d archivos</item>
     </plurals>
 </resources>
