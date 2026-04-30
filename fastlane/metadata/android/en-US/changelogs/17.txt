@@ -1,0 +1,8 @@
+- Added tooltips to all unlabeled icons
+- Improved the app icons and labels
+- Improved movies page with support for directories and better editing
+- Improved navigation experience with better animations
+- Improved the onboarding flow
+- Improved UX across multiple UI elements
+- Synced Crowdin translations
+- Many other fixes and updates
