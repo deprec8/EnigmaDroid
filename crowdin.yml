@@ -26,10 +26,10 @@
     "languages_mapping": {
       "locale": {
         "de": "de-DE",
-        "ru": "ru",
+        "ru": "ru-RU",
         "fr": "fr-FR",
         "es-ES": "es-ES",
-        "it": "it"
+        "it": "it-IT"
       }
     }
   },
@@ -39,10 +39,10 @@
     "languages_mapping": {
       "locale": {
         "de": "de-DE",
-        "ru": "ru",
+        "ru": "ru-RU",
         "fr": "fr-FR",
         "es-ES": "es-ES",
-        "it": "it"
+        "it": "it-IT"
       }
     }
   }
