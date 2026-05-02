@@ -28,7 +28,6 @@ import io.github.deprec8.enigmadroid.common.constant.PreferenceKeys
 import io.github.deprec8.enigmadroid.common.enums.LoadingState
 import io.github.deprec8.enigmadroid.data.source.local.devices.DeviceDatabase
 import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
@@ -45,13 +44,11 @@ class OnboardingRepository @Inject constructor(
     private val onboardingKey = booleanPreferencesKey(PreferenceKeys.ONBOARDING_NEEDED)
     private val loadingStateKey = intPreferencesKey(PreferenceKeys.LOADING_STATE)
 
-    fun getOnboardingNeeded(): Flow<Boolean> {
-        return dataStore.data.map { preferences ->
-            preferences[onboardingKey] ?: true
-        }
-    }
-
     suspend fun completeOnboarding() {
+        dataStore.edit { preferences ->
+            preferences[onboardingKey] = false
+        }
+
         val currentLoadingState = dataStore.data.map { preferences ->
             LoadingState.entries[preferences[loadingStateKey] ?: 3]
         }.first()
@@ -78,9 +75,6 @@ class OnboardingRepository @Inject constructor(
             dataStore.edit { preferences ->
                 preferences[loadingStateKey] = LoadingState.NO_DEVICE_AVAILABLE.id
             }
-        }
-        dataStore.edit { settings ->
-            settings[onboardingKey] = false
         }
     }
 }

@@ -26,7 +26,6 @@ import io.github.deprec8.enigmadroid.common.enums.LoadingState
 import io.github.deprec8.enigmadroid.data.ApiRepository
 import io.github.deprec8.enigmadroid.data.DevicesRepository
 import io.github.deprec8.enigmadroid.data.LoadingRepository
-import io.github.deprec8.enigmadroid.data.OnboardingRepository
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -37,14 +36,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val onboardingRepository: OnboardingRepository,
     private val devicesRepository: DevicesRepository,
     private val loadingRepository: LoadingRepository,
     private val apiRepository: ApiRepository
 ) : ViewModel() {
-
-    private val _isOnboardingNeeded = MutableStateFlow(false)
-    val isOnboardingNeeded: StateFlow<Boolean> = _isOnboardingNeeded.asStateFlow()
 
     private val _currentDevice = MutableStateFlow<Device?>(null)
     val currentDevice: StateFlow<Device?> = _currentDevice.asStateFlow()
@@ -56,11 +51,6 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             devicesRepository.getCurrentDevice().collectLatest { currentDevice ->
                 _currentDevice.value = currentDevice
-            }
-        }
-        viewModelScope.launch {
-            onboardingRepository.getOnboardingNeeded().collectLatest { needed ->
-                _isOnboardingNeeded.value = needed
             }
         }
         viewModelScope.launch {
@@ -77,5 +67,4 @@ class MainViewModel @Inject constructor(
     suspend fun buildOwifUrl(): String {
         return apiRepository.buildOwifUrl()
     }
-
 }

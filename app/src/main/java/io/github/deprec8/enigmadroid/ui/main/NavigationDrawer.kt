@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.main.components
+package io.github.deprec8.enigmadroid.ui.main
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Spring
@@ -84,14 +84,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
 import io.github.deprec8.enigmadroid.R
+import io.github.deprec8.enigmadroid.common.constant.MainKeys
 import io.github.deprec8.enigmadroid.common.enums.LoadingState
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.model.DrawerPage
 import io.github.deprec8.enigmadroid.model.DrawerPageGroup
-import io.github.deprec8.enigmadroid.model.navigation.MainPages
 
 @Composable
-fun NavDrawerContent(
+fun DrawerContent(
     currentDevice: Device?,
     loadingState: LoadingState,
     currentTopLevelRoute: NavKey,
@@ -299,26 +299,26 @@ private val drawerPageGroups = listOf(
     DrawerPageGroup(
         R.string.content, listOf(
             DrawerPage(
-                R.string.tv, MainPages.Tv, Icons.Outlined.LiveTv, Icons.Filled.LiveTv
+                R.string.tv, MainKeys.Tv, Icons.Outlined.LiveTv, Icons.Filled.LiveTv
             ), DrawerPage(
-                R.string.radio, MainPages.Radio, Icons.Outlined.Radio, Icons.Filled.Radio
+                R.string.radio, MainKeys.Radio, Icons.Outlined.Radio, Icons.Filled.Radio
             ), DrawerPage(
                 R.string.current,
-                MainPages.Current,
+                MainKeys.Current,
                 Icons.AutoMirrored.Outlined.PlaylistPlay,
                 Icons.AutoMirrored.Filled.PlaylistPlay
             ), DrawerPage(
-                R.string.movies, MainPages.Movies, Icons.Outlined.Movie, Icons.Filled.Movie
+                R.string.movies, MainKeys.Movies, Icons.Outlined.Movie, Icons.Filled.Movie
             ), DrawerPage(
-                R.string.timers, MainPages.Timers, Icons.Outlined.Timer, Icons.Filled.Timer
+                R.string.timers, MainKeys.Timers, Icons.Outlined.Timer, Icons.Filled.Timer
             ), DrawerPage(
                 R.string.tv_epg,
-                MainPages.TvEpg,
+                MainKeys.TvEpg,
                 Icons.AutoMirrored.Outlined.Dvr,
                 Icons.AutoMirrored.Filled.Dvr,
             ), DrawerPage(
                 R.string.radio_epg,
-                MainPages.RadioEpg,
+                MainKeys.RadioEpg,
                 Icons.AutoMirrored.Outlined.LibraryBooks,
                 Icons.AutoMirrored.Filled.LibraryBooks,
             )
@@ -327,18 +327,18 @@ private val drawerPageGroups = listOf(
         R.string.device, listOf(
             DrawerPage(
                 R.string.device_info,
-                MainPages.DeviceInfo,
+                MainKeys.DeviceInfo,
                 Icons.Outlined.DeveloperBoard,
                 Icons.Filled.DeveloperBoard
             ), DrawerPage(
-                R.string.signal, MainPages.Signal, Icons.Outlined.Speed, Icons.Filled.Speed
+                R.string.signal, MainKeys.Signal, Icons.Outlined.Speed, Icons.Filled.Speed
             )
         )
     ), DrawerPageGroup(
         R.string.settings, listOf(
             DrawerPage(
                 R.string.settings,
-                MainPages.Settings,
+                MainKeys.Settings,
                 Icons.Outlined.Settings,
                 Icons.Filled.Settings
             ),

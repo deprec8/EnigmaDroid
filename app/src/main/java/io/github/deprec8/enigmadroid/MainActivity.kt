@@ -28,13 +28,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.lifecycleScope
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import dagger.hilt.android.AndroidEntryPoint
+import io.github.deprec8.enigmadroid.common.constant.PreferenceKeys
 import io.github.deprec8.enigmadroid.data.DevicesRepository
-import io.github.deprec8.enigmadroid.ui.main.MainPage
+import io.github.deprec8.enigmadroid.data.source.local.dataStore
+import io.github.deprec8.enigmadroid.ui.root.RootNavigationDisplay
 import io.github.deprec8.enigmadroid.ui.theme.EnigmaDroidTheme
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -43,19 +46,24 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var devicesRepository: DevicesRepository
 
+    private val onboardingKey = booleanPreferencesKey(PreferenceKeys.ONBOARDING_NEEDED)
+
+    private var isOnboardingNeeded by mutableStateOf(false)
     private var isRemoteControlDeepLink by mutableStateOf(false)
-    private var isIntentBeingHandled by mutableStateOf(true)
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        var isSetupFinished = false
         installSplashScreen().setKeepOnScreenCondition {
-            isIntentBeingHandled
+            !isSetupFinished
         }
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        handleIntent(intent)
+        processIntent(intent)
+        isSetupFinished = true
         setContent {
             EnigmaDroidTheme {
-                MainPage(isRemoteControlDeepLink)
+                RootNavigationDisplay(isOnboardingNeeded, isRemoteControlDeepLink)
             }
         }
     }
@@ -63,27 +71,39 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        handleIntent(intent)
+        processIntent(intent)
     }
 
-    private fun handleIntent(intent: Intent?) = lifecycleScope.launch {
-        intent ?: return@launch
-
-        when (intent.action) {
-            "io.github.deprec8.enigmadroid.OPEN_WITH_DEVICE" -> {
-                val deviceId = intent.getIntExtra("device_id", -1)
-                if (deviceId != -1) {
-                    val current = devicesRepository.getCurrentDeviceId().first()
-                    if (deviceId != current) {
-                        devicesRepository.setCurrentDeviceId(deviceId)
-                    }
-                }
-            }
-
-            Intent.ACTION_VIEW -> {
-                isRemoteControlDeepLink = intent.data?.toString() == "enigmadroid://remotecontrol"
+    private fun processIntent(intent: Intent?) {
+        isOnboardingNeeded = checkIsOnboardingNeeded()
+        if (!isOnboardingNeeded) {
+            val isDeepLink = isRemoteControlDeepLink(intent)
+            isRemoteControlDeepLink = isDeepLink
+            if (!isDeepLink) {
+                handleDeviceIntent(intent)
             }
         }
-        isIntentBeingHandled = false
+    }
+
+    private fun isRemoteControlDeepLink(intent: Intent?): Boolean {
+        intent ?: return false
+        if (intent.action != Intent.ACTION_VIEW) return false
+        return intent.data?.toString() == "enigmadroid://remotecontrol"
+    }
+
+    private fun checkIsOnboardingNeeded(): Boolean = runBlocking {
+        dataStore.data.map { it[onboardingKey] ?: true }.first()
+    }
+
+    private fun handleDeviceIntent(intent: Intent?) = runBlocking {
+        intent ?: return@runBlocking
+        if (intent.action != "io.github.deprec8.enigmadroid.OPEN_WITH_DEVICE") return@runBlocking
+        val deviceId = intent.getIntExtra("device_id", -1)
+        if (deviceId != -1) {
+            val currentDeviceId = devicesRepository.getCurrentDeviceId().first()
+            if (deviceId != currentDeviceId) {
+                devicesRepository.setCurrentDeviceId(deviceId)
+            }
+        }
     }
 }
