@@ -21,7 +21,6 @@ package io.github.deprec8.enigmadroid.ui.root
 
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
@@ -40,22 +39,15 @@ import io.github.deprec8.enigmadroid.ui.remotecontrol.RemoteControlPage
 fun RootNavigationDisplay(
     isOnboardingNeeded: Boolean, isRemoteControlDeepLink: Boolean
 ) {
-
-    val rootBackStack = when {
-        isRemoteControlDeepLink && !isOnboardingNeeded -> rememberNavBackStack(
-            RootKeys.Main, RootKeys.RemoteControl
-        )
-
-        !isOnboardingNeeded -> rememberNavBackStack(RootKeys.Main)
-
-        else -> rememberNavBackStack(RootKeys.Onboarding)
+    val initialElements = if (isOnboardingNeeded) {
+        arrayOf(RootKeys.Onboarding)
+    } else if (isRemoteControlDeepLink) {
+        arrayOf(RootKeys.Main, RootKeys.RemoteControl)
+    } else {
+        arrayOf(RootKeys.Main)
     }
 
-    LaunchedEffect(isRemoteControlDeepLink) {
-        if (isRemoteControlDeepLink && rootBackStack.lastOrNull() != RootKeys.RemoteControl) {
-            rootBackStack.add(RootKeys.RemoteControl)
-        }
-    }
+    val rootBackStack = rememberNavBackStack(*initialElements)
 
     Surface {
         NavDisplay(

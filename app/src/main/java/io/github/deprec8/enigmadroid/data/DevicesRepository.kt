@@ -28,11 +28,13 @@ import io.github.deprec8.enigmadroid.common.enums.LoadingState
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.data.source.local.devices.DeviceDatabase
 import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class DevicesRepository @Inject constructor(
@@ -89,7 +91,7 @@ class DevicesRepository @Inject constructor(
         return deviceDatabase.deviceDao().getAll()
     }
 
-    suspend fun deleteDevice(deviceId: Int) {
+    suspend fun deleteDevice(deviceId: Int) = withContext(NonCancellable) {
         deviceDatabase.deviceDao().delete(deviceId)
         if (deviceDatabase.deviceDao().getAll().firstOrNull().isNullOrEmpty()) {
             dataStore.edit { preferences ->
@@ -98,12 +100,12 @@ class DevicesRepository @Inject constructor(
         }
     }
 
-    suspend fun editDevice(oldDevice: Device, newDevice: Device) {
+    suspend fun editDevice(oldDevice: Device, newDevice: Device) = withContext(NonCancellable) {
         deviceDatabase.deviceDao().update(newDevice.copy(id = oldDevice.id))
         updateLoadingState()
     }
 
-    suspend fun addDevice(device: Device) {
+    suspend fun addDevice(device: Device) = withContext(NonCancellable) {
         deviceDatabase.deviceDao().insert(device)
         if (deviceDatabase.deviceDao().getAll().first().size == 1) {
             updateLoadingState()

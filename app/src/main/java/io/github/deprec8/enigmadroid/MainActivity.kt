@@ -28,15 +28,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.datastore.preferences.core.booleanPreferencesKey
 import dagger.hilt.android.AndroidEntryPoint
-import io.github.deprec8.enigmadroid.common.constant.PreferenceKeys
 import io.github.deprec8.enigmadroid.data.DevicesRepository
-import io.github.deprec8.enigmadroid.data.source.local.dataStore
+import io.github.deprec8.enigmadroid.data.OnboardingRepository
 import io.github.deprec8.enigmadroid.ui.root.RootNavigationDisplay
 import io.github.deprec8.enigmadroid.ui.theme.EnigmaDroidTheme
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
@@ -46,11 +43,11 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var devicesRepository: DevicesRepository
 
-    private val onboardingKey = booleanPreferencesKey(PreferenceKeys.ONBOARDING_NEEDED)
+    @Inject
+    lateinit var onboardingRepository: OnboardingRepository
 
     private var isOnboardingNeeded by mutableStateOf(false)
     private var isRemoteControlDeepLink by mutableStateOf(false)
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         var isSetupFinished = false
@@ -63,7 +60,9 @@ class MainActivity : ComponentActivity() {
         isSetupFinished = true
         setContent {
             EnigmaDroidTheme {
-                RootNavigationDisplay(isOnboardingNeeded, isRemoteControlDeepLink)
+                RootNavigationDisplay(
+                    isOnboardingNeeded, isRemoteControlDeepLink
+                )
             }
         }
     }
@@ -82,6 +81,8 @@ class MainActivity : ComponentActivity() {
             if (!isDeepLink) {
                 handleDeviceIntent(intent)
             }
+        } else {
+            isRemoteControlDeepLink = false
         }
     }
 
@@ -92,7 +93,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun checkIsOnboardingNeeded(): Boolean = runBlocking {
-        dataStore.data.map { it[onboardingKey] ?: true }.first()
+        return@runBlocking onboardingRepository.isOnboardingNeeded()
     }
 
     private fun handleDeviceIntent(intent: Intent?) = runBlocking {

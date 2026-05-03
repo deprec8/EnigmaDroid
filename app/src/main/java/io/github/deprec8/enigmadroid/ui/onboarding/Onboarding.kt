@@ -55,8 +55,7 @@ import io.github.deprec8.enigmadroid.ui.components.DeviceSetupCard
 
 @Composable
 fun OnboardingPage(
-    onOnboardingFinished: () -> Unit,
-    onboardingViewModel: OnboardingViewModel = hiltViewModel()
+    onOnboardingFinished: () -> Unit, onboardingViewModel: OnboardingViewModel = hiltViewModel()
 ) {
     val isEveryFieldFilled by onboardingViewModel.isEveryFieldFilled.collectAsStateWithLifecycle()
 
@@ -78,7 +77,7 @@ fun OnboardingPage(
                     }
                     Button(
                         onClick = {
-                            onboardingViewModel.completeOnboardingWithDevice()
+                            onboardingViewModel.finishOnboardingWithDevice()
                             onOnboardingFinished()
                         }, enabled = isEveryFieldFilled, modifier = Modifier.padding(16.dp)
                     ) {
@@ -126,7 +125,7 @@ fun OnboardingPage(
         AlertDialog(onDismissRequest = { showSkipDialog = false }, confirmButton = {
             TextButton(onClick = {
                 showSkipDialog = false
-                onboardingViewModel.completeOnboarding()
+                onboardingViewModel.finishOnboarding()
                 onOnboardingFinished()
             }) {
                 Text(stringResource(R.string.skip))
