@@ -232,6 +232,7 @@
     <string name="go_top">Aller en haut</string>
     <string name="name_must_be_changed_and_can_t_be_blank">Le nom doit être changé et ne peut pas être vide.</string>
     <string name="directory_must_be_changed_and_must_start_and_end_with">Le répertoire doit être changé et doit commencer et se terminer par \"/\".</string>
+    <string name="power_menu">Menu d\'alimentation</string>
     <plurals name="files">
         <item quantity="one">%1$d fichier</item>
         <item quantity="other">%1$d fichiers</item>
