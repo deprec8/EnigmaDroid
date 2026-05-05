@@ -297,15 +297,6 @@ fun MainNavigationDisplay(
         }
     }
 
-    val navigationDisplay = remember {
-        movableContentOf {
-            NavDisplay(
-                entries = drawerNavigationState.toEntries(entryProvider),
-                onBack = { drawerNavigator.goBack() },
-                sceneStrategies = remember { listOf(DialogSceneStrategy()) })
-        }
-    }
-
     if (isSmallScreenLayout) {
         ModalNavigationDrawer(
             drawerState = modalDrawerState,
@@ -322,7 +313,10 @@ fun MainNavigationDisplay(
                 }
             },
         ) {
-            navigationDisplay()
+            NavDisplay(
+                entries = drawerNavigationState.toEntries(entryProvider),
+                onBack = { drawerNavigator.goBack() },
+                sceneStrategies = remember { listOf(DialogSceneStrategy()) })
         }
     } else {
         PermanentNavigationDrawer(
@@ -337,7 +331,10 @@ fun MainNavigationDisplay(
                     drawerContent()
                 }
             }) {
-            navigationDisplay()
+            NavDisplay(
+                entries = drawerNavigationState.toEntries(entryProvider),
+                onBack = { drawerNavigator.goBack() },
+                sceneStrategies = remember { listOf(DialogSceneStrategy()) })
         }
     }
 }
