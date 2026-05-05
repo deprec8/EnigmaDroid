@@ -105,30 +105,28 @@ class OnboardingViewModel @Inject constructor(
         isLogin = !isLogin
     }
 
-    fun completeOnboardingWithDevice() {
+    fun finishOnboardingWithDevice() {
         viewModelScope.launch {
-            if (_isEveryFieldFilled.value) {
-                devicesRepository.addDevice(
-                    Device(
-                        0,
-                        nameState.text.toString(),
-                        ipState.text.toString().trim(),
-                        isHttps,
-                        isLogin,
-                        userState.text.toString(),
-                        passwordState.text.toString(),
-                        portState.text.toString().trim(),
-                        livePortState.text.toString().trim()
-                    )
-                )
-                onboardingRepository.completeOnboarding()
-            }
+            onboardingRepository.finishOnboarding()
+            val newDevice = Device(
+                0,
+                nameState.text.toString(),
+                ipState.text.toString().trim(),
+                isHttps,
+                isLogin,
+                userState.text.toString(),
+                passwordState.text.toString(),
+                portState.text.toString().trim(),
+                livePortState.text.toString().trim()
+            )
+            devicesRepository.addDevice(newDevice)
         }
     }
 
-    fun completeOnboarding() {
+
+    fun finishOnboarding() {
         viewModelScope.launch {
-            onboardingRepository.completeOnboarding()
+            onboardingRepository.finishOnboarding()
         }
     }
 }

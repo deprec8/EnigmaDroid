@@ -19,11 +19,8 @@
 
 package io.github.deprec8.enigmadroid.ui.components.navigation
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,49 +39,45 @@ import androidx.navigation3.runtime.serialization.NavKeySerializer
 import androidx.savedstate.compose.serialization.serializers.MutableStateSerializer
 
 @Composable
-fun rememberNavigationState(
-    startRoute: NavKey, topLevelRoutes: Set<NavKey>, deepLinkRoute: NavKey? = null
-): NavigationState {
+fun rememberDrawerNavigationState(
+    startKey: NavKey, topLevelKeys: Set<NavKey>
+): DrawerNavigationState {
 
-    val topLevelRoute = rememberSerializable(
-        startRoute, topLevelRoutes, serializer = MutableStateSerializer(NavKeySerializer())
+    val topLevelKey = rememberSerializable(
+        startKey, topLevelKeys, serializer = MutableStateSerializer(NavKeySerializer())
     ) {
-        mutableStateOf(startRoute)
+        mutableStateOf(startKey)
     }
 
-    val backStacks = topLevelRoutes.associateWith { key ->
-        if (key == startRoute && deepLinkRoute != null) {
-            rememberNavBackStack(key, deepLinkRoute)
-        } else {
-            rememberNavBackStack(key)
-        }
+    val backStacks = topLevelKeys.associateWith { key ->
+        rememberNavBackStack(key)
     }
 
 
-    return remember(startRoute, topLevelRoutes) {
-        NavigationState(
-            startRoute = startRoute, topLevelRoute = topLevelRoute, backStacks = backStacks
+    return remember(startKey, topLevelKeys) {
+        DrawerNavigationState(
+            startKey = startKey, topLevelKey = topLevelKey, backStacks = backStacks
         )
     }
 }
 
-class NavigationState(
-    val startRoute: NavKey,
-    topLevelRoute: MutableState<NavKey>,
+class DrawerNavigationState(
+    val startKey: NavKey,
+    topLevelKey: MutableState<NavKey>,
     val backStacks: Map<NavKey, NavBackStack<NavKey>>
 ) {
 
-    var topLevelRoute: NavKey by topLevelRoute
+    var topLevelKey: NavKey by topLevelKey
     val stacksInUse: List<NavKey>
-        get() = if (topLevelRoute == startRoute) {
-            listOf(startRoute)
+        get() = if (topLevelKey == startKey) {
+            listOf(startKey)
         } else {
-            listOf(startRoute, topLevelRoute)
+            listOf(startKey, topLevelKey)
         }
 }
 
 @Composable
-fun NavigationState.toEntries(
+fun DrawerNavigationState.toEntries(
     entryProvider: (NavKey) -> NavEntry<NavKey>
 ): SnapshotStateList<NavEntry<NavKey>> {
 
@@ -101,35 +94,32 @@ fun NavigationState.toEntries(
     return stacksInUse.flatMap { decoratedEntries[it] ?: emptyList() }.toMutableStateList()
 }
 
-class Navigator(val state: NavigationState) {
+class DrawerNavigator(val state: DrawerNavigationState) {
 
     fun navigate(route: NavKey) {
         if (route in state.backStacks.keys) {
-            state.topLevelRoute = route
+            state.topLevelKey = route
         } else {
-            state.backStacks[state.topLevelRoute]?.add(route)
+            state.backStacks[state.topLevelKey]?.add(route)
         }
     }
 
     fun goBack() {
-        val currentStack = state.backStacks[state.topLevelRoute]
-            ?: error("Stack for ${state.topLevelRoute} not found")
-        val currentRoute = currentStack.last()
+        val currentStack =
+            state.backStacks[state.topLevelKey] ?: error("Stack for ${state.topLevelKey} not found")
+        val currentKey = currentStack.last()
 
-        if (currentRoute == state.topLevelRoute) {
-            state.topLevelRoute = state.startRoute
+        if (currentKey == state.topLevelKey) {
+            state.topLevelKey = state.startKey
         } else {
             currentStack.removeLastOrNull()
         }
     }
 
     fun goTop() {
-        val currentStack = state.backStacks[state.topLevelRoute]
-            ?: error("Stack for ${state.topLevelRoute} not found")
+        val currentStack =
+            state.backStacks[state.topLevelKey] ?: error("Stack for ${state.topLevelKey} not found")
 
-        currentStack.replaceAll { state.topLevelRoute }
+        currentStack.replaceAll { state.topLevelKey }
     }
 }
-
-@OptIn(ExperimentalSharedTransitionApi::class)
-val LocalSharedTransitionScope = compositionLocalOf<SharedTransitionScope?> { null }

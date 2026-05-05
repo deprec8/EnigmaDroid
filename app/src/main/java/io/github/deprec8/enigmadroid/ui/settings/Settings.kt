@@ -47,7 +47,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation3.runtime.NavKey
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.model.navigation.SettingsPages
+import io.github.deprec8.enigmadroid.common.constant.SettingsKeys
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.DrawerNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
@@ -96,7 +96,7 @@ fun SettingsPage(
                     Icon(Icons.Outlined.ConnectedTv, contentDescription = null)
                 },
                 modifier = Modifier.clickable(onClick = {
-                    onNavigateToSettingsPage(SettingsPages.Devices)
+                    onNavigateToSettingsPage(SettingsKeys.Devices)
                 })
             )
             ListItem(
@@ -111,7 +111,7 @@ fun SettingsPage(
                     Icon(Icons.AutoMirrored.Outlined.ManageSearch, contentDescription = null)
                 },
                 modifier = Modifier.clickable(onClick = {
-                    onNavigateToSettingsPage(SettingsPages.Search)
+                    onNavigateToSettingsPage(SettingsKeys.Search)
                 })
             )
             ListItem(
@@ -126,7 +126,7 @@ fun SettingsPage(
                     Icon(Icons.Outlined.Dialpad, contentDescription = null)
                 },
                 modifier = Modifier.clickable(onClick = {
-                    onNavigateToSettingsPage(SettingsPages.RemoteControl)
+                    onNavigateToSettingsPage(SettingsKeys.RemoteControl)
                 })
             )
             ListItem(
@@ -137,7 +137,7 @@ fun SettingsPage(
                 }, leadingContent = {
                     Icon(Icons.Outlined.Info, contentDescription = null)
                 }, modifier = Modifier.clickable(onClick = {
-                    onNavigateToSettingsPage(SettingsPages.About)
+                    onNavigateToSettingsPage(SettingsKeys.About)
                 })
             )
         }
