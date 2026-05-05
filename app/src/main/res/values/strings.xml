@@ -247,6 +247,7 @@
     <string name="go_top">Go top</string>
     <string name="name_must_be_changed_and_can_t_be_blank">Name must be changed and can\'t be blank.</string>
     <string name="directory_must_be_changed_and_must_start_and_end_with">Directory must be changed and must start and end with \"/\".</string>
+    <string name="power_menu">Power menu</string>
     <plurals name="files">
         <item quantity="one">%1$d file</item>
         <item quantity="other">%1$d files</item>
