@@ -232,6 +232,7 @@
     <string name="go_top">Вверх</string>
     <string name="name_must_be_changed_and_can_t_be_blank">Имя должно быть изменено и не может быть пустым.</string>
     <string name="directory_must_be_changed_and_must_start_and_end_with">Каталог должен быть изменен и должен начинаться и заканчиваться \"/\".</string>
+    <string name="power_menu">Меню питания</string>
     <plurals name="files">
         <item quantity="one">%1$d файл</item>
         <item quantity="few">%1$d Файла</item>

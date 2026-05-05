@@ -1,1 +1,35 @@
-<p><strong>EnigmaDroid</strong> es una aplicación moderna y amigable con el usuario que te permite controlar tu caja de configuración satelital o cable basada en Enigma2 directamente desde tu dispositivo Android.</p><p>En cualquier parte de tu hogar, <strong>EnigmaDroid</strong> te da acceso completo a las características y contenido de tu receptor.</p><h3>Funciones</h3><ul><li><strong>Canal y Lista de Bouquet</strong>: Navega rápidamente por el canal completo y por los fuets favoritos.</li><li><strong>Administración de temporizadores</strong>: Añadir, eliminar o editar temporizadores y grabaciones programadas.</li><li><strong>Transmitir grabaciones</strong>: Navega y reproduce tus series y películas guardadas.</li><li><strong>Soporte EPG</strong>: Ver los datos de la Guía Electrónica del Programa con información detallada de la muestra para cada que.</li><li><strong>Control remoto</strong>: Control remoto a pantalla completo con teclado.</li><li><strong>Live TV Streaming</strong>: Mira transmisiones en directo desde tu caja Enigma2 en tu dispositivo usando un reproductor de vídeo compatible.</li><li><strong>Buscar y Filtro</strong>: Encontrar canales o programas con búsqueda integrada en cada página.</li><li><strong>Soporte Multi-Box</strong>: Conéctese a múltiples receptores y cambie entre ellos con facilidad.</li></ul><h3>Streaming</h3><p><strong>EnigmaDroid</strong> actualmente utiliza reproductores de medios externos para transmitir TV en vivo y grabaciones.</p><p><strong>VLC</strong> es recomendado, aunque otros reproductores multimedia también pueden funcionar.</p><h3>Requisitos</h3><ul><li>Un decodificador basado en <strong>Enigma2</strong> (satélite o cable).</li><li>Plugin <strong>OpenWebif</strong> actualizado activado y configurado.</li></ul><h3>Compatibilidad</h3><p>Probado con imágenes Enigma2 populares.</p><p>Algunas imágenes, como <strong>VTi</strong>, pueden requerir actualizar manualmente el plugin OpenWebif para asegurar la compatibilidad completa.</p><h3>Fuente libre y abierta</h3><p>EnigmaDroid es totalmente de código abierto, respeta su privacidad y no contiene anuncios ni seguimientos. Las contribuciones y peticiones de características son bienvenidas en el repositorio GitHub del proyecto.</p>
+<strong>EnigmaDroid</strong> es una aplicación moderna y amigable con el usuario que te permite controlar tu caja de configuración satelital o cable basada en Enigma2 directamente desde tu dispositivo Android.
+
+En cualquier parte de tu hogar, <strong>EnigmaDroid</strong> te da acceso completo a las características y contenido de tu receptor.
+
+<strong>Funciones</strong>
+<ul>
+<li><strong>Canal y Lista de Bouquet</strong>: Navega rápidamente por el canal completo y por los fuets favoritos.</li>
+<li><strong>Administración de temporizadores</strong>: Añadir, eliminar o editar temporizadores y grabaciones programadas.</li>
+<li><strong>Transmitir grabaciones</strong>: Navega y reproduce tus series y películas guardadas.</li>
+<li><strong>Soporte EPG</strong>: Ver los datos de la Guía Electrónica del Programa con información detallada de la muestra para cada que.</li>
+<li><strong>Control remoto</strong>: Control remoto a pantalla completo con teclado.</li>
+<li><strong>Live TV Streaming</strong>: Mira transmisiones en directo desde tu caja Enigma2 en tu dispositivo usando un reproductor de vídeo compatible.</li>
+<li><strong>Buscar y Filtro</strong>: Encontrar canales o programas con búsqueda integrada en cada página.</li>
+<li><strong>Soporte Multi-Box</strong>: Conéctese a múltiples receptores y cambie entre ellos con facilidad.</li>
+</ul>
+<strong>Streaming</strong>
+
+<strong>EnigmaDroid</strong> actualmente utiliza reproductores de medios externos para transmitir TV en vivo y grabaciones.
+
+<strong>VLC</strong> es recomendado, aunque otros reproductores multimedia también pueden funcionar.
+
+<strong>Requisitos</strong>
+<ul>
+<li>Un decodificador basado en <strong>Enigma2</strong> (satélite o cable).</li>
+<li>Plugin <strong>OpenWebif</strong> actualizado activado y configurado.</li>
+</ul>
+<strong>Compatibilidad</strong>
+
+Probado con imágenes Enigma2 populares.
+
+Algunas imágenes, como <strong>VTi</strong>, pueden requerir actualizar manualmente el plugin OpenWebif para asegurar la compatibilidad completa.
+
+<strong>Fuente libre y abierta</strong>
+
+EnigmaDroid es totalmente de código abierto, respeta su privacidad y no contiene anuncios ni seguimientos. Las contribuciones y peticiones de características son bienvenidas en el repositorio GitHub del proyecto.
