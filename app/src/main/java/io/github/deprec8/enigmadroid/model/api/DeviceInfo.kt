@@ -29,23 +29,29 @@ import kotlinx.serialization.Serializable
 data class DeviceInfo(
     @SerialName("tuners") val tuners: List<Tuner> = emptyList(),
     @SerialName("ifaces") val interfaces: List<Interface> = emptyList(),
-    @SerialName("fp_version") val fpVersion: Int = 0,
-    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("kernelver") val kernelVersion: String = "N/A",
-    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("uptime") val uptime: String = "N/A",
-    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("enigmaver") val enigmaVersion: String = "N/A",
-    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("imagever") val imageVersion: String = "N/A",
+    @SerialName("hdd") val hdds: List<Hdd> = emptyList(),
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("brand") val brand: String = "N/A",
-    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("webifver") val webifVersion: String = "N/A",
-    @SerialName("hdd") val hdds: List<HDD> = emptyList(),
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("model") val model: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("chipset") val chipset: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("boxtype") val boxType: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("imagedistro") val imageDistro: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("imagever") val imageVersion: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("kernelver") val kernelVersion: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("enigmaver") val enigmaVersion: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("webifver") val owifVersion: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("oever") val oeSystemVersion: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("driverdate") val driverDate: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("uptime") val uptime: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("mem1") val totalMemory: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("mem2") val freeMemory: String = "N/A"
 )
 
 @Immutable
 @Serializable
-data class HDD(
+data class Hdd(
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("capacity") val capacity: String = "N/A",
-    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("mount") val mount: String = "N/A",
-    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("free") val free: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("mount") val mountDirectory: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("free") val freeSpace: String = "N/A",
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("model") val model: String = "N/A"
 )
 
@@ -53,7 +59,12 @@ data class HDD(
 @Serializable
 data class Interface(
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("ip") val ip: String = "N/A",
-    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("name") val name: String = "N/A"
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("name") val name: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("friendlynic") val friendlyNic: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("gw") val gateway: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("linkspeed") val linkSpeed: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("firstpublic") val firstPublicIpv6: String = "N/A",
+    @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("ipv4method") val ipv4Method: String = "N/A"
 )
 
 @Immutable

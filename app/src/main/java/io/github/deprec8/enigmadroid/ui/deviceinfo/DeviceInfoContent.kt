@@ -30,7 +30,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Apps
-import androidx.compose.material.icons.outlined.SettingsEthernet
+import androidx.compose.material.icons.outlined.ConnectedTv
+import androidx.compose.material.icons.outlined.Router
 import androidx.compose.material.icons.outlined.SimCard
 import androidx.compose.material.icons.outlined.Storage
 import androidx.compose.material3.HorizontalDivider
@@ -60,7 +61,45 @@ fun DeviceInfoContent(
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Column {
                     ListItem(headlineContent = {
-                        Text(stringResource(R.string.general))
+                        Text(stringResource(R.string.hardware))
+                    }, leadingContent = {
+                        Icon(
+                            Icons.Outlined.ConnectedTv, null
+                        )
+                    })
+                    HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+                }
+            }
+            item {
+                ListItem(
+                    headlineContent = { Text(text = stringResource(R.string.brand_model)) },
+                    supportingContent = { Text(text = "${deviceInfo.brand} ${deviceInfo.model} (${deviceInfo.boxType})") })
+            }
+            item {
+                ListItem(
+                    headlineContent = { Text(text = stringResource(R.string.chipset)) },
+                    supportingContent = { Text(text = deviceInfo.chipset) })
+            }
+            item {
+                ListItem(
+                    headlineContent = { Text(text = stringResource(R.string.memory)) },
+                    supportingContent = {
+                        Text(
+                            text = "${deviceInfo.totalMemory} (" + stringResource(
+                                R.string.free, deviceInfo.freeMemory
+                            ) + ")"
+                        )
+                    })
+            }
+            item {
+                ListItem(
+                    headlineContent = { Text(text = stringResource(R.string.uptime)) },
+                    supportingContent = { Text(text = deviceInfo.uptime) })
+            }
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                Column {
+                    ListItem(headlineContent = {
+                        Text(stringResource(R.string.software))
                     }, leadingContent = {
                         Icon(
                             Icons.Outlined.Apps, null
@@ -71,46 +110,23 @@ fun DeviceInfoContent(
             }
             item {
                 ListItem(
-                    headlineContent = { Text(text = stringResource(R.string.brand)) },
-                    supportingContent = { Text(text = deviceInfo.brand) })
+                    headlineContent = { Text(text = stringResource(R.string.oe_system)) },
+                    supportingContent = { Text(text = deviceInfo.oeSystemVersion) })
             }
             item {
                 ListItem(
-                    headlineContent = { Text(text = stringResource(R.string.model)) },
-                    supportingContent = { Text(text = deviceInfo.model) })
+                    headlineContent = { Text(text = stringResource(R.string.firmware)) },
+                    supportingContent = { Text(text = "${deviceInfo.imageDistro} ${deviceInfo.imageVersion} (${deviceInfo.enigmaVersion})") })
             }
             item {
                 ListItem(
-                    headlineContent = { Text(text = stringResource(R.string.uptime)) },
-                    supportingContent = { Text(text = deviceInfo.uptime) })
+                    headlineContent = { Text(text = stringResource(R.string.kernel_drivers)) },
+                    supportingContent = { Text(text = "${deviceInfo.kernelVersion} (${deviceInfo.driverDate})") })
             }
             item {
                 ListItem(
-                    headlineContent = { Text(text = stringResource(R.string.image)) },
-                    supportingContent = { Text(text = deviceInfo.imageVersion) })
-            }
-            item {
-                ListItem(
-                    headlineContent = { Text(text = stringResource(R.string.gui)) },
-                    supportingContent = { Text(text = deviceInfo.enigmaVersion) })
-
-            }
-            item {
-                ListItem(
-                    headlineContent = { Text(text = stringResource(R.string.frontp)) },
-                    supportingContent = { Text(text = deviceInfo.fpVersion.toString()) })
-
-            }
-            item {
-                ListItem(
-                    headlineContent = { Text(text = stringResource(R.string.kernel)) },
-                    supportingContent = { Text(text = deviceInfo.kernelVersion) })
-
-            }
-            item {
-                ListItem(
-                    headlineContent = { Text(text = stringResource(R.string.interface_res)) },
-                    supportingContent = { Text(text = deviceInfo.webifVersion) })
+                    headlineContent = { Text(text = stringResource(R.string.openwebif)) },
+                    supportingContent = { Text(text = deviceInfo.owifVersion) })
             }
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Column {
@@ -134,10 +150,10 @@ fun DeviceInfoContent(
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Column {
                     ListItem(headlineContent = {
-                        Text(stringResource(R.string.network))
+                        Text(stringResource(R.string.interfaces))
                     }, leadingContent = {
                         Icon(
-                            Icons.Outlined.SettingsEthernet, null
+                            Icons.Outlined.Router, null
                         )
                     })
                     HorizontalDivider(Modifier.padding(horizontal = 16.dp))
@@ -146,8 +162,14 @@ fun DeviceInfoContent(
             items(deviceInfo.interfaces) { iface ->
                 ListItem(headlineContent = { Text(text = iface.name) }, supportingContent = {
                     Text(
-                        text = iface.ip
-                    )
+                        text = buildString {
+                            appendLine(stringResource(R.string.ip_address, iface.ip))
+                            appendLine(stringResource(R.string.ip_method, iface.ipv4Method))
+                            appendLine(stringResource(R.string.ipv6_address, iface.firstPublicIpv6))
+                            appendLine(stringResource(R.string.link_speed, iface.linkSpeed))
+                            appendLine(stringResource(R.string.gateway, iface.gateway))
+                            append(stringResource(R.string.adapter, iface.friendlyNic))
+                        })
                 })
             }
             item(span = { GridItemSpan(maxLineSpan) }) {
@@ -164,11 +186,11 @@ fun DeviceInfoContent(
             }
             items(deviceInfo.hdds) { hdd ->
                 ListItem(
-                    headlineContent = { Text(text = "${hdd.model} (${hdd.mount})") },
+                    headlineContent = { Text(text = "${hdd.model} (${hdd.mountDirectory})") },
                     supportingContent = {
                         Text(
-                            text = "${hdd.capacity} (${hdd.free} " + stringResource(
-                                R.string.free
+                            text = "${hdd.capacity} (" + stringResource(
+                                R.string.free, hdd.freeSpace
                             ) + ")"
                         )
                     })
