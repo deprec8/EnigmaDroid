@@ -239,6 +239,7 @@
     <string name="memory">Mémoire</string>
     <string name="chipset">Puce électronique</string>
     <string name="brand_model"><![CDATA[Marque et Modèle]]></string>
+    <string name="switch_device">Changer d\'appareil</string>
     <plurals name="files">
         <item quantity="one">%1$d fichier</item>
         <item quantity="other">%1$d fichiers</item>

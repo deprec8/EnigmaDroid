@@ -239,6 +239,7 @@
     <string name="memory">Память</string>
     <string name="chipset">Чипсет</string>
     <string name="brand_model"><![CDATA[Бренд и модель]]></string>
+    <string name="switch_device">Выбрать другое устройство</string>
     <plurals name="files">
         <item quantity="one">%1$d файл</item>
         <item quantity="few">%1$d Файла</item>
