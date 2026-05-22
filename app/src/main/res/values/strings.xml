@@ -254,6 +254,7 @@
     <string name="memory">Memory</string>
     <string name="chipset">Chipset</string>
     <string name="brand_model"><![CDATA[Brand & Model]]></string>
+    <string name="switch_device">Switch device</string>
     <plurals name="files">
         <item quantity="one">%1$d file</item>
         <item quantity="other">%1$d files</item>

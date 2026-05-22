@@ -79,6 +79,7 @@ fun MainNavigationDisplay(
     onNavigateToRemoteControl: () -> Unit, mainViewModel: MainViewModel = hiltViewModel()
 ) {
     val currentDevice by mainViewModel.currentDevice.collectAsStateWithLifecycle()
+    val devices by mainViewModel.devices.collectAsStateWithLifecycle()
     val loadingState by mainViewModel.loadingState.collectAsStateWithLifecycle()
 
     val isSmallScreenLayout = isSmallScreenLayout()
@@ -278,6 +279,7 @@ fun MainNavigationDisplay(
         movableContentOf {
             DrawerContent(
                 currentDevice = currentDevice,
+                devices = devices,
                 scrollState = drawerScrollState,
                 loadingState = loadingState,
                 currentTopLevelRoute = drawerNavigationState.topLevelKey,
@@ -293,6 +295,7 @@ fun MainNavigationDisplay(
                 onOpenOwif = {
                     scope.launch { IntentUtils.openOwif(context, mainViewModel.buildOwifUrl()) }
                 },
+                onSetCurrentDevice = mainViewModel::setCurrentDevice
             )
         }
     }

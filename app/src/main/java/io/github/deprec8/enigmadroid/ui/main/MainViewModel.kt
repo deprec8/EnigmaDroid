@@ -44,6 +44,9 @@ class MainViewModel @Inject constructor(
     private val _currentDevice = MutableStateFlow<Device?>(null)
     val currentDevice: StateFlow<Device?> = _currentDevice.asStateFlow()
 
+    private val _devices = MutableStateFlow<List<Device>>(emptyList())
+    val devices = _devices.asStateFlow()
+
     private val _loadingState = MutableStateFlow(LoadingState.LOADING)
     val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
 
@@ -58,6 +61,11 @@ class MainViewModel @Inject constructor(
                 _loadingState.value = state
             }
         }
+        viewModelScope.launch {
+            devicesRepository.getAllDevices().collectLatest { devices ->
+                _devices.value = devices
+            }
+        }
     }
 
     suspend fun updateLoadingState(forceUpdate: Boolean) {
@@ -66,5 +74,11 @@ class MainViewModel @Inject constructor(
 
     suspend fun buildOwifUrl(): String {
         return apiRepository.buildOwifUrl()
+    }
+
+    fun setCurrentDevice(device: Device) {
+        viewModelScope.launch {
+            devicesRepository.setCurrentDevice(device)
+        }
     }
 }
