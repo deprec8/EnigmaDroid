@@ -1,0 +1,4 @@
+- Added a button to quickly switch devices
+- Improved the device info page
+- Synced Crowdin translations
+- Some other fixes and updates

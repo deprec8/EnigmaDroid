@@ -36,8 +36,8 @@ android {
         applicationId = "io.github.deprec8.enigmadroid"
         minSdk = 28
         targetSdk = 37
-        versionCode = 17
-        versionName = "1.9.0"
+        versionCode = 18
+        versionName = "1.9.1"
 
         vectorDrawables {
             useSupportLibrary = true
