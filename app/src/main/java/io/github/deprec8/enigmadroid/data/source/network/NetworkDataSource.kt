@@ -56,15 +56,10 @@ class NetworkDataSource @Inject constructor(
     private val loadingStateKey = intPreferencesKey(PreferenceKeys.LOADING_STATE)
 
     private suspend fun getCurrentDevice(): Device? {
-        val listId = dataStore.data.map { preferences ->
-            preferences[currentDeviceKey]
-        }.firstOrNull()
-        val allDevices = deviceDatabase.deviceDao().getAll().firstOrNull()
-        return if (allDevices.isNullOrEmpty()) {
-            null
-        } else {
-            allDevices[listId ?: 0]
-        }
+        val id = dataStore.data.map { preferences ->
+            preferences[currentDeviceKey] ?: -1
+        }.first()
+        return deviceDatabase.deviceDao().get(id).firstOrNull()
     }
 
     private suspend fun updateLoadingState(exception: Exception) {

@@ -35,7 +35,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
@@ -92,7 +92,7 @@ fun DevicesPage(
     devicesViewModel: DevicesViewModel = hiltViewModel(),
 ) {
 
-    val currentDeviceId by devicesViewModel.currentDeviceId.collectAsStateWithLifecycle()
+    val currentDevice by devicesViewModel.currentDeviceId.collectAsStateWithLifecycle()
     val devices by devicesViewModel.devices.collectAsStateWithLifecycle()
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -163,7 +163,7 @@ fun DevicesPage(
                 contentPadding = innerPadding,
                 columns = GridCells.Adaptive(350.dp),
             ) {
-                itemsIndexed(devices, key = { _, device -> device.id }) { index, device ->
+                items(devices, key = { device -> device.id }) { device ->
                     var showDropDownMenu by rememberSaveable {
                         mutableStateOf(false)
                     }
@@ -181,13 +181,13 @@ fun DevicesPage(
                         }, modifier = Modifier
                             .clickable(
                                 onClick = {
-                                    if (currentDeviceId != index) {
-                                        devicesViewModel.setCurrentDevice(index)
+                                    if (device.id != currentDevice) {
+                                        devicesViewModel.setCurrentDevice(device)
                                     }
                                 })
                             .animateItem(), leadingContent = {
                             AnimatedVisibility(
-                                visible = currentDeviceId == index,
+                                visible = device.id == currentDevice,
                                 enter = expandIn(expandFrom = Alignment.Center) + fadeIn(),
                                 exit = shrinkOut(shrinkTowards = Alignment.Center) + fadeOut()
                             ) {
@@ -229,7 +229,7 @@ fun DevicesPage(
                                         onClick = {
                                             showDropDownMenu = false
                                             IntentUtils.pinDevice(
-                                                context, device, index
+                                                context, device
                                             )
 
                                         })
@@ -300,7 +300,7 @@ fun DevicesPage(
                                                 "device_${device.id}", "openwebif_${device.id}"
                                             )
                                         )
-                                        devicesViewModel.deleteDevice(index)
+                                        devicesViewModel.deleteDevice(device)
 
                                     }) { Text(stringResource(R.string.confirm)) }
                             },
@@ -322,8 +322,9 @@ fun DevicesPage(
                                                 .setShortLabel("${newDevice.name} (Web)").setIntent(
                                                     Intent(
                                                         Intent.ACTION_DEFAULT,
-                                                        devicesViewModel
-                                                            .buildDeviceOwifUrl(newDevice).toUri()
+                                                        devicesViewModel.buildDeviceOwifUrl(
+                                                            newDevice
+                                                        ).toUri()
                                                     )
                                                 ).build(),
                                             ShortcutInfo.Builder(context, "device_${it.id}")

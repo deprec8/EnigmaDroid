@@ -35,8 +35,8 @@ import javax.inject.Inject
 class DevicesViewModel @Inject constructor(private val devicesRepository: DevicesRepository) :
     ViewModel() {
 
-    private val _currentDeviceId = MutableStateFlow<Int?>(null)
-    val currentDeviceId: StateFlow<Int?> = _currentDeviceId.asStateFlow()
+    private val _currentDeviceId = MutableStateFlow(-1)
+    val currentDeviceId: StateFlow<Int> = _currentDeviceId.asStateFlow()
 
     private val _devices = MutableStateFlow<List<Device>>(emptyList())
     val devices: StateFlow<List<Device>> = _devices.asStateFlow()
@@ -56,22 +56,15 @@ class DevicesViewModel @Inject constructor(private val devicesRepository: Device
 
     fun buildDeviceOwifUrl(device: Device) = device.buildOwifUrl()
 
-    fun setCurrentDevice(listId: Int) {
+    fun setCurrentDevice(device: Device) {
         viewModelScope.launch {
-            devicesRepository.setCurrentDeviceId(listId)
+            devicesRepository.setCurrentDevice(device)
         }
     }
 
-    fun deleteDevice(listId: Int) {
+    fun deleteDevice(device: Device) {
         viewModelScope.launch {
-            devicesRepository.deleteDevice(_devices.value[listId].id)
-            if (_currentDeviceId.value == listId) {
-                devicesRepository.setCurrentDeviceId(0)
-            } else _currentDeviceId.value?.let {
-                if (it > listId) {
-                    devicesRepository.setCurrentDeviceId(it - 1)
-                }
-            }
+            devicesRepository.deleteDevice(device)
         }
     }
 

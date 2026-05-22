@@ -28,15 +28,17 @@ import io.github.deprec8.enigmadroid.common.enums.LoadingState
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.data.source.local.devices.DeviceDatabase
 import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class DevicesRepository @Inject constructor(
     private val deviceDatabase: DeviceDatabase,
     private val dataStore: DataStore<Preferences>,
@@ -64,26 +66,31 @@ class DevicesRepository @Inject constructor(
         }
     }
 
-    fun getCurrentDeviceId(): Flow<Int> {
-        return dataStore.data.map { preferences ->
-            preferences[currentDeviceKey] ?: 0
+    suspend fun setCurrentDevice(device: Device) {
+        dataStore.edit { preferences ->
+            preferences[currentDeviceKey] = device.id
         }
+        updateLoadingState()
     }
 
-    suspend fun setCurrentDeviceId(listId: Int) {
+    suspend fun setCurrentDeviceId(id: Int) {
         dataStore.edit { preferences ->
-            preferences[currentDeviceKey] = listId
+            preferences[currentDeviceKey] = id
         }
         updateLoadingState()
     }
 
     fun getCurrentDevice(): Flow<Device?> {
-        val listId = dataStore.data.map { preferences ->
-            preferences[currentDeviceKey]
+        return dataStore.data.map { preferences ->
+            preferences[currentDeviceKey] ?: -1
+        }.flatMapLatest { id ->
+            deviceDatabase.deviceDao().get(id)
         }
-        val allDevices = deviceDatabase.deviceDao().getAll()
-        return combine(listId, allDevices) { listIdF, allDevicesF ->
-            allDevicesF.getOrNull(listIdF ?: 0)
+    }
+
+    fun getCurrentDeviceId(): Flow<Int> {
+        return dataStore.data.map { preferences ->
+            preferences[currentDeviceKey] ?: -1
         }
     }
 
@@ -91,11 +98,23 @@ class DevicesRepository @Inject constructor(
         return deviceDatabase.deviceDao().getAll()
     }
 
-    suspend fun deleteDevice(deviceId: Int) = withContext(NonCancellable) {
-        deviceDatabase.deviceDao().delete(deviceId)
+    suspend fun deleteDevice(device: Device) = withContext(NonCancellable) {
+        val currentDeviceId = dataStore.data.map { preferences ->
+            preferences[currentDeviceKey] ?: -1
+        }.first()
+        val allDevices = deviceDatabase.deviceDao().getAll().firstOrNull()
+
+        deviceDatabase.deviceDao().delete(device)
+
         if (deviceDatabase.deviceDao().getAll().firstOrNull().isNullOrEmpty()) {
             dataStore.edit { preferences ->
                 preferences[loadingStateKey] = LoadingState.NO_DEVICE_AVAILABLE.id
+            }
+        }
+
+        if (currentDeviceId == device.id) {
+            dataStore.edit { preferences ->
+                preferences[currentDeviceKey] = allDevices?.first()?.id ?: -1
             }
         }
     }
@@ -107,7 +126,7 @@ class DevicesRepository @Inject constructor(
 
     suspend fun addDevice(device: Device) = withContext(NonCancellable) {
         deviceDatabase.deviceDao().insert(device)
-        if (deviceDatabase.deviceDao().getAll().first().size == 1) {
+        if (deviceDatabase.deviceDao().getAll().firstOrNull()?.size == 1) {
             updateLoadingState()
         }
     }

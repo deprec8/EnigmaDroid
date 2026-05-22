@@ -99,11 +99,11 @@ class MainActivity : ComponentActivity() {
     private fun handleDeviceIntent(intent: Intent?) = runBlocking {
         intent ?: return@runBlocking
         if (intent.action != "io.github.deprec8.enigmadroid.OPEN_WITH_DEVICE") return@runBlocking
-        val deviceId = intent.getIntExtra("device_id", -1)
-        if (deviceId != -1) {
+        val id = intent.getIntExtra("device_id", -1)
+        if (id != -1) {
             val currentDeviceId = devicesRepository.getCurrentDeviceId().first()
-            if (deviceId != currentDeviceId) {
-                devicesRepository.setCurrentDeviceId(deviceId)
+            if (id != currentDeviceId) {
+                devicesRepository.setCurrentDeviceId(id)
             }
         }
     }

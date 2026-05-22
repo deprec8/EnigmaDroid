@@ -20,6 +20,7 @@
 package io.github.deprec8.enigmadroid.data.source.local.devices
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
@@ -34,12 +35,12 @@ interface DeviceDao {
     @Update
     suspend fun update(device: Device)
 
-    @Query("DELETE FROM Device WHERE id = :deviceId")
-    suspend fun delete(deviceId: Int)
+    @Delete
+    suspend fun delete(device: Device)
 
     @Query("SELECT * FROM Device")
     fun getAll(): Flow<List<Device>>
 
-    @Query("SELECT * FROM Device WHERE id = :deviceId")
-    fun get(deviceId: Int): Flow<Device?>
+    @Query("SELECT * FROM Device WHERE id = :id")
+    fun get(id: Int): Flow<Device?>
 }

@@ -99,7 +99,7 @@ object IntentUtils {
         }
     }
 
-    fun pinDevice(context: Context, device: Device, deviceId: Int) {
+    fun pinDevice(context: Context, device: Device) {
         context.getSystemService(ShortcutManager::class.java).requestPinShortcut(
             ShortcutInfo.Builder(context, "device_${device.id}").setIcon(
                 Icon.createWithResource(
@@ -108,7 +108,7 @@ object IntentUtils {
             ).setShortLabel(device.name).setIntent(
                 Intent(
                     "io.github.deprec8.enigmadroid.OPEN_WITH_DEVICE",
-                ).putExtra("device_id", deviceId)
+                ).putExtra("device_id", device.id)
             ).build(), null
         )
     }
