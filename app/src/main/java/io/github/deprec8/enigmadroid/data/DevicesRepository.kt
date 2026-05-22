@@ -53,15 +53,9 @@ class DevicesRepository @Inject constructor(
             preferences[loadingStateKey] = LoadingState.LOADING.id
         }
 
-        if (networkDataSource.isNetworkAvailable()) {
-            if (networkDataSource.isDeviceOnline()) {
-                dataStore.edit { preferences ->
-                    preferences[loadingStateKey] = LoadingState.LOADED.id
-                }
-            }
-        } else {
+        if (networkDataSource.isDeviceOnline()) {
             dataStore.edit { preferences ->
-                preferences[loadingStateKey] = LoadingState.NO_NETWORK_AVAILABLE.id
+                preferences[loadingStateKey] = LoadingState.LOADED.id
             }
         }
     }

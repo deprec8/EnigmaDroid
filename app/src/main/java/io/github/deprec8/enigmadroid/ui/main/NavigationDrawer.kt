@@ -289,14 +289,6 @@ fun DeviceItem(
                         )
                     }
 
-                    LoadingState.NO_NETWORK_AVAILABLE -> {
-                        Text(
-                            stringResource(R.string.connect_to_a_network),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-
                     LoadingState.INVALID_DEVICE_RESPONSE -> {
                         Text(
                             stringResource(id = R.string.invalid_device_response),

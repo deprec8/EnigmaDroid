@@ -19,13 +19,11 @@
 
 package io.github.deprec8.enigmadroid.di
 
-import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.github.deprec8.enigmadroid.data.source.local.devices.DeviceDatabase
 import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
@@ -38,10 +36,9 @@ object NetworkDataSourceModule {
     @Singleton
     @Provides
     fun provideNetworkDataSource(
-        @ApplicationContext context: Context,
         deviceDatabase: DeviceDatabase,
         dataStore: DataStore<Preferences>
     ): NetworkDataSource {
-        return NetworkDataSource(dataStore, deviceDatabase, context)
+        return NetworkDataSource(dataStore, deviceDatabase)
     }
 }

@@ -19,8 +19,6 @@
 
 package io.github.deprec8.enigmadroid.data.source.network
 
-import android.content.Context
-import android.net.ConnectivityManager
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -47,9 +45,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class NetworkDataSource @Inject constructor(
-    private val dataStore: DataStore<Preferences>,
-    private val deviceDatabase: DeviceDatabase,
-    private val context: Context
+    private val dataStore: DataStore<Preferences>, private val deviceDatabase: DeviceDatabase
 ) {
 
     private val currentDeviceKey = intPreferencesKey(PreferenceKeys.CURRENT_DEVICE)
@@ -82,14 +78,8 @@ class NetworkDataSource @Inject constructor(
                 }
 
                 if (deviceDatabase.deviceDao().getAll().firstOrNull().isNullOrEmpty().not()) {
-                    if (isNetworkAvailable()) {
-                        dataStore.edit { preferences ->
-                            preferences[loadingStateKey] = LoadingState.DEVICE_NOT_ONLINE.id
-                        }
-                    } else {
-                        dataStore.edit { preferences ->
-                            preferences[loadingStateKey] = LoadingState.NO_NETWORK_AVAILABLE.id
-                        }
+                    dataStore.edit { preferences ->
+                        preferences[loadingStateKey] = LoadingState.DEVICE_NOT_ONLINE.id
                     }
                 } else {
                     dataStore.edit { preferences ->
@@ -124,15 +114,6 @@ class NetworkDataSource @Inject constructor(
                 connectionPool(ConnectionPool(5, 1, TimeUnit.MINUTES))
             }
         }
-    }
-
-    fun isNetworkAvailable(): Boolean {
-        val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
-        val activeNetwork = connectivityManager.activeNetwork
-
-        return activeNetwork != null
     }
 
     suspend fun isDeviceOnline(): Boolean = try {

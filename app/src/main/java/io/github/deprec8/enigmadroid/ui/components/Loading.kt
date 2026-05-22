@@ -153,26 +153,6 @@ fun LoadingScreen(
                     }
                 }
 
-                LoadingState.NO_NETWORK_AVAILABLE -> {
-                    Column {
-                        Text(
-                            text = stringResource(R.string.no_network_available),
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                                .padding(16.dp),
-                        )
-                        FilledTonalButton(
-                            onClick = { onReload(true) },
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
-                        ) {
-                            Text(stringResource(R.string.retry))
-                        }
-                    }
-                }
-
                 LoadingState.INVALID_DEVICE_RESPONSE -> {
                     Column {
                         Text(
@@ -233,8 +213,7 @@ fun NoResults(modifier: Modifier = Modifier) {
             .imePadding(), contentAlignment = Alignment.Center
     ) {
         Text(
-            text = stringResource(R.string.no_results),
-            textAlign = TextAlign.Center
+            text = stringResource(R.string.no_results), textAlign = TextAlign.Center
         )
     }
 }

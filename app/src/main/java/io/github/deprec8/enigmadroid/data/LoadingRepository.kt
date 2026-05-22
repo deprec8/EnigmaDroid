@@ -73,15 +73,9 @@ class LoadingRepository @Inject constructor(
             }
 
             if (deviceDatabase.deviceDao().getAll().firstOrNull().isNullOrEmpty().not()) {
-                if (networkDataSource.isNetworkAvailable()) {
-                    if (networkDataSource.isDeviceOnline()) {
-                        dataStore.edit { preferences ->
-                            preferences[loadingStateKey] = LoadingState.LOADED.id
-                        }
-                    }
-                } else {
+                if (networkDataSource.isDeviceOnline()) {
                     dataStore.edit { preferences ->
-                        preferences[loadingStateKey] = LoadingState.NO_NETWORK_AVAILABLE.id
+                        preferences[loadingStateKey] = LoadingState.LOADED.id
                     }
                 }
             } else {
