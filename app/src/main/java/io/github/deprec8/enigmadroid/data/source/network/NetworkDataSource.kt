@@ -26,8 +26,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import io.github.deprec8.enigmadroid.common.constant.PreferenceKeys
 import io.github.deprec8.enigmadroid.common.enums.LoadingState
 import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
-import io.github.deprec8.enigmadroid.data.source.local.devices.Device
-import io.github.deprec8.enigmadroid.data.source.local.devices.DeviceDatabase
+import io.github.deprec8.enigmadroid.data.source.local.devices.DevicesLocalDataSource
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpTimeout
@@ -38,25 +37,16 @@ import io.ktor.http.HttpHeaders
 import io.ktor.utils.io.CancellationException
 import io.ktor.utils.io.ClosedByteChannelException
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import okhttp3.ConnectionPool
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class NetworkDataSource @Inject constructor(
-    private val dataStore: DataStore<Preferences>, private val deviceDatabase: DeviceDatabase
+    private val dataStore: DataStore<Preferences>,
+    private val devicesLocalDataSource: DevicesLocalDataSource
 ) {
-
-    private val currentDeviceKey = intPreferencesKey(PreferenceKeys.CURRENT_DEVICE)
     private val loadingStateKey = intPreferencesKey(PreferenceKeys.LOADING_STATE)
-
-    private suspend fun getCurrentDevice(): Device? {
-        val id = dataStore.data.map { preferences ->
-            preferences[currentDeviceKey] ?: -1
-        }.first()
-        return deviceDatabase.deviceDao().get(id).firstOrNull()
-    }
 
     private suspend fun updateLoadingState(exception: Exception) {
         when (exception) {
@@ -77,7 +67,7 @@ class NetworkDataSource @Inject constructor(
                     }
                 }
 
-                if (deviceDatabase.deviceDao().getAll().firstOrNull().isNullOrEmpty().not()) {
+                if (devicesLocalDataSource.getAllDevicesStatic().isEmpty().not()) {
                     dataStore.edit { preferences ->
                         preferences[loadingStateKey] = LoadingState.DEVICE_NOT_ONLINE.id
                     }
@@ -117,7 +107,8 @@ class NetworkDataSource @Inject constructor(
     }
 
     suspend fun isDeviceOnline(): Boolean = try {
-        val url = getCurrentDevice()?.buildUrl("currenttime") ?: throw NullPointerException()
+        val url = devicesLocalDataSource.getCurrentDeviceStatic()?.buildUrl("currenttime")
+            ?: throw NullPointerException()
         checkClient.get(url) {
             header(HttpHeaders.Connection, "close")
         }
@@ -133,7 +124,8 @@ class NetworkDataSource @Inject constructor(
 
     suspend fun post(endpoint: String) {
         try {
-            val url = getCurrentDevice()?.buildUrl(endpoint) ?: throw NullPointerException()
+            val url = devicesLocalDataSource.getCurrentDeviceStatic()?.buildUrl(endpoint)
+                ?: throw NullPointerException()
             client.get(url) {
                 header(HttpHeaders.Connection, "close")
             }
@@ -148,7 +140,8 @@ class NetworkDataSource @Inject constructor(
 
     suspend fun post(key: RemoteControlKey) {
         try {
-            val url = getCurrentDevice()?.buildUrl(key) ?: throw NullPointerException()
+            val url = devicesLocalDataSource.getCurrentDeviceStatic()?.buildUrl(key)
+                ?: throw NullPointerException()
             client.get(url) {
                 header(HttpHeaders.Connection, "close")
             }
@@ -162,7 +155,8 @@ class NetworkDataSource @Inject constructor(
     }
 
     suspend fun fetchJson(endpoint: String): String = try {
-        val url = getCurrentDevice()?.buildUrl(endpoint) ?: throw NullPointerException()
+        val url = devicesLocalDataSource.getCurrentDeviceStatic()?.buildUrl(endpoint)
+            ?: throw NullPointerException()
         client.get(url) {
             header(HttpHeaders.Connection, "close")
         }.bodyAsText()

@@ -24,11 +24,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.deprec8.enigmadroid.common.enums.LoadingState
-import io.github.deprec8.enigmadroid.data.ApiRepository
-import io.github.deprec8.enigmadroid.data.DevicesRepository
-import io.github.deprec8.enigmadroid.data.LoadingRepository
-import io.github.deprec8.enigmadroid.data.SearchHistoryRepository
-import io.github.deprec8.enigmadroid.data.SettingsRepository
+import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
+import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
+import io.github.deprec8.enigmadroid.data.repositories.LoadingRepository
+import io.github.deprec8.enigmadroid.data.repositories.SearchHistoryRepository
+import io.github.deprec8.enigmadroid.data.repositories.SettingsRepository
 import io.github.deprec8.enigmadroid.model.api.ServiceBatchSet
 import io.github.deprec8.enigmadroid.model.api.Timer
 import io.github.deprec8.enigmadroid.model.api.TimerBatch

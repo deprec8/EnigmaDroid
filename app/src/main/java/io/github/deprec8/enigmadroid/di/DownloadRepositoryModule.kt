@@ -20,15 +20,13 @@
 package io.github.deprec8.enigmadroid.di
 
 import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import io.github.deprec8.enigmadroid.data.DownloadRepository
-import io.github.deprec8.enigmadroid.data.source.local.devices.DeviceDatabase
+import io.github.deprec8.enigmadroid.data.repositories.DownloadRepository
+import io.github.deprec8.enigmadroid.data.source.local.devices.DevicesLocalDataSource
 import javax.inject.Singleton
 
 @Module
@@ -39,9 +37,8 @@ object DownloadRepositoryModule {
     @Provides
     fun provideDownloadRepository(
         @ApplicationContext context: Context,
-        deviceDatabase: DeviceDatabase,
-        dataStore: DataStore<Preferences>
+        devicesLocalDataSource: DevicesLocalDataSource
     ): DownloadRepository {
-        return DownloadRepository(context, deviceDatabase, dataStore)
+        return DownloadRepository(context, devicesLocalDataSource)
     }
 }

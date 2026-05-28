@@ -29,8 +29,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import dagger.hilt.android.AndroidEntryPoint
-import io.github.deprec8.enigmadroid.data.DevicesRepository
-import io.github.deprec8.enigmadroid.data.OnboardingRepository
+import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
+import io.github.deprec8.enigmadroid.data.repositories.OnboardingRepository
 import io.github.deprec8.enigmadroid.ui.root.RootNavigationDisplay
 import io.github.deprec8.enigmadroid.ui.theme.EnigmaDroidTheme
 import kotlinx.coroutines.flow.first

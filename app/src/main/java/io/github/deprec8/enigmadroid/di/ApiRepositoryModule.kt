@@ -20,15 +20,13 @@
 package io.github.deprec8.enigmadroid.di
 
 import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import io.github.deprec8.enigmadroid.data.ApiRepository
-import io.github.deprec8.enigmadroid.data.source.local.devices.DeviceDatabase
+import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
+import io.github.deprec8.enigmadroid.data.source.local.devices.DevicesLocalDataSource
 import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
 import jakarta.inject.Singleton
 
@@ -41,9 +39,8 @@ object ApiRepositoryModule {
     fun provideApiRepository(
         @ApplicationContext context: Context,
         networkDataSource: NetworkDataSource,
-        deviceDatabase: DeviceDatabase,
-        dataStore: DataStore<Preferences>
+        devicesLocalDataSource: DevicesLocalDataSource
     ): ApiRepository {
-        return ApiRepository(context, networkDataSource, deviceDatabase, dataStore)
+        return ApiRepository(context, networkDataSource, devicesLocalDataSource)
     }
 }

@@ -17,20 +17,15 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.data
+package io.github.deprec8.enigmadroid.data.repositories
 
 import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.intPreferencesKey
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.constant.PreferenceKeys
 import io.github.deprec8.enigmadroid.common.enums.ContentFlag
 import io.github.deprec8.enigmadroid.common.enums.ContentType
 import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
 import io.github.deprec8.enigmadroid.common.enums.RemoteControlPowerKey
-import io.github.deprec8.enigmadroid.data.source.local.devices.Device
-import io.github.deprec8.enigmadroid.data.source.local.devices.DeviceDatabase
+import io.github.deprec8.enigmadroid.data.source.local.devices.DevicesLocalDataSource
 import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
 import io.github.deprec8.enigmadroid.model.api.Bouquet
 import io.github.deprec8.enigmadroid.model.api.BouquetBatch
@@ -47,10 +42,8 @@ import io.github.deprec8.enigmadroid.model.api.TimerBatch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
@@ -58,23 +51,8 @@ import javax.inject.Inject
 class ApiRepository @Inject constructor(
     private val context: Context,
     private val networkDataSource: NetworkDataSource,
-    private val deviceDatabase: DeviceDatabase,
-    private val dataStore: DataStore<Preferences>
+    private val devicesLocalDataSource: DevicesLocalDataSource
 ) {
-
-    private val currentDeviceKey = intPreferencesKey(PreferenceKeys.CURRENT_DEVICE)
-
-    private suspend fun getCurrentDevice(): Device? {
-        val listId = dataStore.data.map { preferences ->
-            preferences[currentDeviceKey]
-        }.firstOrNull()
-        val allDevices = deviceDatabase.deviceDao().getAll().firstOrNull()
-        return if (allDevices.isNullOrEmpty()) {
-            null
-        } else {
-            allDevices[listId ?: 0]
-        }
-    }
 
     private val json = Json {
         ignoreUnknownKeys = true
@@ -82,13 +60,14 @@ class ApiRepository @Inject constructor(
         isLenient = true
     }
 
-    suspend fun buildOwifUrl(): String = getCurrentDevice()?.buildOwifUrl() ?: ""
+    suspend fun buildOwifUrl(): String =
+        devicesLocalDataSource.getCurrentDeviceStatic()?.buildOwifUrl() ?: ""
 
     suspend fun buildLiveStreamUrl(serviceReference: String): String =
-        getCurrentDevice()?.buildLiveStreamUrl(serviceReference) ?: ""
+        devicesLocalDataSource.getCurrentDeviceStatic()?.buildLiveStreamUrl(serviceReference) ?: ""
 
     suspend fun buildMovieStreamUrl(file: String): String =
-        getCurrentDevice()?.buildMovieStreamUrl(file) ?: ""
+        devicesLocalDataSource.getCurrentDeviceStatic()?.buildMovieStreamUrl(file) ?: ""
 
     private fun ContentFlag.shouldBeNumbered(): Boolean {
         return when (this) {

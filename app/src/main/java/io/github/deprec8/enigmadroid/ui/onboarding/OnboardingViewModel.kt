@@ -29,8 +29,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.deprec8.enigmadroid.common.constant.DefaultPorts
-import io.github.deprec8.enigmadroid.data.DevicesRepository
-import io.github.deprec8.enigmadroid.data.OnboardingRepository
+import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
+import io.github.deprec8.enigmadroid.data.repositories.OnboardingRepository
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

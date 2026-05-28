@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.data
+package io.github.deprec8.enigmadroid.data.repositories
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -25,13 +25,12 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import io.github.deprec8.enigmadroid.common.constant.PreferenceKeys
 import io.github.deprec8.enigmadroid.common.enums.LoadingState
-import io.github.deprec8.enigmadroid.data.source.local.devices.DeviceDatabase
+import io.github.deprec8.enigmadroid.data.source.local.devices.DevicesLocalDataSource
 import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -40,8 +39,8 @@ import javax.inject.Singleton
 @Singleton
 class LoadingRepository @Inject constructor(
     private val dataStore: DataStore<Preferences>,
-    private val deviceDatabase: DeviceDatabase,
-    private val networkDataSource: NetworkDataSource
+    private val networkDataSource: NetworkDataSource,
+    private val devicesLocalDataSource: DevicesLocalDataSource
 ) {
 
     private val loadingStateKey = intPreferencesKey(PreferenceKeys.LOADING_STATE)
@@ -72,7 +71,7 @@ class LoadingRepository @Inject constructor(
                 }
             }
 
-            if (deviceDatabase.deviceDao().getAll().firstOrNull().isNullOrEmpty().not()) {
+            if (devicesLocalDataSource.getAllDevicesStatic().isEmpty().not()) {
                 if (networkDataSource.isDeviceOnline()) {
                     dataStore.edit { preferences ->
                         preferences[loadingStateKey] = LoadingState.LOADED.id

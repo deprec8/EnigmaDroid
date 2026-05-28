@@ -25,7 +25,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import io.github.deprec8.enigmadroid.data.source.local.devices.DeviceDatabase
+import io.github.deprec8.enigmadroid.data.source.local.devices.DevicesLocalDataSource
 import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
 import javax.inject.Singleton
 
@@ -36,9 +36,9 @@ object NetworkDataSourceModule {
     @Singleton
     @Provides
     fun provideNetworkDataSource(
-        deviceDatabase: DeviceDatabase,
+        devicesLocalDataSource: DevicesLocalDataSource,
         dataStore: DataStore<Preferences>
     ): NetworkDataSource {
-        return NetworkDataSource(dataStore, deviceDatabase)
+        return NetworkDataSource(dataStore, devicesLocalDataSource)
     }
 }
