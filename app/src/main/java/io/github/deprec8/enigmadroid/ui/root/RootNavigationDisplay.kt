@@ -58,7 +58,9 @@ fun RootNavigationDisplay(
                 }
                 entry<RootKeys.RemoteControl>(metadata = sharedAxisXTransition()) {
                     RemoteControlPage(onNavigateBack = {
-                        rootBackStack.removeLastOrNull()
+                        if (rootBackStack.size > 1) {
+                            rootBackStack.removeLastOrNull()
+                        }
                     })
                 }
                 entry<RootKeys.Onboarding>(metadata = fadeThroughTransition()) {
@@ -67,13 +69,11 @@ fun RootNavigationDisplay(
                         rootBackStack.add(RootKeys.Main)
                     })
                 }
-            },
-            onBack = { rootBackStack.removeLastOrNull() },
-            backStack = rootBackStack,
-            entryDecorators = listOf(
+            }, onBack = {
+                rootBackStack.removeLastOrNull()
+            }, backStack = rootBackStack, entryDecorators = listOf(
                 rememberSaveableStateHolderNavEntryDecorator(),
                 rememberViewModelStoreNavEntryDecorator()
-            ),
-            sceneStrategies = remember { listOf(DialogSceneStrategy()) })
+            ), sceneStrategies = remember { listOf(DialogSceneStrategy()) })
     }
 }
