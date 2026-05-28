@@ -1,0 +1,2 @@
+- Fixed crash when trying to stream or download a service
+- Fixed crash when double-clicking the back button in remote control
