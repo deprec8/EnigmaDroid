@@ -194,8 +194,6 @@
     <string name="log_entries">Записи журнала</string>
     <string name="view_log">Посмотреть журнал</string>
     <string name="code">Код: %1$d</string>
-    <string name="no_network_available">Сеть недоступна.</string>
-    <string name="connect_to_a_network">Подключиться к сети.</string>
     <string name="current_bouquet">Текущий букет</string>
     <string name="search_epg_from">Искать EPG из \"%1$s\"</string>
     <string name="service_epg">Служба EPG</string>

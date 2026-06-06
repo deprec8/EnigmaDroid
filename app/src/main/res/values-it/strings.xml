@@ -194,8 +194,6 @@
     <string name="log_entries">Log inseriti</string>
     <string name="view_log">Visualizza registro</string>
     <string name="code">Codice: %1$d</string>
-    <string name="no_network_available">Nessuna rete disponibile.</string>
-    <string name="connect_to_a_network">Collegarsi a una rete.</string>
     <string name="current_bouquet">Bouquet attuale</string>
     <string name="search_epg_from">Cerca EPG da \"%1$s\"</string>
     <string name="service_epg">Servizio EPG</string>

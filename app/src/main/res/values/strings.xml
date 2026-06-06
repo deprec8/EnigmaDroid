@@ -209,8 +209,6 @@
     <string name="log_entries">Log entries</string>
     <string name="view_log">View log</string>
     <string name="code">Code: %1$d</string>
-    <string name="no_network_available">No network available.</string>
-    <string name="connect_to_a_network">Connect to a network.</string>
     <string name="current_bouquet">Current bouquet</string>
     <string name="search_epg_from">Search EPG from \"%1$s\"</string>
     <string name="service_epg">Service EPG</string>
