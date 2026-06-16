@@ -40,13 +40,13 @@ class DevicesLocalDataSource(
 
     private val currentDeviceKey = intPreferencesKey(PreferenceKeys.CURRENT_DEVICE)
 
-    suspend fun setCurrentDevice(device: Device) {
+    suspend fun setCurrentDevice(device: Device) = withContext(NonCancellable) {
         dataStore.edit { preferences ->
             preferences[currentDeviceKey] = device.id
         }
     }
 
-    suspend fun setCurrentDeviceId(id: Int) {
+    suspend fun setCurrentDeviceId(id: Int) = withContext(NonCancellable) {
         dataStore.edit { preferences ->
             preferences[currentDeviceKey] = id
         }

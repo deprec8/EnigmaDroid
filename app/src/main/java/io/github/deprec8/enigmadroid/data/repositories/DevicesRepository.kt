@@ -28,9 +28,11 @@ import io.github.deprec8.enigmadroid.common.enums.LoadingState
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.data.source.local.devices.DevicesLocalDataSource
 import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -40,6 +42,8 @@ class DevicesRepository(
     private val devicesLocalDataSource: DevicesLocalDataSource
 ) {
     private val loadingStateKey = intPreferencesKey(PreferenceKeys.LOADING_STATE)
+
+    private var loadingJob: Job? = null
 
     private suspend fun updateLoadingState() {
         dataStore.edit { preferences ->
@@ -53,14 +57,16 @@ class DevicesRepository(
         }
     }
 
-    suspend fun setCurrentDevice(device: Device) {
+    suspend fun setCurrentDevice(device: Device) = withContext(Dispatchers.IO) {
         devicesLocalDataSource.setCurrentDevice(device)
-        updateLoadingState()
+        loadingJob?.cancel()
+        loadingJob = launch { updateLoadingState() }
     }
 
-    suspend fun setCurrentDeviceId(id: Int) {
+    suspend fun setCurrentDeviceId(id: Int) = withContext(Dispatchers.IO) {
         devicesLocalDataSource.setCurrentDeviceId(id)
-        updateLoadingState()
+        loadingJob?.cancel()
+        loadingJob = launch { updateLoadingState() }
     }
 
     fun getCurrentDevice(): Flow<Device?> {
@@ -75,7 +81,7 @@ class DevicesRepository(
         return devicesLocalDataSource.getAllDevicesFlow()
     }
 
-    suspend fun deleteDevice(device: Device) = withContext(NonCancellable) {
+    suspend fun deleteDevice(device: Device) = withContext(Dispatchers.IO) {
         devicesLocalDataSource.deleteDevice(device)
 
         if (devicesLocalDataSource.getAllDevicesStatic().isEmpty()) {
@@ -85,17 +91,19 @@ class DevicesRepository(
         }
     }
 
-    suspend fun editDevice(oldDevice: Device, newDevice: Device) = withContext(NonCancellable) {
+    suspend fun editDevice(oldDevice: Device, newDevice: Device) = withContext(Dispatchers.IO) {
         devicesLocalDataSource.editDevice(oldDevice, newDevice)
         if (devicesLocalDataSource.getCurrentDeviceIdStatic() == oldDevice.id) {
-            updateLoadingState()
+            loadingJob?.cancel()
+            loadingJob = launch { updateLoadingState() }
         }
     }
 
-    suspend fun addDevice(device: Device) = withContext(NonCancellable) {
+    suspend fun addDevice(device: Device) = withContext(Dispatchers.IO) {
         devicesLocalDataSource.addDevice(device)
         if (devicesLocalDataSource.getAllDevicesStatic().size == 1) {
-            updateLoadingState()
+            loadingJob?.cancel()
+            loadingJob = launch { updateLoadingState() }
         }
     }
 }
