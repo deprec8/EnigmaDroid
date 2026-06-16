@@ -49,17 +49,17 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.ArrowNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
+import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchSettingsPage(
-    onNavigateBack: () -> Unit, searchSettingsViewModel: SearchSettingsViewModel = hiltViewModel()
+    onNavigateBack: () -> Unit, searchSettingsViewModel: SearchSettingsViewModel = koinViewModel()
 ) {
 
     val tvSearchHistory by searchSettingsViewModel.tvSearchHistory.collectAsStateWithLifecycle()

@@ -21,17 +21,14 @@ package io.github.deprec8.enigmadroid.ui.settings.remotecontrol
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.deprec8.enigmadroid.data.repositories.SettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class RemoteControlSettingsViewModel @Inject constructor(private var settingsRepository: SettingsRepository) :
+class RemoteControlSettingsViewModel(private var settingsRepository: SettingsRepository) :
     ViewModel() {
 
     private val _remoteControlVibration = MutableStateFlow<Boolean?>(null)

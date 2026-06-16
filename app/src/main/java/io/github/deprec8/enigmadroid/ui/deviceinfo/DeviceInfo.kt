@@ -35,7 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.common.enums.LoadingState
@@ -47,13 +46,14 @@ import io.github.deprec8.enigmadroid.ui.components.navigation.DrawerNavigationBu
 import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
 import kotlinx.coroutines.launch
+import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeviceInfoPage(
     onNavigateToRemoteControl: () -> Unit,
     drawerState: DrawerState,
-    deviceInfoViewModel: DeviceInfoViewModel = hiltViewModel()
+    deviceInfoViewModel: DeviceInfoViewModel = koinViewModel()
 ) {
 
     val loadingState by deviceInfoViewModel.loadingState.collectAsStateWithLifecycle()

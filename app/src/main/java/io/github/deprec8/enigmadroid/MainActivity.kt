@@ -28,23 +28,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import dagger.hilt.android.AndroidEntryPoint
 import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
 import io.github.deprec8.enigmadroid.data.repositories.OnboardingRepository
 import io.github.deprec8.enigmadroid.ui.root.RootNavigationDisplay
 import io.github.deprec8.enigmadroid.ui.theme.EnigmaDroidTheme
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
 
-@AndroidEntryPoint
+
 class MainActivity : ComponentActivity() {
 
-    @Inject
-    lateinit var devicesRepository: DevicesRepository
-
-    @Inject
-    lateinit var onboardingRepository: OnboardingRepository
+    private val devicesRepository: DevicesRepository by inject()
+    private val onboardingRepository: OnboardingRepository by inject()
 
     private var isOnboardingNeeded by mutableStateOf(false)
     private var isRemoteControlDeepLink by mutableStateOf(false)

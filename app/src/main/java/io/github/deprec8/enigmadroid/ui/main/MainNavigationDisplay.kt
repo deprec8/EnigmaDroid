@@ -39,7 +39,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.scene.DialogSceneStrategy
@@ -73,10 +72,11 @@ import io.github.deprec8.enigmadroid.ui.signal.SignalPage
 import io.github.deprec8.enigmadroid.ui.timers.TimersPage
 import io.github.deprec8.enigmadroid.utils.IntentUtils
 import kotlinx.coroutines.launch
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun MainNavigationDisplay(
-    onNavigateToRemoteControl: () -> Unit, mainViewModel: MainViewModel = hiltViewModel()
+    onNavigateToRemoteControl: () -> Unit, mainViewModel: MainViewModel = koinViewModel()
 ) {
     val currentDevice by mainViewModel.currentDevice.collectAsStateWithLifecycle()
     val devices by mainViewModel.devices.collectAsStateWithLifecycle()
@@ -124,7 +124,7 @@ fun MainNavigationDisplay(
         entry<MainKeys.ServiceEpg>(
             metadata = sharedAxisXTransition()
         ) { backStackEntry ->
-            val serviceEpgViewModel: ServiceEpgViewModel = hiltViewModel()
+            val serviceEpgViewModel: ServiceEpgViewModel = koinViewModel()
             LaunchedEffect(backStackEntry) {
                 serviceEpgViewModel.initialize(backStackEntry.serviceReference)
             }
@@ -148,7 +148,7 @@ fun MainNavigationDisplay(
         entry<MainKeys.MoviesDirectory>(
             metadata = sharedAxisXTransition()
         ) { backStackEntry ->
-            val moviesViewModel: MoviesViewModel = hiltViewModel()
+            val moviesViewModel: MoviesViewModel = koinViewModel()
             LaunchedEffect(backStackEntry) {
                 moviesViewModel.initialize(backStackEntry.path, backStackEntry.preloadBatch)
             }

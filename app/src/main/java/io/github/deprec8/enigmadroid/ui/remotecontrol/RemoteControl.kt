@@ -61,7 +61,6 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
@@ -76,11 +75,12 @@ import io.github.deprec8.enigmadroid.ui.remotecontrol.components.DeviceText
 import io.github.deprec8.enigmadroid.ui.remotecontrol.components.MediaButtons
 import io.github.deprec8.enigmadroid.ui.remotecontrol.components.NumberButtons
 import kotlinx.coroutines.launch
+import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RemoteControlPage(
-    onNavigateBack: () -> Unit, remoteControlViewModel: RemoteControlViewModel = hiltViewModel()
+    onNavigateBack: () -> Unit, remoteControlViewModel: RemoteControlViewModel = koinViewModel()
 ) {
 
     val loadingState by remoteControlViewModel.loadingState.collectAsStateWithLifecycle()

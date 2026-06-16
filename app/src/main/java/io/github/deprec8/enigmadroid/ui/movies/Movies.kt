@@ -34,7 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.common.enums.LoadingState
@@ -50,6 +49,7 @@ import io.github.deprec8.enigmadroid.ui.movies.components.MoviesActionBar
 import io.github.deprec8.enigmadroid.ui.movies.components.MoviesContent
 import io.github.deprec8.enigmadroid.utils.IntentUtils
 import kotlinx.coroutines.launch
+import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,7 +57,7 @@ fun MoviesPage(
     onNavigateToRemoteControl: () -> Unit,
     onNavigateToDirectory: (String, MovieBatch?) -> Unit,
     drawerState: DrawerState,
-    moviesViewModel: MoviesViewModel = hiltViewModel()
+    moviesViewModel: MoviesViewModel = koinViewModel()
 ) {
 
     val movieBatch by moviesViewModel.movieBatch.collectAsStateWithLifecycle()

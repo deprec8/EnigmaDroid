@@ -46,9 +46,8 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
-import javax.inject.Inject
 
-class ApiRepository @Inject constructor(
+class ApiRepository(
     private val context: Context,
     private val networkDataSource: NetworkDataSource,
     private val devicesLocalDataSource: DevicesLocalDataSource

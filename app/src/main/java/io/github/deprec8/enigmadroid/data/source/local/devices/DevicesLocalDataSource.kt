@@ -32,10 +32,9 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class DevicesLocalDataSource @Inject constructor(
+class DevicesLocalDataSource(
     private val deviceDatabase: DeviceDatabase, private val dataStore: DataStore<Preferences>
 ) {
 

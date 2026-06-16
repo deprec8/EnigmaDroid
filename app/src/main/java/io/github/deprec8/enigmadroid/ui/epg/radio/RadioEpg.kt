@@ -39,7 +39,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.common.enums.LoadingState
@@ -56,13 +55,14 @@ import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarDrawerN
 import io.github.deprec8.enigmadroid.ui.epg.components.BouquetMenu
 import io.github.deprec8.enigmadroid.ui.epg.components.EpgContent
 import kotlinx.coroutines.launch
+import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RadioEpgPage(
     onNavigateToRemoteControl: () -> Unit,
     drawerState: DrawerState,
-    radioEpgViewModel: RadioEpgViewModel = hiltViewModel()
+    radioEpgViewModel: RadioEpgViewModel = koinViewModel()
 ) {
     val eventBatchSet by radioEpgViewModel.eventBatchSet.collectAsStateWithLifecycle()
     val filteredEvents by radioEpgViewModel.filteredEvents.collectAsStateWithLifecycle()

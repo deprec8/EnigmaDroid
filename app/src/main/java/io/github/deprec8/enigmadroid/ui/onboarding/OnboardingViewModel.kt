@@ -27,7 +27,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.deprec8.enigmadroid.common.constant.DefaultPorts
 import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
 import io.github.deprec8.enigmadroid.data.repositories.OnboardingRepository
@@ -37,10 +36,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class OnboardingViewModel @Inject constructor(
+class OnboardingViewModel(
     private val onboardingRepository: OnboardingRepository,
     private val devicesRepository: DevicesRepository
 ) : ViewModel() {

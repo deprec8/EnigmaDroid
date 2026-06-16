@@ -21,7 +21,6 @@ package io.github.deprec8.enigmadroid.ui.settings.devices
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,10 +28,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class DevicesViewModel @Inject constructor(private val devicesRepository: DevicesRepository) :
+class DevicesViewModel(private val devicesRepository: DevicesRepository) :
     ViewModel() {
 
     private val _currentDeviceId = MutableStateFlow(-1)

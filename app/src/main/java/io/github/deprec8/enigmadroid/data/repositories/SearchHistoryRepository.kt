@@ -28,11 +28,9 @@ import io.github.deprec8.enigmadroid.common.constant.PreferenceKeys
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class SearchHistoryRepository @Inject constructor(private val dataStore: DataStore<Preferences>) {
+
+class SearchHistoryRepository(private val dataStore: DataStore<Preferences>) {
 
     private val tvSearchHistoryKey = stringSetPreferencesKey(PreferenceKeys.TV_SEARCH_HISTORY)
     private val radioSearchHistoryKey = stringSetPreferencesKey(PreferenceKeys.RADIO_SEARCH_HISTORY)

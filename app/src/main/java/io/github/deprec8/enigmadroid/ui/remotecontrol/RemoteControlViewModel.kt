@@ -21,7 +21,6 @@ package io.github.deprec8.enigmadroid.ui.remotecontrol
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.deprec8.enigmadroid.common.enums.LoadingState
 import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
 import io.github.deprec8.enigmadroid.common.enums.RemoteControlPowerKey
@@ -36,10 +35,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class RemoteControlViewModel @Inject constructor(
+class RemoteControlViewModel(
     private val apiRepository: ApiRepository,
     private val devicesRepository: DevicesRepository,
     private val loadingRepository: LoadingRepository,

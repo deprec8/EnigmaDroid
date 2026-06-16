@@ -26,11 +26,8 @@ import androidx.datastore.preferences.core.edit
 import io.github.deprec8.enigmadroid.common.constant.PreferenceKeys
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class SettingsRepository @Inject constructor(private val dataStore: DataStore<Preferences>) {
+class SettingsRepository(private val dataStore: DataStore<Preferences>) {
 
     private val remoteControlVibrationKey =
         booleanPreferencesKey(PreferenceKeys.REMOTE_CONTROL_VIBRATION)

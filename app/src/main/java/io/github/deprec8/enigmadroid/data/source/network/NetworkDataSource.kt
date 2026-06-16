@@ -40,9 +40,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import okhttp3.ConnectionPool
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
-class NetworkDataSource @Inject constructor(
+class NetworkDataSource(
     private val dataStore: DataStore<Preferences>,
     private val devicesLocalDataSource: DevicesLocalDataSource
 ) {

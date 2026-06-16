@@ -32,10 +32,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class DevicesRepository @Inject constructor(
+class DevicesRepository(
     private val dataStore: DataStore<Preferences>,
     private val networkDataSource: NetworkDataSource,
     private val devicesLocalDataSource: DevicesLocalDataSource

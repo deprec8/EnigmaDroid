@@ -53,7 +53,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.common.enums.LoadingState
@@ -66,13 +65,14 @@ import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarDrawerN
 import io.github.deprec8.enigmadroid.ui.timers.components.TimerSetupDialog
 import io.github.deprec8.enigmadroid.ui.timers.components.TimersContent
 import kotlinx.coroutines.launch
+import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimersPage(
     onNavigateToRemoteControl: () -> Unit,
     drawerState: DrawerState,
-    timersViewModel: TimersViewModel = hiltViewModel()
+    timersViewModel: TimersViewModel = koinViewModel()
 ) {
 
     val filteredTimers by timersViewModel.filteredTimers.collectAsStateWithLifecycle()

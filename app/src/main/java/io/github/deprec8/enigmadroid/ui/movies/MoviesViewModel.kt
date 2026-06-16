@@ -22,7 +22,6 @@ package io.github.deprec8.enigmadroid.ui.movies
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.deprec8.enigmadroid.common.enums.LoadingState
 import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
 import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
@@ -45,10 +44,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class MoviesViewModel @Inject constructor(
+class MoviesViewModel(
     private val apiRepository: ApiRepository,
     private val loadingRepository: LoadingRepository,
     private val downloadRepository: DownloadRepository,

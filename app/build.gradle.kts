@@ -22,7 +22,7 @@ import com.android.build.gradle.internal.tasks.CompileArtProfileTask
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.google.dagger.hilt.android)
+    alias(libs.plugins.koin.compiler)
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.mikepenz.aboutlibraries)
     alias(libs.plugins.jetbrains.kotlin.serialization)
@@ -92,10 +92,12 @@ android {
 
 dependencies {
 
-    // Hilt
-    implementation(libs.google.dagger.hilt.android)
-    ksp(libs.google.dagger.hilt.android.compiler)
-    implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
+    // Koin
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.compose)
+    implementation(libs.koin.compose.viewmodel)
 
     // Serialization
     implementation(libs.jetbrains.kotlinx.serialization.core)
