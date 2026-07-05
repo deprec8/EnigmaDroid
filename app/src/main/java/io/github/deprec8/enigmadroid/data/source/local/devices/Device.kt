@@ -19,8 +19,8 @@
 
 package io.github.deprec8.enigmadroid.data.source.local.devices
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room3.Entity
+import androidx.room3.PrimaryKey
 import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
 
 @Entity

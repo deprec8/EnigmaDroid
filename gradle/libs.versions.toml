@@ -1,21 +1,21 @@
 [versions]
-aboutlibraries = "14.2.1"
+aboutlibraries = "15.0.3"
 agp = "9.2.1"
 browser = "1.10.0"
 coreSplashscreen = "1.2.0"
 datastorePreferences = "1.2.1"
 kotlin = "2.4.0"
 coroutines = "1.11.0"
-ktor = "3.5.0"
+ktor = "3.5.1"
 re2j = "1.8"
-room = "2.8.4"
-lifecycle = "2.10.0"
+room = "3.0.0"
+lifecycle = "2.11.0"
 coreKtx = "1.19.0"
 activity = "1.13.0"
-composeBom = "2026.05.01"
+composeBom = "2026.06.01"
 ksp = "2.3.9"
 jsoup = "1.22.2"
-navigation3 = "1.1.2"
+navigation3 = "1.1.4"
 kotlinxSerialization = "1.11.0"
 savedstateKtx = "1.5.0"
 window = "1.5.1"
@@ -24,9 +24,8 @@ koin-plugin = "1.0.1"
 
 [libraries]
 # Room
-androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
-androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
-androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+androidx-room3-compiler = { module = "androidx.room3:room3-compiler", version.ref = "room" }
+androidx-room3-runtime = { module = "androidx.room3:room3-runtime", version.ref = "room" }
 # Koin
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin" }
 koin-core = { module = "io.insert-koin:koin-core" }
@@ -61,7 +60,6 @@ androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", versi
 # Browser
 androidx-browser = { module = "androidx.browser:browser", version.ref = "browser" }
 # Datastore
-androidx-datastore-core = { module = "androidx.datastore:datastore-core", version.ref = "datastorePreferences" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 # Coroutines
 jetbrains-kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
@@ -88,3 +86,4 @@ mikepenz-aboutlibraries = { id = "com.mikepenz.aboutlibraries.plugin.android", v
 jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 koin-compiler = { id = "io.insert-koin.compiler.plugin", version.ref = "koin-plugin" }
+androidx-room3 = { id = "androidx.room3", version.ref = "room" }

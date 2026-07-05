@@ -26,6 +26,7 @@ plugins {
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.mikepenz.aboutlibraries)
     alias(libs.plugins.jetbrains.kotlin.serialization)
+    alias(libs.plugins.androidx.room3)
 }
 
 android {
@@ -126,9 +127,8 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
 
     // Room
-    implementation(libs.androidx.room.ktx)
-    implementation(libs.androidx.room.runtime)
-    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room3.runtime)
+    ksp(libs.androidx.room3.compiler)
 
     // Activity
     implementation(libs.androidx.activity.ktx)
@@ -162,6 +162,10 @@ dependencies {
 
     // Savedstate
     implementation(libs.androidx.savedstate.ktx)
+}
+
+room3 {
+    schemaDirectory("$projectDir/schemas")
 }
 
 tasks.withType<CompileArtProfileTask> {
