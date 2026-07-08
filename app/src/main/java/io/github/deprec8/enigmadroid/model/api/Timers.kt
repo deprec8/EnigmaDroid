@@ -21,6 +21,7 @@ package io.github.deprec8.enigmadroid.model.api
 
 import androidx.compose.runtime.Immutable
 import io.github.deprec8.enigmadroid.data.serialization.HtmlDecodedStringSerializer
+import io.github.deprec8.enigmadroid.data.serialization.LenientBooleanIntSerializer
 import io.github.deprec8.enigmadroid.data.serialization.LogEntrySerializer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -35,7 +36,7 @@ data class Timer(
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("tags") val tags: String = "",
     @SerialName("always_zap") val alwaysZap: Int = 0,
     @SerialName("disabled") val disabled: Int = 0,
-    @SerialName("repeated") val repeated: Int = 0,
+    @Serializable(with = LenientBooleanIntSerializer::class) @SerialName("repeated") val repeated: Int = 0,
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("servicename") val serviceName: String = "",
     @SerialName("duration") val durationInSeconds: Int = 0,
     @Serializable(with = HtmlDecodedStringSerializer::class) @SerialName("dirname") val directoryName: String = "",
