@@ -65,7 +65,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun MoviesDirectoryPage(
     onNavigateToRemoteControl: () -> Unit,
-    onNavigateToDirectory: (String, MovieBatch?) -> Unit,
+    onNavigateToDirectory: (Int?, String, MovieBatch?, String?) -> Unit,
     onNavigateBack: () -> Unit,
     onNavigateToTop: () -> Unit,
     moviesViewModel: MoviesViewModel = koinViewModel()
@@ -77,6 +77,7 @@ fun MoviesDirectoryPage(
     val loadingState by moviesViewModel.loadingState.collectAsStateWithLifecycle()
     val highlightedWords by moviesViewModel.highlightedWords.collectAsStateWithLifecycle()
     val preloadBatches by moviesViewModel.preloadBatches.collectAsStateWithLifecycle()
+    val freeSpace by moviesViewModel.freeSpace.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -166,7 +167,7 @@ fun MoviesDirectoryPage(
                 moviesViewModel.updateSearchInput()
             },
             actionBar = {
-                MoviesActionBar(movieBatch, loadingState)
+                MoviesActionBar(movieBatch, freeSpace, loadingState)
             })
     }
 
@@ -201,21 +202,21 @@ fun MoviesDirectoryPage(
                 },
                 onDownloadMovie = { movie -> moviesViewModel.download(movie) },
                 onNavigateToDirectory = { path, preloadBatch ->
-                    onNavigateToDirectory(path, preloadBatch)
+                    onNavigateToDirectory(
+                        moviesViewModel.loadedDeviceId, path, preloadBatch, freeSpace
+                    )
                 })
         } else {
             LoadingScreen(
                 Modifier
                     .consumeWindowInsets(innerPadding)
-                    .padding(innerPadding),
-                onReload = {
+                    .padding(innerPadding), onReload = {
                     scope.launch {
                         moviesViewModel.updateLoadingState(
                             it
                         )
                     }
-                },
-                loadingState = loadingState
+                }, loadingState = loadingState
             )
         }
     }

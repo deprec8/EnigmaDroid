@@ -55,7 +55,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun MoviesPage(
     onNavigateToRemoteControl: () -> Unit,
-    onNavigateToDirectory: (String, MovieBatch?) -> Unit,
+    onNavigateToDirectory: (Int?, String, MovieBatch?, String?) -> Unit,
     drawerState: DrawerState,
     moviesViewModel: MoviesViewModel = koinViewModel()
 ) {
@@ -66,6 +66,7 @@ fun MoviesPage(
     val loadingState by moviesViewModel.loadingState.collectAsStateWithLifecycle()
     val highlightedWords by moviesViewModel.highlightedWords.collectAsStateWithLifecycle()
     val preloadBatches by moviesViewModel.preloadBatches.collectAsStateWithLifecycle()
+    val freeSpace by moviesViewModel.freeSpace.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -137,7 +138,7 @@ fun MoviesPage(
                 moviesViewModel.updateSearchInput()
             },
             actionBar = {
-                MoviesActionBar(movieBatch, loadingState)
+                MoviesActionBar(movieBatch, freeSpace, loadingState)
             })
     }
 
@@ -172,21 +173,21 @@ fun MoviesPage(
                 },
                 onDownloadMovie = { movie -> moviesViewModel.download(movie) },
                 onNavigateToDirectory = { path, preloadBatch ->
-                    onNavigateToDirectory(path, preloadBatch)
+                    onNavigateToDirectory(
+                        moviesViewModel.loadedDeviceId, path, preloadBatch, freeSpace
+                    )
                 })
         } else {
             LoadingScreen(
                 Modifier
                     .consumeWindowInsets(innerPadding)
-                    .padding(innerPadding),
-                onReload = {
+                    .padding(innerPadding), onReload = {
                     scope.launch {
                         moviesViewModel.updateLoadingState(
                             it
                         )
                     }
-                },
-                loadingState = loadingState
+                }, loadingState = loadingState
             )
         }
     }

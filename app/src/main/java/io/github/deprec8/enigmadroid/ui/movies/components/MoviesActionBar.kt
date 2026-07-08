@@ -19,6 +19,8 @@
 
 package io.github.deprec8.enigmadroid.ui.movies.components
 
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -26,29 +28,44 @@ import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.common.enums.LoadingState
 import io.github.deprec8.enigmadroid.model.api.MovieBatch
 
 @Composable
-fun MoviesActionBar(movieBatch: MovieBatch?, loadingState: LoadingState) {
+fun MoviesActionBar(movieBatch: MovieBatch?, freeSpace: String?, loadingState: LoadingState) {
 
-    if (movieBatch != null && loadingState == LoadingState.LOADED) {
+    if ((movieBatch != null || freeSpace != null) && loadingState == LoadingState.LOADED) {
+
         OutlinedCard(
             modifier = Modifier
                 .padding(horizontal = 16.dp, vertical = 8.dp)
                 .fillMaxWidth(),
         ) {
-            Text(
-                movieBatch.directory,
-                style = MaterialTheme.typography.labelLarge,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth(),
-                overflow = TextOverflow.StartEllipsis,
-                maxLines = 1
-            )
+            FlowRow(modifier = Modifier.padding(8.dp)) {
+                if (movieBatch != null) {
+                    Text(
+                        movieBatch.directory,
+                        style = MaterialTheme.typography.labelLarge,
+                        overflow = TextOverflow.StartEllipsis,
+                        maxLines = 1
+                    )
+                }
+                Spacer(Modifier.weight(1f))
+                if (freeSpace != null) {
+                    Text(
+                        stringResource(
+                            R.string.free, freeSpace
+                        ),
+                        style = MaterialTheme.typography.labelLarge,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1
+                    )
+                }
+            }
         }
     }
 }

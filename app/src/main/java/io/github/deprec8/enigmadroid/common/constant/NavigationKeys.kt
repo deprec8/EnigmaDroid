@@ -55,7 +55,12 @@ object MainKeys {
     data object Movies : NavKey
 
     @Serializable
-    data class MoviesDirectory(val path: String, val preloadBatch: MovieBatch?) : NavKey
+    data class MoviesDirectory(
+        val loadedDeviceId: Int?,
+        val path: String,
+        val preloadBatch: MovieBatch?,
+        val freeSpace: String?
+    ) : NavKey
 
     @Serializable
     data object Timers : NavKey

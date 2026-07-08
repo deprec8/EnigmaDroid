@@ -145,6 +145,20 @@ class ApiRepository(
         }
     }
 
+    suspend fun fetchFreeSpace(directory: String): String {
+        val rawJson = networkDataSource.fetchJson("deviceinfo")
+
+        return withContext(Dispatchers.Default) {
+            runCatching {
+                val deviceInfo = json.decodeFromString(
+                    DeviceInfo.serializer(), rawJson
+                )
+                deviceInfo.hdds.firstOrNull { directory.startsWith(it.mountDirectory) }?.freeSpace
+                    ?: "N/A"
+            }.getOrDefault("N/A")
+        }
+    }
+
     suspend fun renameMovie(serviceReference: String, newName: String) {
         networkDataSource.post("movierename?sRef=$serviceReference&newname=$newName")
     }

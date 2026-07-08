@@ -139,8 +139,12 @@ fun MainNavigationDisplay(
         ) {
             MoviesPage(
                 onNavigateToRemoteControl = { onNavigateToRemoteControl() },
-                onNavigateToDirectory = { path, preloadBatch ->
-                    drawerNavigator.navigate(MainKeys.MoviesDirectory(path, preloadBatch))
+                onNavigateToDirectory = { loadedDeviceId, path, preloadBatch, freeSpace ->
+                    drawerNavigator.navigate(
+                        MainKeys.MoviesDirectory(
+                            loadedDeviceId, path, preloadBatch, freeSpace
+                        )
+                    )
                 },
                 modalDrawerState
             )
@@ -150,12 +154,21 @@ fun MainNavigationDisplay(
         ) { backStackEntry ->
             val moviesViewModel: MoviesViewModel = koinViewModel()
             LaunchedEffect(backStackEntry) {
-                moviesViewModel.initialize(backStackEntry.path, backStackEntry.preloadBatch)
+                moviesViewModel.initialize(
+                    backStackEntry.loadedDeviceId,
+                    backStackEntry.path,
+                    backStackEntry.preloadBatch,
+                    backStackEntry.freeSpace
+                )
             }
             MoviesDirectoryPage(
                 onNavigateToRemoteControl = { onNavigateToRemoteControl() },
-                onNavigateToDirectory = { path, preloadBatch ->
-                    drawerNavigator.navigate(MainKeys.MoviesDirectory(path, preloadBatch))
+                onNavigateToDirectory = { loadedDeviceId, path, preloadBatch, freeSpace ->
+                    drawerNavigator.navigate(
+                        MainKeys.MoviesDirectory(
+                            loadedDeviceId, path, preloadBatch, freeSpace
+                        )
+                    )
                 },
                 onNavigateBack = {
                     drawerNavigator.goBack()

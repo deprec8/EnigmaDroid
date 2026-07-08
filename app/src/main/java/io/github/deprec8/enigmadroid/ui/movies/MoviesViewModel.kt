@@ -69,6 +69,9 @@ class MoviesViewModel(
     private val _preloadBatches = MutableStateFlow<Map<String, MovieBatch>>(emptyMap())
     val preloadBatches: StateFlow<Map<String, MovieBatch>> = _preloadBatches.asStateFlow()
 
+    private val _freeSpace = MutableStateFlow<String?>(null)
+    val freeSpace: StateFlow<String?> = _freeSpace.asStateFlow()
+
     val searchFieldState = TextFieldState()
 
     private val searchInput = MutableStateFlow("")
@@ -85,7 +88,8 @@ class MoviesViewModel(
 
     private var fetchJob: Job? = null
 
-    private var loadedDeviceId: Int? = null
+    var loadedDeviceId: Int? = null
+        private set
 
     init {
         viewModelScope.launch {
@@ -112,9 +116,13 @@ class MoviesViewModel(
         }
     }
 
-    fun initialize(path: String, movieBatch: MovieBatch?) {
+    fun initialize(
+        loadedDeviceId: Int?, path: String, movieBatch: MovieBatch?, freeSpace: String?
+    ) {
+        this.loadedDeviceId = loadedDeviceId
         this.path = path
         _movieBatch.value = movieBatch
+        _freeSpace.value = freeSpace
     }
 
     suspend fun updateLoadingState(isForcedUpdate: Boolean) {
@@ -127,16 +135,19 @@ class MoviesViewModel(
             if (currentDeviceId != loadedDeviceId || isForced) {
                 _movieBatch.value = null
                 _preloadBatches.value = emptyMap()
+                _freeSpace.value = null
                 loadedDeviceId = currentDeviceId
             }
 
-            if (_movieBatch.value == null || _preloadBatches.value.isEmpty()) {
+            if (_movieBatch.value == null || _preloadBatches.value.isEmpty() || _freeSpace.value == null) {
                 fetchJob?.cancel()
                 fetchJob = launch {
                     val batch = apiRepository.fetchMovieBatch(path)
                     _movieBatch.value = batch
 
                     val directory = batch.directory
+
+                    _freeSpace.value = apiRepository.fetchFreeSpace(directory)
 
                     batch.bookmarks.asSequence()
                         .filter { bookmark -> _preloadBatches.value[bookmark] == null }
