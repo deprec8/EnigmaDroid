@@ -56,7 +56,7 @@ object MainKeys {
 
     @Serializable
     data class MoviesDirectory(
-        val loadedDeviceId: Int?,
+        val connectedDeviceId: Int?,
         val path: String,
         val preloadBatch: MovieBatch?,
         val freeSpace: String?

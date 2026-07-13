@@ -83,7 +83,7 @@ class TimersViewModel(
 
     private var fetchJob: Job? = null
 
-    private var loadedDeviceId: Int? = null
+    private var connectedDeviceId: Int? = null
 
     init {
         viewModelScope.launch {
@@ -114,10 +114,10 @@ class TimersViewModel(
     fun fetchData(isForced: Boolean = false) {
         viewModelScope.launch {
             val currentDeviceId = devicesRepository.getCurrentDeviceId().first()
-            if (currentDeviceId != loadedDeviceId || isForced) {
+            if (currentDeviceId != connectedDeviceId || isForced) {
                 _timerBatch.value = null
                 _serviceBatchSet.value = null
-                loadedDeviceId = currentDeviceId
+                connectedDeviceId = currentDeviceId
             }
 
             if (_timerBatch.value == null || _serviceBatchSet.value == null) {

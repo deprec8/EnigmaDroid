@@ -89,7 +89,7 @@ class RadioEpgViewModel(
 
     private var fetchedEventBatchSetMap = emptyMap<String, EventBatchSet>()
 
-    private var loadedDeviceId: Int? = null
+    private var connectedDeviceId: Int? = null
 
     init {
         viewModelScope.launch {
@@ -120,11 +120,11 @@ class RadioEpgViewModel(
     fun fetchData(isForced: Boolean = false) {
         viewModelScope.launch {
             val currentDeviceId = devicesRepository.getCurrentDeviceId().first()
-            if (currentDeviceId != loadedDeviceId || isForced) {
+            if (currentDeviceId != connectedDeviceId || isForced) {
                 _eventBatchSet.value = null
                 _bouquets.value = null
                 fetchedEventBatchSetMap = emptyMap()
-                loadedDeviceId = currentDeviceId
+                connectedDeviceId = currentDeviceId
             }
 
             if (_eventBatchSet.value == null || _bouquets.value == null) {

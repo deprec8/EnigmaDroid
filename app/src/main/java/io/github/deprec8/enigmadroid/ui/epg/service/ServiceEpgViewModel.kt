@@ -81,7 +81,7 @@ class ServiceEpgViewModel(
 
     private var serviceReference = ""
 
-    private var loadedDeviceId: Int? = null
+    private var connectedDeviceId: Int? = null
 
     init {
         viewModelScope.launch {
@@ -116,9 +116,9 @@ class ServiceEpgViewModel(
     fun fetchData(isForced: Boolean = false) {
         viewModelScope.launch {
             val currentDeviceId = devicesRepository.getCurrentDeviceId().first()
-            if (currentDeviceId != loadedDeviceId || isForced) {
+            if (currentDeviceId != connectedDeviceId || isForced) {
                 _eventBatch.value = null
-                loadedDeviceId = currentDeviceId
+                connectedDeviceId = currentDeviceId
             }
 
             if (_eventBatch.value == null) {

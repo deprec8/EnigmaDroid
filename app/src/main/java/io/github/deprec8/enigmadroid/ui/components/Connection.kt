@@ -180,7 +180,7 @@ private fun InfoDisplay(text: String, onReload: () -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FloatingReloadButton(connectionState: ConnectionState, onReload: () -> Unit) {
+fun FloatingReloadButton(connectionState: ConnectionState, onCheckConnection: () -> Unit) {
     AnimatedVisibility(
         connectionState == ConnectionState.CONNECTED, enter = scaleIn(), exit = scaleOut()
     ) {
@@ -196,7 +196,7 @@ fun FloatingReloadButton(connectionState: ConnectionState, onReload: () -> Unit)
             )
         ) {
             FloatingActionButton(onClick = {
-                onReload()
+                onCheckConnection()
             }) {
                 Icon(
                     Icons.Default.Refresh, contentDescription = stringResource(R.string.reload)

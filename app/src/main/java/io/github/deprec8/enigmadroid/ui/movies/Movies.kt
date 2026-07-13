@@ -174,7 +174,7 @@ fun MoviesPage(
                 onDownloadMovie = { movie -> moviesViewModel.download(movie) },
                 onNavigateToDirectory = { path, preloadBatch ->
                     onNavigateToDirectory(
-                        moviesViewModel.loadedDeviceId, path, preloadBatch, freeSpace
+                        moviesViewModel.connectedDeviceId, path, preloadBatch, freeSpace
                     )
                 })
         } else {

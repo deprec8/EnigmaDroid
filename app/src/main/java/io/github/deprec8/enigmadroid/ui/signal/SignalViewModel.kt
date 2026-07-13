@@ -51,7 +51,7 @@ class SignalViewModel(
 
     private var fetchJob: Job? = null
 
-    private var loadedDeviceId: Int? = null
+    private var connectedDeviceId: Int? = null
 
     fun checkConnection(forced: Boolean) {
         viewModelScope.launch {
@@ -62,9 +62,9 @@ class SignalViewModel(
     fun fetchData(isForced: Boolean = false) {
         viewModelScope.launch {
             val currentDeviceId = devicesRepository.getCurrentDeviceId().first()
-            if (currentDeviceId != loadedDeviceId || isForced) {
+            if (currentDeviceId != connectedDeviceId || isForced) {
                 _signalInfo.value = null
-                loadedDeviceId = currentDeviceId
+                connectedDeviceId = currentDeviceId
             }
 
             if (_signalInfo.value == null) {

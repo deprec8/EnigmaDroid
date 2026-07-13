@@ -139,10 +139,10 @@ fun MainNavigationDisplay(
         ) {
             MoviesPage(
                 onNavigateToRemoteControl = { onNavigateToRemoteControl() },
-                onNavigateToDirectory = { loadedDeviceId, path, preloadBatch, freeSpace ->
+                onNavigateToDirectory = { connectedDeviceId, path, preloadBatch, freeSpace ->
                     drawerNavigator.navigate(
                         MainKeys.MoviesDirectory(
-                            loadedDeviceId, path, preloadBatch, freeSpace
+                            connectedDeviceId, path, preloadBatch, freeSpace
                         )
                     )
                 },
@@ -155,7 +155,7 @@ fun MainNavigationDisplay(
             val moviesViewModel: MoviesViewModel = koinViewModel()
             LaunchedEffect(backStackEntry) {
                 moviesViewModel.initialize(
-                    backStackEntry.loadedDeviceId,
+                    backStackEntry.connectedDeviceId,
                     backStackEntry.path,
                     backStackEntry.preloadBatch,
                     backStackEntry.freeSpace
@@ -163,10 +163,10 @@ fun MainNavigationDisplay(
             }
             MoviesDirectoryPage(
                 onNavigateToRemoteControl = { onNavigateToRemoteControl() },
-                onNavigateToDirectory = { loadedDeviceId, path, preloadBatch, freeSpace ->
+                onNavigateToDirectory = { connectedDeviceId, path, preloadBatch, freeSpace ->
                     drawerNavigator.navigate(
                         MainKeys.MoviesDirectory(
-                            loadedDeviceId, path, preloadBatch, freeSpace
+                            connectedDeviceId, path, preloadBatch, freeSpace
                         )
                     )
                 },

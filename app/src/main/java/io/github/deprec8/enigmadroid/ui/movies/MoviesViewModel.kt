@@ -90,7 +90,7 @@ class MoviesViewModel(
 
     private var fetchJob: Job? = null
 
-    var loadedDeviceId: Int? = null
+    var connectedDeviceId: Int? = null
         private set
 
     init {
@@ -114,9 +114,9 @@ class MoviesViewModel(
     }
 
     fun initialize(
-        loadedDeviceId: Int?, path: String, movieBatch: MovieBatch?, freeSpace: String?
+        connectedDeviceId: Int?, path: String, movieBatch: MovieBatch?, freeSpace: String?
     ) {
-        this.loadedDeviceId = loadedDeviceId
+        this.connectedDeviceId = connectedDeviceId
         this.path = path
         _movieBatch.value = movieBatch
         _freeSpace.value = freeSpace
@@ -131,11 +131,11 @@ class MoviesViewModel(
     fun fetchData(isForced: Boolean = false) {
         viewModelScope.launch {
             val currentDeviceId = devicesRepository.getCurrentDeviceId().first()
-            if (currentDeviceId != loadedDeviceId || isForced) {
+            if (currentDeviceId != connectedDeviceId || isForced) {
                 _movieBatch.value = null
                 _preloadBatches.value = emptyMap()
                 _freeSpace.value = null
-                loadedDeviceId = currentDeviceId
+                connectedDeviceId = currentDeviceId
             }
 
             if (_movieBatch.value == null || _preloadBatches.value.isEmpty() || _freeSpace.value == null) {
