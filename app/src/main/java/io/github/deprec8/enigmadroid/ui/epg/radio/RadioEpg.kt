@@ -41,7 +41,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
@@ -68,7 +68,7 @@ fun RadioEpgPage(
     val filteredEvents by radioEpgViewModel.filteredEvents.collectAsStateWithLifecycle()
     val searchHistory by radioEpgViewModel.searchHistory.collectAsStateWithLifecycle()
     val highlightedWords by radioEpgViewModel.highlightedWords.collectAsStateWithLifecycle()
-    val loadingState by radioEpgViewModel.loadingState.collectAsStateWithLifecycle()
+    val loadingState by radioEpgViewModel.connectionState.collectAsStateWithLifecycle()
     val bouquets by radioEpgViewModel.bouquets.collectAsStateWithLifecycle()
     val currentBouquetReference by radioEpgViewModel.currentBouquetReference.collectAsStateWithLifecycle()
 
@@ -87,7 +87,7 @@ fun RadioEpgPage(
     }
 
     LaunchedEffect(loadingState) {
-        if (loadingState == LoadingState.LOADED) {
+        if (loadingState == ConnectionState.CONNECTED) {
             radioEpgViewModel.fetchData()
         }
     }
@@ -98,7 +98,7 @@ fun RadioEpgPage(
         }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = eventBatchSet?.eventBatches?.isNotEmpty() == true && loadingState == LoadingState.LOADED,
+            enabled = eventBatchSet?.eventBatches?.isNotEmpty() == true && loadingState == ConnectionState.CONNECTED,
             textFieldState = radioEpgViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_epg),
             content = {
@@ -135,7 +135,7 @@ fun RadioEpgPage(
                 radioEpgViewModel.updateSearchInput()
             },
             actionBar = {
-                if (eventBatchSet?.eventBatches?.isNotEmpty() == true && loadingState == LoadingState.LOADED) {
+                if (eventBatchSet?.eventBatches?.isNotEmpty() == true && loadingState == ConnectionState.CONNECTED) {
                     ContentTabRow(selectedTabIndex) {
                         eventBatchSet?.eventBatches?.forEachIndexed { index, eventBatch ->
                             ContentTab(
@@ -152,7 +152,7 @@ fun RadioEpgPage(
     }
 
     ) { innerPadding ->
-        if (eventBatchSet != null && loadingState == LoadingState.LOADED) {
+        if (eventBatchSet != null && loadingState == ConnectionState.CONNECTED) {
             if (eventBatchSet?.eventBatches?.isNotEmpty() == true) {
                 HorizontalPager(
                     modifier = Modifier.fillMaxSize(),
@@ -182,7 +182,7 @@ fun RadioEpgPage(
                         )
                     }
                 },
-                loadingState = loadingState
+                connectionState = loadingState
             )
         }
     }

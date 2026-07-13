@@ -55,7 +55,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
@@ -79,7 +79,7 @@ fun TimersPage(
     val timerBatch by timersViewModel.timerBatch.collectAsStateWithLifecycle()
     val serviceBatchSet by timersViewModel.serviceBatchSet.collectAsStateWithLifecycle()
     val searchHistory by timersViewModel.searchHistory.collectAsStateWithLifecycle()
-    val loadingState by timersViewModel.loadingState.collectAsStateWithLifecycle()
+    val loadingState by timersViewModel.connectionState.collectAsStateWithLifecycle()
     val highlightedWords by timersViewModel.highlightedWords.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
@@ -92,14 +92,14 @@ fun TimersPage(
     }
 
     LaunchedEffect(loadingState) {
-        if (loadingState == LoadingState.LOADED) {
+        if (loadingState == ConnectionState.CONNECTED) {
             timersViewModel.fetchData()
         }
     }
 
     Scaffold(contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = timerBatch?.timers?.isNotEmpty() == true && loadingState == LoadingState.LOADED,
+            enabled = timerBatch?.timers?.isNotEmpty() == true && loadingState == ConnectionState.CONNECTED,
             textFieldState = timersViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_timers),
             content = {
@@ -142,7 +142,7 @@ fun TimersPage(
 
     }, floatingActionButton = {
         AnimatedVisibility(
-            loadingState == LoadingState.LOADED, enter = scaleIn(), exit = scaleOut()
+            loadingState == ConnectionState.CONNECTED, enter = scaleIn(), exit = scaleOut()
         ) {
             Column(horizontalAlignment = Alignment.End) {
                 TooltipBox(
@@ -188,7 +188,7 @@ fun TimersPage(
     }
 
     ) { innerPadding ->
-        if (timerBatch != null && loadingState == LoadingState.LOADED) {
+        if (timerBatch != null && loadingState == ConnectionState.CONNECTED) {
             TimersContent(
                 timers = timerBatch?.timers ?: emptyList(),
                 paddingValues = innerPadding,
@@ -215,7 +215,7 @@ fun TimersPage(
                         )
                     }
                 },
-                loadingState = loadingState
+                connectionState = loadingState
             )
         }
     }

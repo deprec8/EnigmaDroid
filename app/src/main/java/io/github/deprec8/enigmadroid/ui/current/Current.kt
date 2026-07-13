@@ -37,7 +37,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.model.api.CurrentInfo
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
@@ -58,7 +58,7 @@ fun CurrentPage(
 ) {
 
     val currentEventInfo by currentViewModel.currentInfo.collectAsStateWithLifecycle()
-    val loadingState by currentViewModel.loadingState.collectAsStateWithLifecycle()
+    val loadingState by currentViewModel.connectionState.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -68,7 +68,7 @@ fun CurrentPage(
     }
 
     LaunchedEffect(loadingState) {
-        if (loadingState == LoadingState.LOADED) {
+        if (loadingState == ConnectionState.CONNECTED) {
             currentViewModel.fetchData()
         }
     }
@@ -93,7 +93,7 @@ fun CurrentPage(
                 RemoteControlActionButton { onNavigateToRemoteControl() }
             })
     }) { innerPadding ->
-        if (currentEventInfo != null && loadingState == LoadingState.LOADED) {
+        if (currentEventInfo != null && loadingState == ConnectionState.CONNECTED) {
             CurrentContent(
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 currentEventInfo ?: CurrentInfo(),
@@ -116,7 +116,7 @@ fun CurrentPage(
                             it
                         )
                     }
-                }, loadingState = loadingState
+                }, connectionState = loadingState
             )
         }
     }

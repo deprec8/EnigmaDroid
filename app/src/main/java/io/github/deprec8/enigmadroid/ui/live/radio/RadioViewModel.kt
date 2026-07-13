@@ -23,10 +23,10 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.deprec8.enigmadroid.common.enums.ContentType
-import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
+import io.github.deprec8.enigmadroid.data.repositories.ConnectionRepository
 import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
-import io.github.deprec8.enigmadroid.data.repositories.LoadingRepository
 import io.github.deprec8.enigmadroid.data.repositories.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.data.repositories.SettingsRepository
 import io.github.deprec8.enigmadroid.model.api.Event
@@ -46,7 +46,7 @@ import kotlinx.coroutines.launch
 
 class RadioViewModel(
     private val apiRepository: ApiRepository,
-    private val loadingRepository: LoadingRepository,
+    private val connectionRepository: ConnectionRepository,
     private val searchHistoryRepository: SearchHistoryRepository,
     private val settingsRepository: SettingsRepository,
     private val devicesRepository: DevicesRepository
@@ -58,8 +58,8 @@ class RadioViewModel(
     private val _eventBatches = MutableStateFlow<List<EventBatch>?>(null)
     val eventBatches: StateFlow<List<EventBatch>?> = _eventBatches.asStateFlow()
 
-    private val _loadingState = MutableStateFlow(LoadingState.LOADING)
-    val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
+    private val _connectionState = MutableStateFlow(ConnectionState.CONNECTING)
+    val connectionState: StateFlow<ConnectionState> = _connectionState.asStateFlow()
 
     private val _searchHistory = MutableStateFlow<List<String>>(emptyList())
     val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()
@@ -84,8 +84,8 @@ class RadioViewModel(
 
     init {
         viewModelScope.launch {
-            loadingRepository.getLoadingState().collectLatest { state ->
-                _loadingState.value = state
+            connectionRepository.getLoadingState().collectLatest { state ->
+                _connectionState.value = state
             }
         }
         viewModelScope.launch {
@@ -110,7 +110,7 @@ class RadioViewModel(
     }
 
     suspend fun updateLoadingState(isForcedUpdate: Boolean) {
-        loadingRepository.updateLoadingState(isForcedUpdate)
+        connectionRepository.checkConnection(isForcedUpdate)
     }
 
     suspend fun buildLiveStreamUrl(serviceReference: String): String {

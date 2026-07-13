@@ -36,7 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.model.api.MovieBatch
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
@@ -63,7 +63,7 @@ fun MoviesPage(
     val movieBatch by moviesViewModel.movieBatch.collectAsStateWithLifecycle()
     val filteredMovies by moviesViewModel.filteredMovies.collectAsStateWithLifecycle()
     val searchHistory by moviesViewModel.searchHistory.collectAsStateWithLifecycle()
-    val loadingState by moviesViewModel.loadingState.collectAsStateWithLifecycle()
+    val loadingState by moviesViewModel.connectionState.collectAsStateWithLifecycle()
     val highlightedWords by moviesViewModel.highlightedWords.collectAsStateWithLifecycle()
     val preloadBatches by moviesViewModel.preloadBatches.collectAsStateWithLifecycle()
     val freeSpace by moviesViewModel.freeSpace.collectAsStateWithLifecycle()
@@ -76,7 +76,7 @@ fun MoviesPage(
     }
 
     LaunchedEffect(loadingState) {
-        if (loadingState == LoadingState.LOADED) {
+        if (loadingState == ConnectionState.CONNECTED) {
             moviesViewModel.fetchData()
         }
     }
@@ -85,7 +85,7 @@ fun MoviesPage(
         FloatingReloadButton(loadingState) { moviesViewModel.fetchData(isForced = true) }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = movieBatch?.movies?.isNotEmpty() == true && loadingState == LoadingState.LOADED,
+            enabled = movieBatch?.movies?.isNotEmpty() == true && loadingState == ConnectionState.CONNECTED,
             textFieldState = moviesViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_movies),
             content = {
@@ -143,7 +143,7 @@ fun MoviesPage(
     }
 
     ) { innerPadding ->
-        if (movieBatch != null && loadingState == LoadingState.LOADED) {
+        if (movieBatch != null && loadingState == ConnectionState.CONNECTED) {
             MoviesContent(
                 movies = movieBatch?.movies ?: emptyList(),
                 bookmarks = movieBatch?.bookmarks ?: emptyList(),
@@ -187,7 +187,7 @@ fun MoviesPage(
                             it
                         )
                     }
-                }, loadingState = loadingState
+                }, connectionState = loadingState
             )
         }
     }

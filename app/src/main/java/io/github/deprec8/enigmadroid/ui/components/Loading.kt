@@ -57,13 +57,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.ConnectionState
 
 @Composable
 fun LoadingScreen(
     modifier: Modifier,
     onReload: (Boolean) -> Unit,
-    loadingState: LoadingState,
+    connectionState: ConnectionState,
 ) {
     val scrollState = rememberScrollState()
 
@@ -74,7 +74,7 @@ fun LoadingScreen(
             .verticalScroll(scrollState)
     ) {
         AnimatedContent(
-            modifier = Modifier.fillMaxSize(), targetState = loadingState, transitionSpec = {
+            modifier = Modifier.fillMaxSize(), targetState = connectionState, transitionSpec = {
                 scaleIn(
                     initialScale = 0f, animationSpec = spring(
                         dampingRatio = Spring.DampingRatioMediumBouncy,
@@ -84,7 +84,7 @@ fun LoadingScreen(
             }, label = ""
         ) {
             when (it) {
-                LoadingState.LOADED -> {
+                ConnectionState.CONNECTED -> {
                     Column {
                         CircularProgressIndicator(
                             modifier = Modifier
@@ -95,7 +95,7 @@ fun LoadingScreen(
                     }
                 }
 
-                LoadingState.DEVICE_NOT_ONLINE -> {
+                ConnectionState.DEVICE_NOT_ONLINE -> {
                     Column {
                         Text(
                             text = stringResource(R.string.device_not_connected),
@@ -115,7 +115,7 @@ fun LoadingScreen(
                     }
                 }
 
-                LoadingState.NO_DEVICE_AVAILABLE -> {
+                ConnectionState.NO_DEVICE_AVAILABLE -> {
                     Column {
                         Text(
                             text = stringResource(R.string.no_device_available),
@@ -135,7 +135,7 @@ fun LoadingScreen(
                     }
                 }
 
-                LoadingState.LOADING -> {
+                ConnectionState.CONNECTING -> {
                     Column {
                         CircularProgressIndicator(
                             modifier = Modifier
@@ -153,7 +153,7 @@ fun LoadingScreen(
                     }
                 }
 
-                LoadingState.INVALID_DEVICE_RESPONSE -> {
+                ConnectionState.INVALID_DEVICE_RESPONSE -> {
                     Column {
                         Text(
                             text = stringResource(R.string.invalid_device_response),
@@ -179,9 +179,9 @@ fun LoadingScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FloatingReloadButton(loadingState: LoadingState, onReload: () -> Unit) {
+fun FloatingReloadButton(connectionState: ConnectionState, onReload: () -> Unit) {
     AnimatedVisibility(
-        loadingState == LoadingState.LOADED, enter = scaleIn(), exit = scaleOut()
+        connectionState == ConnectionState.CONNECTED, enter = scaleIn(), exit = scaleOut()
     ) {
         TooltipBox(
             tooltip = {

@@ -19,12 +19,8 @@
 
 package io.github.deprec8.enigmadroid.data.repositories
 
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
-import io.github.deprec8.enigmadroid.common.constant.PreferenceKeys
-import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.ConnectionState
+import io.github.deprec8.enigmadroid.data.ConnectionStateHolder
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.data.source.local.devices.DevicesLocalDataSource
 import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
@@ -37,36 +33,22 @@ import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DevicesRepository(
-    private val dataStore: DataStore<Preferences>,
+    private val connectionStateHolder: ConnectionStateHolder,
     private val networkDataSource: NetworkDataSource,
     private val devicesLocalDataSource: DevicesLocalDataSource
 ) {
-    private val loadingStateKey = intPreferencesKey(PreferenceKeys.LOADING_STATE)
-
     private var loadingJob: Job? = null
-
-    private suspend fun updateLoadingState() {
-        dataStore.edit { preferences ->
-            preferences[loadingStateKey] = LoadingState.LOADING.id
-        }
-
-        if (networkDataSource.isDeviceOnline()) {
-            dataStore.edit { preferences ->
-                preferences[loadingStateKey] = LoadingState.LOADED.id
-            }
-        }
-    }
 
     suspend fun setCurrentDevice(device: Device) = withContext(Dispatchers.IO) {
         devicesLocalDataSource.setCurrentDevice(device)
         loadingJob?.cancel()
-        loadingJob = launch { updateLoadingState() }
+        loadingJob = launch { networkDataSource.checkConnection() }
     }
 
     suspend fun setCurrentDeviceId(id: Int) = withContext(Dispatchers.IO) {
         devicesLocalDataSource.setCurrentDeviceId(id)
         loadingJob?.cancel()
-        loadingJob = launch { updateLoadingState() }
+        loadingJob = launch { networkDataSource.checkConnection() }
     }
 
     fun getCurrentDevice(): Flow<Device?> {
@@ -85,9 +67,7 @@ class DevicesRepository(
         devicesLocalDataSource.deleteDevice(device)
 
         if (devicesLocalDataSource.getAllDevicesStatic().isEmpty()) {
-            dataStore.edit { preferences ->
-                preferences[loadingStateKey] = LoadingState.NO_DEVICE_AVAILABLE.id
-            }
+            connectionStateHolder.updateConnectionState(ConnectionState.NO_DEVICE_AVAILABLE)
         }
     }
 
@@ -95,7 +75,7 @@ class DevicesRepository(
         devicesLocalDataSource.editDevice(oldDevice, newDevice)
         if (devicesLocalDataSource.getCurrentDeviceIdStatic() == oldDevice.id) {
             loadingJob?.cancel()
-            loadingJob = launch { updateLoadingState() }
+            loadingJob = launch { networkDataSource.checkConnection() }
         }
     }
 
@@ -103,7 +83,7 @@ class DevicesRepository(
         devicesLocalDataSource.addDevice(device)
         if (devicesLocalDataSource.getAllDevicesStatic().size == 1) {
             loadingJob?.cancel()
-            loadingJob = launch { updateLoadingState() }
+            loadingJob = launch { networkDataSource.checkConnection() }
         }
     }
 }

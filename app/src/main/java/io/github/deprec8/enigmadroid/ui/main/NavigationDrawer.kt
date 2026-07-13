@@ -93,7 +93,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.common.constant.MainKeys
-import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.model.DrawerPage
 import io.github.deprec8.enigmadroid.model.DrawerPageGroup
@@ -102,7 +102,7 @@ import io.github.deprec8.enigmadroid.model.DrawerPageGroup
 fun DrawerContent(
     currentDevice: Device?,
     devices: List<Device>,
-    loadingState: LoadingState,
+    connectionState: ConnectionState,
     currentTopLevelRoute: NavKey,
     scrollState: ScrollState,
     onOpenOwif: () -> Unit,
@@ -120,7 +120,7 @@ fun DrawerContent(
         DeviceItem(
             currentDevice = currentDevice,
             devices = devices,
-            loadingState = loadingState,
+            connectionState = connectionState,
             onOpenOwif = { onOpenOwif() },
             onUpdateDeviceStatus = { onUpdateDeviceStatus() },
             onSetCurrentDevice = onSetCurrentDevice
@@ -173,7 +173,7 @@ fun DrawerItem(
 fun DeviceItem(
     currentDevice: Device?,
     devices: List<Device>,
-    loadingState: LoadingState,
+    connectionState: ConnectionState,
     onOpenOwif: () -> Unit,
     onUpdateDeviceStatus: () -> Unit,
     onSetCurrentDevice: (Device) -> Unit
@@ -189,7 +189,7 @@ fun DeviceItem(
             )
         },
         trailingContent = {
-            AnimatedContent(loadingState, label = "", transitionSpec = {
+            AnimatedContent(connectionState, label = "", transitionSpec = {
                 scaleIn(
                     initialScale = 0f, animationSpec = spring(
                         dampingRatio = Spring.DampingRatioMediumBouncy,
@@ -198,7 +198,7 @@ fun DeviceItem(
                 ) + fadeIn() togetherWith scaleOut(targetScale = 0f) + fadeOut()
             }) {
                 when (it) {
-                    LoadingState.LOADED -> {
+                    ConnectionState.CONNECTED -> {
                         TooltipBox(
                             tooltip = {
                                 PlainTooltip {
@@ -221,7 +221,7 @@ fun DeviceItem(
                         }
                     }
 
-                    LoadingState.LOADING -> {
+                    ConnectionState.CONNECTING -> {
                         IconButton(onClick = {}, enabled = false) {
                             CircularProgressIndicator(Modifier.size(24.dp))
                         }
@@ -253,11 +253,11 @@ fun DeviceItem(
         },
         supportingContent = {
             AnimatedContent(
-                loadingState,
+                connectionState,
                 label = "",
                 transitionSpec = { fadeIn() togetherWith fadeOut() }) {
                 when (it) {
-                    LoadingState.LOADED -> {
+                    ConnectionState.CONNECTED -> {
                         Text(
                             stringResource(R.string.connected),
                             maxLines = 1,
@@ -265,7 +265,7 @@ fun DeviceItem(
                         )
                     }
 
-                    LoadingState.DEVICE_NOT_ONLINE -> {
+                    ConnectionState.DEVICE_NOT_ONLINE -> {
                         Text(
                             stringResource(id = R.string.device_not_connected),
                             maxLines = 1,
@@ -273,7 +273,7 @@ fun DeviceItem(
                         )
                     }
 
-                    LoadingState.NO_DEVICE_AVAILABLE -> {
+                    ConnectionState.NO_DEVICE_AVAILABLE -> {
                         Text(
                             stringResource(R.string.add_a_device_to_connect_to),
                             maxLines = 1,
@@ -281,7 +281,7 @@ fun DeviceItem(
                         )
                     }
 
-                    LoadingState.LOADING -> {
+                    ConnectionState.CONNECTING -> {
                         Text(
                             stringResource(R.string.searching_for_device),
                             maxLines = 1,
@@ -289,7 +289,7 @@ fun DeviceItem(
                         )
                     }
 
-                    LoadingState.INVALID_DEVICE_RESPONSE -> {
+                    ConnectionState.INVALID_DEVICE_RESPONSE -> {
                         Text(
                             stringResource(id = R.string.invalid_device_response),
                             maxLines = 1,

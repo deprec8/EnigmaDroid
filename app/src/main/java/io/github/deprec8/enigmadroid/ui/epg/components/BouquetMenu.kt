@@ -41,7 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.model.api.Bouquet
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,7 +49,7 @@ import io.github.deprec8.enigmadroid.model.api.Bouquet
 fun BouquetMenu(
     bouquets: List<Bouquet>?,
     currentBouquetReference: String,
-    loadingState: LoadingState,
+    connectionState: ConnectionState,
     onBouquetChange: (String) -> Unit
 ) {
     var showMenu by rememberSaveable { mutableStateOf(false) }
@@ -67,7 +67,9 @@ fun BouquetMenu(
     ) {
         IconButton(onClick = {
             showMenu = true
-        }, enabled = bouquets?.isNotEmpty() == true && loadingState == LoadingState.LOADED) {
+        },
+            enabled = bouquets?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED
+        ) {
             Icon(
                 Icons.Default.MoreVert, contentDescription = stringResource(R.string.bouquet_menu)
             )

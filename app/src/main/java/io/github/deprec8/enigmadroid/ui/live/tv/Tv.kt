@@ -40,7 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.content.ContentTab
@@ -65,7 +65,7 @@ fun TvPage(
 
     val filteredEvents by tvViewModel.filteredEvents.collectAsStateWithLifecycle()
     val eventBatches by tvViewModel.eventBatches.collectAsStateWithLifecycle()
-    val loadingState by tvViewModel.loadingState.collectAsStateWithLifecycle()
+    val loadingState by tvViewModel.connectionState.collectAsStateWithLifecycle()
     val searchHistory by tvViewModel.searchHistory.collectAsStateWithLifecycle()
     val highlightedWords by tvViewModel.highlightedWords.collectAsStateWithLifecycle()
 
@@ -81,7 +81,7 @@ fun TvPage(
         tvViewModel.updateLoadingState(false)
     }
     LaunchedEffect(loadingState) {
-        if (loadingState == LoadingState.LOADED) {
+        if (loadingState == ConnectionState.CONNECTED) {
             tvViewModel.fetchData()
         }
     }
@@ -95,7 +95,7 @@ fun TvPage(
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
             textFieldState = tvViewModel.searchFieldState,
-            enabled = eventBatches?.isNotEmpty() == true && loadingState == LoadingState.LOADED,
+            enabled = eventBatches?.isNotEmpty() == true && loadingState == ConnectionState.CONNECTED,
             placeholder = stringResource(R.string.search_events),
             content = {
                 filteredEvents?.let { filterEvents ->
@@ -139,7 +139,7 @@ fun TvPage(
                 tvViewModel.updateSearchInput()
             },
             actionBar = {
-                if (eventBatches?.isNotEmpty() == true && loadingState == LoadingState.LOADED) {
+                if (eventBatches?.isNotEmpty() == true && loadingState == ConnectionState.CONNECTED) {
                     ContentTabRow(selectedTabIndex) {
                         eventBatches?.forEachIndexed { index, eventBatch ->
                             ContentTab(
@@ -155,7 +155,7 @@ fun TvPage(
             })
 
     }) { innerPadding ->
-        if (eventBatches != null && loadingState == LoadingState.LOADED) {
+        if (eventBatches != null && loadingState == ConnectionState.CONNECTED) {
             HorizontalPager(
                 modifier = Modifier.fillMaxSize(), state = pagerState
             ) { index ->
@@ -189,7 +189,7 @@ fun TvPage(
                         )
                     }
                 },
-                loadingState = loadingState
+                connectionState = loadingState
             )
         }
     }

@@ -37,7 +37,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.model.api.DeviceInfo
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
@@ -56,7 +56,7 @@ fun DeviceInfoPage(
     deviceInfoViewModel: DeviceInfoViewModel = koinViewModel()
 ) {
 
-    val loadingState by deviceInfoViewModel.loadingState.collectAsStateWithLifecycle()
+    val loadingState by deviceInfoViewModel.connectionState.collectAsStateWithLifecycle()
     val deviceInfo by deviceInfoViewModel.deviceInfo.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
@@ -67,7 +67,7 @@ fun DeviceInfoPage(
     }
 
     LaunchedEffect(loadingState) {
-        if (loadingState == LoadingState.LOADED) {
+        if (loadingState == ConnectionState.CONNECTED) {
             deviceInfoViewModel.fetchData()
         }
     }
@@ -87,7 +87,7 @@ fun DeviceInfoPage(
             RemoteControlActionButton { onNavigateToRemoteControl() }
         })
     }) { innerPadding ->
-        if (deviceInfo != null && loadingState == LoadingState.LOADED) {
+        if (deviceInfo != null && loadingState == ConnectionState.CONNECTED) {
             DeviceInfoContent(
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 deviceInfo ?: DeviceInfo(),
@@ -105,7 +105,7 @@ fun DeviceInfoPage(
                         )
                     }
                 },
-                loadingState = loadingState
+                connectionState = loadingState
             )
         }
     }

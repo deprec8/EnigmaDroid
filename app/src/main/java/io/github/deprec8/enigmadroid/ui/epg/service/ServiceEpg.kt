@@ -34,7 +34,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
@@ -53,7 +53,7 @@ fun ServiceEpgPage(
     serviceEpgViewModel: ServiceEpgViewModel = koinViewModel()
 ) {
     val eventBatch by serviceEpgViewModel.eventBatch.collectAsStateWithLifecycle()
-    val loadingState by serviceEpgViewModel.loadingState.collectAsStateWithLifecycle()
+    val loadingState by serviceEpgViewModel.connectionState.collectAsStateWithLifecycle()
     val filteredEvents by serviceEpgViewModel.filteredEvents.collectAsStateWithLifecycle()
     val searchHistory by serviceEpgViewModel.searchHistory.collectAsStateWithLifecycle()
     val highlightedWords by serviceEpgViewModel.highlightedWords.collectAsStateWithLifecycle()
@@ -65,7 +65,7 @@ fun ServiceEpgPage(
     }
 
     LaunchedEffect(loadingState) {
-        if (loadingState == LoadingState.LOADED) {
+        if (loadingState == ConnectionState.CONNECTED) {
             serviceEpgViewModel.fetchData()
         }
     }
@@ -74,7 +74,7 @@ fun ServiceEpgPage(
         FloatingReloadButton(loadingState) { serviceEpgViewModel.fetchData(isForced = true) }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = eventBatch?.events?.isNotEmpty() == true && loadingState == LoadingState.LOADED,
+            enabled = eventBatch?.events?.isNotEmpty() == true && loadingState == ConnectionState.CONNECTED,
             textFieldState = serviceEpgViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_epg_from, serviceName),
             content = {
@@ -103,7 +103,7 @@ fun ServiceEpgPage(
                 serviceEpgViewModel.updateSearchInput()
             })
     }) { innerPadding ->
-        if (eventBatch != null && loadingState == LoadingState.LOADED) {
+        if (eventBatch != null && loadingState == ConnectionState.CONNECTED) {
             EpgContent(
                 events = eventBatch?.events ?: emptyList(),
                 innerPadding,
@@ -120,7 +120,7 @@ fun ServiceEpgPage(
                         )
                     }
                 },
-                loadingState = loadingState
+                connectionState = loadingState
             )
         }
     }

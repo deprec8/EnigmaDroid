@@ -21,10 +21,10 @@ package io.github.deprec8.enigmadroid.ui.signal
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
+import io.github.deprec8.enigmadroid.data.repositories.ConnectionRepository
 import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
-import io.github.deprec8.enigmadroid.data.repositories.LoadingRepository
 import io.github.deprec8.enigmadroid.model.api.SignalInfo
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,15 +36,15 @@ import kotlinx.coroutines.launch
 
 class SignalViewModel(
     private val apiRepository: ApiRepository,
-    private val loadingRepository: LoadingRepository,
+    private val connectionRepository: ConnectionRepository,
     private val devicesRepository: DevicesRepository
 ) : ViewModel() {
 
     private val _signalInfo = MutableStateFlow<SignalInfo?>(null)
     val signalInfo: StateFlow<SignalInfo?> = _signalInfo.asStateFlow()
 
-    private val _loadingState = MutableStateFlow(LoadingState.LOADING)
-    val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
+    private val _connectionState = MutableStateFlow(ConnectionState.CONNECTING)
+    val connectionState: StateFlow<ConnectionState> = _connectionState.asStateFlow()
 
     private var fetchJob: Job? = null
 
@@ -52,14 +52,14 @@ class SignalViewModel(
 
     init {
         viewModelScope.launch {
-            loadingRepository.getLoadingState().collectLatest { state ->
-                _loadingState.value = state
+            connectionRepository.getLoadingState().collectLatest { state ->
+                _connectionState.value = state
             }
         }
     }
 
     suspend fun updateLoadingState(isForcedUpdate: Boolean) {
-        loadingRepository.updateLoadingState(isForcedUpdate)
+        connectionRepository.checkConnection(isForcedUpdate)
     }
 
     fun fetchData(isForced: Boolean = false) {

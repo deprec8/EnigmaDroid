@@ -40,7 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.content.ContentTab
@@ -66,7 +66,7 @@ fun RadioPage(
     val filteredEvents by radioViewModel.filteredEvents.collectAsStateWithLifecycle()
     val eventBatches by radioViewModel.eventBatches.collectAsStateWithLifecycle()
     val searchHistory by radioViewModel.searchHistory.collectAsStateWithLifecycle()
-    val loadingState by radioViewModel.loadingState.collectAsStateWithLifecycle()
+    val loadingState by radioViewModel.connectionState.collectAsStateWithLifecycle()
     val highlightedWords by radioViewModel.highlightedWords.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
@@ -82,7 +82,7 @@ fun RadioPage(
     }
 
     LaunchedEffect(loadingState) {
-        if (loadingState == LoadingState.LOADED) {
+        if (loadingState == ConnectionState.CONNECTED) {
             radioViewModel.fetchData()
         }
     }
@@ -95,7 +95,7 @@ fun RadioPage(
         FloatingReloadButton(loadingState) { radioViewModel.fetchData(isForced = true) }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = eventBatches?.isNotEmpty() == true && loadingState == LoadingState.LOADED,
+            enabled = eventBatches?.isNotEmpty() == true && loadingState == ConnectionState.CONNECTED,
             textFieldState = radioViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_events),
             content = {
@@ -140,7 +140,7 @@ fun RadioPage(
                 radioViewModel.updateSearchInput()
             },
             actionBar = {
-                if (eventBatches?.isNotEmpty() == true && loadingState == LoadingState.LOADED) {
+                if (eventBatches?.isNotEmpty() == true && loadingState == ConnectionState.CONNECTED) {
                     ContentTabRow(selectedTabIndex) {
                         eventBatches?.forEachIndexed { index, eventBatch ->
                             ContentTab(
@@ -158,7 +158,7 @@ fun RadioPage(
     }
 
     ) { innerPadding ->
-        if (eventBatches != null && loadingState == LoadingState.LOADED) {
+        if (eventBatches != null && loadingState == ConnectionState.CONNECTED) {
             HorizontalPager(
                 modifier = Modifier.fillMaxSize(),
                 state = pagerState,
@@ -191,7 +191,7 @@ fun RadioPage(
                             it
                         )
                     }
-                }, loadingState = loadingState
+                }, connectionState = loadingState
             )
         }
     }

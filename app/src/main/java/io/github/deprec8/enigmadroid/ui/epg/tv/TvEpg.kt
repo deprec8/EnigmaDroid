@@ -41,7 +41,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
@@ -69,7 +69,7 @@ fun TvEpgPage(
     val currentBouquetReference by tvEpgViewModel.currentBouquetReference.collectAsStateWithLifecycle()
     val filteredEvents by tvEpgViewModel.filteredEvents.collectAsStateWithLifecycle()
     val searchHistory by tvEpgViewModel.searchHistory.collectAsStateWithLifecycle()
-    val loadingState by tvEpgViewModel.loadingState.collectAsStateWithLifecycle()
+    val loadingState by tvEpgViewModel.connectionState.collectAsStateWithLifecycle()
     val highlightedWords by tvEpgViewModel.highlightedWords.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
@@ -87,7 +87,7 @@ fun TvEpgPage(
     }
 
     LaunchedEffect(loadingState) {
-        if (loadingState == LoadingState.LOADED) {
+        if (loadingState == ConnectionState.CONNECTED) {
             tvEpgViewModel.fetchData()
         }
     }
@@ -98,7 +98,7 @@ fun TvEpgPage(
         }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = eventBatchSet?.eventBatches?.isNotEmpty() == true && loadingState == LoadingState.LOADED,
+            enabled = eventBatchSet?.eventBatches?.isNotEmpty() == true && loadingState == ConnectionState.CONNECTED,
             textFieldState = tvEpgViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_epg),
             content = {
@@ -135,7 +135,7 @@ fun TvEpgPage(
                 tvEpgViewModel.updateSearchInput()
             },
             actionBar = {
-                if (eventBatchSet?.eventBatches?.isNotEmpty() == true && loadingState == LoadingState.LOADED) {
+                if (eventBatchSet?.eventBatches?.isNotEmpty() == true && loadingState == ConnectionState.CONNECTED) {
                     ContentTabRow(selectedTabIndex) {
                         eventBatchSet?.eventBatches?.forEachIndexed { index, eventBatch ->
                             ContentTab(
@@ -152,7 +152,7 @@ fun TvEpgPage(
     }
 
     ) { innerPadding ->
-        if (eventBatchSet != null && loadingState == LoadingState.LOADED) {
+        if (eventBatchSet != null && loadingState == ConnectionState.CONNECTED) {
             if (eventBatchSet?.eventBatches?.isNotEmpty() == true) {
                 HorizontalPager(
                     modifier = Modifier.fillMaxSize(),
@@ -182,7 +182,7 @@ fun TvEpgPage(
                         )
                     }
                 },
-                loadingState = loadingState
+                connectionState = loadingState
             )
         }
     }

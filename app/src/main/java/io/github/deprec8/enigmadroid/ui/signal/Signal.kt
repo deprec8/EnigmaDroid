@@ -36,7 +36,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.model.api.SignalInfo
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
 import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
@@ -57,7 +57,7 @@ fun SignalPage(
 ) {
 
     val signalInfo by signalViewModel.signalInfo.collectAsStateWithLifecycle()
-    val loadingState by signalViewModel.loadingState.collectAsStateWithLifecycle()
+    val loadingState by signalViewModel.connectionState.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -66,7 +66,7 @@ fun SignalPage(
         signalViewModel.updateLoadingState(false)
     }
     LaunchedEffect(loadingState) {
-        if (loadingState == LoadingState.LOADED) {
+        if (loadingState == ConnectionState.CONNECTED) {
             signalViewModel.fetchData()
         }
     }
@@ -85,7 +85,7 @@ fun SignalPage(
                 RemoteControlActionButton { onNavigateToRemoteControl() }
             })
     }) { innerPadding ->
-        if (signalInfo != null && loadingState == LoadingState.LOADED) {
+        if (signalInfo != null && loadingState == ConnectionState.CONNECTED) {
             SignalContent(
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 signalInfo ?: SignalInfo(),
@@ -96,7 +96,7 @@ fun SignalPage(
                 Modifier
                     .consumeWindowInsets(innerPadding)
                     .padding(innerPadding),
-                loadingState = loadingState,
+                connectionState = loadingState,
                 onReload = {
                     scope.launch {
                         signalViewModel.updateLoadingState(it)
