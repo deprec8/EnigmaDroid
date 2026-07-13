@@ -80,7 +80,7 @@ fun MainNavigationDisplay(
 ) {
     val currentDevice by mainViewModel.currentDevice.collectAsStateWithLifecycle()
     val devices by mainViewModel.devices.collectAsStateWithLifecycle()
-    val loadingState by mainViewModel.loadingState.collectAsStateWithLifecycle()
+    val connectionState by mainViewModel.connectionState.collectAsStateWithLifecycle()
 
     val isSmallScreenLayout = isSmallScreenLayout()
     val modalDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -139,10 +139,10 @@ fun MainNavigationDisplay(
         ) {
             MoviesPage(
                 onNavigateToRemoteControl = { onNavigateToRemoteControl() },
-                onNavigateToDirectory = { loadedDeviceId, path, preloadBatch, freeSpace ->
+                onNavigateToDirectory = { connectedDeviceId, path, preloadBatch, freeSpace ->
                     drawerNavigator.navigate(
                         MainKeys.MoviesDirectory(
-                            loadedDeviceId, path, preloadBatch, freeSpace
+                            connectedDeviceId, path, preloadBatch, freeSpace
                         )
                     )
                 },
@@ -155,7 +155,7 @@ fun MainNavigationDisplay(
             val moviesViewModel: MoviesViewModel = koinViewModel()
             LaunchedEffect(backStackEntry) {
                 moviesViewModel.initialize(
-                    backStackEntry.loadedDeviceId,
+                    backStackEntry.connectedDeviceId,
                     backStackEntry.path,
                     backStackEntry.preloadBatch,
                     backStackEntry.freeSpace
@@ -163,10 +163,10 @@ fun MainNavigationDisplay(
             }
             MoviesDirectoryPage(
                 onNavigateToRemoteControl = { onNavigateToRemoteControl() },
-                onNavigateToDirectory = { loadedDeviceId, path, preloadBatch, freeSpace ->
+                onNavigateToDirectory = { connectedDeviceId, path, preloadBatch, freeSpace ->
                     drawerNavigator.navigate(
                         MainKeys.MoviesDirectory(
-                            loadedDeviceId, path, preloadBatch, freeSpace
+                            connectedDeviceId, path, preloadBatch, freeSpace
                         )
                     )
                 },
@@ -294,7 +294,7 @@ fun MainNavigationDisplay(
                 currentDevice = currentDevice,
                 devices = devices,
                 scrollState = drawerScrollState,
-                loadingState = loadingState,
+                connectionState = connectionState,
                 currentTopLevelRoute = drawerNavigationState.topLevelKey,
                 onNavigate = { route ->
                     if (isSmallScreenLayout) {
@@ -302,8 +302,8 @@ fun MainNavigationDisplay(
                     }
                     drawerNavigator.navigate(route)
                 },
-                onUpdateDeviceStatus = {
-                    scope.launch { mainViewModel.updateLoadingState(true) }
+                onCheckConnection = {
+                    mainViewModel.checkConnection(true)
                 },
                 onOpenOwif = {
                     scope.launch { IntentUtils.openOwif(context, mainViewModel.buildOwifUrl()) }

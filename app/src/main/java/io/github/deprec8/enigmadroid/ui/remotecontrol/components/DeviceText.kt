@@ -50,17 +50,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeviceText(
-    loadingState: LoadingState, currentDevice: Device?, onUpdateLoadingState: () -> Unit
+    connectionState: ConnectionState, currentDevice: Device?, onCheckConnection: () -> Unit
 ) {
     Box {
         AnimatedContent(
-            loadingState, label = "", transitionSpec = {
+            connectionState, label = "", transitionSpec = {
                 scaleIn(
                     initialScale = 0f, animationSpec = spring(
                         dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessLow
@@ -68,7 +68,7 @@ fun DeviceText(
                 ) + fadeIn() togetherWith scaleOut(targetScale = 0f) + fadeOut()
             }) {
             when (it) {
-                LoadingState.LOADED -> Text(
+                ConnectionState.CONNECTED -> Text(
                     modifier = Modifier
                         .padding(12.dp)
                         .align(Alignment.Center),
@@ -78,7 +78,7 @@ fun DeviceText(
                     overflow = TextOverflow.Ellipsis
                 )
 
-                LoadingState.LOADING -> CircularProgressIndicator(
+                ConnectionState.CONNECTING -> CircularProgressIndicator(
                     Modifier
                         .padding(12.dp)
                         .size(24.dp)
@@ -97,7 +97,7 @@ fun DeviceText(
                     )
                 ) {
                     IconButton(
-                        onClick = { onUpdateLoadingState() },
+                        onClick = { onCheckConnection() },
                         modifier = Modifier
                             .padding(12.dp)
                             .size(24.dp)

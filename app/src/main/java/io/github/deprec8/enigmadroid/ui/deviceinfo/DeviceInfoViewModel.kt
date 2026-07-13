@@ -21,53 +21,50 @@ package io.github.deprec8.enigmadroid.ui.deviceinfo
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
+import io.github.deprec8.enigmadroid.data.repositories.ConnectionRepository
 import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
-import io.github.deprec8.enigmadroid.data.repositories.LoadingRepository
 import io.github.deprec8.enigmadroid.model.api.DeviceInfo
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class DeviceInfoViewModel(
     private val apiRepository: ApiRepository,
-    private val loadingRepository: LoadingRepository,
+    private val connectionRepository: ConnectionRepository,
     private val devicesRepository: DevicesRepository
 ) : ViewModel() {
 
     private val _deviceInfo = MutableStateFlow<DeviceInfo?>(null)
     val deviceInfo: StateFlow<DeviceInfo?> = _deviceInfo.asStateFlow()
 
-    private val _loadingState = MutableStateFlow(LoadingState.LOADING)
-    val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
+    val connectionState: StateFlow<ConnectionState> =
+        connectionRepository.getConnectionState().stateIn(
+            viewModelScope, SharingStarted.WhileSubscribed(5000), ConnectionState.CONNECTING
+        )
 
     private var fetchJob: Job? = null
 
-    private var loadedDeviceId: Int? = null
+    private var connectedDeviceId: Int? = null
 
-    init {
+    fun checkConnection(forced: Boolean) {
         viewModelScope.launch {
-            loadingRepository.getLoadingState().collectLatest { state ->
-                _loadingState.value = state
-            }
+            connectionRepository.checkConnection(forced)
         }
-    }
-
-    suspend fun updateLoadingState(isForcedUpdate: Boolean) {
-        loadingRepository.updateLoadingState(isForcedUpdate)
     }
 
     fun fetchData(isForced: Boolean = false) {
         viewModelScope.launch {
             val currentDeviceId = devicesRepository.getCurrentDeviceId().first()
-            if (currentDeviceId != loadedDeviceId || isForced) {
+            if (currentDeviceId != connectedDeviceId || isForced) {
                 _deviceInfo.value = null
-                loadedDeviceId = currentDeviceId
+                connectedDeviceId = currentDeviceId
             }
 
             if (_deviceInfo.value == null) {

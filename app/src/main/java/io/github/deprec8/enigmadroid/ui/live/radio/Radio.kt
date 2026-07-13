@@ -40,9 +40,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.ConnectionState
+import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
-import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.content.ContentTab
 import io.github.deprec8.enigmadroid.ui.components.content.ContentTabRow
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
@@ -66,7 +66,7 @@ fun RadioPage(
     val filteredEvents by radioViewModel.filteredEvents.collectAsStateWithLifecycle()
     val eventBatches by radioViewModel.eventBatches.collectAsStateWithLifecycle()
     val searchHistory by radioViewModel.searchHistory.collectAsStateWithLifecycle()
-    val loadingState by radioViewModel.loadingState.collectAsStateWithLifecycle()
+    val connectionState by radioViewModel.connectionState.collectAsStateWithLifecycle()
     val highlightedWords by radioViewModel.highlightedWords.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
@@ -78,11 +78,11 @@ fun RadioPage(
     }
 
     LaunchedEffect(Unit) {
-        radioViewModel.updateLoadingState(false)
+        radioViewModel.checkConnection(false)
     }
 
-    LaunchedEffect(loadingState) {
-        if (loadingState == LoadingState.LOADED) {
+    LaunchedEffect(connectionState) {
+        if (connectionState == ConnectionState.CONNECTED) {
             radioViewModel.fetchData()
         }
     }
@@ -92,10 +92,10 @@ fun RadioPage(
     }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(loadingState) { radioViewModel.fetchData(isForced = true) }
+        FloatingReloadButton(connectionState) { radioViewModel.fetchData(isForced = true) }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = eventBatches?.isNotEmpty() == true && loadingState == LoadingState.LOADED,
+            enabled = eventBatches?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED,
             textFieldState = radioViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_events),
             content = {
@@ -140,7 +140,7 @@ fun RadioPage(
                 radioViewModel.updateSearchInput()
             },
             actionBar = {
-                if (eventBatches?.isNotEmpty() == true && loadingState == LoadingState.LOADED) {
+                if (eventBatches?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED) {
                     ContentTabRow(selectedTabIndex) {
                         eventBatches?.forEachIndexed { index, eventBatch ->
                             ContentTab(
@@ -158,7 +158,7 @@ fun RadioPage(
     }
 
     ) { innerPadding ->
-        if (eventBatches != null && loadingState == LoadingState.LOADED) {
+        if (eventBatches != null && connectionState == ConnectionState.CONNECTED) {
             HorizontalPager(
                 modifier = Modifier.fillMaxSize(),
                 state = pagerState,
@@ -182,16 +182,14 @@ fun RadioPage(
                     })
             }
         } else {
-            LoadingScreen(
+            ConnectionDisplay(
                 Modifier
                     .consumeWindowInsets(innerPadding)
-                    .padding(innerPadding), onReload = {
-                    scope.launch {
-                        radioViewModel.updateLoadingState(
-                            it
-                        )
-                    }
-                }, loadingState = loadingState
+                    .padding(innerPadding), onCheckConnection = {
+                    radioViewModel.checkConnection(
+                        true
+                    )
+                }, connectionState = connectionState
             )
         }
     }

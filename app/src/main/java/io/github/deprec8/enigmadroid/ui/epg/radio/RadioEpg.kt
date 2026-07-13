@@ -41,9 +41,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.ConnectionState
+import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
-import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.content.ContentTab
 import io.github.deprec8.enigmadroid.ui.components.content.ContentTabRow
@@ -68,7 +68,7 @@ fun RadioEpgPage(
     val filteredEvents by radioEpgViewModel.filteredEvents.collectAsStateWithLifecycle()
     val searchHistory by radioEpgViewModel.searchHistory.collectAsStateWithLifecycle()
     val highlightedWords by radioEpgViewModel.highlightedWords.collectAsStateWithLifecycle()
-    val loadingState by radioEpgViewModel.loadingState.collectAsStateWithLifecycle()
+    val connectionState by radioEpgViewModel.connectionState.collectAsStateWithLifecycle()
     val bouquets by radioEpgViewModel.bouquets.collectAsStateWithLifecycle()
     val currentBouquetReference by radioEpgViewModel.currentBouquetReference.collectAsStateWithLifecycle()
 
@@ -83,22 +83,22 @@ fun RadioEpgPage(
     }
 
     LaunchedEffect(Unit) {
-        radioEpgViewModel.updateLoadingState(false)
+        radioEpgViewModel.checkConnection(false)
     }
 
-    LaunchedEffect(loadingState) {
-        if (loadingState == LoadingState.LOADED) {
+    LaunchedEffect(connectionState) {
+        if (connectionState == ConnectionState.CONNECTED) {
             radioEpgViewModel.fetchData()
         }
     }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(loadingState) {
+        FloatingReloadButton(connectionState) {
             radioEpgViewModel.fetchData(isForced = true)
         }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = eventBatchSet?.eventBatches?.isNotEmpty() == true && loadingState == LoadingState.LOADED,
+            enabled = eventBatchSet?.eventBatches?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED,
             textFieldState = radioEpgViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_epg),
             content = {
@@ -126,7 +126,7 @@ fun RadioEpgPage(
             actionButtons = {
                 Row {
                     BouquetMenu(
-                        bouquets, currentBouquetReference, loadingState
+                        bouquets, currentBouquetReference, connectionState
                     ) { bouquetReference -> radioEpgViewModel.setCurrentBouquet(bouquetReference) }
                     RemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
                 }
@@ -135,7 +135,7 @@ fun RadioEpgPage(
                 radioEpgViewModel.updateSearchInput()
             },
             actionBar = {
-                if (eventBatchSet?.eventBatches?.isNotEmpty() == true && loadingState == LoadingState.LOADED) {
+                if (eventBatchSet?.eventBatches?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED) {
                     ContentTabRow(selectedTabIndex) {
                         eventBatchSet?.eventBatches?.forEachIndexed { index, eventBatch ->
                             ContentTab(
@@ -152,7 +152,7 @@ fun RadioEpgPage(
     }
 
     ) { innerPadding ->
-        if (eventBatchSet != null && loadingState == LoadingState.LOADED) {
+        if (eventBatchSet != null && connectionState == ConnectionState.CONNECTED) {
             if (eventBatchSet?.eventBatches?.isNotEmpty() == true) {
                 HorizontalPager(
                     modifier = Modifier.fillMaxSize(),
@@ -171,18 +171,16 @@ fun RadioEpgPage(
                 )
             }
         } else {
-            LoadingScreen(
+            ConnectionDisplay(
                 Modifier
                     .consumeWindowInsets(innerPadding)
                     .padding(innerPadding),
-                onReload = {
-                    scope.launch {
-                        radioEpgViewModel.updateLoadingState(
-                            it
-                        )
-                    }
+                onCheckConnection = {
+                    radioEpgViewModel.checkConnection(
+                        true
+                    )
                 },
-                loadingState = loadingState
+                connectionState = connectionState
             )
         }
     }

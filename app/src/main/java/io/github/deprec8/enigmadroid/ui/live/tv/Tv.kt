@@ -40,9 +40,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.ConnectionState
+import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
-import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.content.ContentTab
 import io.github.deprec8.enigmadroid.ui.components.content.ContentTabRow
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
@@ -65,7 +65,7 @@ fun TvPage(
 
     val filteredEvents by tvViewModel.filteredEvents.collectAsStateWithLifecycle()
     val eventBatches by tvViewModel.eventBatches.collectAsStateWithLifecycle()
-    val loadingState by tvViewModel.loadingState.collectAsStateWithLifecycle()
+    val connectionState by tvViewModel.connectionState.collectAsStateWithLifecycle()
     val searchHistory by tvViewModel.searchHistory.collectAsStateWithLifecycle()
     val highlightedWords by tvViewModel.highlightedWords.collectAsStateWithLifecycle()
 
@@ -78,10 +78,10 @@ fun TvPage(
     }
 
     LaunchedEffect(Unit) {
-        tvViewModel.updateLoadingState(false)
+        tvViewModel.checkConnection(false)
     }
-    LaunchedEffect(loadingState) {
-        if (loadingState == LoadingState.LOADED) {
+    LaunchedEffect(connectionState) {
+        if (connectionState == ConnectionState.CONNECTED) {
             tvViewModel.fetchData()
         }
     }
@@ -91,11 +91,11 @@ fun TvPage(
     }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(loadingState) { tvViewModel.fetchData(isForced = true) }
+        FloatingReloadButton(connectionState) { tvViewModel.fetchData(isForced = true) }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
             textFieldState = tvViewModel.searchFieldState,
-            enabled = eventBatches?.isNotEmpty() == true && loadingState == LoadingState.LOADED,
+            enabled = eventBatches?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED,
             placeholder = stringResource(R.string.search_events),
             content = {
                 filteredEvents?.let { filterEvents ->
@@ -139,7 +139,7 @@ fun TvPage(
                 tvViewModel.updateSearchInput()
             },
             actionBar = {
-                if (eventBatches?.isNotEmpty() == true && loadingState == LoadingState.LOADED) {
+                if (eventBatches?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED) {
                     ContentTabRow(selectedTabIndex) {
                         eventBatches?.forEachIndexed { index, eventBatch ->
                             ContentTab(
@@ -155,7 +155,7 @@ fun TvPage(
             })
 
     }) { innerPadding ->
-        if (eventBatches != null && loadingState == LoadingState.LOADED) {
+        if (eventBatches != null && connectionState == ConnectionState.CONNECTED) {
             HorizontalPager(
                 modifier = Modifier.fillMaxSize(), state = pagerState
             ) { index ->
@@ -178,18 +178,16 @@ fun TvPage(
                     })
             }
         } else {
-            LoadingScreen(
+            ConnectionDisplay(
                 Modifier
                     .consumeWindowInsets(innerPadding)
                     .padding(innerPadding),
-                onReload = {
-                    scope.launch {
-                        tvViewModel.updateLoadingState(
-                            it
-                        )
-                    }
+                onCheckConnection = {
+                    tvViewModel.checkConnection(
+                        true
+                    )
                 },
-                loadingState = loadingState
+                connectionState = connectionState
             )
         }
     }

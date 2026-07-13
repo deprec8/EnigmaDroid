@@ -51,7 +51,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -64,7 +63,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.ui.components.navigation.ArrowNavigationButton
 import io.github.deprec8.enigmadroid.ui.remotecontrol.components.ActionMenu
 import io.github.deprec8.enigmadroid.ui.remotecontrol.components.ArrowButtons
@@ -74,7 +73,6 @@ import io.github.deprec8.enigmadroid.ui.remotecontrol.components.ControlButtons
 import io.github.deprec8.enigmadroid.ui.remotecontrol.components.DeviceText
 import io.github.deprec8.enigmadroid.ui.remotecontrol.components.MediaButtons
 import io.github.deprec8.enigmadroid.ui.remotecontrol.components.NumberButtons
-import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -83,14 +81,13 @@ fun RemoteControlPage(
     onNavigateBack: () -> Unit, remoteControlViewModel: RemoteControlViewModel = koinViewModel()
 ) {
 
-    val loadingState by remoteControlViewModel.loadingState.collectAsStateWithLifecycle()
+    val connectionState by remoteControlViewModel.connectionState.collectAsStateWithLifecycle()
     val currentDevice by remoteControlViewModel.currentDevice.collectAsStateWithLifecycle()
     val remoteControlVibration by remoteControlViewModel.remoteControlVibration.collectAsStateWithLifecycle()
 
     var showNumbers by rememberSaveable {
         mutableStateOf(false)
     }
-    val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -102,7 +99,7 @@ fun RemoteControlPage(
         ) && !windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND))
 
     LaunchedEffect(Unit) {
-        remoteControlViewModel.updateLoadingState(false)
+        remoteControlViewModel.checkConnection(false)
     }
 
     fun performHaptic() {
@@ -123,10 +120,8 @@ fun RemoteControlPage(
                 ArrowNavigationButton { onNavigateBack() }
             }, scrollBehavior = scrollBehavior, actions = {
                 Row {
-                    DeviceText(loadingState, currentDevice) {
-                        scope.launch {
-                            remoteControlViewModel.updateLoadingState(true)
-                        }
+                    DeviceText(connectionState, currentDevice) {
+                        remoteControlViewModel.checkConnection(true)
                     }
                     if (!windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)) {
                         TooltipBox(
@@ -142,7 +137,7 @@ fun RemoteControlPage(
                         ) {
                             IconButton(
                                 onClick = { showNumbers = true },
-                                enabled = loadingState == LoadingState.LOADED
+                                enabled = connectionState == ConnectionState.CONNECTED
                             ) {
                                 Icon(
                                     Icons.Default.Dialpad,
@@ -152,7 +147,7 @@ fun RemoteControlPage(
                         }
                     }
                     ActionMenu(
-                        loadingState == LoadingState.LOADED,
+                        connectionState == ConnectionState.CONNECTED,
                         { remoteControlViewModel.fetchScreenshot() },
                         { remoteControlViewModel.onPowerKeyClicked(it) })
                 }
@@ -179,31 +174,31 @@ fun RemoteControlPage(
                         {
                             remoteControlViewModel.onKeyClicked(it)
                             performHaptic()
-                        }, loadingState == LoadingState.LOADED
+                        }, connectionState == ConnectionState.CONNECTED
                     )
                     ArrowButtons(
                         {
                             remoteControlViewModel.onKeyClicked(it)
                             performHaptic()
-                        }, loadingState == LoadingState.LOADED
+                        }, connectionState == ConnectionState.CONNECTED
                     )
                     BouquetButtons(
                         {
                             remoteControlViewModel.onKeyClicked(it)
                             performHaptic()
-                        }, loadingState == LoadingState.LOADED
+                        }, connectionState == ConnectionState.CONNECTED
                     )
                     MediaButtons(
                         {
                             remoteControlViewModel.onKeyClicked(it)
                             performHaptic()
-                        }, loadingState == LoadingState.LOADED
+                        }, connectionState == ConnectionState.CONNECTED
                     )
                     ControlButtons(
                         {
                             remoteControlViewModel.onKeyClicked(it)
                             performHaptic()
-                        }, loadingState == LoadingState.LOADED
+                        }, connectionState == ConnectionState.CONNECTED
                     )
                 }
                 if (showNumbers) {
@@ -221,7 +216,7 @@ fun RemoteControlPage(
                                 {
                                     remoteControlViewModel.onKeyClicked(it)
                                     performHaptic()
-                                }, loadingState == LoadingState.LOADED
+                                }, connectionState == ConnectionState.CONNECTED
                             )
                         }
                     }
@@ -248,19 +243,19 @@ fun RemoteControlPage(
                                 {
                                     remoteControlViewModel.onKeyClicked(it)
                                     performHaptic()
-                                }, loadingState == LoadingState.LOADED
+                                }, connectionState == ConnectionState.CONNECTED
                             )
                             ArrowButtons(
                                 {
                                     remoteControlViewModel.onKeyClicked(it)
                                     performHaptic()
-                                }, loadingState == LoadingState.LOADED
+                                }, connectionState == ConnectionState.CONNECTED
                             )
                             MediaButtons(
                                 {
                                     remoteControlViewModel.onKeyClicked(it)
                                     performHaptic()
-                                }, loadingState == LoadingState.LOADED
+                                }, connectionState == ConnectionState.CONNECTED
                             )
                         }
                         Column(
@@ -274,19 +269,19 @@ fun RemoteControlPage(
                                 {
                                     remoteControlViewModel.onKeyClicked(it)
                                     performHaptic()
-                                }, loadingState == LoadingState.LOADED
+                                }, connectionState == ConnectionState.CONNECTED
                             )
                             NumberButtons(
                                 {
                                     remoteControlViewModel.onKeyClicked(it)
                                     performHaptic()
-                                }, loadingState == LoadingState.LOADED
+                                }, connectionState == ConnectionState.CONNECTED
                             )
                             ControlButtons(
                                 {
                                     remoteControlViewModel.onKeyClicked(it)
                                     performHaptic()
-                                }, loadingState == LoadingState.LOADED
+                                }, connectionState == ConnectionState.CONNECTED
                             )
                         }
                     }

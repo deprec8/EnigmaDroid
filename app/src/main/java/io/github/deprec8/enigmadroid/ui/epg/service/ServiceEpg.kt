@@ -28,21 +28,19 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.ConnectionState
+import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
-import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.ArrowNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.epg.components.EpgContent
-import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,28 +51,26 @@ fun ServiceEpgPage(
     serviceEpgViewModel: ServiceEpgViewModel = koinViewModel()
 ) {
     val eventBatch by serviceEpgViewModel.eventBatch.collectAsStateWithLifecycle()
-    val loadingState by serviceEpgViewModel.loadingState.collectAsStateWithLifecycle()
+    val connectionState by serviceEpgViewModel.connectionState.collectAsStateWithLifecycle()
     val filteredEvents by serviceEpgViewModel.filteredEvents.collectAsStateWithLifecycle()
     val searchHistory by serviceEpgViewModel.searchHistory.collectAsStateWithLifecycle()
     val highlightedWords by serviceEpgViewModel.highlightedWords.collectAsStateWithLifecycle()
 
-    val scope = rememberCoroutineScope()
-
     LaunchedEffect(Unit) {
-        serviceEpgViewModel.updateLoadingState(false)
+        serviceEpgViewModel.checkConnection(false)
     }
 
-    LaunchedEffect(loadingState) {
-        if (loadingState == LoadingState.LOADED) {
+    LaunchedEffect(connectionState) {
+        if (connectionState == ConnectionState.CONNECTED) {
             serviceEpgViewModel.fetchData()
         }
     }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(loadingState) { serviceEpgViewModel.fetchData(isForced = true) }
+        FloatingReloadButton(connectionState) { serviceEpgViewModel.fetchData(isForced = true) }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = eventBatch?.events?.isNotEmpty() == true && loadingState == LoadingState.LOADED,
+            enabled = eventBatch?.events?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED,
             textFieldState = serviceEpgViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_epg_from, serviceName),
             content = {
@@ -103,24 +99,20 @@ fun ServiceEpgPage(
                 serviceEpgViewModel.updateSearchInput()
             })
     }) { innerPadding ->
-        if (eventBatch != null && loadingState == LoadingState.LOADED) {
+        if (eventBatch != null && connectionState == ConnectionState.CONNECTED) {
             EpgContent(
                 events = eventBatch?.events ?: emptyList(),
                 innerPadding,
                 onAddTimerForEvent = { serviceEpgViewModel.addTimerForEvent(it) })
         } else {
-            LoadingScreen(
+            ConnectionDisplay(
                 Modifier
                     .padding(innerPadding)
                     .consumeWindowInsets(innerPadding),
-                onReload = {
-                    scope.launch {
-                        serviceEpgViewModel.updateLoadingState(
-                            it
-                        )
-                    }
+                onCheckConnection = {
+                    serviceEpgViewModel.checkConnection(true)
                 },
-                loadingState = loadingState
+                connectionState = connectionState
             )
         }
     }

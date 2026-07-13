@@ -22,7 +22,6 @@ package io.github.deprec8.enigmadroid.common.constant
 object PreferenceKeys {
 
     const val CURRENT_DEVICE = "current_device"
-    const val LOADING_STATE = "loading_state"
     const val ONBOARDING_NEEDED = "onboarding_needed"
     const val REMOTE_CONTROL_VIBRATION = "remote_control_vibration"
     const val TV_SEARCH_HISTORY = "tv_search_history"

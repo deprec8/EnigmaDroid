@@ -46,7 +46,6 @@
     <string name="description">Описание</string>
     <string name="title">Название</string>
     <string name="all_services">Все сервисы</string>
-    <string name="connected">Подключено</string>
     <string name="search_timers">Поиск таймеров</string>
     <string name="search_movies">Поиск фильмов</string>
     <string name="radio">Радио</string>
@@ -109,7 +108,7 @@
     <string name="license">Лицензия</string>
     <string name="action_menu">Меню действий</string>
     <string name="enabled">Включено</string>
-    <string name="device_not_connected">Устройство не подключено.</string>
+    <string name="unable_to_connect">Устройство не подключено.</string>
     <string name="no_device_available">Устройство недоступно.</string>
     <string name="version_not_found">Версия не найдена.</string>
     <string name="delete_timer">Удалить таймер</string>
@@ -117,7 +116,7 @@
     <string name="third_party_libraries">Сторонние библиотеки</string>
     <string name="source_code">Исходный код</string>
     <string name="libraries_amount">%1$s Библиотеки кода</string>
-    <string name="searching_for_device">Поиск устройства…</string>
+    <string name="connecting">Поиск устройства…</string>
     <string name="channel_up">На канал выше</string>
     <string name="retry">Повторить попытку</string>
     <string name="no_devices_found">Устройства не найдены.</string>
@@ -129,7 +128,6 @@
     <string name="automatic">Автоматически</string>
     <string name="after_event">После события</string>
     <string name="screenshot">Снимок экрана</string>
-    <string name="add_a_device_to_connect_to">Добавить устройство для подключения.</string>
     <string name="device_is_not_playing_any_channel">Устройство не воспроизводит ни одного канала.</string>
     <string name="edit_timer">Изменить таймер</string>
     <string name="tv_epg">ТВ-программа передач</string>
@@ -198,7 +196,7 @@
     <string name="search_epg_from">Искать EPG из \"%1$s\"</string>
     <string name="service_epg">Служба EPG</string>
     <string name="error_loading_libraries">Ошибка загрузки библиотек.</string>
-    <string name="invalid_device_response">Неправильный ответ на устройство.</string>
+    <string name="invalid_response">Неправильный ответ на устройство.</string>
     <string name="enable">Включить</string>
     <string name="disable">Не отображать</string>
     <string name="marker">Маркер</string>

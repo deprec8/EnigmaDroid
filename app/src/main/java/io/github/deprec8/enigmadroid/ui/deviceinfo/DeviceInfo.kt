@@ -30,22 +30,20 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.model.api.DeviceInfo
+import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
-import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.DrawerNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
-import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,24 +54,23 @@ fun DeviceInfoPage(
     deviceInfoViewModel: DeviceInfoViewModel = koinViewModel()
 ) {
 
-    val loadingState by deviceInfoViewModel.loadingState.collectAsStateWithLifecycle()
+    val connectionState by deviceInfoViewModel.connectionState.collectAsStateWithLifecycle()
     val deviceInfo by deviceInfoViewModel.deviceInfo.collectAsStateWithLifecycle()
 
-    val scope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     LaunchedEffect(Unit) {
-        deviceInfoViewModel.updateLoadingState(false)
+        deviceInfoViewModel.checkConnection(false)
     }
 
-    LaunchedEffect(loadingState) {
-        if (loadingState == LoadingState.LOADED) {
+    LaunchedEffect(connectionState) {
+        if (connectionState == ConnectionState.CONNECTED) {
             deviceInfoViewModel.fetchData()
         }
     }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(loadingState) { deviceInfoViewModel.fetchData(isForced = true) }
+        FloatingReloadButton(connectionState) { deviceInfoViewModel.fetchData(isForced = true) }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         TopAppBar(windowInsets = topAppBarWithDrawerWindowInsets(), title = {
             Text(
@@ -87,25 +84,21 @@ fun DeviceInfoPage(
             RemoteControlActionButton { onNavigateToRemoteControl() }
         })
     }) { innerPadding ->
-        if (deviceInfo != null && loadingState == LoadingState.LOADED) {
+        if (deviceInfo != null && connectionState == ConnectionState.CONNECTED) {
             DeviceInfoContent(
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 deviceInfo ?: DeviceInfo(),
                 innerPadding
             )
         } else {
-            LoadingScreen(
+            ConnectionDisplay(
                 Modifier
                     .padding(innerPadding)
                     .consumeWindowInsets(innerPadding),
-                onReload = {
-                    scope.launch {
-                        deviceInfoViewModel.updateLoadingState(
-                            it
-                        )
-                    }
+                onCheckConnection = {
+                    deviceInfoViewModel.checkConnection(true)
                 },
-                loadingState = loadingState
+                connectionState = connectionState
             )
         }
     }

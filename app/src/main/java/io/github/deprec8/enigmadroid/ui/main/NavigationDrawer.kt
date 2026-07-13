@@ -93,7 +93,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.common.constant.MainKeys
-import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.model.DrawerPage
 import io.github.deprec8.enigmadroid.model.DrawerPageGroup
@@ -102,11 +102,11 @@ import io.github.deprec8.enigmadroid.model.DrawerPageGroup
 fun DrawerContent(
     currentDevice: Device?,
     devices: List<Device>,
-    loadingState: LoadingState,
+    connectionState: ConnectionState,
     currentTopLevelRoute: NavKey,
     scrollState: ScrollState,
     onOpenOwif: () -> Unit,
-    onUpdateDeviceStatus: () -> Unit,
+    onCheckConnection: () -> Unit,
     onNavigate: (NavKey) -> Unit,
     onSetCurrentDevice: (Device) -> Unit
 ) {
@@ -120,9 +120,9 @@ fun DrawerContent(
         DeviceItem(
             currentDevice = currentDevice,
             devices = devices,
-            loadingState = loadingState,
+            connectionState = connectionState,
             onOpenOwif = { onOpenOwif() },
-            onUpdateDeviceStatus = { onUpdateDeviceStatus() },
+            onCheckConnection = { onCheckConnection() },
             onSetCurrentDevice = onSetCurrentDevice
         )
 
@@ -173,9 +173,9 @@ fun DrawerItem(
 fun DeviceItem(
     currentDevice: Device?,
     devices: List<Device>,
-    loadingState: LoadingState,
+    connectionState: ConnectionState,
     onOpenOwif: () -> Unit,
-    onUpdateDeviceStatus: () -> Unit,
+    onCheckConnection: () -> Unit,
     onSetCurrentDevice: (Device) -> Unit
 ) {
     var showDevicesMenu by rememberSaveable {
@@ -185,11 +185,15 @@ fun DeviceItem(
     ListItem(
         headlineContent = {
             Text(
-                text = currentDevice?.name ?: stringResource(R.string.no_device_available),
+                text = if (devices.isNotEmpty()) {
+                    currentDevice?.name ?: stringResource(R.string.no_device_selected)
+                } else {
+                    stringResource(R.string.no_device_available)
+                },
             )
         },
         trailingContent = {
-            AnimatedContent(loadingState, label = "", transitionSpec = {
+            AnimatedContent(connectionState, label = "", transitionSpec = {
                 scaleIn(
                     initialScale = 0f, animationSpec = spring(
                         dampingRatio = Spring.DampingRatioMediumBouncy,
@@ -198,7 +202,7 @@ fun DeviceItem(
                 ) + fadeIn() togetherWith scaleOut(targetScale = 0f) + fadeOut()
             }) {
                 when (it) {
-                    LoadingState.LOADED -> {
+                    ConnectionState.CONNECTED -> {
                         TooltipBox(
                             tooltip = {
                                 PlainTooltip {
@@ -221,7 +225,7 @@ fun DeviceItem(
                         }
                     }
 
-                    LoadingState.LOADING -> {
+                    ConnectionState.CONNECTING -> {
                         IconButton(onClick = {}, enabled = false) {
                             CircularProgressIndicator(Modifier.size(24.dp))
                         }
@@ -239,7 +243,7 @@ fun DeviceItem(
                                 TooltipAnchorPosition.Below, 4.dp
                             )
                         ) {
-                            IconButton(onClick = { onUpdateDeviceStatus() }) {
+                            IconButton(onClick = { onCheckConnection() }) {
                                 Icon(
                                     Icons.Default.RestartAlt,
                                     contentDescription = stringResource(R.string.retry),
@@ -253,45 +257,55 @@ fun DeviceItem(
         },
         supportingContent = {
             AnimatedContent(
-                loadingState,
+                connectionState,
                 label = "",
                 transitionSpec = { fadeIn() togetherWith fadeOut() }) {
                 when (it) {
-                    LoadingState.LOADED -> {
+                    ConnectionState.CONNECTED -> {
+                        currentDevice?.let { device ->
+                            Text(
+                                "${device.ip}:${device.port}",
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
+
+                    ConnectionState.NOT_CONNECTED -> {
                         Text(
-                            stringResource(R.string.connected),
+                            stringResource(id = R.string.unable_to_connect),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                     }
 
-                    LoadingState.DEVICE_NOT_ONLINE -> {
+                    ConnectionState.NO_DEVICE_AVAILABLE -> {
                         Text(
-                            stringResource(id = R.string.device_not_connected),
+                            stringResource(R.string.first_add_a_device),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                     }
 
-                    LoadingState.NO_DEVICE_AVAILABLE -> {
+                    ConnectionState.NO_DEVICE_SELECTED -> {
                         Text(
-                            stringResource(R.string.add_a_device_to_connect_to),
+                            stringResource(R.string.first_select_a_device),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                     }
 
-                    LoadingState.LOADING -> {
+                    ConnectionState.CONNECTING -> {
                         Text(
-                            stringResource(R.string.searching_for_device),
+                            stringResource(R.string.connecting),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                     }
 
-                    LoadingState.INVALID_DEVICE_RESPONSE -> {
+                    ConnectionState.INVALID_DEVICE_RESPONSE -> {
                         Text(
-                            stringResource(id = R.string.invalid_device_response),
+                            stringResource(id = R.string.invalid_response),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )

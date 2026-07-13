@@ -19,13 +19,9 @@
 
 package io.github.deprec8.enigmadroid.data.source.network
 
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
-import io.github.deprec8.enigmadroid.common.constant.PreferenceKeys
-import io.github.deprec8.enigmadroid.common.enums.LoadingState
 import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
+import io.github.deprec8.enigmadroid.data.ConnectionState
+import io.github.deprec8.enigmadroid.data.ConnectionStateHolder
 import io.github.deprec8.enigmadroid.data.source.local.devices.DevicesLocalDataSource
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
@@ -36,45 +32,31 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpHeaders
 import io.ktor.utils.io.CancellationException
 import io.ktor.utils.io.ClosedByteChannelException
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import okhttp3.ConnectionPool
 import java.util.concurrent.TimeUnit
 
 class NetworkDataSource(
-    private val dataStore: DataStore<Preferences>,
+    private val connectionStateHolder: ConnectionStateHolder,
     private val devicesLocalDataSource: DevicesLocalDataSource
 ) {
-    private val loadingStateKey = intPreferencesKey(PreferenceKeys.LOADING_STATE)
+    private suspend fun handleException(e: Exception) {
+        val hasDevices = devicesLocalDataSource.getAllDevicesStatic().isNotEmpty()
 
-    private suspend fun updateLoadingState(exception: Exception) {
-        when (exception) {
-            is ClosedByteChannelException -> {
-                dataStore.edit { preferences ->
-                    preferences[loadingStateKey] = LoadingState.INVALID_DEVICE_RESPONSE.id
-                }
-            }
+        when (e) {
+            is CancellationException -> throw e
 
-            else -> {
-                val currentLoadingState = dataStore.data.map { preferences ->
-                    LoadingState.entries[preferences[loadingStateKey] ?: 3]
-                }.first()
+            is NullPointerException if hasDevices -> connectionStateHolder.updateConnectionState(
+                ConnectionState.NO_DEVICE_SELECTED
+            )
 
-                if (currentLoadingState != LoadingState.LOADING) {
-                    dataStore.edit { preferences ->
-                        preferences[loadingStateKey] = LoadingState.LOADING.id
-                    }
-                }
+            is ClosedByteChannelException -> connectionStateHolder.updateConnectionState(
+                ConnectionState.INVALID_DEVICE_RESPONSE
+            )
 
-                if (devicesLocalDataSource.getAllDevicesStatic().isEmpty().not()) {
-                    dataStore.edit { preferences ->
-                        preferences[loadingStateKey] = LoadingState.DEVICE_NOT_ONLINE.id
-                    }
-                } else {
-                    dataStore.edit { preferences ->
-                        preferences[loadingStateKey] = LoadingState.NO_DEVICE_AVAILABLE.id
-                    }
-                }
+            else -> if (!hasDevices) {
+                connectionStateHolder.updateConnectionState(ConnectionState.NO_DEVICE_AVAILABLE)
+            } else {
+                connectionStateHolder.updateConnectionState(ConnectionState.NOT_CONNECTED)
             }
         }
     }
@@ -105,20 +87,20 @@ class NetworkDataSource(
         }
     }
 
-    suspend fun isDeviceOnline(): Boolean = try {
-        val url = devicesLocalDataSource.getCurrentDeviceStatic()?.buildUrl("currenttime")
-            ?: throw NullPointerException()
-        checkClient.get(url) {
-            header(HttpHeaders.Connection, "close")
+    suspend fun checkConnection(forced: Boolean = true) {
+        if (connectionStateHolder.connectionState.value == ConnectionState.CONNECTING || forced) {
+            connectionStateHolder.updateConnectionState(ConnectionState.CONNECTING)
+            try {
+                val url = devicesLocalDataSource.getCurrentDeviceStatic()?.buildUrl("currenttime")
+                    ?: throw NullPointerException()
+                checkClient.get(url) {
+                    header(HttpHeaders.Connection, "close")
+                }
+                connectionStateHolder.updateConnectionState(ConnectionState.CONNECTED)
+            } catch (e: Exception) {
+                handleException(e)
+            }
         }
-        true
-    } catch (e: Exception) {
-        if (e is CancellationException) {
-            throw e
-        } else {
-            updateLoadingState(e)
-        }
-        false
     }
 
     suspend fun post(endpoint: String) {
@@ -129,11 +111,7 @@ class NetworkDataSource(
                 header(HttpHeaders.Connection, "close")
             }
         } catch (e: Exception) {
-            if (e is CancellationException) {
-                throw e
-            } else {
-                updateLoadingState(e)
-            }
+            handleException(e)
         }
     }
 
@@ -145,11 +123,7 @@ class NetworkDataSource(
                 header(HttpHeaders.Connection, "close")
             }
         } catch (e: Exception) {
-            if (e is CancellationException) {
-                throw e
-            } else {
-                updateLoadingState(e)
-            }
+            handleException(e)
         }
     }
 
@@ -160,11 +134,7 @@ class NetworkDataSource(
             header(HttpHeaders.Connection, "close")
         }.bodyAsText()
     } catch (e: Exception) {
-        if (e is CancellationException) {
-            throw e
-        } else {
-            updateLoadingState(e)
-        }
+        handleException(e)
         ""
     }
 }

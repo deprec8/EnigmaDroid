@@ -17,10 +17,22 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.common.enums
+package io.github.deprec8.enigmadroid.data.repositories
 
-enum class LoadingState(val id: Int) {
-    LOADING(0), NO_DEVICE_AVAILABLE(1), DEVICE_NOT_ONLINE(2), LOADED(3), INVALID_DEVICE_RESPONSE(
-        5
-    )
+import io.github.deprec8.enigmadroid.data.ConnectionState
+import io.github.deprec8.enigmadroid.data.ConnectionStateHolder
+import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
+import kotlinx.coroutines.flow.Flow
+
+class ConnectionRepository(
+    private val connectionStateHolder: ConnectionStateHolder,
+    private val networkDataSource: NetworkDataSource
+) {
+    fun getConnectionState(): Flow<ConnectionState> {
+        return connectionStateHolder.connectionState
+    }
+
+    suspend fun checkConnection(forced: Boolean) {
+        networkDataSource.checkConnection(forced)
+    }
 }

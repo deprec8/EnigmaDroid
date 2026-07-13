@@ -57,13 +57,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.ConnectionState
 
 @Composable
-fun LoadingScreen(
+fun ConnectionDisplay(
     modifier: Modifier,
-    onReload: (Boolean) -> Unit,
-    loadingState: LoadingState,
+    onCheckConnection: () -> Unit,
+    connectionState: ConnectionState,
 ) {
     val scrollState = rememberScrollState()
 
@@ -74,7 +74,7 @@ fun LoadingScreen(
             .verticalScroll(scrollState)
     ) {
         AnimatedContent(
-            modifier = Modifier.fillMaxSize(), targetState = loadingState, transitionSpec = {
+            modifier = Modifier.fillMaxSize(), targetState = connectionState, transitionSpec = {
                 scaleIn(
                     initialScale = 0f, animationSpec = spring(
                         dampingRatio = Spring.DampingRatioMediumBouncy,
@@ -84,7 +84,7 @@ fun LoadingScreen(
             }, label = ""
         ) {
             when (it) {
-                LoadingState.LOADED -> {
+                ConnectionState.CONNECTED -> {
                     Column {
                         CircularProgressIndicator(
                             modifier = Modifier
@@ -95,47 +95,25 @@ fun LoadingScreen(
                     }
                 }
 
-                LoadingState.DEVICE_NOT_ONLINE -> {
-                    Column {
-                        Text(
-                            text = stringResource(R.string.device_not_connected),
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                                .padding(16.dp)
-                        )
-                        FilledTonalButton(
-                            onClick = { onReload(true) },
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
-                        ) {
-                            Text(stringResource(R.string.retry))
-                        }
+                ConnectionState.NOT_CONNECTED -> {
+                    InfoDisplay(stringResource(R.string.unable_to_connect)) {
+                        onCheckConnection()
                     }
                 }
 
-                LoadingState.NO_DEVICE_AVAILABLE -> {
-                    Column {
-                        Text(
-                            text = stringResource(R.string.no_device_available),
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                                .padding(16.dp),
-                        )
-                        FilledTonalButton(
-                            onClick = { onReload(true) },
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
-                        ) {
-                            Text(stringResource(R.string.retry))
-                        }
+                ConnectionState.NO_DEVICE_AVAILABLE -> {
+                    InfoDisplay(stringResource(R.string.no_device_available)) {
+                        onCheckConnection()
                     }
                 }
 
-                LoadingState.LOADING -> {
+                ConnectionState.NO_DEVICE_SELECTED -> {
+                    InfoDisplay(stringResource(R.string.no_device_selected)) {
+                        onCheckConnection()
+                    }
+                }
+
+                ConnectionState.CONNECTING -> {
                     Column {
                         CircularProgressIndicator(
                             modifier = Modifier
@@ -144,7 +122,7 @@ fun LoadingScreen(
                             strokeCap = StrokeCap.Round
                         )
                         Text(
-                            text = stringResource(R.string.searching_for_device),
+                            text = stringResource(R.string.connecting),
                             textAlign = TextAlign.Center,
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
@@ -153,17 +131,17 @@ fun LoadingScreen(
                     }
                 }
 
-                LoadingState.INVALID_DEVICE_RESPONSE -> {
+                ConnectionState.INVALID_DEVICE_RESPONSE -> {
                     Column {
                         Text(
-                            text = stringResource(R.string.invalid_device_response),
+                            text = stringResource(R.string.invalid_response),
                             textAlign = TextAlign.Center,
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
                                 .padding(16.dp)
                         )
                         FilledTonalButton(
-                            onClick = { onReload(true) },
+                            onClick = { onCheckConnection() },
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
                                 .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
@@ -175,13 +153,36 @@ fun LoadingScreen(
             }
         }
     }
+
+
+}
+
+@Composable
+private fun InfoDisplay(text: String, onReload: () -> Unit) {
+    Column {
+        Text(
+            text = text,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(16.dp),
+        )
+        FilledTonalButton(
+            onClick = { onReload() },
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+        ) {
+            Text(stringResource(R.string.retry))
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FloatingReloadButton(loadingState: LoadingState, onReload: () -> Unit) {
+fun FloatingReloadButton(connectionState: ConnectionState, onCheckConnection: () -> Unit) {
     AnimatedVisibility(
-        loadingState == LoadingState.LOADED, enter = scaleIn(), exit = scaleOut()
+        connectionState == ConnectionState.CONNECTED, enter = scaleIn(), exit = scaleOut()
     ) {
         TooltipBox(
             tooltip = {
@@ -195,7 +196,7 @@ fun FloatingReloadButton(loadingState: LoadingState, onReload: () -> Unit) {
             )
         ) {
             FloatingActionButton(onClick = {
-                onReload()
+                onCheckConnection()
             }) {
                 Icon(
                     Icons.Default.Refresh, contentDescription = stringResource(R.string.reload)

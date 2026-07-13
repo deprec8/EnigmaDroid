@@ -30,21 +30,19 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.model.api.SignalInfo
+import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
-import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.DrawerNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
-import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 
@@ -57,22 +55,21 @@ fun SignalPage(
 ) {
 
     val signalInfo by signalViewModel.signalInfo.collectAsStateWithLifecycle()
-    val loadingState by signalViewModel.loadingState.collectAsStateWithLifecycle()
+    val connectionState by signalViewModel.connectionState.collectAsStateWithLifecycle()
 
-    val scope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     LaunchedEffect(Unit) {
-        signalViewModel.updateLoadingState(false)
+        signalViewModel.checkConnection(false)
     }
-    LaunchedEffect(loadingState) {
-        if (loadingState == LoadingState.LOADED) {
+    LaunchedEffect(connectionState) {
+        if (connectionState == ConnectionState.CONNECTED) {
             signalViewModel.fetchData()
         }
     }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(loadingState) { signalViewModel.fetchData(isForced = true) }
+        FloatingReloadButton(connectionState) { signalViewModel.fetchData(isForced = true) }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         TopAppBar(
             windowInsets = topAppBarWithDrawerWindowInsets(),
@@ -85,22 +82,20 @@ fun SignalPage(
                 RemoteControlActionButton { onNavigateToRemoteControl() }
             })
     }) { innerPadding ->
-        if (signalInfo != null && loadingState == LoadingState.LOADED) {
+        if (signalInfo != null && connectionState == ConnectionState.CONNECTED) {
             SignalContent(
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 signalInfo ?: SignalInfo(),
                 innerPadding
             )
         } else {
-            LoadingScreen(
+            ConnectionDisplay(
                 Modifier
                     .consumeWindowInsets(innerPadding)
                     .padding(innerPadding),
-                loadingState = loadingState,
-                onReload = {
-                    scope.launch {
-                        signalViewModel.updateLoadingState(it)
-                    }
+                connectionState = connectionState,
+                onCheckConnection = {
+                    signalViewModel.checkConnection(true)
                 })
         }
     }

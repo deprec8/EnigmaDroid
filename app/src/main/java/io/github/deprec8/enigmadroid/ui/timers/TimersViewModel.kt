@@ -22,10 +22,10 @@ package io.github.deprec8.enigmadroid.ui.timers
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
+import io.github.deprec8.enigmadroid.data.repositories.ConnectionRepository
 import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
-import io.github.deprec8.enigmadroid.data.repositories.LoadingRepository
 import io.github.deprec8.enigmadroid.data.repositories.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.data.repositories.SettingsRepository
 import io.github.deprec8.enigmadroid.model.api.ServiceBatchSet
@@ -46,7 +46,7 @@ import kotlinx.coroutines.launch
 
 class TimersViewModel(
     private val apiRepository: ApiRepository,
-    private val loadingRepository: LoadingRepository,
+    private val connectionRepository: ConnectionRepository,
     private val searchHistoryRepository: SearchHistoryRepository,
     private val settingsRepository: SettingsRepository,
     private val devicesRepository: DevicesRepository
@@ -58,8 +58,10 @@ class TimersViewModel(
     private val _timerBatch = MutableStateFlow<TimerBatch?>(null)
     val timerBatch: StateFlow<TimerBatch?> = _timerBatch.asStateFlow()
 
-    private val _loadingState = MutableStateFlow(LoadingState.LOADING)
-    val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
+    val connectionState: StateFlow<ConnectionState> =
+        connectionRepository.getConnectionState().stateIn(
+            viewModelScope, SharingStarted.WhileSubscribed(5000), ConnectionState.CONNECTING
+        )
 
     private val _serviceBatchSet = MutableStateFlow<ServiceBatchSet?>(null)
     val serviceBatchSet: StateFlow<ServiceBatchSet?> = _serviceBatchSet.asStateFlow()
@@ -81,14 +83,9 @@ class TimersViewModel(
 
     private var fetchJob: Job? = null
 
-    private var loadedDeviceId: Int? = null
+    private var connectedDeviceId: Int? = null
 
     init {
-        viewModelScope.launch {
-            loadingRepository.getLoadingState().collectLatest { state ->
-                _loadingState.value = state
-            }
-        }
         viewModelScope.launch {
             combine(_timerBatch, searchInput) { timerBatch, searchInput ->
                 timerBatch?.timers?.search(searchInput)
@@ -108,17 +105,19 @@ class TimersViewModel(
         }
     }
 
-    suspend fun updateLoadingState(isForcedUpdate: Boolean) {
-        loadingRepository.updateLoadingState(isForcedUpdate)
+    fun checkConnection(forced: Boolean) {
+        viewModelScope.launch {
+            connectionRepository.checkConnection(forced)
+        }
     }
 
     fun fetchData(isForced: Boolean = false) {
         viewModelScope.launch {
             val currentDeviceId = devicesRepository.getCurrentDeviceId().first()
-            if (currentDeviceId != loadedDeviceId || isForced) {
+            if (currentDeviceId != connectedDeviceId || isForced) {
                 _timerBatch.value = null
                 _serviceBatchSet.value = null
-                loadedDeviceId = currentDeviceId
+                connectedDeviceId = currentDeviceId
             }
 
             if (_timerBatch.value == null || _serviceBatchSet.value == null) {

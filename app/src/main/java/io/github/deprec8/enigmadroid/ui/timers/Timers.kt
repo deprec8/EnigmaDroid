@@ -46,7 +46,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -55,8 +54,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.LoadingState
-import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
+import io.github.deprec8.enigmadroid.data.ConnectionState
+import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
@@ -64,7 +63,6 @@ import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarDrawerNavigationButton
 import io.github.deprec8.enigmadroid.ui.timers.components.TimerSetupDialog
 import io.github.deprec8.enigmadroid.ui.timers.components.TimersContent
-import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,27 +77,26 @@ fun TimersPage(
     val timerBatch by timersViewModel.timerBatch.collectAsStateWithLifecycle()
     val serviceBatchSet by timersViewModel.serviceBatchSet.collectAsStateWithLifecycle()
     val searchHistory by timersViewModel.searchHistory.collectAsStateWithLifecycle()
-    val loadingState by timersViewModel.loadingState.collectAsStateWithLifecycle()
+    val connectionState by timersViewModel.connectionState.collectAsStateWithLifecycle()
     val highlightedWords by timersViewModel.highlightedWords.collectAsStateWithLifecycle()
 
-    val scope = rememberCoroutineScope()
     var showTimerSetupDialog by rememberSaveable {
         mutableStateOf(false)
     }
 
     LaunchedEffect(Unit) {
-        timersViewModel.updateLoadingState(false)
+        timersViewModel.checkConnection(false)
     }
 
-    LaunchedEffect(loadingState) {
-        if (loadingState == LoadingState.LOADED) {
+    LaunchedEffect(connectionState) {
+        if (connectionState == ConnectionState.CONNECTED) {
             timersViewModel.fetchData()
         }
     }
 
     Scaffold(contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = timerBatch?.timers?.isNotEmpty() == true && loadingState == LoadingState.LOADED,
+            enabled = timerBatch?.timers?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED,
             textFieldState = timersViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_timers),
             content = {
@@ -142,7 +139,7 @@ fun TimersPage(
 
     }, floatingActionButton = {
         AnimatedVisibility(
-            loadingState == LoadingState.LOADED, enter = scaleIn(), exit = scaleOut()
+            connectionState == ConnectionState.CONNECTED, enter = scaleIn(), exit = scaleOut()
         ) {
             Column(horizontalAlignment = Alignment.End) {
                 TooltipBox(
@@ -188,7 +185,7 @@ fun TimersPage(
     }
 
     ) { innerPadding ->
-        if (timerBatch != null && loadingState == LoadingState.LOADED) {
+        if (timerBatch != null && connectionState == ConnectionState.CONNECTED) {
             TimersContent(
                 timers = timerBatch?.timers ?: emptyList(),
                 paddingValues = innerPadding,
@@ -204,18 +201,16 @@ fun TimersPage(
                 serviceBatchSet = serviceBatchSet
             )
         } else {
-            LoadingScreen(
+            ConnectionDisplay(
                 Modifier
                     .consumeWindowInsets(innerPadding)
                     .padding(innerPadding),
-                onReload = {
-                    scope.launch {
-                        timersViewModel.updateLoadingState(
-                            it
-                        )
-                    }
+                onCheckConnection = {
+                    timersViewModel.checkConnection(
+                        true
+                    )
                 },
-                loadingState = loadingState
+                connectionState = connectionState
             )
         }
     }

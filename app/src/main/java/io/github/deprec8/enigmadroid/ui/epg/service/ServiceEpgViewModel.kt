@@ -22,10 +22,10 @@ package io.github.deprec8.enigmadroid.ui.epg.service
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
+import io.github.deprec8.enigmadroid.data.repositories.ConnectionRepository
 import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
-import io.github.deprec8.enigmadroid.data.repositories.LoadingRepository
 import io.github.deprec8.enigmadroid.data.repositories.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.data.repositories.SettingsRepository
 import io.github.deprec8.enigmadroid.model.api.Event
@@ -45,7 +45,7 @@ import kotlinx.coroutines.launch
 
 class ServiceEpgViewModel(
     private val apiRepository: ApiRepository,
-    private val loadingRepository: LoadingRepository,
+    private val connectionRepository: ConnectionRepository,
     private val searchHistoryRepository: SearchHistoryRepository,
     private val settingsRepository: SettingsRepository,
     private val devicesRepository: DevicesRepository
@@ -54,8 +54,10 @@ class ServiceEpgViewModel(
     private val _eventBatch = MutableStateFlow<EventBatch?>(null)
     val eventBatch: StateFlow<EventBatch?> = _eventBatch.asStateFlow()
 
-    private val _loadingState = MutableStateFlow(LoadingState.LOADING)
-    val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
+    val connectionState: StateFlow<ConnectionState> =
+        connectionRepository.getConnectionState().stateIn(
+            viewModelScope, SharingStarted.WhileSubscribed(5000), ConnectionState.CONNECTING
+        )
 
     private val _filteredEvents = MutableStateFlow<List<Event>?>(null)
     val filteredEvents: StateFlow<List<Event>?> = _filteredEvents.asStateFlow()
@@ -79,14 +81,9 @@ class ServiceEpgViewModel(
 
     private var serviceReference = ""
 
-    private var loadedDeviceId: Int? = null
+    private var connectedDeviceId: Int? = null
 
     init {
-        viewModelScope.launch {
-            loadingRepository.getLoadingState().collectLatest { state ->
-                _loadingState.value = state
-            }
-        }
         viewModelScope.launch {
             combine(_eventBatch, searchInput) { eventBatch, searchInput ->
                 eventBatch?.events?.search(searchInput)
@@ -110,16 +107,18 @@ class ServiceEpgViewModel(
         this.serviceReference = serviceReference
     }
 
-    suspend fun updateLoadingState(isForcedUpdate: Boolean) {
-        loadingRepository.updateLoadingState(isForcedUpdate)
+    fun checkConnection(forced: Boolean) {
+        viewModelScope.launch {
+            connectionRepository.checkConnection(forced)
+        }
     }
 
     fun fetchData(isForced: Boolean = false) {
         viewModelScope.launch {
             val currentDeviceId = devicesRepository.getCurrentDeviceId().first()
-            if (currentDeviceId != loadedDeviceId || isForced) {
+            if (currentDeviceId != connectedDeviceId || isForced) {
                 _eventBatch.value = null
-                loadedDeviceId = currentDeviceId
+                connectedDeviceId = currentDeviceId
             }
 
             if (_eventBatch.value == null) {
