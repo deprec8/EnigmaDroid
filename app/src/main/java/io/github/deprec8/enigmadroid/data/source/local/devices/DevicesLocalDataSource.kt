@@ -99,8 +99,11 @@ class DevicesLocalDataSource(
     suspend fun addDevice(device: Device) = withContext(NonCancellable) {
         deviceDatabase.deviceDao().insert(device)
 
-        if (getAllDevicesStatic().size == 1) {
-            setCurrentDevice(device)
+        val devices = deviceDatabase.deviceDao().getAll().firstOrNull()
+
+        if (devices?.size == 1) {
+            val firstDevice = devices.firstOrNull() ?: return@withContext
+            setCurrentDevice(firstDevice)
         }
     }
 }
