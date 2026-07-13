@@ -96,7 +96,7 @@ fun ConnectionDisplay(
                 }
 
                 ConnectionState.NOT_CONNECTED -> {
-                    InfoDisplay(stringResource(R.string.device_not_connected)) {
+                    InfoDisplay(stringResource(R.string.unable_to_connect)) {
                         onCheckConnection()
                     }
                 }
@@ -122,7 +122,7 @@ fun ConnectionDisplay(
                             strokeCap = StrokeCap.Round
                         )
                         Text(
-                            text = stringResource(R.string.connecting_to_device),
+                            text = stringResource(R.string.connecting),
                             textAlign = TextAlign.Center,
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
@@ -134,7 +134,7 @@ fun ConnectionDisplay(
                 ConnectionState.INVALID_DEVICE_RESPONSE -> {
                     Column {
                         Text(
-                            text = stringResource(R.string.invalid_device_response),
+                            text = stringResource(R.string.invalid_response),
                             textAlign = TextAlign.Center,
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)

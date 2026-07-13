@@ -46,7 +46,6 @@
     <string name="description">Descrizione</string>
     <string name="title">Titolo</string>
     <string name="all_services">Tutti i servizi</string>
-    <string name="connected">Connesso</string>
     <string name="search_timers">Cerca timer</string>
     <string name="search_movies">Cerca film</string>
     <string name="radio">Radio</string>
@@ -109,7 +108,7 @@
     <string name="license">Licenza</string>
     <string name="action_menu">Menu azione</string>
     <string name="enabled">Abilitato</string>
-    <string name="device_not_connected">Dispositivo non connesso.</string>
+    <string name="unable_to_connect">Dispositivo non connesso.</string>
     <string name="no_device_available">Nessun dispositivo disponibile.</string>
     <string name="version_not_found">Versione non trovata.</string>
     <string name="delete_timer">Elimina timer</string>
@@ -117,7 +116,7 @@
     <string name="third_party_libraries">Librerie di terze parti</string>
     <string name="source_code">Codice sorgente</string>
     <string name="libraries_amount">%1$s Librerie</string>
-    <string name="connecting_to_device">Ricerca dispositivo…</string>
+    <string name="connecting">Ricerca dispositivo…</string>
     <string name="channel_up">Canale successivo</string>
     <string name="retry">Riprova</string>
     <string name="no_devices_found">Nessun dispositivo trovato.</string>
@@ -197,7 +196,7 @@
     <string name="search_epg_from">Cerca EPG da \"%1$s\"</string>
     <string name="service_epg">Servizio EPG</string>
     <string name="error_loading_libraries">Errore nel caricare le librerie.</string>
-    <string name="invalid_device_response">Risposta dispositivo non valida.</string>
+    <string name="invalid_response">Risposta dispositivo non valida.</string>
     <string name="enable">Abilita</string>
     <string name="disable">Disabilita</string>
     <string name="marker">Marcatore</string>

@@ -53,7 +53,7 @@ class NetworkDataSource(
                 ConnectionState.INVALID_DEVICE_RESPONSE
             )
 
-            else -> if (hasDevices) {
+            else -> if (!hasDevices) {
                 connectionStateHolder.updateConnectionState(ConnectionState.NO_DEVICE_AVAILABLE)
             } else {
                 connectionStateHolder.updateConnectionState(ConnectionState.NOT_CONNECTED)

@@ -46,7 +46,6 @@
     <string name="description">Description</string>
     <string name="title">Titre</string>
     <string name="all_services">Tous les services</string>
-    <string name="connected">Connecté</string>
     <string name="search_timers">Rechercher minuteries</string>
     <string name="search_movies">Rechercher films</string>
     <string name="radio">Radio</string>
@@ -109,7 +108,7 @@
     <string name="license">Licence</string>
     <string name="action_menu">Menu des actions</string>
     <string name="enabled">Activé</string>
-    <string name="device_not_connected">Appareil non connecté.</string>
+    <string name="unable_to_connect">Appareil non connecté.</string>
     <string name="no_device_available">Aucun appareil disponible.</string>
     <string name="version_not_found">Version introuvable.</string>
     <string name="delete_timer">Supprimer la minuterie</string>
@@ -117,7 +116,7 @@
     <string name="third_party_libraries">Bibliothèques tierces</string>
     <string name="source_code">Code source</string>
     <string name="libraries_amount">%1$s Bibliothèques</string>
-    <string name="connecting_to_device">Recherche d’appareil…</string>
+    <string name="connecting">Recherche d’appareil…</string>
     <string name="channel_up">Chaîne suivante</string>
     <string name="retry">Réessayer</string>
     <string name="no_devices_found">Aucun appareil trouvé.</string>
@@ -197,7 +196,7 @@
     <string name="search_epg_from">Rechercher EPG depuis \"%1$s\"</string>
     <string name="service_epg">Service EPG</string>
     <string name="error_loading_libraries">Erreur lors du chargement des bibliothèques.</string>
-    <string name="invalid_device_response">Réponse de l\'appareil non valide.</string>
+    <string name="invalid_response">Réponse de l\'appareil non valide.</string>
     <string name="enable">Activer</string>
     <string name="disable">Désactiver</string>
     <string name="marker">Marqueur</string>

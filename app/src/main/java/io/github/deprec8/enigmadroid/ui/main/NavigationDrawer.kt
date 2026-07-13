@@ -185,7 +185,11 @@ fun DeviceItem(
     ListItem(
         headlineContent = {
             Text(
-                text = currentDevice?.name ?: stringResource(R.string.no_device_available),
+                text = if (devices.isNotEmpty()) {
+                    currentDevice?.name ?: stringResource(R.string.no_device_selected)
+                } else {
+                    stringResource(R.string.no_device_available)
+                },
             )
         },
         trailingContent = {
@@ -258,16 +262,18 @@ fun DeviceItem(
                 transitionSpec = { fadeIn() togetherWith fadeOut() }) {
                 when (it) {
                     ConnectionState.CONNECTED -> {
-                        Text(
-                            stringResource(R.string.connected),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
+                        currentDevice?.let { device ->
+                            Text(
+                                "${device.ip}:${device.port}",
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                     }
 
                     ConnectionState.NOT_CONNECTED -> {
                         Text(
-                            stringResource(id = R.string.device_not_connected),
+                            stringResource(id = R.string.unable_to_connect),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -275,7 +281,7 @@ fun DeviceItem(
 
                     ConnectionState.NO_DEVICE_AVAILABLE -> {
                         Text(
-                            stringResource(R.string.no_device_available),
+                            stringResource(R.string.first_add_a_device),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -283,7 +289,7 @@ fun DeviceItem(
 
                     ConnectionState.NO_DEVICE_SELECTED -> {
                         Text(
-                            stringResource(R.string.no_service_selected),
+                            stringResource(R.string.first_select_a_device),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -291,7 +297,7 @@ fun DeviceItem(
 
                     ConnectionState.CONNECTING -> {
                         Text(
-                            stringResource(R.string.connecting_to_device),
+                            stringResource(R.string.connecting),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -299,7 +305,7 @@ fun DeviceItem(
 
                     ConnectionState.INVALID_DEVICE_RESPONSE -> {
                         Text(
-                            stringResource(id = R.string.invalid_device_response),
+                            stringResource(id = R.string.invalid_response),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
