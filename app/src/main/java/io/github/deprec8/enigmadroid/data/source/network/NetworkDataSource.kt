@@ -56,7 +56,7 @@ class NetworkDataSource(
             else -> if (hasDevices) {
                 connectionStateHolder.updateConnectionState(ConnectionState.NO_DEVICE_AVAILABLE)
             } else {
-                connectionStateHolder.updateConnectionState(ConnectionState.DEVICE_NOT_ONLINE)
+                connectionStateHolder.updateConnectionState(ConnectionState.NOT_CONNECTED)
             }
         }
     }

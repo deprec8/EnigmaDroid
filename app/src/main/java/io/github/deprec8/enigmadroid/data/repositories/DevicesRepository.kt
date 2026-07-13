@@ -37,18 +37,18 @@ class DevicesRepository(
     private val networkDataSource: NetworkDataSource,
     private val devicesLocalDataSource: DevicesLocalDataSource
 ) {
-    private var loadingJob: Job? = null
+    private var checkJob: Job? = null
 
     suspend fun setCurrentDevice(device: Device) = withContext(Dispatchers.IO) {
         devicesLocalDataSource.setCurrentDevice(device)
-        loadingJob?.cancel()
-        loadingJob = launch { networkDataSource.checkConnection() }
+        checkJob?.cancel()
+        checkJob = launch { networkDataSource.checkConnection() }
     }
 
     suspend fun setCurrentDeviceId(id: Int) = withContext(Dispatchers.IO) {
         devicesLocalDataSource.setCurrentDeviceId(id)
-        loadingJob?.cancel()
-        loadingJob = launch { networkDataSource.checkConnection() }
+        checkJob?.cancel()
+        checkJob = launch { networkDataSource.checkConnection() }
     }
 
     fun getCurrentDevice(): Flow<Device?> {
@@ -74,16 +74,16 @@ class DevicesRepository(
     suspend fun editDevice(oldDevice: Device, newDevice: Device) = withContext(Dispatchers.IO) {
         devicesLocalDataSource.editDevice(oldDevice, newDevice)
         if (devicesLocalDataSource.getCurrentDeviceIdStatic() == oldDevice.id) {
-            loadingJob?.cancel()
-            loadingJob = launch { networkDataSource.checkConnection() }
+            checkJob?.cancel()
+            checkJob = launch { networkDataSource.checkConnection() }
         }
     }
 
     suspend fun addDevice(device: Device) = withContext(Dispatchers.IO) {
         devicesLocalDataSource.addDevice(device)
         if (devicesLocalDataSource.getAllDevicesStatic().size == 1) {
-            loadingJob?.cancel()
-            loadingJob = launch { networkDataSource.checkConnection() }
+            checkJob?.cancel()
+            checkJob = launch { networkDataSource.checkConnection() }
         }
     }
 }

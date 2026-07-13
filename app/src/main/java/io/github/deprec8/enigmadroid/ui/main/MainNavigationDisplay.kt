@@ -80,7 +80,7 @@ fun MainNavigationDisplay(
 ) {
     val currentDevice by mainViewModel.currentDevice.collectAsStateWithLifecycle()
     val devices by mainViewModel.devices.collectAsStateWithLifecycle()
-    val loadingState by mainViewModel.connectionState.collectAsStateWithLifecycle()
+    val connectionState by mainViewModel.connectionState.collectAsStateWithLifecycle()
 
     val isSmallScreenLayout = isSmallScreenLayout()
     val modalDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -294,7 +294,7 @@ fun MainNavigationDisplay(
                 currentDevice = currentDevice,
                 devices = devices,
                 scrollState = drawerScrollState,
-                connectionState = loadingState,
+                connectionState = connectionState,
                 currentTopLevelRoute = drawerNavigationState.topLevelKey,
                 onNavigate = { route ->
                     if (isSmallScreenLayout) {
@@ -302,8 +302,8 @@ fun MainNavigationDisplay(
                     }
                     drawerNavigator.navigate(route)
                 },
-                onUpdateDeviceStatus = {
-                    scope.launch { mainViewModel.updateLoadingState(true) }
+                onCheckConnection = {
+                    mainViewModel.checkConnection(true)
                 },
                 onOpenOwif = {
                     scope.launch { IntentUtils.openOwif(context, mainViewModel.buildOwifUrl()) }

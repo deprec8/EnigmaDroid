@@ -30,7 +30,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
@@ -39,13 +38,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.model.api.CurrentInfo
+import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
-import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.DrawerNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
-import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,23 +56,22 @@ fun CurrentPage(
 ) {
 
     val currentEventInfo by currentViewModel.currentInfo.collectAsStateWithLifecycle()
-    val loadingState by currentViewModel.connectionState.collectAsStateWithLifecycle()
+    val connectionState by currentViewModel.connectionState.collectAsStateWithLifecycle()
 
-    val scope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     LaunchedEffect(Unit) {
-        currentViewModel.updateLoadingState(false)
+        currentViewModel.checkConnection(false)
     }
 
-    LaunchedEffect(loadingState) {
-        if (loadingState == ConnectionState.CONNECTED) {
+    LaunchedEffect(connectionState) {
+        if (connectionState == ConnectionState.CONNECTED) {
             currentViewModel.fetchData()
         }
     }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(loadingState) { currentViewModel.fetchData(isForced = true) }
+        FloatingReloadButton(connectionState) { currentViewModel.fetchData(isForced = true) }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         TopAppBar(
             title = {
@@ -93,7 +90,7 @@ fun CurrentPage(
                 RemoteControlActionButton { onNavigateToRemoteControl() }
             })
     }) { innerPadding ->
-        if (currentEventInfo != null && loadingState == ConnectionState.CONNECTED) {
+        if (currentEventInfo != null && connectionState == ConnectionState.CONNECTED) {
             CurrentContent(
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 currentEventInfo ?: CurrentInfo(),
@@ -107,16 +104,14 @@ fun CurrentPage(
                     )
                 })
         } else {
-            LoadingScreen(
+            ConnectionDisplay(
                 Modifier
                     .consumeWindowInsets(innerPadding)
-                    .padding(innerPadding), onReload = {
-                    scope.launch {
-                        currentViewModel.updateLoadingState(
-                            it
-                        )
-                    }
-                }, connectionState = loadingState
+                    .padding(innerPadding),
+                onCheckConnection = {
+                    currentViewModel.checkConnection(true)
+                },
+                connectionState = connectionState
             )
         }
     }

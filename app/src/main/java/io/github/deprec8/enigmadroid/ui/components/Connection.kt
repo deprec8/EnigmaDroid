@@ -60,9 +60,9 @@ import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.ConnectionState
 
 @Composable
-fun LoadingScreen(
+fun ConnectionDisplay(
     modifier: Modifier,
-    onReload: (Boolean) -> Unit,
+    onCheckConnection: () -> Unit,
     connectionState: ConnectionState,
 ) {
     val scrollState = rememberScrollState()
@@ -95,43 +95,21 @@ fun LoadingScreen(
                     }
                 }
 
-                ConnectionState.DEVICE_NOT_ONLINE -> {
-                    Column {
-                        Text(
-                            text = stringResource(R.string.device_not_connected),
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                                .padding(16.dp)
-                        )
-                        FilledTonalButton(
-                            onClick = { onReload(true) },
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
-                        ) {
-                            Text(stringResource(R.string.retry))
-                        }
+                ConnectionState.NOT_CONNECTED -> {
+                    InfoDisplay(stringResource(R.string.device_not_connected)) {
+                        onCheckConnection()
                     }
                 }
 
                 ConnectionState.NO_DEVICE_AVAILABLE -> {
-                    Column {
-                        Text(
-                            text = stringResource(R.string.no_device_available),
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                                .padding(16.dp),
-                        )
-                        FilledTonalButton(
-                            onClick = { onReload(true) },
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
-                        ) {
-                            Text(stringResource(R.string.retry))
-                        }
+                    InfoDisplay(stringResource(R.string.no_device_available)) {
+                        onCheckConnection()
+                    }
+                }
+
+                ConnectionState.NO_DEVICE_SELECTED -> {
+                    InfoDisplay(stringResource(R.string.no_device_selected)) {
+                        onCheckConnection()
                     }
                 }
 
@@ -144,7 +122,7 @@ fun LoadingScreen(
                             strokeCap = StrokeCap.Round
                         )
                         Text(
-                            text = stringResource(R.string.searching_for_device),
+                            text = stringResource(R.string.connecting_to_device),
                             textAlign = TextAlign.Center,
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
@@ -163,7 +141,7 @@ fun LoadingScreen(
                                 .padding(16.dp)
                         )
                         FilledTonalButton(
-                            onClick = { onReload(true) },
+                            onClick = { onCheckConnection() },
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
                                 .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
@@ -173,6 +151,29 @@ fun LoadingScreen(
                     }
                 }
             }
+        }
+    }
+
+
+}
+
+@Composable
+private fun InfoDisplay(text: String, onReload: () -> Unit) {
+    Column {
+        Text(
+            text = text,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(16.dp),
+        )
+        FilledTonalButton(
+            onClick = { onReload() },
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+        ) {
+            Text(stringResource(R.string.retry))
         }
     }
 }

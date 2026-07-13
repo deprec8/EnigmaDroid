@@ -60,7 +60,7 @@ class RemoteControlViewModel(
             }
         }
         viewModelScope.launch {
-            connectionRepository.getLoadingState().collectLatest { state ->
+            connectionRepository.getConnectionState().collectLatest { state ->
                 _connectionState.value = state
             }
         }
@@ -71,8 +71,10 @@ class RemoteControlViewModel(
         }
     }
 
-    suspend fun updateLoadingState(isForcedUpdate: Boolean) {
-        connectionRepository.checkConnection(isForcedUpdate)
+    fun checkConnection(forced: Boolean) {
+        viewModelScope.launch {
+            connectionRepository.checkConnection(forced)
+        }
     }
 
     fun fetchScreenshot() {
@@ -90,7 +92,7 @@ class RemoteControlViewModel(
     fun onPowerKeyClicked(powerKey: RemoteControlPowerKey) {
         viewModelScope.launch {
             apiRepository.setPowerState(powerKey)
-            updateLoadingState(true)
+            connectionRepository.checkConnection(true)
         }
     }
 }

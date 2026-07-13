@@ -91,7 +91,7 @@ class RadioEpgViewModel(
 
     init {
         viewModelScope.launch {
-            connectionRepository.getLoadingState().collectLatest { state ->
+            connectionRepository.getConnectionState().collectLatest { state ->
                 _connectionState.value = state
             }
         }
@@ -114,8 +114,10 @@ class RadioEpgViewModel(
         }
     }
 
-    suspend fun updateLoadingState(isForcedUpdate: Boolean) {
-        connectionRepository.checkConnection(isForcedUpdate)
+    fun checkConnection(forced: Boolean) {
+        viewModelScope.launch {
+            connectionRepository.checkConnection(forced)
+        }
     }
 
     fun fetchData(isForced: Boolean = false) {

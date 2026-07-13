@@ -56,7 +56,7 @@ import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeviceText(
-    connectionState: ConnectionState, currentDevice: Device?, onUpdateLoadingState: () -> Unit
+    connectionState: ConnectionState, currentDevice: Device?, onCheckConnection: () -> Unit
 ) {
     Box {
         AnimatedContent(
@@ -97,7 +97,7 @@ fun DeviceText(
                     )
                 ) {
                     IconButton(
-                        onClick = { onUpdateLoadingState() },
+                        onClick = { onCheckConnection() },
                         modifier = Modifier
                             .padding(12.dp)
                             .size(24.dp)

@@ -84,7 +84,7 @@ class TvViewModel(
 
     init {
         viewModelScope.launch {
-            connectionRepository.getLoadingState().collectLatest { state ->
+            connectionRepository.getConnectionState().collectLatest { state ->
                 _connectionState.value = state
             }
         }
@@ -109,8 +109,10 @@ class TvViewModel(
         }
     }
 
-    suspend fun updateLoadingState(isForcedUpdate: Boolean) {
-        connectionRepository.checkConnection(isForcedUpdate)
+    fun checkConnection(forced: Boolean) {
+        viewModelScope.launch {
+            connectionRepository.checkConnection(forced)
+        }
     }
 
     suspend fun buildLiveStreamUrl(serviceReference: String): String {

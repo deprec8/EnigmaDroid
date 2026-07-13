@@ -54,7 +54,7 @@ class MainViewModel(
             }
         }
         viewModelScope.launch {
-            connectionRepository.getLoadingState().collectLatest { state ->
+            connectionRepository.getConnectionState().collectLatest { state ->
                 _connectionState.value = state
             }
         }
@@ -65,8 +65,10 @@ class MainViewModel(
         }
     }
 
-    suspend fun updateLoadingState(forceUpdate: Boolean) {
-        connectionRepository.checkConnection(forceUpdate)
+    fun checkConnection(forced: Boolean) {
+        viewModelScope.launch {
+            connectionRepository.checkConnection(forced)
+        }
     }
 
     suspend fun buildOwifUrl(): String {

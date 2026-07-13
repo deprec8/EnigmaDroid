@@ -106,7 +106,7 @@ fun DrawerContent(
     currentTopLevelRoute: NavKey,
     scrollState: ScrollState,
     onOpenOwif: () -> Unit,
-    onUpdateDeviceStatus: () -> Unit,
+    onCheckConnection: () -> Unit,
     onNavigate: (NavKey) -> Unit,
     onSetCurrentDevice: (Device) -> Unit
 ) {
@@ -122,7 +122,7 @@ fun DrawerContent(
             devices = devices,
             connectionState = connectionState,
             onOpenOwif = { onOpenOwif() },
-            onUpdateDeviceStatus = { onUpdateDeviceStatus() },
+            onCheckConnection = { onCheckConnection() },
             onSetCurrentDevice = onSetCurrentDevice
         )
 
@@ -175,7 +175,7 @@ fun DeviceItem(
     devices: List<Device>,
     connectionState: ConnectionState,
     onOpenOwif: () -> Unit,
-    onUpdateDeviceStatus: () -> Unit,
+    onCheckConnection: () -> Unit,
     onSetCurrentDevice: (Device) -> Unit
 ) {
     var showDevicesMenu by rememberSaveable {
@@ -239,7 +239,7 @@ fun DeviceItem(
                                 TooltipAnchorPosition.Below, 4.dp
                             )
                         ) {
-                            IconButton(onClick = { onUpdateDeviceStatus() }) {
+                            IconButton(onClick = { onCheckConnection() }) {
                                 Icon(
                                     Icons.Default.RestartAlt,
                                     contentDescription = stringResource(R.string.retry),
@@ -265,7 +265,7 @@ fun DeviceItem(
                         )
                     }
 
-                    ConnectionState.DEVICE_NOT_ONLINE -> {
+                    ConnectionState.NOT_CONNECTED -> {
                         Text(
                             stringResource(id = R.string.device_not_connected),
                             maxLines = 1,
@@ -275,7 +275,15 @@ fun DeviceItem(
 
                     ConnectionState.NO_DEVICE_AVAILABLE -> {
                         Text(
-                            stringResource(R.string.add_a_device_to_connect_to),
+                            stringResource(R.string.no_device_available),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+
+                    ConnectionState.NO_DEVICE_SELECTED -> {
+                        Text(
+                            stringResource(R.string.no_service_selected),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -283,7 +291,7 @@ fun DeviceItem(
 
                     ConnectionState.CONNECTING -> {
                         Text(
-                            stringResource(R.string.searching_for_device),
+                            stringResource(R.string.connecting_to_device),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )

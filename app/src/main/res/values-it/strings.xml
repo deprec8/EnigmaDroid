@@ -117,7 +117,7 @@
     <string name="third_party_libraries">Librerie di terze parti</string>
     <string name="source_code">Codice sorgente</string>
     <string name="libraries_amount">%1$s Librerie</string>
-    <string name="searching_for_device">Ricerca dispositivo…</string>
+    <string name="connecting_to_device">Ricerca dispositivo…</string>
     <string name="channel_up">Canale successivo</string>
     <string name="retry">Riprova</string>
     <string name="no_devices_found">Nessun dispositivo trovato.</string>
@@ -129,7 +129,6 @@
     <string name="automatic">Automatico</string>
     <string name="after_event">Dopo evento</string>
     <string name="screenshot">Screenshot</string>
-    <string name="add_a_device_to_connect_to">Aggiungi un dispositivo a cui connetterti.</string>
     <string name="device_is_not_playing_any_channel">Il dispositivo non sta trasmettendo alcun canale.</string>
     <string name="edit_timer">Modifica timer</string>
     <string name="tv_epg">EPG TV</string>

@@ -42,8 +42,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.ConnectionState
+import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
-import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.content.ContentTab
 import io.github.deprec8.enigmadroid.ui.components.content.ContentTabRow
@@ -69,7 +69,7 @@ fun TvEpgPage(
     val currentBouquetReference by tvEpgViewModel.currentBouquetReference.collectAsStateWithLifecycle()
     val filteredEvents by tvEpgViewModel.filteredEvents.collectAsStateWithLifecycle()
     val searchHistory by tvEpgViewModel.searchHistory.collectAsStateWithLifecycle()
-    val loadingState by tvEpgViewModel.connectionState.collectAsStateWithLifecycle()
+    val connectionState by tvEpgViewModel.connectionState.collectAsStateWithLifecycle()
     val highlightedWords by tvEpgViewModel.highlightedWords.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
@@ -83,22 +83,22 @@ fun TvEpgPage(
     }
 
     LaunchedEffect(Unit) {
-        tvEpgViewModel.updateLoadingState(false)
+        tvEpgViewModel.checkConnection(false)
     }
 
-    LaunchedEffect(loadingState) {
-        if (loadingState == ConnectionState.CONNECTED) {
+    LaunchedEffect(connectionState) {
+        if (connectionState == ConnectionState.CONNECTED) {
             tvEpgViewModel.fetchData()
         }
     }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(loadingState) {
+        FloatingReloadButton(connectionState) {
             tvEpgViewModel.fetchData(isForced = true)
         }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = eventBatchSet?.eventBatches?.isNotEmpty() == true && loadingState == ConnectionState.CONNECTED,
+            enabled = eventBatchSet?.eventBatches?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED,
             textFieldState = tvEpgViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_epg),
             content = {
@@ -126,7 +126,7 @@ fun TvEpgPage(
             actionButtons = {
                 Row {
                     BouquetMenu(
-                        bouquets, currentBouquetReference, loadingState
+                        bouquets, currentBouquetReference, connectionState
                     ) { bouquetReference -> tvEpgViewModel.setCurrentBouquet(bouquetReference) }
                     RemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
                 }
@@ -135,7 +135,7 @@ fun TvEpgPage(
                 tvEpgViewModel.updateSearchInput()
             },
             actionBar = {
-                if (eventBatchSet?.eventBatches?.isNotEmpty() == true && loadingState == ConnectionState.CONNECTED) {
+                if (eventBatchSet?.eventBatches?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED) {
                     ContentTabRow(selectedTabIndex) {
                         eventBatchSet?.eventBatches?.forEachIndexed { index, eventBatch ->
                             ContentTab(
@@ -152,7 +152,7 @@ fun TvEpgPage(
     }
 
     ) { innerPadding ->
-        if (eventBatchSet != null && loadingState == ConnectionState.CONNECTED) {
+        if (eventBatchSet != null && connectionState == ConnectionState.CONNECTED) {
             if (eventBatchSet?.eventBatches?.isNotEmpty() == true) {
                 HorizontalPager(
                     modifier = Modifier.fillMaxSize(),
@@ -171,18 +171,16 @@ fun TvEpgPage(
                 )
             }
         } else {
-            LoadingScreen(
+            ConnectionDisplay(
                 Modifier
                     .consumeWindowInsets(innerPadding)
                     .padding(innerPadding),
-                onReload = {
-                    scope.launch {
-                        tvEpgViewModel.updateLoadingState(
-                            it
-                        )
-                    }
+                onCheckConnection = {
+                    tvEpgViewModel.checkConnection(
+                        it
+                    )
                 },
-                connectionState = loadingState
+                connectionState = connectionState
             )
         }
     }

@@ -38,8 +38,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.model.api.MovieBatch
+import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
-import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
@@ -63,7 +63,7 @@ fun MoviesPage(
     val movieBatch by moviesViewModel.movieBatch.collectAsStateWithLifecycle()
     val filteredMovies by moviesViewModel.filteredMovies.collectAsStateWithLifecycle()
     val searchHistory by moviesViewModel.searchHistory.collectAsStateWithLifecycle()
-    val loadingState by moviesViewModel.connectionState.collectAsStateWithLifecycle()
+    val connectionState by moviesViewModel.connectionState.collectAsStateWithLifecycle()
     val highlightedWords by moviesViewModel.highlightedWords.collectAsStateWithLifecycle()
     val preloadBatches by moviesViewModel.preloadBatches.collectAsStateWithLifecycle()
     val freeSpace by moviesViewModel.freeSpace.collectAsStateWithLifecycle()
@@ -72,20 +72,20 @@ fun MoviesPage(
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
-        moviesViewModel.updateLoadingState(false)
+        moviesViewModel.checkConnection(false)
     }
 
-    LaunchedEffect(loadingState) {
-        if (loadingState == ConnectionState.CONNECTED) {
+    LaunchedEffect(connectionState) {
+        if (connectionState == ConnectionState.CONNECTED) {
             moviesViewModel.fetchData()
         }
     }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(loadingState) { moviesViewModel.fetchData(isForced = true) }
+        FloatingReloadButton(connectionState) { moviesViewModel.fetchData(isForced = true) }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = movieBatch?.movies?.isNotEmpty() == true && loadingState == ConnectionState.CONNECTED,
+            enabled = movieBatch?.movies?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED,
             textFieldState = moviesViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_movies),
             content = {
@@ -138,12 +138,12 @@ fun MoviesPage(
                 moviesViewModel.updateSearchInput()
             },
             actionBar = {
-                MoviesActionBar(movieBatch, freeSpace, loadingState)
+                MoviesActionBar(movieBatch, freeSpace, connectionState)
             })
     }
 
     ) { innerPadding ->
-        if (movieBatch != null && loadingState == ConnectionState.CONNECTED) {
+        if (movieBatch != null && connectionState == ConnectionState.CONNECTED) {
             MoviesContent(
                 movies = movieBatch?.movies ?: emptyList(),
                 bookmarks = movieBatch?.bookmarks ?: emptyList(),
@@ -178,16 +178,12 @@ fun MoviesPage(
                     )
                 })
         } else {
-            LoadingScreen(
+            ConnectionDisplay(
                 Modifier
                     .consumeWindowInsets(innerPadding)
-                    .padding(innerPadding), onReload = {
-                    scope.launch {
-                        moviesViewModel.updateLoadingState(
-                            it
-                        )
-                    }
-                }, connectionState = loadingState
+                    .padding(innerPadding), onCheckConnection = {
+                    moviesViewModel.checkConnection(true)
+                }, connectionState = connectionState
             )
         }
     }

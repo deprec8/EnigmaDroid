@@ -124,7 +124,7 @@
     <string name="third_party_libraries">Third Party Libraries</string>
     <string name="source_code">Source Code</string>
     <string name="libraries_amount">%1$s Libraries</string>
-    <string name="searching_for_device">Searching for device…</string>
+    <string name="connecting_to_device">Connecting to device…</string>
     <string name="channel_up">Channel up</string>
     <string name="retry">Retry</string>
     <string name="no_devices_found">No devices found.</string>
@@ -136,7 +136,6 @@
     <string name="automatic">Automatic</string>
     <string name="after_event">After event</string>
     <string name="screenshot">Screenshot</string>
-    <string name="add_a_device_to_connect_to">Add a device to connect to.</string>
     <string name="app_license_url" translatable="false">https://www.gnu.org/licenses/gpl-3.0.de.html</string>
     <string name="app_source_url" translatable="false">https://github.com/deprec8/EnigmaDroid/</string>
     <string name="app_developer_url" translatable="false">https://github.com/deprec8</string>
@@ -253,6 +252,7 @@
     <string name="chipset">Chipset</string>
     <string name="brand_model"><![CDATA[Brand & Model]]></string>
     <string name="switch_device">Switch device</string>
+    <string name="no_device_selected">No device selected.</string>
     <plurals name="files">
         <item quantity="one">%1$d file</item>
         <item quantity="other">%1$d files</item>

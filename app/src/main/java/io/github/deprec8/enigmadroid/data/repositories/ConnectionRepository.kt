@@ -28,7 +28,7 @@ class ConnectionRepository(
     private val connectionStateHolder: ConnectionStateHolder,
     private val networkDataSource: NetworkDataSource
 ) {
-    fun getLoadingState(): Flow<ConnectionState> {
+    fun getConnectionState(): Flow<ConnectionState> {
         return connectionStateHolder.connectionState
     }
 
