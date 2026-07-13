@@ -204,11 +204,13 @@ fun TimersPage(
             ConnectionDisplay(
                 Modifier
                     .consumeWindowInsets(innerPadding)
-                    .padding(innerPadding), onCheckConnection = {
+                    .padding(innerPadding),
+                onCheckConnection = {
                     timersViewModel.checkConnection(
-                        it
+                        true
                     )
-                }, connectionState = connectionState
+                },
+                connectionState = connectionState
             )
         }
     }

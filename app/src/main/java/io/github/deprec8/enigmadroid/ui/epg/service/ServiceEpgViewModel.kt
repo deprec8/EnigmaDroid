@@ -54,8 +54,10 @@ class ServiceEpgViewModel(
     private val _eventBatch = MutableStateFlow<EventBatch?>(null)
     val eventBatch: StateFlow<EventBatch?> = _eventBatch.asStateFlow()
 
-    private val _connectionState = MutableStateFlow(ConnectionState.CONNECTING)
-    val connectionState: StateFlow<ConnectionState> = _connectionState.asStateFlow()
+    val connectionState: StateFlow<ConnectionState> =
+        connectionRepository.getConnectionState().stateIn(
+            viewModelScope, SharingStarted.WhileSubscribed(5000), ConnectionState.CONNECTING
+        )
 
     private val _filteredEvents = MutableStateFlow<List<Event>?>(null)
     val filteredEvents: StateFlow<List<Event>?> = _filteredEvents.asStateFlow()
@@ -82,11 +84,6 @@ class ServiceEpgViewModel(
     private var loadedDeviceId: Int? = null
 
     init {
-        viewModelScope.launch {
-            connectionRepository.getConnectionState().collectLatest { state ->
-                _connectionState.value = state
-            }
-        }
         viewModelScope.launch {
             combine(_eventBatch, searchInput) { eventBatch, searchInput ->
                 eventBatch?.events?.search(searchInput)

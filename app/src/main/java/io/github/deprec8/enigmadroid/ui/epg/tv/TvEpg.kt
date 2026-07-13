@@ -177,7 +177,7 @@ fun TvEpgPage(
                     .padding(innerPadding),
                 onCheckConnection = {
                     tvEpgViewModel.checkConnection(
-                        it
+                        true
                     )
                 },
                 connectionState = connectionState

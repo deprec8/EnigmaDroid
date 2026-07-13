@@ -177,7 +177,7 @@ fun RadioEpgPage(
                     .padding(innerPadding),
                 onCheckConnection = {
                     radioEpgViewModel.checkConnection(
-                        it
+                        true
                     )
                 },
                 connectionState = connectionState

@@ -58,8 +58,10 @@ class RadioViewModel(
     private val _eventBatches = MutableStateFlow<List<EventBatch>?>(null)
     val eventBatches: StateFlow<List<EventBatch>?> = _eventBatches.asStateFlow()
 
-    private val _connectionState = MutableStateFlow(ConnectionState.CONNECTING)
-    val connectionState: StateFlow<ConnectionState> = _connectionState.asStateFlow()
+    val connectionState: StateFlow<ConnectionState> =
+        connectionRepository.getConnectionState().stateIn(
+            viewModelScope, SharingStarted.WhileSubscribed(5000), ConnectionState.CONNECTING
+        )
 
     private val _searchHistory = MutableStateFlow<List<String>>(emptyList())
     val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()
@@ -83,11 +85,6 @@ class RadioViewModel(
     private var loadedDeviceId: Int? = null
 
     init {
-        viewModelScope.launch {
-            connectionRepository.getConnectionState().collectLatest { state ->
-                _connectionState.value = state
-            }
-        }
         viewModelScope.launch {
             combine(
                 _eventBatches, searchInput, currentBouquetIndex

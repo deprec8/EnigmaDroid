@@ -95,7 +95,7 @@ fun SignalPage(
                     .padding(innerPadding),
                 connectionState = connectionState,
                 onCheckConnection = {
-                    signalViewModel.checkConnection(it)
+                    signalViewModel.checkConnection(true)
                 })
         }
     }

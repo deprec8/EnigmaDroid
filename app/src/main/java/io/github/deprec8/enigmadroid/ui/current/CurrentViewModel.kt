@@ -28,10 +28,11 @@ import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
 import io.github.deprec8.enigmadroid.model.api.CurrentInfo
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class CurrentViewModel(
@@ -43,20 +44,14 @@ class CurrentViewModel(
     private val _currentInfo = MutableStateFlow<CurrentInfo?>(null)
     val currentInfo: StateFlow<CurrentInfo?> = _currentInfo.asStateFlow()
 
-    private val _connectionState = MutableStateFlow(ConnectionState.CONNECTING)
-    val connectionState: StateFlow<ConnectionState> = _connectionState.asStateFlow()
+    val connectionState: StateFlow<ConnectionState> =
+        connectionRepository.getConnectionState().stateIn(
+            viewModelScope, SharingStarted.WhileSubscribed(5000), ConnectionState.CONNECTING
+        )
 
     private var fetchJob: Job? = null
 
     private var loadedDeviceId: Int? = null
-
-    init {
-        viewModelScope.launch {
-            connectionRepository.getConnectionState().collectLatest { state ->
-                _connectionState.value = state
-            }
-        }
-    }
 
     fun checkConnection(forced: Boolean) {
         viewModelScope.launch {

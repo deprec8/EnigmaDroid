@@ -184,7 +184,7 @@ fun TvPage(
                     .padding(innerPadding),
                 onCheckConnection = {
                     tvViewModel.checkConnection(
-                        it
+                        true
                     )
                 },
                 connectionState = connectionState

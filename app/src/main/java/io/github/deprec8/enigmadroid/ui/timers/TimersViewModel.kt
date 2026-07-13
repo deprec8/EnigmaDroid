@@ -58,8 +58,10 @@ class TimersViewModel(
     private val _timerBatch = MutableStateFlow<TimerBatch?>(null)
     val timerBatch: StateFlow<TimerBatch?> = _timerBatch.asStateFlow()
 
-    private val _connectionState = MutableStateFlow(ConnectionState.CONNECTING)
-    val connectionState: StateFlow<ConnectionState> = _connectionState.asStateFlow()
+    val connectionState: StateFlow<ConnectionState> =
+        connectionRepository.getConnectionState().stateIn(
+            viewModelScope, SharingStarted.WhileSubscribed(5000), ConnectionState.CONNECTING
+        )
 
     private val _serviceBatchSet = MutableStateFlow<ServiceBatchSet?>(null)
     val serviceBatchSet: StateFlow<ServiceBatchSet?> = _serviceBatchSet.asStateFlow()
@@ -84,11 +86,6 @@ class TimersViewModel(
     private var loadedDeviceId: Int? = null
 
     init {
-        viewModelScope.launch {
-            connectionRepository.getConnectionState().collectLatest { state ->
-                _connectionState.value = state
-            }
-        }
         viewModelScope.launch {
             combine(_timerBatch, searchInput) { timerBatch, searchInput ->
                 timerBatch?.timers?.search(searchInput)

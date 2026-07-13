@@ -31,9 +31,11 @@ import io.github.deprec8.enigmadroid.data.repositories.DownloadRepository
 import io.github.deprec8.enigmadroid.data.repositories.SettingsRepository
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class RemoteControlViewModel(
@@ -44,8 +46,10 @@ class RemoteControlViewModel(
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
-    private val _connectionState = MutableStateFlow(ConnectionState.CONNECTING)
-    val connectionState: StateFlow<ConnectionState> = _connectionState.asStateFlow()
+    val connectionState: StateFlow<ConnectionState> =
+        connectionRepository.getConnectionState().stateIn(
+            viewModelScope, SharingStarted.WhileSubscribed(5000), ConnectionState.CONNECTING
+        )
 
     private val _currentDevice = MutableStateFlow<Device?>(null)
     val currentDevice: StateFlow<Device?> = _currentDevice.asStateFlow()
@@ -57,11 +61,6 @@ class RemoteControlViewModel(
         viewModelScope.launch {
             devicesRepository.getCurrentDevice().collectLatest { currentDevice ->
                 _currentDevice.value = currentDevice
-            }
-        }
-        viewModelScope.launch {
-            connectionRepository.getConnectionState().collectLatest { state ->
-                _connectionState.value = state
             }
         }
         viewModelScope.launch {

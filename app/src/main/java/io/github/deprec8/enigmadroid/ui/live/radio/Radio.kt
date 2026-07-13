@@ -187,7 +187,7 @@ fun RadioPage(
                     .consumeWindowInsets(innerPadding)
                     .padding(innerPadding), onCheckConnection = {
                     radioViewModel.checkConnection(
-                        it
+                        true
                     )
                 }, connectionState = connectionState
             )

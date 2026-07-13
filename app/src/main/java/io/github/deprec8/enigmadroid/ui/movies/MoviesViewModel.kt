@@ -60,8 +60,10 @@ class MoviesViewModel(
     private val _movieBatch = MutableStateFlow<MovieBatch?>(null)
     val movieBatch: StateFlow<MovieBatch?> = _movieBatch.asStateFlow()
 
-    private val _connectionState = MutableStateFlow(ConnectionState.CONNECTING)
-    val connectionState: StateFlow<ConnectionState> = _connectionState.asStateFlow()
+    val connectionState: StateFlow<ConnectionState> =
+        connectionRepository.getConnectionState().stateIn(
+            viewModelScope, SharingStarted.WhileSubscribed(5000), ConnectionState.CONNECTING
+        )
 
     private val _searchHistory = MutableStateFlow<List<String>>(emptyList())
     val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()
@@ -92,11 +94,6 @@ class MoviesViewModel(
         private set
 
     init {
-        viewModelScope.launch {
-            connectionRepository.getConnectionState().collectLatest { state ->
-                _connectionState.value = state
-            }
-        }
         viewModelScope.launch {
             combine(_movieBatch, searchInput) { movieBatch, searchInput ->
                 movieBatch?.movies?.search(searchInput)

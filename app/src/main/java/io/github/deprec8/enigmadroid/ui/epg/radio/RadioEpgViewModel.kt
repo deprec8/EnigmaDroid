@@ -59,8 +59,10 @@ class RadioEpgViewModel(
     private val _filteredEvents = MutableStateFlow<List<Event>?>(null)
     val filteredEvents: StateFlow<List<Event>?> = _filteredEvents.asStateFlow()
 
-    private val _connectionState = MutableStateFlow(ConnectionState.CONNECTING)
-    val connectionState: StateFlow<ConnectionState> = _connectionState.asStateFlow()
+    val connectionState: StateFlow<ConnectionState> =
+        connectionRepository.getConnectionState().stateIn(
+            viewModelScope, SharingStarted.WhileSubscribed(5000), ConnectionState.CONNECTING
+        )
 
     private val _searchHistory = MutableStateFlow<List<String>>(emptyList())
     val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()
@@ -90,11 +92,6 @@ class RadioEpgViewModel(
     private var loadedDeviceId: Int? = null
 
     init {
-        viewModelScope.launch {
-            connectionRepository.getConnectionState().collectLatest { state ->
-                _connectionState.value = state
-            }
-        }
         viewModelScope.launch {
             combine(_eventBatchSet, searchInput) { eventBatchSet, searchInput ->
                 eventBatchSet?.eventBatches?.flatMap { it.events }?.search(searchInput)
