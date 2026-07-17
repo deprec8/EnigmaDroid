@@ -108,15 +108,15 @@
     <string name="license">Lizenz</string>
     <string name="action_menu">Aktionsmenü</string>
     <string name="enabled">Aktiviert</string>
-    <string name="unable_to_connect">Gerät nicht verbunden.</string>
-    <string name="no_device_available">Kein Gerät verfügbar.</string>
+    <string name="unable_to_connect">Verbindung nicht möglich</string>
+    <string name="no_device_available">Kein Gerät verfügbar</string>
     <string name="version_not_found">Version nicht gefunden.</string>
     <string name="delete_timer">Timer löschen</string>
     <string name="delete_timer_warning">Wenn sie diesen Timer löschen wird er nicht wiederherstellbar sein.</string>
     <string name="third_party_libraries">Drittanbieter Bibliotheken</string>
     <string name="source_code">Quellcode</string>
     <string name="libraries_amount">%1$s Bibliotheken</string>
-    <string name="connecting">Suche nach Gerät…</string>
+    <string name="connecting">Verbinde…</string>
     <string name="channel_up">Kanal hoch</string>
     <string name="retry">Erneut versuchen</string>
     <string name="no_devices_found">Keine Geräte gefunden.</string>
@@ -196,7 +196,7 @@
     <string name="search_epg_from">EPG von \"%1$s \" durchsuchen</string>
     <string name="service_epg">Service EPG</string>
     <string name="error_loading_libraries">Fehler beim Laden der Bibliotheken.</string>
-    <string name="invalid_response">Ungültige Geräteantwort.</string>
+    <string name="invalid_response">Ungültige Antwort</string>
     <string name="enable">Aktivieren</string>
     <string name="disable">Deaktivieren</string>
     <string name="marker">Marker</string>
@@ -236,6 +236,9 @@
     <string name="chipset">Chipsatz</string>
     <string name="brand_model"><![CDATA[Marke & Modell]]></string>
     <string name="switch_device">Gerät wechseln</string>
+    <string name="no_device_selected">Kein Gerät ausgewählt</string>
+    <string name="first_add_a_device">Zuerst ein Gerät hinzufügen.</string>
+    <string name="first_select_a_device">Wählen Sie zuerst ein Gerät aus.</string>
     <plurals name="files">
         <item quantity="one">%1$d Datei</item>
         <item quantity="other">%1$d Dateien</item>
