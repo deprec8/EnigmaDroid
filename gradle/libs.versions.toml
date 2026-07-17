@@ -1,10 +1,10 @@
 [versions]
-aboutlibraries = "15.0.3"
-agp = "9.2.1"
+aboutlibraries = "15.0.4"
+agp = "9.3.0"
 browser = "1.10.0"
 coreSplashscreen = "1.2.0"
 datastorePreferences = "1.2.1"
-kotlin = "2.4.0"
+kotlin = "2.4.10"
 coroutines = "1.11.0"
 ktor = "3.5.1"
 re2j = "1.8"
@@ -20,7 +20,7 @@ kotlinxSerialization = "1.11.0"
 savedstateKtx = "1.5.0"
 window = "1.5.1"
 koin = "4.2.2"
-koin-plugin = "1.0.1"
+koin-plugin = "1.0.2"
 
 [libraries]
 # Room
