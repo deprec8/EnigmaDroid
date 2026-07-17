@@ -108,15 +108,15 @@
     <string name="license">Licence</string>
     <string name="action_menu">Menu des actions</string>
     <string name="enabled">Activé</string>
-    <string name="unable_to_connect">Appareil non connecté.</string>
-    <string name="no_device_available">Aucun appareil disponible.</string>
+    <string name="unable_to_connect">Impossible de se connecter</string>
+    <string name="no_device_available">Aucun appareil disponible</string>
     <string name="version_not_found">Version introuvable.</string>
     <string name="delete_timer">Supprimer la minuterie</string>
     <string name="delete_timer_warning">Si vous supprimez cette minuterie, elle ne pourra pas être récupérée.</string>
     <string name="third_party_libraries">Bibliothèques tierces</string>
     <string name="source_code">Code source</string>
     <string name="libraries_amount">%1$s Bibliothèques</string>
-    <string name="connecting">Recherche d’appareil…</string>
+    <string name="connecting">Connexion à…</string>
     <string name="channel_up">Chaîne suivante</string>
     <string name="retry">Réessayer</string>
     <string name="no_devices_found">Aucun appareil trouvé.</string>
@@ -196,7 +196,7 @@
     <string name="search_epg_from">Rechercher EPG depuis \"%1$s\"</string>
     <string name="service_epg">Service EPG</string>
     <string name="error_loading_libraries">Erreur lors du chargement des bibliothèques.</string>
-    <string name="invalid_response">Réponse de l\'appareil non valide.</string>
+    <string name="invalid_response">Réponse invalide</string>
     <string name="enable">Activer</string>
     <string name="disable">Désactiver</string>
     <string name="marker">Marqueur</string>
@@ -236,6 +236,9 @@
     <string name="chipset">Puce électronique</string>
     <string name="brand_model"><![CDATA[Marque et Modèle]]></string>
     <string name="switch_device">Changer d\'appareil</string>
+    <string name="no_device_selected">Aucun appareil sélectionné</string>
+    <string name="first_add_a_device">Tout d\'abord, ajoutez un appareil.</string>
+    <string name="first_select_a_device">Tout d\'abord, sélectionnez un périphérique.</string>
     <plurals name="files">
         <item quantity="one">%1$d fichier</item>
         <item quantity="other">%1$d fichiers</item>

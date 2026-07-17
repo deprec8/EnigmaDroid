@@ -108,15 +108,15 @@
     <string name="license">Лицензия</string>
     <string name="action_menu">Меню действий</string>
     <string name="enabled">Включено</string>
-    <string name="unable_to_connect">Устройство не подключено.</string>
-    <string name="no_device_available">Устройство недоступно.</string>
+    <string name="unable_to_connect">Не удается подключиться</string>
+    <string name="no_device_available">Устройство недоступно</string>
     <string name="version_not_found">Версия не найдена.</string>
     <string name="delete_timer">Удалить таймер</string>
     <string name="delete_timer_warning">Если вы удалите этот таймер, его будет уже не восстановить.</string>
     <string name="third_party_libraries">Сторонние библиотеки</string>
     <string name="source_code">Исходный код</string>
     <string name="libraries_amount">%1$s Библиотеки кода</string>
-    <string name="connecting">Поиск устройства…</string>
+    <string name="connecting">Подключение…</string>
     <string name="channel_up">На канал выше</string>
     <string name="retry">Повторить попытку</string>
     <string name="no_devices_found">Устройства не найдены.</string>
@@ -196,7 +196,7 @@
     <string name="search_epg_from">Искать EPG из \"%1$s\"</string>
     <string name="service_epg">Служба EPG</string>
     <string name="error_loading_libraries">Ошибка загрузки библиотек.</string>
-    <string name="invalid_response">Неправильный ответ на устройство.</string>
+    <string name="invalid_response">Неверный ответ</string>
     <string name="enable">Включить</string>
     <string name="disable">Не отображать</string>
     <string name="marker">Маркер</string>
@@ -236,6 +236,9 @@
     <string name="chipset">Чипсет</string>
     <string name="brand_model"><![CDATA[Бренд и модель]]></string>
     <string name="switch_device">Выбрать другое устройство</string>
+    <string name="no_device_selected">Устройство не выбрано</string>
+    <string name="first_add_a_device">Сначала добавьте устройство.</string>
+    <string name="first_select_a_device">Сначала выберите устройство.</string>
     <plurals name="files">
         <item quantity="one">%1$d файл</item>
         <item quantity="few">%1$d Файла</item>
