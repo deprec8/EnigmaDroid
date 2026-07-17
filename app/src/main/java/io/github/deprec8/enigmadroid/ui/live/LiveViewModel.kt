@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.epg.tv
+package io.github.deprec8.enigmadroid.ui.live
 
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.lifecycle.ViewModel
@@ -29,9 +29,8 @@ import io.github.deprec8.enigmadroid.data.repositories.ConnectionRepository
 import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
 import io.github.deprec8.enigmadroid.data.repositories.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.data.repositories.SettingsRepository
-import io.github.deprec8.enigmadroid.model.api.Bouquet
 import io.github.deprec8.enigmadroid.model.api.Event
-import io.github.deprec8.enigmadroid.model.api.EventBatchSet
+import io.github.deprec8.enigmadroid.model.api.EventBatch
 import io.github.deprec8.enigmadroid.model.api.search
 import io.github.deprec8.enigmadroid.ui.components.search.asHighlightedWords
 import kotlinx.coroutines.Job
@@ -44,8 +43,10 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.koin.core.annotation.InjectedParam
 
-class TvEpgViewModel(
+class LiveViewModel(
+    @InjectedParam private val contentType: ContentType,
     private val apiRepository: ApiRepository,
     private val connectionRepository: ConnectionRepository,
     private val searchHistoryRepository: SearchHistoryRepository,
@@ -53,11 +54,11 @@ class TvEpgViewModel(
     private val devicesRepository: DevicesRepository
 ) : ViewModel() {
 
-    private val _eventBatchSet = MutableStateFlow<EventBatchSet?>(null)
-    val eventBatchSet: StateFlow<EventBatchSet?> = _eventBatchSet.asStateFlow()
-
     private val _filteredEvents = MutableStateFlow<List<Event>?>(null)
     val filteredEvents: StateFlow<List<Event>?> = _filteredEvents.asStateFlow()
+
+    private val _eventBatches = MutableStateFlow<List<EventBatch>?>(null)
+    val eventBatches: StateFlow<List<EventBatch>?> = _eventBatches.asStateFlow()
 
     val connectionState: StateFlow<ConnectionState> =
         connectionRepository.getConnectionState().stateIn(
@@ -67,13 +68,9 @@ class TvEpgViewModel(
     private val _searchHistory = MutableStateFlow<List<String>>(emptyList())
     val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()
 
-    private val _currentBouquetReference = MutableStateFlow("")
-    val currentBouquetReference: StateFlow<String> = _currentBouquetReference.asStateFlow()
-
-    private val _bouquets = MutableStateFlow<List<Bouquet>?>(null)
-    val bouquets: StateFlow<List<Bouquet>?> = _bouquets.asStateFlow()
-
     val searchFieldState = TextFieldState()
+
+    private val currentBouquetIndex = MutableStateFlow(0)
 
     private val searchInput = MutableStateFlow("")
     private val useSearchHighlighting = MutableStateFlow(true)
@@ -87,21 +84,27 @@ class TvEpgViewModel(
 
     private var fetchJob: Job? = null
 
-    private var fetchedEventBatchSetMap = emptyMap<String, EventBatchSet>()
-
     private var connectedDeviceId: Int? = null
 
     init {
         viewModelScope.launch {
-            combine(_eventBatchSet, searchInput) { eventBatchSet, searchInput ->
-                eventBatchSet?.eventBatches?.flatMap { it.events }?.search(searchInput)
+            combine(
+                _eventBatches, searchInput, currentBouquetIndex
+            ) { eventBatches, searchInput, currentBouquetIndex ->
+                eventBatches?.getOrNull(currentBouquetIndex)?.events?.search(searchInput)
             }.collectLatest {
                 _filteredEvents.value = it
             }
         }
         viewModelScope.launch {
-            searchHistoryRepository.getTvEpgSearchHistory().collectLatest {
-                _searchHistory.value = it
+            if (contentType == ContentType.Tv) {
+                searchHistoryRepository.getTvSearchHistory().collectLatest {
+                    _searchHistory.value = it
+                }
+            } else {
+                searchHistoryRepository.getRadioSearchHistory().collectLatest {
+                    _searchHistory.value = it
+                }
             }
         }
         viewModelScope.launch {
@@ -117,44 +120,33 @@ class TvEpgViewModel(
         }
     }
 
+    suspend fun buildLiveStreamUrl(serviceReference: String): String {
+        return apiRepository.buildLiveStreamUrl(serviceReference)
+    }
+
     fun fetchData(isForced: Boolean = false) {
         viewModelScope.launch {
             val currentDeviceId = devicesRepository.getCurrentDeviceId().first()
             if (currentDeviceId != connectedDeviceId || isForced) {
-                _eventBatchSet.value = null
-                _bouquets.value = null
-                fetchedEventBatchSetMap = emptyMap()
+                _eventBatches.value = null
                 connectedDeviceId = currentDeviceId
             }
 
-            if (_eventBatchSet.value == null || _bouquets.value == null) {
+            if (_eventBatches.value == null) {
                 fetchJob?.cancel()
                 fetchJob = launch {
-                    fetchBouquets()
-                    fetchEpgBatchSet()
+                    apiRepository.fetchEventBatches(contentType).collect { events ->
+                        _eventBatches.value = _eventBatches.value?.plus(events) ?: listOf(events)
+                    }
                 }
             }
         }
     }
 
-    private suspend fun fetchBouquets() {
-        val bouquets = apiRepository.fetchBouquets(ContentType.Tv)
-        _bouquets.value = bouquets
-        val firstBRef = bouquets.firstOrNull()?.reference ?: ""
-        if (_currentBouquetReference.value.isBlank() || bouquets.find { it.reference == _currentBouquetReference.value } == null) {
-            _currentBouquetReference.value = firstBRef
+    fun playOnDevice(serviceReference: String) {
+        viewModelScope.launch {
+            apiRepository.playOnDevice(serviceReference)
         }
-    }
-
-    private suspend fun fetchEpgBatchSet() {
-        val cached = fetchedEventBatchSetMap[_currentBouquetReference.value]
-        if (cached != null) {
-            _eventBatchSet.value = cached
-            return
-        }
-        val epgBatchSet = apiRepository.fetchEpgEventBatchSet(_currentBouquetReference.value)
-        _eventBatchSet.value = epgBatchSet
-        fetchedEventBatchSetMap += _currentBouquetReference.value to epgBatchSet
     }
 
     fun addTimerForEvent(event: Event) {
@@ -165,20 +157,19 @@ class TvEpgViewModel(
         }
     }
 
-    fun setCurrentBouquet(bouquetReference: String) {
-        fetchJob?.cancel()
-        _currentBouquetReference.value = bouquetReference
-        _eventBatchSet.value = null
-        fetchJob = viewModelScope.launch {
-            fetchEpgBatchSet()
-        }
+    fun updateCurrentBouquetIndex(index: Int) {
+        currentBouquetIndex.value = index
     }
 
     fun updateSearchInput() {
         val input = searchFieldState.text.toString()
         if (input.isNotBlank()) {
             viewModelScope.launch {
-                searchHistoryRepository.addToTvEpgSearchHistory(input)
+                if (contentType == ContentType.Tv) {
+                    searchHistoryRepository.addToTvSearchHistory(input)
+                } else {
+                    searchHistoryRepository.addToTvSearchHistory(input)
+                }
             }
         }
         searchInput.value = input

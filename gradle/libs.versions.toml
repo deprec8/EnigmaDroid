@@ -29,6 +29,7 @@ androidx-room3-runtime = { module = "androidx.room3:room3-runtime", version.ref 
 # Koin
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin" }
 koin-core = { module = "io.insert-koin:koin-core" }
+koin-annotations = { module = "io.insert-koin:koin-annotations" }
 koin-android = { module = "io.insert-koin:koin-android" }
 koin-compose = { module = "io.insert-koin:koin-compose" }
 koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel" }

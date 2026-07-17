@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.epg.service
+package io.github.deprec8.enigmadroid.ui.serviceepg
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -40,7 +40,7 @@ import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.ArrowNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
-import io.github.deprec8.enigmadroid.ui.epg.components.EpgContent
+import io.github.deprec8.enigmadroid.ui.epg.EpgContent
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)

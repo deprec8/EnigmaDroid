@@ -37,15 +37,13 @@ import io.github.deprec8.enigmadroid.data.source.local.devices.DevicesLocalDataS
 import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
 import io.github.deprec8.enigmadroid.ui.current.CurrentViewModel
 import io.github.deprec8.enigmadroid.ui.deviceinfo.DeviceInfoViewModel
-import io.github.deprec8.enigmadroid.ui.epg.radio.RadioEpgViewModel
-import io.github.deprec8.enigmadroid.ui.epg.service.ServiceEpgViewModel
-import io.github.deprec8.enigmadroid.ui.epg.tv.TvEpgViewModel
-import io.github.deprec8.enigmadroid.ui.live.radio.RadioViewModel
-import io.github.deprec8.enigmadroid.ui.live.tv.TvViewModel
+import io.github.deprec8.enigmadroid.ui.epg.EpgViewModel
+import io.github.deprec8.enigmadroid.ui.live.LiveViewModel
 import io.github.deprec8.enigmadroid.ui.main.MainViewModel
 import io.github.deprec8.enigmadroid.ui.movies.MoviesViewModel
 import io.github.deprec8.enigmadroid.ui.onboarding.OnboardingViewModel
 import io.github.deprec8.enigmadroid.ui.remotecontrol.RemoteControlViewModel
+import io.github.deprec8.enigmadroid.ui.serviceepg.ServiceEpgViewModel
 import io.github.deprec8.enigmadroid.ui.settings.devices.DevicesViewModel
 import io.github.deprec8.enigmadroid.ui.settings.remotecontrol.RemoteControlSettingsViewModel
 import io.github.deprec8.enigmadroid.ui.settings.search.SearchSettingsViewModel
@@ -78,15 +76,13 @@ val appModule = module {
 
     viewModel<MainViewModel>()
     viewModel<RemoteControlViewModel>()
-    viewModel<TvViewModel>()
+    viewModel<LiveViewModel>()
     viewModel<OnboardingViewModel>()
-    viewModel<RadioViewModel>()
     viewModel<ServiceEpgViewModel>()
     viewModel<CurrentViewModel>()
     viewModel<MoviesViewModel>()
     viewModel<TimersViewModel>()
-    viewModel<TvEpgViewModel>()
-    viewModel<RadioEpgViewModel>()
+    viewModel<EpgViewModel>()
     viewModel<DeviceInfoViewModel>()
     viewModel<SignalViewModel>()
     viewModel<DevicesViewModel>()

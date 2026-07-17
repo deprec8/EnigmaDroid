@@ -45,6 +45,7 @@ import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
 import io.github.deprec8.enigmadroid.common.constant.MainKeys
 import io.github.deprec8.enigmadroid.common.constant.SettingsKeys
+import io.github.deprec8.enigmadroid.common.enums.ContentType
 import io.github.deprec8.enigmadroid.ui.components.isSmallScreenLayout
 import io.github.deprec8.enigmadroid.ui.components.navigation.DrawerNavigator
 import io.github.deprec8.enigmadroid.ui.components.navigation.fadeThroughTransition
@@ -53,15 +54,13 @@ import io.github.deprec8.enigmadroid.ui.components.navigation.sharedAxisXTransit
 import io.github.deprec8.enigmadroid.ui.components.navigation.toEntries
 import io.github.deprec8.enigmadroid.ui.current.CurrentPage
 import io.github.deprec8.enigmadroid.ui.deviceinfo.DeviceInfoPage
-import io.github.deprec8.enigmadroid.ui.epg.radio.RadioEpgPage
-import io.github.deprec8.enigmadroid.ui.epg.service.ServiceEpgPage
-import io.github.deprec8.enigmadroid.ui.epg.service.ServiceEpgViewModel
-import io.github.deprec8.enigmadroid.ui.epg.tv.TvEpgPage
-import io.github.deprec8.enigmadroid.ui.live.radio.RadioPage
-import io.github.deprec8.enigmadroid.ui.live.tv.TvPage
+import io.github.deprec8.enigmadroid.ui.epg.EpgPage
+import io.github.deprec8.enigmadroid.ui.live.LivePage
 import io.github.deprec8.enigmadroid.ui.movies.MoviesDirectoryPage
 import io.github.deprec8.enigmadroid.ui.movies.MoviesPage
 import io.github.deprec8.enigmadroid.ui.movies.MoviesViewModel
+import io.github.deprec8.enigmadroid.ui.serviceepg.ServiceEpgPage
+import io.github.deprec8.enigmadroid.ui.serviceepg.ServiceEpgViewModel
 import io.github.deprec8.enigmadroid.ui.settings.SettingsPage
 import io.github.deprec8.enigmadroid.ui.settings.about.AboutPage
 import io.github.deprec8.enigmadroid.ui.settings.about.LibrariesPage
@@ -109,7 +108,8 @@ fun MainNavigationDisplay(
         entry<MainKeys.Tv>(
             metadata = fadeThroughTransition()
         ) {
-            TvPage(
+            LivePage(
+                contentType = ContentType.Tv,
                 onNavigateToRemoteControl = { onNavigateToRemoteControl() },
                 onNavigateToServiceEpg = { serviceReference, serviceName ->
                     drawerNavigator.navigate(
@@ -182,15 +182,19 @@ fun MainNavigationDisplay(
         entry<MainKeys.TvEpg>(
             metadata = fadeThroughTransition()
         ) {
-            TvEpgPage(
-                onNavigateToRemoteControl = { onNavigateToRemoteControl() }, modalDrawerState
+            EpgPage(
+                contentType = ContentType.Tv,
+                onNavigateToRemoteControl = { onNavigateToRemoteControl() },
+                modalDrawerState
             )
         }
         entry<MainKeys.RadioEpg>(
             metadata = fadeThroughTransition()
         ) {
-            RadioEpgPage(
-                onNavigateToRemoteControl = { onNavigateToRemoteControl() }, modalDrawerState
+            EpgPage(
+                contentType = ContentType.Radio,
+                onNavigateToRemoteControl = { onNavigateToRemoteControl() },
+                modalDrawerState
             )
         }
         entry<MainKeys.Current>(
@@ -211,7 +215,8 @@ fun MainNavigationDisplay(
         entry<MainKeys.Radio>(
             metadata = fadeThroughTransition()
         ) {
-            RadioPage(
+            LivePage(
+                contentType = ContentType.Radio,
                 onNavigateToRemoteControl = { onNavigateToRemoteControl() },
                 onNavigateToServiceEpg = { serviceReference, serviceName ->
                     drawerNavigator.navigate(

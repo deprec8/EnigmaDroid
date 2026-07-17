@@ -17,21 +17,19 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.epg.radio
+package io.github.deprec8.enigmadroid.ui.serviceepg
 
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.deprec8.enigmadroid.common.enums.ContentType
 import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
 import io.github.deprec8.enigmadroid.data.repositories.ConnectionRepository
 import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
 import io.github.deprec8.enigmadroid.data.repositories.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.data.repositories.SettingsRepository
-import io.github.deprec8.enigmadroid.model.api.Bouquet
 import io.github.deprec8.enigmadroid.model.api.Event
-import io.github.deprec8.enigmadroid.model.api.EventBatchSet
+import io.github.deprec8.enigmadroid.model.api.EventBatch
 import io.github.deprec8.enigmadroid.model.api.search
 import io.github.deprec8.enigmadroid.ui.components.search.asHighlightedWords
 import kotlinx.coroutines.Job
@@ -45,7 +43,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class RadioEpgViewModel(
+class ServiceEpgViewModel(
     private val apiRepository: ApiRepository,
     private val connectionRepository: ConnectionRepository,
     private val searchHistoryRepository: SearchHistoryRepository,
@@ -53,25 +51,19 @@ class RadioEpgViewModel(
     private val devicesRepository: DevicesRepository
 ) : ViewModel() {
 
-    private val _eventBatchSet = MutableStateFlow<EventBatchSet?>(null)
-    val eventBatchSet: StateFlow<EventBatchSet?> = _eventBatchSet.asStateFlow()
-
-    private val _filteredEvents = MutableStateFlow<List<Event>?>(null)
-    val filteredEvents: StateFlow<List<Event>?> = _filteredEvents.asStateFlow()
+    private val _eventBatch = MutableStateFlow<EventBatch?>(null)
+    val eventBatch: StateFlow<EventBatch?> = _eventBatch.asStateFlow()
 
     val connectionState: StateFlow<ConnectionState> =
         connectionRepository.getConnectionState().stateIn(
             viewModelScope, SharingStarted.WhileSubscribed(5000), ConnectionState.CONNECTING
         )
 
+    private val _filteredEvents = MutableStateFlow<List<Event>?>(null)
+    val filteredEvents: StateFlow<List<Event>?> = _filteredEvents.asStateFlow()
+
     private val _searchHistory = MutableStateFlow<List<String>>(emptyList())
     val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()
-
-    private val _currentBouquetReference = MutableStateFlow("")
-    val currentBouquetReference: StateFlow<String> = _currentBouquetReference.asStateFlow()
-
-    private val _bouquets = MutableStateFlow<List<Bouquet>?>(null)
-    val bouquets: StateFlow<List<Bouquet>?> = _bouquets.asStateFlow()
 
     val searchFieldState = TextFieldState()
 
@@ -87,20 +79,20 @@ class RadioEpgViewModel(
 
     private var fetchJob: Job? = null
 
-    private var fetchedEventBatchSetMap = emptyMap<String, EventBatchSet>()
+    private var serviceReference = ""
 
     private var connectedDeviceId: Int? = null
 
     init {
         viewModelScope.launch {
-            combine(_eventBatchSet, searchInput) { eventBatchSet, searchInput ->
-                eventBatchSet?.eventBatches?.flatMap { it.events }?.search(searchInput)
+            combine(_eventBatch, searchInput) { eventBatch, searchInput ->
+                eventBatch?.events?.search(searchInput)
             }.collectLatest {
                 _filteredEvents.value = it
             }
         }
         viewModelScope.launch {
-            searchHistoryRepository.getRadioEpgSearchHistory().collectLatest {
+            searchHistoryRepository.getServiceEpgSearchHistory().collectLatest {
                 _searchHistory.value = it
             }
         }
@@ -109,6 +101,10 @@ class RadioEpgViewModel(
                 useSearchHighlighting.value = it
             }
         }
+    }
+
+    fun initialize(serviceReference: String) {
+        this.serviceReference = serviceReference
     }
 
     fun checkConnection(forced: Boolean) {
@@ -121,40 +117,17 @@ class RadioEpgViewModel(
         viewModelScope.launch {
             val currentDeviceId = devicesRepository.getCurrentDeviceId().first()
             if (currentDeviceId != connectedDeviceId || isForced) {
-                _eventBatchSet.value = null
-                _bouquets.value = null
-                fetchedEventBatchSetMap = emptyMap()
+                _eventBatch.value = null
                 connectedDeviceId = currentDeviceId
             }
 
-            if (_eventBatchSet.value == null || _bouquets.value == null) {
+            if (_eventBatch.value == null) {
                 fetchJob?.cancel()
                 fetchJob = launch {
-                    fetchBouquets()
-                    fetchEpgBatchSet()
+                    _eventBatch.value = apiRepository.fetchServiceEpgBatch(serviceReference)
                 }
             }
         }
-    }
-
-    private suspend fun fetchBouquets() {
-        val bouquets = apiRepository.fetchBouquets(ContentType.Radio)
-        _bouquets.value = bouquets
-        val firstBRef = bouquets.firstOrNull()?.reference ?: ""
-        if (_currentBouquetReference.value.isBlank() || bouquets.find { it.reference == _currentBouquetReference.value } == null) {
-            _currentBouquetReference.value = firstBRef
-        }
-    }
-
-    private suspend fun fetchEpgBatchSet() {
-        val cached = fetchedEventBatchSetMap[_currentBouquetReference.value]
-        if (cached != null) {
-            _eventBatchSet.value = cached
-            return
-        }
-        val epgBatchSet = apiRepository.fetchEpgEventBatchSet(_currentBouquetReference.value)
-        _eventBatchSet.value = epgBatchSet
-        fetchedEventBatchSetMap += _currentBouquetReference.value to epgBatchSet
     }
 
     fun addTimerForEvent(event: Event) {
@@ -165,20 +138,11 @@ class RadioEpgViewModel(
         }
     }
 
-    fun setCurrentBouquet(bouquetReference: String) {
-        fetchJob?.cancel()
-        _currentBouquetReference.value = bouquetReference
-        _eventBatchSet.value = null
-        fetchJob = viewModelScope.launch {
-            fetchEpgBatchSet()
-        }
-    }
-
     fun updateSearchInput() {
         val input = searchFieldState.text.toString()
         if (input.isNotBlank()) {
             viewModelScope.launch {
-                searchHistoryRepository.addToRadioEpgSearchHistory(input)
+                searchHistoryRepository.addToServiceEpgSearchHistory(input)
             }
         }
         searchInput.value = input

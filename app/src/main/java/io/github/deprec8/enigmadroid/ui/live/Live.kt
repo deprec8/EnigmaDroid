@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.live.tv
+package io.github.deprec8.enigmadroid.ui.live
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -40,6 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
+import io.github.deprec8.enigmadroid.common.enums.ContentType
 import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
@@ -50,24 +51,25 @@ import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActio
 import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarDrawerNavigationButton
-import io.github.deprec8.enigmadroid.ui.live.components.LiveContent
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TvPage(
+fun LivePage(
+    contentType: ContentType,
     onNavigateToRemoteControl: () -> Unit,
     onNavigateToServiceEpg: (String, String) -> Unit,
     drawerState: DrawerState,
-    tvViewModel: TvViewModel = koinViewModel()
+    liveViewModel: LiveViewModel = koinViewModel(parameters = { parametersOf(contentType) })
 ) {
 
-    val filteredEvents by tvViewModel.filteredEvents.collectAsStateWithLifecycle()
-    val eventBatches by tvViewModel.eventBatches.collectAsStateWithLifecycle()
-    val connectionState by tvViewModel.connectionState.collectAsStateWithLifecycle()
-    val searchHistory by tvViewModel.searchHistory.collectAsStateWithLifecycle()
-    val highlightedWords by tvViewModel.highlightedWords.collectAsStateWithLifecycle()
+    val filteredEvents by liveViewModel.filteredEvents.collectAsStateWithLifecycle()
+    val eventBatches by liveViewModel.eventBatches.collectAsStateWithLifecycle()
+    val connectionState by liveViewModel.connectionState.collectAsStateWithLifecycle()
+    val searchHistory by liveViewModel.searchHistory.collectAsStateWithLifecycle()
+    val highlightedWords by liveViewModel.highlightedWords.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { eventBatches?.size ?: 0 })
@@ -78,23 +80,23 @@ fun TvPage(
     }
 
     LaunchedEffect(Unit) {
-        tvViewModel.checkConnection(false)
+        liveViewModel.checkConnection(false)
     }
     LaunchedEffect(connectionState) {
         if (connectionState == ConnectionState.CONNECTED) {
-            tvViewModel.fetchData()
+            liveViewModel.fetchData()
         }
     }
 
     LaunchedEffect(selectedTabIndex) {
-        tvViewModel.updateCurrentBouquetIndex(selectedTabIndex)
+        liveViewModel.updateCurrentBouquetIndex(selectedTabIndex)
     }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(connectionState) { tvViewModel.fetchData(isForced = true) }
+        FloatingReloadButton(connectionState) { liveViewModel.fetchData(isForced = true) }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            textFieldState = tvViewModel.searchFieldState,
+            textFieldState = liveViewModel.searchFieldState,
             enabled = eventBatches?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED,
             placeholder = stringResource(R.string.search_events),
             content = {
@@ -110,20 +112,20 @@ fun TvPage(
                             )
                         },
                         onPlayOnDevice = {
-                            tvViewModel.playOnDevice(it)
+                            liveViewModel.playOnDevice(it)
                         },
                         onAddTimerForEvent = {
-                            tvViewModel.addTimerForEvent(it)
+                            liveViewModel.addTimerForEvent(it)
                         },
                         buildLiveStreamUrl = {
-                            tvViewModel.buildLiveStreamUrl(it)
+                            liveViewModel.buildLiveStreamUrl(it)
                         })
                 } ?: run {
                     SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
-                        tvViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
-                        tvViewModel.updateSearchInput()
+                        liveViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
+                        liveViewModel.updateSearchInput()
                     }, onTermInsertClick = {
-                        tvViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
+                        liveViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
                             it
                         )
                     })
@@ -136,7 +138,7 @@ fun TvPage(
                 RemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
             },
             onSearch = {
-                tvViewModel.updateSearchInput()
+                liveViewModel.updateSearchInput()
             },
             actionBar = {
                 if (eventBatches?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED) {
@@ -168,13 +170,13 @@ fun TvPage(
                         )
                     },
                     onPlayOnDevice = {
-                        tvViewModel.playOnDevice(it)
+                        liveViewModel.playOnDevice(it)
                     },
                     onAddTimerForEvent = {
-                        tvViewModel.addTimerForEvent(it)
+                        liveViewModel.addTimerForEvent(it)
                     },
                     buildLiveStreamUrl = {
-                        tvViewModel.buildLiveStreamUrl(it)
+                        liveViewModel.buildLiveStreamUrl(it)
                     })
             }
         } else {
@@ -183,7 +185,7 @@ fun TvPage(
                     .consumeWindowInsets(innerPadding)
                     .padding(innerPadding),
                 onCheckConnection = {
-                    tvViewModel.checkConnection(
+                    liveViewModel.checkConnection(
                         true
                     )
                 },
