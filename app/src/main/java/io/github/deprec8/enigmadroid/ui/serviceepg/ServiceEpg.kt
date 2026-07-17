@@ -42,13 +42,19 @@ import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.epg.EpgContent
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ServiceEpgPage(
     serviceName: String,
+    serviceReference: String,
     onNavigateBack: () -> Unit,
-    serviceEpgViewModel: ServiceEpgViewModel = koinViewModel()
+    serviceEpgViewModel: ServiceEpgViewModel = koinViewModel(parameters = {
+        parametersOf(
+            serviceReference
+        )
+    })
 ) {
     val eventBatch by serviceEpgViewModel.eventBatch.collectAsStateWithLifecycle()
     val connectionState by serviceEpgViewModel.connectionState.collectAsStateWithLifecycle()

@@ -42,8 +42,10 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.koin.core.annotation.InjectedParam
 
 class ServiceEpgViewModel(
+    @InjectedParam private val serviceReference: String,
     private val apiRepository: ApiRepository,
     private val connectionRepository: ConnectionRepository,
     private val searchHistoryRepository: SearchHistoryRepository,
@@ -79,8 +81,6 @@ class ServiceEpgViewModel(
 
     private var fetchJob: Job? = null
 
-    private var serviceReference = ""
-
     private var connectedDeviceId: Int? = null
 
     init {
@@ -101,10 +101,6 @@ class ServiceEpgViewModel(
                 useSearchHighlighting.value = it
             }
         }
-    }
-
-    fun initialize(serviceReference: String) {
-        this.serviceReference = serviceReference
     }
 
     fun checkConnection(forced: Boolean) {

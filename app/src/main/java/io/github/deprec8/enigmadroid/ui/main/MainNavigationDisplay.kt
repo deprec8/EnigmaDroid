@@ -60,7 +60,6 @@ import io.github.deprec8.enigmadroid.ui.movies.MoviesDirectoryPage
 import io.github.deprec8.enigmadroid.ui.movies.MoviesPage
 import io.github.deprec8.enigmadroid.ui.movies.MoviesViewModel
 import io.github.deprec8.enigmadroid.ui.serviceepg.ServiceEpgPage
-import io.github.deprec8.enigmadroid.ui.serviceepg.ServiceEpgViewModel
 import io.github.deprec8.enigmadroid.ui.settings.SettingsPage
 import io.github.deprec8.enigmadroid.ui.settings.about.AboutPage
 import io.github.deprec8.enigmadroid.ui.settings.about.LibrariesPage
@@ -121,18 +120,44 @@ fun MainNavigationDisplay(
                 modalDrawerState
             )
         }
+        entry<MainKeys.Radio>(
+            metadata = fadeThroughTransition()
+        ) {
+            LivePage(
+                contentType = ContentType.Radio,
+                onNavigateToRemoteControl = { onNavigateToRemoteControl() },
+                onNavigateToServiceEpg = { serviceReference, serviceName ->
+                    drawerNavigator.navigate(
+                        MainKeys.ServiceEpg(
+                            serviceReference, serviceName
+                        )
+                    )
+                },
+                modalDrawerState
+            )
+        }
+        entry<MainKeys.Current>(
+            metadata = fadeThroughTransition()
+        ) {
+            CurrentPage(
+                onNavigateToRemoteControl = { onNavigateToRemoteControl() },
+                onNavigateToServiceEpg = { serviceReference, serviceName ->
+                    drawerNavigator.navigate(
+                        MainKeys.ServiceEpg(
+                            serviceReference, serviceName
+                        )
+                    )
+                },
+                drawerState = modalDrawerState
+            )
+        }
         entry<MainKeys.ServiceEpg>(
             metadata = sharedAxisXTransition()
         ) { backStackEntry ->
-            val serviceEpgViewModel: ServiceEpgViewModel = koinViewModel()
-            LaunchedEffect(backStackEntry) {
-                serviceEpgViewModel.initialize(backStackEntry.serviceReference)
-            }
             ServiceEpgPage(
                 serviceName = backStackEntry.serviceName,
-                onNavigateBack = { drawerNavigator.goBack() },
-                serviceEpgViewModel
-            )
+                serviceReference = backStackEntry.serviceReference,
+                onNavigateBack = { drawerNavigator.goBack() })
         }
         entry<MainKeys.Movies>(
             metadata = fadeThroughTransition()
@@ -179,6 +204,13 @@ fun MainNavigationDisplay(
                 moviesViewModel
             )
         }
+        entry<MainKeys.Timers>(
+            metadata = fadeThroughTransition()
+        ) {
+            TimersPage(
+                onNavigateToRemoteControl = { onNavigateToRemoteControl() }, modalDrawerState
+            )
+        }
         entry<MainKeys.TvEpg>(
             metadata = fadeThroughTransition()
         ) {
@@ -197,41 +229,10 @@ fun MainNavigationDisplay(
                 modalDrawerState
             )
         }
-        entry<MainKeys.Current>(
+        entry<MainKeys.DeviceInfo>(
             metadata = fadeThroughTransition()
         ) {
-            CurrentPage(
-                onNavigateToRemoteControl = { onNavigateToRemoteControl() },
-                onNavigateToServiceEpg = { serviceReference, serviceName ->
-                    drawerNavigator.navigate(
-                        MainKeys.ServiceEpg(
-                            serviceReference, serviceName
-                        )
-                    )
-                },
-                drawerState = modalDrawerState
-            )
-        }
-        entry<MainKeys.Radio>(
-            metadata = fadeThroughTransition()
-        ) {
-            LivePage(
-                contentType = ContentType.Radio,
-                onNavigateToRemoteControl = { onNavigateToRemoteControl() },
-                onNavigateToServiceEpg = { serviceReference, serviceName ->
-                    drawerNavigator.navigate(
-                        MainKeys.ServiceEpg(
-                            serviceReference, serviceName
-                        )
-                    )
-                },
-                modalDrawerState
-            )
-        }
-        entry<MainKeys.Timers>(
-            metadata = fadeThroughTransition()
-        ) {
-            TimersPage(
+            DeviceInfoPage(
                 onNavigateToRemoteControl = { onNavigateToRemoteControl() }, modalDrawerState
             )
         }
@@ -239,13 +240,6 @@ fun MainNavigationDisplay(
             metadata = fadeThroughTransition()
         ) {
             SignalPage(
-                onNavigateToRemoteControl = { onNavigateToRemoteControl() }, modalDrawerState
-            )
-        }
-        entry<MainKeys.DeviceInfo>(
-            metadata = fadeThroughTransition()
-        ) {
-            DeviceInfoPage(
                 onNavigateToRemoteControl = { onNavigateToRemoteControl() }, modalDrawerState
             )
         }
