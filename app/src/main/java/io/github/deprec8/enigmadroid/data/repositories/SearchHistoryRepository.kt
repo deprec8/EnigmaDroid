@@ -23,27 +23,28 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringSetPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import io.github.deprec8.enigmadroid.common.constant.PreferenceKeys
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.json.Json
 
 
 class SearchHistoryRepository(private val dataStore: DataStore<Preferences>) {
 
-    private val tvSearchHistoryKey = stringSetPreferencesKey(PreferenceKeys.TV_SEARCH_HISTORY)
-    private val radioSearchHistoryKey = stringSetPreferencesKey(PreferenceKeys.RADIO_SEARCH_HISTORY)
+    private val tvSearchHistoryKey = stringPreferencesKey(PreferenceKeys.TV_SEARCH_HISTORY)
+    private val radioSearchHistoryKey = stringPreferencesKey(PreferenceKeys.RADIO_SEARCH_HISTORY)
     private val tvEpgSearchHistoryKey =
-        stringSetPreferencesKey(PreferenceKeys.TV_EPG_SEARCH_HISTORY)
+        stringPreferencesKey(PreferenceKeys.TV_EPG_SEARCH_HISTORY)
     private val radioEpgSearchHistoryKey =
-        stringSetPreferencesKey(PreferenceKeys.RADIO_EPG_SEARCH_HISTORY)
+        stringPreferencesKey(PreferenceKeys.RADIO_EPG_SEARCH_HISTORY)
     private val moviesSearchHistoryKey =
-        stringSetPreferencesKey(PreferenceKeys.MOVIES_SEARCH_HISTORY)
+        stringPreferencesKey(PreferenceKeys.MOVIES_SEARCH_HISTORY)
     private val timersSearchHistoryKey =
-        stringSetPreferencesKey(PreferenceKeys.TIMERS_SEARCH_HISTORY)
+        stringPreferencesKey(PreferenceKeys.TIMERS_SEARCH_HISTORY)
     private val serviceEpgSearchHistoryKey =
-        stringSetPreferencesKey(PreferenceKeys.SERVICE_EPG_SEARCH_HISTORY)
+        stringPreferencesKey(PreferenceKeys.SERVICE_EPG_SEARCH_HISTORY)
     private val useSearchHistoryKey = booleanPreferencesKey(PreferenceKeys.USE_SEARCH_HISTORY)
 
     fun getUseSearchHistory(): Flow<Boolean> = dataStore.data.map { preferences ->
@@ -51,37 +52,47 @@ class SearchHistoryRepository(private val dataStore: DataStore<Preferences>) {
     }
 
     suspend fun setUseSearchHistory(useSearchHistory: Boolean) {
-        if (!useSearchHistory) {
-            clearTvSearchHistory()
-            clearRadioSearchHistory()
-            clearTvEpgSearchHistory()
-            clearRadioEpgSearchHistory()
-            clearMoviesSearchHistory()
-            clearTimersSearchHistory()
-            clearServiceEpgSearchHistory()
-        }
         dataStore.edit { preferences ->
+            if (!useSearchHistory) {
+                preferences[tvSearchHistoryKey] = ""
+                preferences[radioSearchHistoryKey] = ""
+                preferences[tvEpgSearchHistoryKey] = ""
+                preferences[radioEpgSearchHistoryKey] = ""
+                preferences[moviesSearchHistoryKey] = ""
+                preferences[timersSearchHistoryKey] = ""
+                preferences[serviceEpgSearchHistoryKey] = ""
+            }
             preferences[useSearchHistoryKey] = useSearchHistory
         }
     }
 
-    private fun getHistory(key: Preferences.Key<Set<String>>): Flow<List<String>> =
+    private fun getHistory(key: Preferences.Key<String>): Flow<List<String>> =
         dataStore.data.map { preferences ->
-            (preferences[key] ?: emptySet()).reversed()
+            getHistoryList(preferences[key])
         }
 
-    private suspend fun addToHistory(key: Preferences.Key<Set<String>>, string: String) {
+    private suspend fun addToHistory(key: Preferences.Key<String>, string: String) {
         if (getUseSearchHistory().first()) {
             dataStore.edit { preferences ->
-                val strings = preferences[key] ?: emptySet()
-                preferences[key] = strings + string
+                val currentHistory = getHistoryList(preferences[key])
+                val newHistory = (listOf(string) + currentHistory).distinct().take(50)
+                preferences[key] = Json.encodeToString(newHistory)
             }
         }
     }
 
-    private suspend fun clearHistory(key: Preferences.Key<Set<String>>) {
+    private suspend fun clearHistory(key: Preferences.Key<String>) {
         dataStore.edit { preferences ->
-            preferences[key] = emptySet()
+            preferences[key] = ""
+        }
+    }
+
+    private fun getHistoryList(jsonString: String?): List<String> {
+        return try {
+            if (jsonString.isNullOrBlank()) emptyList()
+            else Json.decodeFromString(jsonString)
+        } catch (_: Exception) {
+            emptyList()
         }
     }
 
