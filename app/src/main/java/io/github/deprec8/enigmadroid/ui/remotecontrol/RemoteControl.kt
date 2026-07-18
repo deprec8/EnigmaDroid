@@ -19,6 +19,7 @@
 
 package io.github.deprec8.enigmadroid.ui.remotecontrol
 
+import android.os.Build
 import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,6 +39,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
@@ -51,11 +56,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -73,6 +81,8 @@ import io.github.deprec8.enigmadroid.ui.remotecontrol.components.ControlButtons
 import io.github.deprec8.enigmadroid.ui.remotecontrol.components.DeviceText
 import io.github.deprec8.enigmadroid.ui.remotecontrol.components.MediaButtons
 import io.github.deprec8.enigmadroid.ui.remotecontrol.components.NumberButtons
+import io.github.deprec8.enigmadroid.utils.IntentUtils
+import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -97,6 +107,14 @@ fun RemoteControlPage(
         !windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) || (windowSizeClass.isHeightAtLeastBreakpoint(
             WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
         ) && !windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND))
+    val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+    val viewString = stringResource(R.string.view)
+    val retryString = stringResource(R.string.retry)
+    val savedString = stringResource(R.string.screenshot_saved)
+    val failedString = stringResource(R.string.screenshot_failed)
 
     LaunchedEffect(Unit) {
         remoteControlViewModel.checkConnection(false)
@@ -108,8 +126,47 @@ fun RemoteControlPage(
         }
     }
 
+    fun fetchScreenshot() {
+        scope.launch {
+            val uri = remoteControlViewModel.fetchScreenshot()
+            if (uri != null) {
+                if (remoteControlVibration) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
+                    }
+                }
+
+                val result = snackbarHostState.showSnackbar(
+                    message = savedString,
+                    actionLabel = viewString,
+                    duration = SnackbarDuration.Short
+                )
+                if (result == SnackbarResult.ActionPerformed) {
+                    IntentUtils.openImage(context, uri)
+                }
+            } else {
+                if (remoteControlVibration) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        view.performHapticFeedback(HapticFeedbackConstants.REJECT)
+                    }
+                }
+
+                val result = snackbarHostState.showSnackbar(
+                    message = failedString,
+                    actionLabel = retryString,
+                    duration = SnackbarDuration.Short
+                )
+                if (result == SnackbarResult.ActionPerformed) {
+                    fetchScreenshot()
+                }
+            }
+        }
+    }
+
     Scaffold(
-        topBar = {
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        }, topBar = {
             TopAppBar(title = {
                 Text(
                     text = stringResource(R.string.remote_control),
@@ -148,7 +205,7 @@ fun RemoteControlPage(
                     }
                     ActionMenu(
                         connectionState == ConnectionState.CONNECTED,
-                        { remoteControlViewModel.fetchScreenshot() },
+                        { fetchScreenshot() },
                         { remoteControlViewModel.onPowerKeyClicked(it) })
                 }
             })

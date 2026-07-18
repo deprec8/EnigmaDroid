@@ -19,6 +19,7 @@
 
 package io.github.deprec8.enigmadroid.ui.remotecontrol
 
+import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
 import io.github.deprec8.enigmadroid.common.enums.RemoteControlPowerKey
@@ -48,10 +49,8 @@ class RemoteControlViewModel(
             viewModelScope, SharingStarted.WhileSubscribed(5000), false
         )
 
-    fun fetchScreenshot() {
-        viewModelScope.launch {
-            downloadRepository.fetchScreenshot()
-        }
+    suspend fun fetchScreenshot(): Uri? {
+        return downloadRepository.fetchScreenshot()
     }
 
     fun onKeyClicked(key: RemoteControlKey) {

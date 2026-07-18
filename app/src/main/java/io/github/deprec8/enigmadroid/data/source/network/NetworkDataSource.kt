@@ -29,6 +29,7 @@ import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.statement.bodyAsText
+import io.ktor.client.statement.readRawBytes
 import io.ktor.http.HttpHeaders
 import io.ktor.utils.io.CancellationException
 import io.ktor.utils.io.ClosedByteChannelException
@@ -136,5 +137,16 @@ class NetworkDataSource(
     } catch (e: Exception) {
         handleException(e)
         ""
+    }
+
+    suspend fun fetchScreenshot(): ByteArray = try {
+        val url = devicesLocalDataSource.getCurrentStatic()?.buildScreenshotUrl()
+            ?: throw NullPointerException()
+        client.get(url) {
+            header(HttpHeaders.Connection, "close")
+        }.readRawBytes()
+    } catch (e: Exception) {
+        handleException(e)
+        ByteArray(0)
     }
 }

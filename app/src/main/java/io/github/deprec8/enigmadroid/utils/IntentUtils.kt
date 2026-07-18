@@ -19,12 +19,14 @@
 
 package io.github.deprec8.enigmadroid.utils
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
 import android.graphics.drawable.Icon
+import android.net.Uri
 import android.os.Build
 import android.provider.CalendarContract
 import android.widget.Toast
@@ -96,6 +98,20 @@ object IntentUtils {
             context.startActivity(intent)
         } else {
             Toast.makeText(context, R.string.no_browser_found, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun openImage(context: Context, uri: Uri) {
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(uri, "image/*")
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        try {
+            context.startActivity(intent)
+        } catch (_: ActivityNotFoundException) {
+            Toast.makeText(
+                context, context.getString(R.string.no_image_viewer_found), Toast.LENGTH_SHORT
+            ).show()
         }
     }
 

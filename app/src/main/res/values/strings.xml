@@ -254,6 +254,10 @@
     <string name="no_device_selected">No device selected</string>
     <string name="first_add_a_device">First, add a device.</string>
     <string name="first_select_a_device">First, select a device.</string>
+    <string name="screenshot_saved">Screenshot saved</string>
+    <string name="screenshot_failed">Screenshot failed</string>
+    <string name="view">View</string>
+    <string name="no_image_viewer_found">No image viewer found</string>
     <plurals name="files">
         <item quantity="one">%1$d file</item>
         <item quantity="other">%1$d files</item>
