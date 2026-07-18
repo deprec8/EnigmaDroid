@@ -46,7 +46,7 @@ class NetworkDataSource(
         when (e) {
             is CancellationException -> throw e
 
-            is NullPointerException if hasDevices -> connectionStateHolder.updateConnectionState(
+            is NoCurrentDeviceException if hasDevices -> connectionStateHolder.updateConnectionState(
                 ConnectionState.NO_DEVICE_SELECTED
             )
 
@@ -107,7 +107,7 @@ class NetworkDataSource(
     suspend fun post(endpoint: String) {
         try {
             val url = devicesLocalDataSource.getCurrentStatic()?.buildUrl(endpoint)
-                ?: throw NullPointerException()
+                ?: throw NoCurrentDeviceException()
             client.get(url) {
                 header(HttpHeaders.Connection, "close")
             }
@@ -119,7 +119,7 @@ class NetworkDataSource(
     suspend fun post(key: RemoteControlKey) {
         try {
             val url = devicesLocalDataSource.getCurrentStatic()?.buildUrl(key)
-                ?: throw NullPointerException()
+                ?: throw NoCurrentDeviceException()
             client.get(url) {
                 header(HttpHeaders.Connection, "close")
             }
@@ -130,7 +130,7 @@ class NetworkDataSource(
 
     suspend fun fetchJson(endpoint: String): String = try {
         val url = devicesLocalDataSource.getCurrentStatic()?.buildUrl(endpoint)
-            ?: throw NullPointerException()
+            ?: throw NoCurrentDeviceException()
         client.get(url) {
             header(HttpHeaders.Connection, "close")
         }.bodyAsText()
@@ -141,12 +141,16 @@ class NetworkDataSource(
 
     suspend fun fetchScreenshot(): ByteArray = try {
         val url = devicesLocalDataSource.getCurrentStatic()?.buildScreenshotUrl()
-            ?: throw NullPointerException()
+            ?: throw NoCurrentDeviceException()
         client.get(url) {
             header(HttpHeaders.Connection, "close")
         }.readRawBytes()
     } catch (e: Exception) {
         handleException(e)
         ByteArray(0)
+    }
+
+    companion object {
+        private class NoCurrentDeviceException : Exception()
     }
 }
