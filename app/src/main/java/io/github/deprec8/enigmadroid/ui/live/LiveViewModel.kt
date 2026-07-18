@@ -19,28 +19,19 @@
 
 package io.github.deprec8.enigmadroid.ui.live
 
-import androidx.compose.foundation.text.input.TextFieldState
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.deprec8.enigmadroid.common.enums.ContentType
-import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
-import io.github.deprec8.enigmadroid.data.repositories.ConnectionRepository
-import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
 import io.github.deprec8.enigmadroid.data.repositories.SearchHistoryRepository
-import io.github.deprec8.enigmadroid.data.repositories.SettingsRepository
 import io.github.deprec8.enigmadroid.model.api.Event
 import io.github.deprec8.enigmadroid.model.api.EventBatch
 import io.github.deprec8.enigmadroid.model.api.search
-import io.github.deprec8.enigmadroid.ui.components.search.asHighlightedWords
-import kotlinx.coroutines.Job
+import io.github.deprec8.enigmadroid.ui.components.viewmodels.SearchableContentViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.InjectedParam
@@ -48,99 +39,32 @@ import org.koin.core.annotation.InjectedParam
 class LiveViewModel(
     @InjectedParam private val contentType: ContentType,
     private val apiRepository: ApiRepository,
-    private val connectionRepository: ConnectionRepository,
-    private val searchHistoryRepository: SearchHistoryRepository,
-    private val settingsRepository: SettingsRepository,
-    private val devicesRepository: DevicesRepository
-) : ViewModel() {
-
-    private val _filteredEvents = MutableStateFlow<List<Event>?>(null)
-    val filteredEvents: StateFlow<List<Event>?> = _filteredEvents.asStateFlow()
+    private val searchHistoryRepository: SearchHistoryRepository
+) : SearchableContentViewModel() {
 
     private val _eventBatches = MutableStateFlow<List<EventBatch>?>(null)
     val eventBatches: StateFlow<List<EventBatch>?> = _eventBatches.asStateFlow()
 
-    val connectionState: StateFlow<ConnectionState> =
-        connectionRepository.getConnectionState().stateIn(
-            viewModelScope, SharingStarted.WhileSubscribed(5000), ConnectionState.CONNECTING
-        )
-
-    private val _searchHistory = MutableStateFlow<List<String>>(emptyList())
-    val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()
-
-    val searchFieldState = TextFieldState()
-
     private val currentBouquetIndex = MutableStateFlow(0)
 
-    private val searchInput = MutableStateFlow("")
-    private val useSearchHighlighting = MutableStateFlow(true)
+    val filteredEvents = combine(
+        _eventBatches, searchInput, currentBouquetIndex
+    ) { eventBatches, searchInput, currentBouquetIndex ->
+        eventBatches?.getOrNull(currentBouquetIndex)?.events?.search(searchInput)
+    }.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000), null
+    )
 
-    val highlightedWords: StateFlow<List<String>> =
-        searchInput.asHighlightedWords(useSearchHighlighting).stateIn(
-            viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
-
-    private var fetchJob: Job? = null
-
-    private var connectedDeviceId: Int? = null
-
-    init {
-        viewModelScope.launch {
-            combine(
-                _eventBatches, searchInput, currentBouquetIndex
-            ) { eventBatches, searchInput, currentBouquetIndex ->
-                eventBatches?.getOrNull(currentBouquetIndex)?.events?.search(searchInput)
-            }.collectLatest {
-                _filteredEvents.value = it
-            }
-        }
-        viewModelScope.launch {
-            if (contentType == ContentType.Tv) {
-                searchHistoryRepository.getTvSearchHistory().collectLatest {
-                    _searchHistory.value = it
-                }
-            } else {
-                searchHistoryRepository.getRadioSearchHistory().collectLatest {
-                    _searchHistory.value = it
-                }
-            }
-        }
-        viewModelScope.launch {
-            settingsRepository.getUseSearchHighlighting().collectLatest {
-                useSearchHighlighting.value = it
-            }
-        }
-    }
-
-    fun checkConnection(forced: Boolean) {
-        viewModelScope.launch {
-            connectionRepository.checkConnection(forced)
-        }
-    }
+    override val searchHistory = if (contentType == ContentType.Tv) {
+        searchHistoryRepository.getTvSearchHistory()
+    } else {
+        searchHistoryRepository.getRadioSearchHistory()
+    }.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
+    )
 
     suspend fun buildLiveStreamUrl(serviceReference: String): String {
         return apiRepository.buildLiveStreamUrl(serviceReference)
-    }
-
-    fun fetchData(isForced: Boolean = false) {
-        viewModelScope.launch {
-            val currentDeviceId = devicesRepository.getCurrentDeviceId().first()
-            if (currentDeviceId != connectedDeviceId || isForced) {
-                _eventBatches.value = null
-                connectedDeviceId = currentDeviceId
-            }
-
-            if (_eventBatches.value == null) {
-                fetchJob?.cancel()
-                fetchJob = launch {
-                    apiRepository.fetchEventBatches(contentType).collect { events ->
-                        _eventBatches.value = _eventBatches.value?.plus(events) ?: listOf(events)
-                    }
-                }
-            }
-        }
     }
 
     fun playOnDevice(serviceReference: String) {
@@ -161,17 +85,27 @@ class LiveViewModel(
         currentBouquetIndex.value = index
     }
 
-    fun updateSearchInput() {
-        val input = searchFieldState.text.toString()
-        if (input.isNotBlank()) {
-            viewModelScope.launch {
-                if (contentType == ContentType.Tv) {
-                    searchHistoryRepository.addToTvSearchHistory(input)
-                } else {
-                    searchHistoryRepository.addToTvSearchHistory(input)
-                }
+    override fun onAddToSearchHistory(input: String) {
+        viewModelScope.launch {
+            if (contentType == ContentType.Tv) {
+                searchHistoryRepository.addToTvSearchHistory(input)
+            } else {
+                searchHistoryRepository.addToRadioSearchHistory(input)
             }
         }
-        searchInput.value = input
+    }
+
+    override fun onClearData() {
+        _eventBatches.value = null
+    }
+
+    override suspend fun onGetData() {
+        apiRepository.fetchEventBatches(contentType).collect { events ->
+            _eventBatches.value = _eventBatches.value?.plus(events) ?: listOf(events)
+        }
+    }
+
+    override fun shouldGetData(): Boolean {
+        return _eventBatches.value == null
     }
 }

@@ -84,7 +84,7 @@ fun LivePage(
     }
     LaunchedEffect(connectionState) {
         if (connectionState == ConnectionState.CONNECTED) {
-            liveViewModel.fetchData()
+            liveViewModel.fetchData(false)
         }
     }
 
@@ -93,7 +93,7 @@ fun LivePage(
     }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(connectionState) { liveViewModel.fetchData(isForced = true) }
+        FloatingReloadButton(connectionState) { liveViewModel.fetchData(true) }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
             textFieldState = liveViewModel.searchFieldState,

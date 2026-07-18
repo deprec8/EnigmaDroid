@@ -66,12 +66,12 @@ fun CurrentPage(
 
     LaunchedEffect(connectionState) {
         if (connectionState == ConnectionState.CONNECTED) {
-            currentViewModel.fetchData()
+            currentViewModel.fetchData(false)
         }
     }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(connectionState) { currentViewModel.fetchData(isForced = true) }
+        FloatingReloadButton(connectionState) { currentViewModel.fetchData(true) }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         TopAppBar(
             title = {

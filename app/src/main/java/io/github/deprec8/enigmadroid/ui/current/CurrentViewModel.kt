@@ -19,64 +19,33 @@
 
 package io.github.deprec8.enigmadroid.ui.current
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
-import io.github.deprec8.enigmadroid.data.repositories.ConnectionRepository
-import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
 import io.github.deprec8.enigmadroid.model.api.CurrentInfo
-import kotlinx.coroutines.Job
+import io.github.deprec8.enigmadroid.ui.components.viewmodels.ContentViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 
 class CurrentViewModel(
-    private val apiRepository: ApiRepository,
-    private val connectionRepository: ConnectionRepository,
-    private val devicesRepository: DevicesRepository
-) : ViewModel() {
+    private val apiRepository: ApiRepository
+) : ContentViewModel() {
 
     private val _currentInfo = MutableStateFlow<CurrentInfo?>(null)
     val currentInfo: StateFlow<CurrentInfo?> = _currentInfo.asStateFlow()
 
-    val connectionState: StateFlow<ConnectionState> =
-        connectionRepository.getConnectionState().stateIn(
-            viewModelScope, SharingStarted.WhileSubscribed(5000), ConnectionState.CONNECTING
-        )
-
-    private var fetchJob: Job? = null
-
-    private var connectedDeviceId: Int? = null
-
-    fun checkConnection(forced: Boolean) {
-        viewModelScope.launch {
-            connectionRepository.checkConnection(forced)
-        }
-    }
-
-    fun fetchData(isForced: Boolean = false) {
-        viewModelScope.launch {
-            val currentDeviceId = devicesRepository.getCurrentDeviceId().first()
-            if (currentDeviceId != connectedDeviceId || isForced) {
-                _currentInfo.value = null
-                connectedDeviceId = currentDeviceId
-            }
-
-            if (_currentInfo.value == null) {
-                fetchJob?.cancel()
-                fetchJob = launch {
-                    _currentInfo.value = apiRepository.fetchCurrentInfo()
-                }
-            }
-        }
-    }
-
     suspend fun buildLiveStreamUrl(serviceReference: String): String {
         return apiRepository.buildLiveStreamUrl(serviceReference)
+    }
+
+    override fun onClearData() {
+        _currentInfo.value = null
+    }
+
+    override suspend fun onGetData() {
+        _currentInfo.value = apiRepository.fetchCurrentInfo()
+    }
+
+    override fun shouldGetData(): Boolean {
+        return _currentInfo.value == null
     }
 }

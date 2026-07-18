@@ -77,12 +77,12 @@ fun MoviesPage(
 
     LaunchedEffect(connectionState) {
         if (connectionState == ConnectionState.CONNECTED) {
-            moviesViewModel.fetchData()
+            moviesViewModel.fetchData(false)
         }
     }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(connectionState) { moviesViewModel.fetchData(isForced = true) }
+        FloatingReloadButton(connectionState) { moviesViewModel.fetchData(true) }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
             enabled = movieBatch?.movies?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED,
@@ -181,9 +181,11 @@ fun MoviesPage(
             ConnectionDisplay(
                 Modifier
                     .consumeWindowInsets(innerPadding)
-                    .padding(innerPadding), onCheckConnection = {
+                    .padding(innerPadding),
+                onCheckConnection = {
                     moviesViewModel.checkConnection(true)
-                }, connectionState = connectionState
+                },
+                connectionState = connectionState
             )
         }
     }

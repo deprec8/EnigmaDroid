@@ -23,33 +23,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class DevicesViewModel(private val devicesRepository: DevicesRepository) :
-    ViewModel() {
+class DevicesViewModel(private val devicesRepository: DevicesRepository) : ViewModel() {
 
-    private val _currentDeviceId = MutableStateFlow(-1)
-    val currentDeviceId: StateFlow<Int> = _currentDeviceId.asStateFlow()
+    val currentDeviceId = devicesRepository.getCurrentDeviceId().stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000), -1
+    )
 
-    private val _devices = MutableStateFlow<List<Device>>(emptyList())
-    val devices: StateFlow<List<Device>> = _devices.asStateFlow()
-
-    init {
-        viewModelScope.launch {
-            devicesRepository.getAllDevices().collectLatest { allDevices ->
-                _devices.value = allDevices
-            }
-        }
-        viewModelScope.launch {
-            devicesRepository.getCurrentDeviceId().collectLatest { currentDeviceId ->
-                _currentDeviceId.value = currentDeviceId
-            }
-        }
-    }
+    val devices = devicesRepository.getAllDevices().stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
+    )
 
     fun buildDeviceOwifUrl(device: Device) = device.buildOwifUrl()
 

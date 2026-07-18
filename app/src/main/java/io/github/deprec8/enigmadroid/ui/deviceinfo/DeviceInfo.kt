@@ -65,12 +65,12 @@ fun DeviceInfoPage(
 
     LaunchedEffect(connectionState) {
         if (connectionState == ConnectionState.CONNECTED) {
-            deviceInfoViewModel.fetchData()
+            deviceInfoViewModel.fetchData(false)
         }
     }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(connectionState) { deviceInfoViewModel.fetchData(isForced = true) }
+        FloatingReloadButton(connectionState) { deviceInfoViewModel.fetchData(true) }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         TopAppBar(windowInsets = topAppBarWithDrawerWindowInsets(), title = {
             Text(

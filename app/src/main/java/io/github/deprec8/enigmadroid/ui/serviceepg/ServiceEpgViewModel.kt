@@ -19,27 +19,18 @@
 
 package io.github.deprec8.enigmadroid.ui.serviceepg
 
-import androidx.compose.foundation.text.input.TextFieldState
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
-import io.github.deprec8.enigmadroid.data.repositories.ConnectionRepository
-import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
 import io.github.deprec8.enigmadroid.data.repositories.SearchHistoryRepository
-import io.github.deprec8.enigmadroid.data.repositories.SettingsRepository
 import io.github.deprec8.enigmadroid.model.api.Event
 import io.github.deprec8.enigmadroid.model.api.EventBatch
 import io.github.deprec8.enigmadroid.model.api.search
-import io.github.deprec8.enigmadroid.ui.components.search.asHighlightedWords
-import kotlinx.coroutines.Job
+import io.github.deprec8.enigmadroid.ui.components.viewmodels.SearchableContentViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.InjectedParam
@@ -47,84 +38,21 @@ import org.koin.core.annotation.InjectedParam
 class ServiceEpgViewModel(
     @InjectedParam private val serviceReference: String,
     private val apiRepository: ApiRepository,
-    private val connectionRepository: ConnectionRepository,
-    private val searchHistoryRepository: SearchHistoryRepository,
-    private val settingsRepository: SettingsRepository,
-    private val devicesRepository: DevicesRepository
-) : ViewModel() {
+    private val searchHistoryRepository: SearchHistoryRepository
+) : SearchableContentViewModel() {
 
     private val _eventBatch = MutableStateFlow<EventBatch?>(null)
     val eventBatch: StateFlow<EventBatch?> = _eventBatch.asStateFlow()
 
-    val connectionState: StateFlow<ConnectionState> =
-        connectionRepository.getConnectionState().stateIn(
-            viewModelScope, SharingStarted.WhileSubscribed(5000), ConnectionState.CONNECTING
-        )
+    val filteredEvents = combine(_eventBatch, searchInput) { eventBatch, searchInput ->
+        eventBatch?.events?.search(searchInput)
+    }.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000), null
+    )
 
-    private val _filteredEvents = MutableStateFlow<List<Event>?>(null)
-    val filteredEvents: StateFlow<List<Event>?> = _filteredEvents.asStateFlow()
-
-    private val _searchHistory = MutableStateFlow<List<String>>(emptyList())
-    val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()
-
-    val searchFieldState = TextFieldState()
-
-    private val searchInput = MutableStateFlow("")
-    private val useSearchHighlighting = MutableStateFlow(true)
-
-    val highlightedWords: StateFlow<List<String>> =
-        searchInput.asHighlightedWords(useSearchHighlighting).stateIn(
-            viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
-
-    private var fetchJob: Job? = null
-
-    private var connectedDeviceId: Int? = null
-
-    init {
-        viewModelScope.launch {
-            combine(_eventBatch, searchInput) { eventBatch, searchInput ->
-                eventBatch?.events?.search(searchInput)
-            }.collectLatest {
-                _filteredEvents.value = it
-            }
-        }
-        viewModelScope.launch {
-            searchHistoryRepository.getServiceEpgSearchHistory().collectLatest {
-                _searchHistory.value = it
-            }
-        }
-        viewModelScope.launch {
-            settingsRepository.getUseSearchHighlighting().collectLatest {
-                useSearchHighlighting.value = it
-            }
-        }
-    }
-
-    fun checkConnection(forced: Boolean) {
-        viewModelScope.launch {
-            connectionRepository.checkConnection(forced)
-        }
-    }
-
-    fun fetchData(isForced: Boolean = false) {
-        viewModelScope.launch {
-            val currentDeviceId = devicesRepository.getCurrentDeviceId().first()
-            if (currentDeviceId != connectedDeviceId || isForced) {
-                _eventBatch.value = null
-                connectedDeviceId = currentDeviceId
-            }
-
-            if (_eventBatch.value == null) {
-                fetchJob?.cancel()
-                fetchJob = launch {
-                    _eventBatch.value = apiRepository.fetchServiceEpgBatch(serviceReference)
-                }
-            }
-        }
-    }
+    override val searchHistory = searchHistoryRepository.getServiceEpgSearchHistory().stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
+    )
 
     fun addTimerForEvent(event: Event) {
         viewModelScope.launch {
@@ -134,13 +62,21 @@ class ServiceEpgViewModel(
         }
     }
 
-    fun updateSearchInput() {
-        val input = searchFieldState.text.toString()
-        if (input.isNotBlank()) {
-            viewModelScope.launch {
-                searchHistoryRepository.addToServiceEpgSearchHistory(input)
-            }
+    override fun onAddToSearchHistory(input: String) {
+        viewModelScope.launch {
+            searchHistoryRepository.addToServiceEpgSearchHistory(input)
         }
-        searchInput.value = input
+    }
+
+    override fun onClearData() {
+        _eventBatch.value = null
+    }
+
+    override suspend fun onGetData() {
+        _eventBatch.value = apiRepository.fetchServiceEpgBatch(serviceReference)
+    }
+
+    override fun shouldGetData(): Boolean {
+        return _eventBatch.value == null
     }
 }

@@ -31,10 +31,9 @@ import io.github.deprec8.enigmadroid.common.constant.DefaultPorts
 import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
 import io.github.deprec8.enigmadroid.data.repositories.OnboardingRepository
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class OnboardingViewModel(
@@ -60,33 +59,26 @@ class OnboardingViewModel(
 
     val passwordState = TextFieldState("")
 
-    private val _isEveryFieldFilled = MutableStateFlow(false)
-    val isEveryFieldFilled = _isEveryFieldFilled.asStateFlow()
-
-    init {
-        viewModelScope.launch {
-            val baseFlow = combine(
-                snapshotFlow { nameState.text },
-                snapshotFlow { ipState.text },
-                snapshotFlow { portState.text },
-                snapshotFlow { livePortState.text }) { name, ip, port, livePort ->
-                listOf(name, ip, port, livePort).all { it.isNotBlank() }
-            }
-
-            val loginFlow = combine(
-                snapshotFlow { userState.text },
-                snapshotFlow { passwordState.text },
-                snapshotFlow { isLogin }) { user, password, isLogin ->
-                !isLogin || (user.isNotBlank() && password.isNotBlank())
-            }
-
-            combine(baseFlow, loginFlow) { baseFilled, loginFilled ->
-                baseFilled && loginFilled
-            }.collectLatest {
-                _isEveryFieldFilled.value = it
-            }
-        }
+    val baseFlow = combine(
+        snapshotFlow { nameState.text },
+        snapshotFlow { ipState.text },
+        snapshotFlow { portState.text },
+        snapshotFlow { livePortState.text }) { name, ip, port, livePort ->
+        listOf(name, ip, port, livePort).all { it.isNotBlank() }
     }
+
+    val loginFlow = combine(
+        snapshotFlow { userState.text },
+        snapshotFlow { passwordState.text },
+        snapshotFlow { isLogin }) { user, password, isLogin ->
+        !isLogin || (user.isNotBlank() && password.isNotBlank())
+    }
+
+    val isEveryFieldFilled = combine(baseFlow, loginFlow) { baseFilled, loginFilled ->
+        baseFilled && loginFilled
+    }.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000), false
+    )
 
     fun toggleHttps() {
         isHttps = !isHttps
@@ -94,7 +86,6 @@ class OnboardingViewModel(
             portState.setTextAndPlaceCursorAtEnd(DefaultPorts.HTTPS)
         } else if (portState.text == DefaultPorts.HTTPS && !isHttps) {
             portState.setTextAndPlaceCursorAtEnd(DefaultPorts.HTTP)
-
         }
     }
 

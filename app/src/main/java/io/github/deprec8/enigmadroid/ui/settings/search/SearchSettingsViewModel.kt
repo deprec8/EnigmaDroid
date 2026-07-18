@@ -23,8 +23,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.deprec8.enigmadroid.data.repositories.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.data.repositories.SettingsRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class SearchSettingsViewModel(
@@ -32,80 +32,41 @@ class SearchSettingsViewModel(
     private var settingsRepository: SettingsRepository
 ) : ViewModel() {
 
-    private val _tvSearchHistory = MutableStateFlow<List<String>>(emptyList())
-    val tvSearchHistory = _tvSearchHistory.asStateFlow()
+    val tvSearchHistory = searchHistoryRepository.getTvSearchHistory().stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
+    )
 
-    private val _radioSearchHistory = MutableStateFlow<List<String>>(emptyList())
-    val radioSearchHistory = _radioSearchHistory.asStateFlow()
+    val radioSearchHistory = searchHistoryRepository.getRadioSearchHistory().stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
+    )
 
-    private val _moviesSearchHistory = MutableStateFlow<List<String>>(emptyList())
-    val moviesSearchHistory = _moviesSearchHistory.asStateFlow()
+    val moviesSearchHistory = searchHistoryRepository.getMoviesSearchHistory().stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
+    )
 
-    private val _timersSearchHistory = MutableStateFlow<List<String>>(emptyList())
-    val timersSearchHistory = _timersSearchHistory.asStateFlow()
+    val timersSearchHistory = searchHistoryRepository.getTimersSearchHistory().stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
+    )
 
-    private val _tvEpgSearchHistory = MutableStateFlow<List<String>>(emptyList())
-    val tvEpgSearchHistory = _tvEpgSearchHistory.asStateFlow()
+    val tvEpgSearchHistory = searchHistoryRepository.getTvEpgSearchHistory().stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
+    )
 
-    private val _radioEpgSearchHistory = MutableStateFlow<List<String>>(emptyList())
-    val radioEpgSearchHistory = _radioEpgSearchHistory.asStateFlow()
+    val radioEpgSearchHistory = searchHistoryRepository.getRadioEpgSearchHistory().stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
+    )
 
-    private val _serviceEpgSearchHistory = MutableStateFlow<List<String>>(emptyList())
-    val serviceEpgSearchHistory = _serviceEpgSearchHistory.asStateFlow()
+    val serviceEpgSearchHistory = searchHistoryRepository.getServiceEpgSearchHistory().stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
+    )
 
-    private val _useSearchHistory = MutableStateFlow<Boolean?>(null)
-    val useSearchHistory = _useSearchHistory.asStateFlow()
+    val useSearchHistory = searchHistoryRepository.getUseSearchHistory().stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000), true
+    )
 
-    private val _useSearchHighlighting = MutableStateFlow<Boolean?>(null)
-    val useSearchHighlighting = _useSearchHighlighting.asStateFlow()
-
-    init {
-        viewModelScope.launch {
-            searchHistoryRepository.getUseSearchHistory().collect {
-                _useSearchHistory.value = it
-            }
-        }
-        viewModelScope.launch {
-            searchHistoryRepository.getTvSearchHistory().collect {
-                _tvSearchHistory.value = it
-            }
-        }
-        viewModelScope.launch {
-            searchHistoryRepository.getRadioSearchHistory().collect {
-                _radioSearchHistory.value = it
-            }
-        }
-        viewModelScope.launch {
-            searchHistoryRepository.getMoviesSearchHistory().collect {
-                _moviesSearchHistory.value = it
-            }
-        }
-        viewModelScope.launch {
-            searchHistoryRepository.getTimersSearchHistory().collect {
-                _timersSearchHistory.value = it
-            }
-        }
-        viewModelScope.launch {
-            searchHistoryRepository.getTvEpgSearchHistory().collect {
-                _tvEpgSearchHistory.value = it
-            }
-        }
-        viewModelScope.launch {
-            searchHistoryRepository.getServiceEpgSearchHistory().collect {
-                _serviceEpgSearchHistory.value = it
-            }
-        }
-        viewModelScope.launch {
-            searchHistoryRepository.getRadioEpgSearchHistory().collect {
-                _radioEpgSearchHistory.value = it
-            }
-        }
-        viewModelScope.launch {
-            settingsRepository.getUseSearchHighlighting().collect {
-                _useSearchHighlighting.value = it
-            }
-        }
-    }
+    val useSearchHighlighting = settingsRepository.getUseSearchHighlighting().stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000), true
+    )
 
     fun setUseSearchHistory(useSearchHistory: Boolean) {
         viewModelScope.launch {

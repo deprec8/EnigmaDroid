@@ -64,12 +64,12 @@ fun SignalPage(
     }
     LaunchedEffect(connectionState) {
         if (connectionState == ConnectionState.CONNECTED) {
-            signalViewModel.fetchData()
+            signalViewModel.fetchData(false)
         }
     }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(connectionState) { signalViewModel.fetchData(isForced = true) }
+        FloatingReloadButton(connectionState) { signalViewModel.fetchData(true) }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         TopAppBar(
             windowInsets = topAppBarWithDrawerWindowInsets(),

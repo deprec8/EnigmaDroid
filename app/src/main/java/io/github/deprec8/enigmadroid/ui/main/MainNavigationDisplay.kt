@@ -32,7 +32,6 @@ import androidx.compose.material3.PermanentDrawerSheet
 import androidx.compose.material3.PermanentNavigationDrawer
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.remember
@@ -58,7 +57,6 @@ import io.github.deprec8.enigmadroid.ui.epg.EpgPage
 import io.github.deprec8.enigmadroid.ui.live.LivePage
 import io.github.deprec8.enigmadroid.ui.movies.MoviesDirectoryPage
 import io.github.deprec8.enigmadroid.ui.movies.MoviesPage
-import io.github.deprec8.enigmadroid.ui.movies.MoviesViewModel
 import io.github.deprec8.enigmadroid.ui.serviceepg.ServiceEpgPage
 import io.github.deprec8.enigmadroid.ui.settings.SettingsPage
 import io.github.deprec8.enigmadroid.ui.settings.about.AboutPage
@@ -177,16 +175,11 @@ fun MainNavigationDisplay(
         entry<MainKeys.MoviesDirectory>(
             metadata = sharedAxisXTransition()
         ) { backStackEntry ->
-            val moviesViewModel: MoviesViewModel = koinViewModel()
-            LaunchedEffect(backStackEntry) {
-                moviesViewModel.initialize(
-                    backStackEntry.connectedDeviceId,
-                    backStackEntry.path,
-                    backStackEntry.preloadBatch,
-                    backStackEntry.freeSpace
-                )
-            }
             MoviesDirectoryPage(
+                connectedDeviceId = backStackEntry.connectedDeviceId,
+                path = backStackEntry.path,
+                movieBatch = backStackEntry.preloadBatch,
+                freeSpace = backStackEntry.freeSpace,
                 onNavigateToRemoteControl = { onNavigateToRemoteControl() },
                 onNavigateToDirectory = { connectedDeviceId, path, preloadBatch, freeSpace ->
                     drawerNavigator.navigate(
@@ -200,9 +193,7 @@ fun MainNavigationDisplay(
                 },
                 onNavigateToTop = {
                     drawerNavigator.goTop()
-                },
-                moviesViewModel
-            )
+                })
         }
         entry<MainKeys.Timers>(
             metadata = fadeThroughTransition()

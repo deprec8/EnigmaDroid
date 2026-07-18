@@ -19,56 +19,26 @@
 
 package io.github.deprec8.enigmadroid.ui.main
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
-import io.github.deprec8.enigmadroid.data.repositories.ConnectionRepository
 import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
-import kotlinx.coroutines.flow.MutableStateFlow
+import io.github.deprec8.enigmadroid.ui.components.viewmodels.ConnectionViewModel
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class MainViewModel(
-    private val devicesRepository: DevicesRepository,
-    private val connectionRepository: ConnectionRepository,
-    private val apiRepository: ApiRepository
-) : ViewModel() {
+    private val devicesRepository: DevicesRepository, private val apiRepository: ApiRepository
+) : ConnectionViewModel() {
 
-    private val _currentDevice = MutableStateFlow<Device?>(null)
-    val currentDevice: StateFlow<Device?> = _currentDevice.asStateFlow()
+    val currentDevice = devicesRepository.getCurrentDevice().stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000), null
+    )
 
-    private val _devices = MutableStateFlow<List<Device>>(emptyList())
-    val devices = _devices.asStateFlow()
-
-    val connectionState: StateFlow<ConnectionState> =
-        connectionRepository.getConnectionState().stateIn(
-            viewModelScope, SharingStarted.WhileSubscribed(5000), ConnectionState.CONNECTING
-        )
-
-    init {
-        viewModelScope.launch {
-            devicesRepository.getCurrentDevice().collectLatest { currentDevice ->
-                _currentDevice.value = currentDevice
-            }
-        }
-        viewModelScope.launch {
-            devicesRepository.getAllDevices().collectLatest { devices ->
-                _devices.value = devices
-            }
-        }
-    }
-
-    fun checkConnection(forced: Boolean) {
-        viewModelScope.launch {
-            connectionRepository.checkConnection(forced)
-        }
-    }
+    val devices = devicesRepository.getAllDevices().stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
+    )
 
     suspend fun buildOwifUrl(): String {
         return apiRepository.buildOwifUrl()

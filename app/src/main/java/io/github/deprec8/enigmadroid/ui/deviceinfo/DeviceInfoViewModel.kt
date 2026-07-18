@@ -19,60 +19,29 @@
 
 package io.github.deprec8.enigmadroid.ui.deviceinfo
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
-import io.github.deprec8.enigmadroid.data.repositories.ConnectionRepository
-import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
 import io.github.deprec8.enigmadroid.model.api.DeviceInfo
-import kotlinx.coroutines.Job
+import io.github.deprec8.enigmadroid.ui.components.viewmodels.ContentViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 
 class DeviceInfoViewModel(
     private val apiRepository: ApiRepository,
-    private val connectionRepository: ConnectionRepository,
-    private val devicesRepository: DevicesRepository
-) : ViewModel() {
+) : ContentViewModel() {
 
     private val _deviceInfo = MutableStateFlow<DeviceInfo?>(null)
     val deviceInfo: StateFlow<DeviceInfo?> = _deviceInfo.asStateFlow()
 
-    val connectionState: StateFlow<ConnectionState> =
-        connectionRepository.getConnectionState().stateIn(
-            viewModelScope, SharingStarted.WhileSubscribed(5000), ConnectionState.CONNECTING
-        )
-
-    private var fetchJob: Job? = null
-
-    private var connectedDeviceId: Int? = null
-
-    fun checkConnection(forced: Boolean) {
-        viewModelScope.launch {
-            connectionRepository.checkConnection(forced)
-        }
+    override fun onClearData() {
+        _deviceInfo.value = null
     }
 
-    fun fetchData(isForced: Boolean = false) {
-        viewModelScope.launch {
-            val currentDeviceId = devicesRepository.getCurrentDeviceId().first()
-            if (currentDeviceId != connectedDeviceId || isForced) {
-                _deviceInfo.value = null
-                connectedDeviceId = currentDeviceId
-            }
+    override suspend fun onGetData() {
+        _deviceInfo.value = apiRepository.fetchDeviceInfo()
+    }
 
-            if (_deviceInfo.value == null) {
-                fetchJob?.cancel()
-                fetchJob = launch {
-                    _deviceInfo.value = apiRepository.fetchDeviceInfo()
-                }
-            }
-        }
+    override fun shouldGetData(): Boolean {
+        return _deviceInfo.value == null
     }
 }

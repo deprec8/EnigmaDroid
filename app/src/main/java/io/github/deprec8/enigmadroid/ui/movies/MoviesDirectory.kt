@@ -60,15 +60,22 @@ import io.github.deprec8.enigmadroid.ui.movies.components.MoviesContent
 import io.github.deprec8.enigmadroid.utils.IntentUtils
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MoviesDirectoryPage(
+    connectedDeviceId: Int? = null,
+    path: String,
+    movieBatch: MovieBatch? = null,
+    freeSpace: String? = null,
     onNavigateToRemoteControl: () -> Unit,
     onNavigateToDirectory: (Int?, String, MovieBatch?, String?) -> Unit,
     onNavigateBack: () -> Unit,
     onNavigateToTop: () -> Unit,
-    moviesViewModel: MoviesViewModel = koinViewModel()
+    moviesViewModel: MoviesViewModel = koinViewModel(parameters = {
+        parametersOf(connectedDeviceId, path, movieBatch, freeSpace)
+    })
 ) {
 
     val movieBatch by moviesViewModel.movieBatch.collectAsStateWithLifecycle()
@@ -88,12 +95,12 @@ fun MoviesDirectoryPage(
 
     LaunchedEffect(connectionState) {
         if (connectionState == ConnectionState.CONNECTED) {
-            moviesViewModel.fetchData()
+            moviesViewModel.fetchData(false)
         }
     }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(connectionState) { moviesViewModel.fetchData(isForced = true) }
+        FloatingReloadButton(connectionState) { moviesViewModel.fetchData(true) }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
             enabled = movieBatch?.movies?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED,
@@ -210,9 +217,11 @@ fun MoviesDirectoryPage(
             ConnectionDisplay(
                 Modifier
                     .consumeWindowInsets(innerPadding)
-                    .padding(innerPadding), onCheckConnection = {
+                    .padding(innerPadding),
+                onCheckConnection = {
                     moviesViewModel.checkConnection(true)
-                }, connectionState = connectionState
+                },
+                connectionState = connectionState
             )
         }
     }

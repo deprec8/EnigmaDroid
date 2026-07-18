@@ -17,25 +17,29 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.ui.settings.remotecontrol
+package io.github.deprec8.enigmadroid.ui.components.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.deprec8.enigmadroid.data.repositories.SettingsRepository
+import io.github.deprec8.enigmadroid.data.ConnectionState
+import io.github.deprec8.enigmadroid.data.repositories.ConnectionRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class RemoteControlSettingsViewModel(private var settingsRepository: SettingsRepository) :
-    ViewModel() {
+abstract class ConnectionViewModel : ViewModel(), KoinComponent {
 
-    val remoteControlVibration = settingsRepository.getRemoteControlVibration().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), true
+    private val connectionRepository: ConnectionRepository by inject()
+
+    val connectionState = connectionRepository.getConnectionState().stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000), ConnectionState.CONNECTING
     )
 
-    fun setRemoteControlVibration(value: Boolean) {
+    fun checkConnection(forced: Boolean) {
         viewModelScope.launch {
-            settingsRepository.setRemoteControlVibration(value)
+            connectionRepository.checkConnection(forced)
         }
     }
 }

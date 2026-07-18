@@ -19,62 +19,34 @@
 
 package io.github.deprec8.enigmadroid.ui.remotecontrol
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
 import io.github.deprec8.enigmadroid.common.enums.RemoteControlPowerKey
-import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
-import io.github.deprec8.enigmadroid.data.repositories.ConnectionRepository
 import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
 import io.github.deprec8.enigmadroid.data.repositories.DownloadRepository
 import io.github.deprec8.enigmadroid.data.repositories.SettingsRepository
-import io.github.deprec8.enigmadroid.data.source.local.devices.Device
-import kotlinx.coroutines.flow.MutableStateFlow
+import io.github.deprec8.enigmadroid.ui.components.viewmodels.ConnectionViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class RemoteControlViewModel(
     private val apiRepository: ApiRepository,
-    private val devicesRepository: DevicesRepository,
-    private val connectionRepository: ConnectionRepository,
     private val downloadRepository: DownloadRepository,
-    private val settingsRepository: SettingsRepository
-) : ViewModel() {
+    devicesRepository: DevicesRepository,
+    settingsRepository: SettingsRepository
+) : ConnectionViewModel() {
 
-    val connectionState: StateFlow<ConnectionState> =
-        connectionRepository.getConnectionState().stateIn(
-            viewModelScope, SharingStarted.WhileSubscribed(5000), ConnectionState.CONNECTING
+    val currentDevice = devicesRepository.getCurrentDevice().stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000), null
+    )
+
+    val remoteControlVibration: StateFlow<Boolean> =
+        settingsRepository.getRemoteControlVibration().stateIn(
+            viewModelScope, SharingStarted.WhileSubscribed(5000), false
         )
-
-    private val _currentDevice = MutableStateFlow<Device?>(null)
-    val currentDevice: StateFlow<Device?> = _currentDevice.asStateFlow()
-
-    private val _remoteControlVibration = MutableStateFlow(false)
-    val remoteControlVibration: StateFlow<Boolean> = _remoteControlVibration.asStateFlow()
-
-    init {
-        viewModelScope.launch {
-            devicesRepository.getCurrentDevice().collectLatest { currentDevice ->
-                _currentDevice.value = currentDevice
-            }
-        }
-        viewModelScope.launch {
-            settingsRepository.getRemoteControlVibration().collectLatest { value ->
-                _remoteControlVibration.value = value
-            }
-        }
-    }
-
-    fun checkConnection(forced: Boolean) {
-        viewModelScope.launch {
-            connectionRepository.checkConnection(forced)
-        }
-    }
 
     fun fetchScreenshot() {
         viewModelScope.launch {
@@ -91,7 +63,7 @@ class RemoteControlViewModel(
     fun onPowerKeyClicked(powerKey: RemoteControlPowerKey) {
         viewModelScope.launch {
             apiRepository.setPowerState(powerKey)
-            connectionRepository.checkConnection(true)
+            checkConnection(true)
         }
     }
 }

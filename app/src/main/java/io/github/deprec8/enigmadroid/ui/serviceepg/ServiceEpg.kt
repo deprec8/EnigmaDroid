@@ -68,12 +68,12 @@ fun ServiceEpgPage(
 
     LaunchedEffect(connectionState) {
         if (connectionState == ConnectionState.CONNECTED) {
-            serviceEpgViewModel.fetchData()
+            serviceEpgViewModel.fetchData(false)
         }
     }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(connectionState) { serviceEpgViewModel.fetchData(isForced = true) }
+        FloatingReloadButton(connectionState) { serviceEpgViewModel.fetchData(true) }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
             enabled = eventBatch?.events?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED,

@@ -90,7 +90,7 @@ fun TimersPage(
 
     LaunchedEffect(connectionState) {
         if (connectionState == ConnectionState.CONNECTED) {
-            timersViewModel.fetchData()
+            timersViewModel.fetchData(false)
         }
     }
 
@@ -154,7 +154,7 @@ fun TimersPage(
                     )
                 ) {
                     SmallFloatingActionButton(onClick = {
-                        timersViewModel.fetchData(isForced = true)
+                        timersViewModel.fetchData(true)
                     }) {
                         Icon(
                             Icons.Default.Refresh,
