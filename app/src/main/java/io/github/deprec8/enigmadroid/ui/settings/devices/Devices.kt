@@ -244,8 +244,7 @@ fun DevicesPage(
                                             showDropDownMenu = false
                                             IntentUtils.pinOwifDevice(
                                                 context,
-                                                device,
-                                                devicesViewModel.buildDeviceOwifUrl(device)
+                                                device
                                             )
 
                                         })

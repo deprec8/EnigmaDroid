@@ -19,7 +19,6 @@
 
 package io.github.deprec8.enigmadroid.utils
 
-import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -30,6 +29,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.CalendarContract
 import android.widget.Toast
+import androidx.annotation.StringRes
 import androidx.browser.customtabs.CustomTabsClient
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
@@ -38,6 +38,16 @@ import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.model.api.Event
 
 object IntentUtils {
+
+    private fun Intent.startActivity(context: Context, @StringRes errorResId: Int) {
+        if (this.resolveActivity(context.packageManager) != null) {
+            context.startActivity(this)
+        } else {
+            Toast.makeText(
+                context, errorResId, Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
 
     fun addReminder(context: Context, event: Event) {
         val calendarIntent = Intent(Intent.ACTION_INSERT).apply {
@@ -63,13 +73,7 @@ object IntentUtils {
             }
         }
 
-        if (calendarIntent.resolveActivity(context.packageManager) != null) {
-            context.startActivity(calendarIntent)
-        } else {
-            Toast.makeText(
-                context, R.string.no_calendar_found, Toast.LENGTH_SHORT
-            ).show()
-        }
+        calendarIntent.startActivity(context, R.string.no_calendar_found)
     }
 
     fun playMedia(context: Context, url: String, title: String) {
@@ -80,25 +84,15 @@ object IntentUtils {
             putExtra("title", title)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
-        if (intent.resolveActivity(context.packageManager) != null) {
-            context.startActivity(intent)
-        } else {
-            Toast.makeText(
-                context, context.getString(R.string.no_media_player_found), Toast.LENGTH_SHORT
-            ).show()
-
-        }
+        intent.startActivity(context, R.string.no_media_player_found)
     }
 
     fun openUrl(context: Context, url: String) {
-        val intent = Intent(
-            Intent.ACTION_VIEW, url.toUri()
-        ).addCategory(Intent.CATEGORY_BROWSABLE).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        if (intent.resolveActivity(context.packageManager) != null) {
-            context.startActivity(intent)
-        } else {
-            Toast.makeText(context, R.string.no_browser_found, Toast.LENGTH_SHORT).show()
+        val intent = Intent(Intent.ACTION_VIEW, url.toUri()).apply {
+            addCategory(Intent.CATEGORY_BROWSABLE)
         }
+
+        intent.startActivity(context, R.string.no_browser_found)
     }
 
     fun openImage(context: Context, uri: Uri) {
@@ -106,13 +100,8 @@ object IntentUtils {
             setDataAndType(uri, "image/*")
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
-        try {
-            context.startActivity(intent)
-        } catch (_: ActivityNotFoundException) {
-            Toast.makeText(
-                context, context.getString(R.string.no_image_viewer_found), Toast.LENGTH_SHORT
-            ).show()
-        }
+
+        intent.startActivity(context, R.string.no_image_viewer_found)
     }
 
     fun pinDevice(context: Context, device: Device) {
@@ -129,7 +118,7 @@ object IntentUtils {
         )
     }
 
-    fun pinOwifDevice(context: Context, device: Device, url: String) {
+    fun pinOwifDevice(context: Context, device: Device) {
         context.getSystemService(ShortcutManager::class.java).requestPinShortcut(
             ShortcutInfo.Builder(context, "openwebif_${device.id}").setIcon(
                 Icon.createWithResource(
@@ -137,7 +126,7 @@ object IntentUtils {
                 )
             ).setShortLabel(device.name + " (Web)").setIntent(
                 Intent(
-                    Intent.ACTION_DEFAULT, url.toUri()
+                    Intent.ACTION_DEFAULT, device.buildOwifUrl().toUri()
                 )
             ).build(), null
         )
