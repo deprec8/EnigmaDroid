@@ -33,7 +33,7 @@ class DevicesViewModel(private val devicesRepository: DevicesRepository) : ViewM
         viewModelScope, SharingStarted.WhileSubscribed(5000), -1
     )
 
-    val devices = devicesRepository.getAllDevices().stateIn(
+    val devices = devicesRepository.getDevices().stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
     )
 

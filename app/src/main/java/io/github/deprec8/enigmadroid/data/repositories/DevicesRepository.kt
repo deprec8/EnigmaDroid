@@ -40,48 +40,48 @@ class DevicesRepository(
     private var checkJob: Job? = null
 
     suspend fun setCurrentDevice(device: Device) = withContext(Dispatchers.IO) {
-        devicesLocalDataSource.setCurrentDevice(device)
+        devicesLocalDataSource.setCurrent(device)
         checkJob?.cancel()
         checkJob = launch { networkDataSource.checkConnection() }
     }
 
     suspend fun setCurrentDeviceId(id: Int) = withContext(Dispatchers.IO) {
-        devicesLocalDataSource.setCurrentDeviceId(id)
+        devicesLocalDataSource.setCurrentId(id)
         checkJob?.cancel()
         checkJob = launch { networkDataSource.checkConnection() }
     }
 
     fun getCurrentDevice(): Flow<Device?> {
-        return devicesLocalDataSource.getCurrentDeviceFlow()
+        return devicesLocalDataSource.getCurrent()
     }
 
     fun getCurrentDeviceId(): Flow<Int> {
-        return devicesLocalDataSource.getCurrentDeviceIdFlow()
+        return devicesLocalDataSource.getCurrentId()
     }
 
-    fun getAllDevices(): Flow<List<Device>> {
-        return devicesLocalDataSource.getAllDevicesFlow()
+    fun getDevices(): Flow<List<Device>> {
+        return devicesLocalDataSource.getAll()
     }
 
     suspend fun deleteDevice(device: Device) = withContext(Dispatchers.IO) {
-        devicesLocalDataSource.deleteDevice(device)
+        devicesLocalDataSource.delete(device)
 
-        if (devicesLocalDataSource.getAllDevicesStatic().isEmpty()) {
+        if (devicesLocalDataSource.getCount() == 0) {
             connectionStateHolder.updateConnectionState(ConnectionState.NO_DEVICE_AVAILABLE)
         }
     }
 
     suspend fun editDevice(oldDevice: Device, newDevice: Device) = withContext(Dispatchers.IO) {
-        devicesLocalDataSource.editDevice(oldDevice, newDevice)
-        if (devicesLocalDataSource.getCurrentDeviceIdStatic() == oldDevice.id) {
+        devicesLocalDataSource.edit(oldDevice, newDevice)
+        if (devicesLocalDataSource.getCurrentIdStatic() == oldDevice.id) {
             checkJob?.cancel()
             checkJob = launch { networkDataSource.checkConnection() }
         }
     }
 
     suspend fun addDevice(device: Device) = withContext(Dispatchers.IO) {
-        devicesLocalDataSource.addDevice(device)
-        if (devicesLocalDataSource.getAllDevicesStatic().size == 1) {
+        devicesLocalDataSource.add(device)
+        if (devicesLocalDataSource.getCount() == 1) {
             checkJob?.cancel()
             checkJob = launch { networkDataSource.checkConnection() }
         }

@@ -60,13 +60,13 @@ class ApiRepository(
     }
 
     suspend fun buildOwifUrl(): String =
-        devicesLocalDataSource.getCurrentDeviceStatic()?.buildOwifUrl() ?: ""
+        devicesLocalDataSource.getCurrentStatic()?.buildOwifUrl() ?: ""
 
     suspend fun buildLiveStreamUrl(serviceReference: String): String =
-        devicesLocalDataSource.getCurrentDeviceStatic()?.buildLiveStreamUrl(serviceReference) ?: ""
+        devicesLocalDataSource.getCurrentStatic()?.buildLiveStreamUrl(serviceReference) ?: ""
 
     suspend fun buildMovieStreamUrl(file: String): String =
-        devicesLocalDataSource.getCurrentDeviceStatic()?.buildMovieStreamUrl(file) ?: ""
+        devicesLocalDataSource.getCurrentStatic()?.buildMovieStreamUrl(file) ?: ""
 
     private fun ContentFlag.shouldBeNumbered(): Boolean {
         return when (this) {

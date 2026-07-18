@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.Flow
 interface DeviceDao {
 
     @Insert
-    suspend fun insert(device: Device)
+    suspend fun insert(device: Device): Long
 
     @Update
     suspend fun update(device: Device)
@@ -41,6 +41,15 @@ interface DeviceDao {
     @Query("SELECT * FROM Device")
     fun getAll(): Flow<List<Device>>
 
+    @Query("SELECT * FROM Device")
+    suspend fun getAllStatic(): List<Device>
+
     @Query("SELECT * FROM Device WHERE id = :id")
     fun get(id: Int): Flow<Device?>
+
+    @Query("SELECT * FROM Device WHERE id = :id")
+    suspend fun getStatic(id: Int): Device?
+
+    @Query("SELECT COUNT(*) FROM Device")
+    suspend fun getCount(): Int
 }

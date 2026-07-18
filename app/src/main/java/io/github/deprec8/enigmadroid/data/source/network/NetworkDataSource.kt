@@ -40,7 +40,7 @@ class NetworkDataSource(
     private val devicesLocalDataSource: DevicesLocalDataSource
 ) {
     private suspend fun handleException(e: Exception) {
-        val hasDevices = devicesLocalDataSource.getAllDevicesStatic().isNotEmpty()
+        val hasDevices = devicesLocalDataSource.getCount() > 0
 
         when (e) {
             is CancellationException -> throw e
@@ -91,7 +91,7 @@ class NetworkDataSource(
         if (connectionStateHolder.connectionState.value == ConnectionState.CONNECTING || forced) {
             connectionStateHolder.updateConnectionState(ConnectionState.CONNECTING)
             try {
-                val url = devicesLocalDataSource.getCurrentDeviceStatic()?.buildUrl("currenttime")
+                val url = devicesLocalDataSource.getCurrentStatic()?.buildUrl("currenttime")
                     ?: throw NullPointerException()
                 checkClient.get(url) {
                     header(HttpHeaders.Connection, "close")
@@ -105,7 +105,7 @@ class NetworkDataSource(
 
     suspend fun post(endpoint: String) {
         try {
-            val url = devicesLocalDataSource.getCurrentDeviceStatic()?.buildUrl(endpoint)
+            val url = devicesLocalDataSource.getCurrentStatic()?.buildUrl(endpoint)
                 ?: throw NullPointerException()
             client.get(url) {
                 header(HttpHeaders.Connection, "close")
@@ -117,7 +117,7 @@ class NetworkDataSource(
 
     suspend fun post(key: RemoteControlKey) {
         try {
-            val url = devicesLocalDataSource.getCurrentDeviceStatic()?.buildUrl(key)
+            val url = devicesLocalDataSource.getCurrentStatic()?.buildUrl(key)
                 ?: throw NullPointerException()
             client.get(url) {
                 header(HttpHeaders.Connection, "close")
@@ -128,7 +128,7 @@ class NetworkDataSource(
     }
 
     suspend fun fetchJson(endpoint: String): String = try {
-        val url = devicesLocalDataSource.getCurrentDeviceStatic()?.buildUrl(endpoint)
+        val url = devicesLocalDataSource.getCurrentStatic()?.buildUrl(endpoint)
             ?: throw NullPointerException()
         client.get(url) {
             header(HttpHeaders.Connection, "close")

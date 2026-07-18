@@ -36,7 +36,7 @@ class MainViewModel(
         viewModelScope, SharingStarted.WhileSubscribed(5000), null
     )
 
-    val devices = devicesRepository.getAllDevices().stateIn(
+    val devices = devicesRepository.getDevices().stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
     )
 

@@ -34,7 +34,7 @@ class DownloadRepository(
 
     suspend fun downloadMovie(movie: Movie) {
         val url =
-            devicesLocalDataSource.getCurrentDeviceStatic()?.buildMovieStreamUrl(movie.fileName)
+            devicesLocalDataSource.getCurrentStatic()?.buildMovieStreamUrl(movie.fileName)
                 ?: return
         val request = DownloadManager.Request(url.toUri()).apply {
             setTitle(context.getString(R.string.downloading, movie.eventName))
@@ -50,7 +50,7 @@ class DownloadRepository(
     }
 
     suspend fun fetchScreenshot() {
-        val url = devicesLocalDataSource.getCurrentDeviceStatic()?.buildScreenshotUrl() ?: return
+        val url = devicesLocalDataSource.getCurrentStatic()?.buildScreenshotUrl() ?: return
         val request = DownloadManager.Request(url.toUri()).apply {
             setTitle(context.getString(R.string.fetching_screenshot))
             setMimeType("image/png")
