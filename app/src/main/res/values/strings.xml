@@ -126,7 +126,7 @@
     <string name="connecting">Connecting…</string>
     <string name="channel_up">Channel up</string>
     <string name="retry">Retry</string>
-    <string name="no_devices_found">No devices found.</string>
+    <string name="no_devices_found">No devices found</string>
     <string name="skip">Skip</string>
     <string name="delete_device">Delete device</string>
     <string name="delete_device_warning">You can add this device again at any time.</string>
@@ -138,7 +138,7 @@
     <string name="app_license_url" translatable="false">https://www.gnu.org/licenses/gpl-3.0.de.html</string>
     <string name="app_source_url" translatable="false">https://github.com/deprec8/EnigmaDroid/</string>
     <string name="app_developer_url" translatable="false">https://github.com/deprec8</string>
-    <string name="device_is_not_playing_any_channel">Device is not playing any channel.</string>
+    <string name="no_channel_is_playing">No channel is playing</string>
     <string name="edit_timer">Edit Timer</string>
     <string name="tv_epg">TV EPG</string>
     <string name="radio_epg">Radio EPG</string>
@@ -147,12 +147,11 @@
     <string name="search_events">Search events</string>
     <string name="switch_channel">Switch</string>
     <string name="service">Service</string>
-    <string name="no_browser_found">No browser found.</string>
-    <string name="no_calendar_found">No calendar found.</string>
-    <string name="no_media_player_found">No media player found.</string>
+    <string name="no_browser_found">No browser found</string>
+    <string name="no_calendar_found">No calendar found</string>
+    <string name="no_media_player_found">No media player found</string>
     <string name="download">Download</string>
     <string name="downloading">Downloading \"%1$s\"…</string>
-    <string name="fetching_screenshot">Fetching screenshot…</string>
     <string name="reload">Reload</string>
     <string name="app_issue" translatable="false">github.com/deprec8/EnigmaDroid/issues</string>
     <string name="issue_tracker">Issue Tracker</string>

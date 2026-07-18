@@ -128,7 +128,7 @@
     <string name="automatic">Automatique</string>
     <string name="after_event">Après l’événement</string>
     <string name="screenshot">Capture d’écran</string>
-    <string name="device_is_not_playing_any_channel">L’appareil ne diffuse aucune chaîne.</string>
+    <string name="no_channel_is_playing">L’appareil ne diffuse aucune chaîne.</string>
     <string name="edit_timer">Modifier la minuterie</string>
     <string name="tv_epg">EPG TV</string>
     <string name="radio_epg">EPG Radio</string>
@@ -142,7 +142,6 @@
     <string name="no_media_player_found">Aucun lecteur multimédia trouvé.</string>
     <string name="download">Télécharger</string>
     <string name="downloading">Téléchargement de «%1$s»…</string>
-    <string name="fetching_screenshot">Récupération de la capture d\'écran…</string>
     <string name="reload">Redémarrer</string>
     <string name="issue_tracker">Suivi des problèmes</string>
     <string name="ok">OK</string>

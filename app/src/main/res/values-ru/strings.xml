@@ -128,7 +128,7 @@
     <string name="automatic">Автоматически</string>
     <string name="after_event">После события</string>
     <string name="screenshot">Снимок экрана</string>
-    <string name="device_is_not_playing_any_channel">Устройство не воспроизводит ни одного канала.</string>
+    <string name="no_channel_is_playing">Устройство не воспроизводит ни одного канала.</string>
     <string name="edit_timer">Изменить таймер</string>
     <string name="tv_epg">ТВ-программа передач</string>
     <string name="radio_epg">Радио-программа передач</string>
@@ -142,7 +142,6 @@
     <string name="no_media_player_found">Видеоплейер не найден.</string>
     <string name="download">Скачать</string>
     <string name="downloading">Загрузка \"%1$s\"…</string>
-    <string name="fetching_screenshot">Загрузка скриншота…</string>
     <string name="reload">Обновить</string>
     <string name="issue_tracker">Список задач</string>
     <string name="ok">Хорошо</string>

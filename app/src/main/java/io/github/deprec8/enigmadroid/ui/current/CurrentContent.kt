@@ -308,7 +308,7 @@ fun CurrentContent(
                 .padding(paddingValues), contentAlignment = Alignment.Center
         ) {
             Text(
-                text = stringResource(R.string.device_is_not_playing_any_channel),
+                text = stringResource(R.string.no_channel_is_playing),
                 textAlign = TextAlign.Center
             )
         }
