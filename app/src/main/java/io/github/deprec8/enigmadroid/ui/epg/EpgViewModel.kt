@@ -125,8 +125,4 @@ class EpgViewModel(
         fetchBouquets()
         fetchEpgBatchSet()
     }
-
-    override fun shouldGetData(): Boolean {
-        return _eventBatchSet.value == null || _bouquets.value == null
-    }
 }

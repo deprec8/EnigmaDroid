@@ -27,7 +27,6 @@ import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -37,9 +36,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.ConnectionState
-import io.github.deprec8.enigmadroid.model.api.MovieBatch
 import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
+import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
@@ -55,7 +54,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun MoviesPage(
     onNavigateToRemoteControl: () -> Unit,
-    onNavigateToDirectory: (Int?, String, MovieBatch?, String?) -> Unit,
+    onNavigateToDirectory: (String) -> Unit,
     drawerState: DrawerState,
     moviesViewModel: MoviesViewModel = koinViewModel()
 ) {
@@ -65,24 +64,15 @@ fun MoviesPage(
     val searchHistory by moviesViewModel.searchHistory.collectAsStateWithLifecycle()
     val connectionState by moviesViewModel.connectionState.collectAsStateWithLifecycle()
     val highlightedWords by moviesViewModel.highlightedWords.collectAsStateWithLifecycle()
-    val preloadBatches by moviesViewModel.preloadBatches.collectAsStateWithLifecycle()
     val freeSpace by moviesViewModel.freeSpace.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(Unit) {
-        moviesViewModel.checkConnection(false)
-    }
-
-    LaunchedEffect(connectionState) {
-        if (connectionState == ConnectionState.CONNECTED) {
-            moviesViewModel.fetchData(false)
-        }
-    }
+    ObserveActiveState(moviesViewModel)
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(connectionState) { moviesViewModel.fetchData(true) }
+        FloatingReloadButton(connectionState) { moviesViewModel.fetchData() }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
             enabled = movieBatch?.movies?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED,
@@ -149,7 +139,6 @@ fun MoviesPage(
                 bookmarks = movieBatch?.bookmarks ?: emptyList(),
                 directory = movieBatch?.directory ?: "",
                 paddingValues = innerPadding,
-                preloadBatches = preloadBatches,
                 onStreamMovie = { movie ->
                     scope.launch {
                         IntentUtils.playMedia(
@@ -172,9 +161,9 @@ fun MoviesPage(
                     )
                 },
                 onDownloadMovie = { movie -> moviesViewModel.download(movie) },
-                onNavigateToDirectory = { path, preloadBatch ->
+                onNavigateToDirectory = { path ->
                     onNavigateToDirectory(
-                        moviesViewModel.connectedDeviceId, path, preloadBatch, freeSpace
+                        path
                     )
                 })
         } else {
@@ -183,7 +172,7 @@ fun MoviesPage(
                     .consumeWindowInsets(innerPadding)
                     .padding(innerPadding),
                 onCheckConnection = {
-                    moviesViewModel.checkConnection(true)
+                    moviesViewModel.checkConnection()
                 },
                 connectionState = connectionState
             )

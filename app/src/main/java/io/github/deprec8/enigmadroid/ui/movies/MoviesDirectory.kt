@@ -37,7 +37,6 @@ import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -47,9 +46,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.ConnectionState
-import io.github.deprec8.enigmadroid.model.api.MovieBatch
 import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
+import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.ArrowNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
@@ -65,17 +64,12 @@ import org.koin.core.parameter.parametersOf
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MoviesDirectoryPage(
-    connectedDeviceId: Int? = null,
     path: String,
-    movieBatch: MovieBatch? = null,
-    freeSpace: String? = null,
     onNavigateToRemoteControl: () -> Unit,
-    onNavigateToDirectory: (Int?, String, MovieBatch?, String?) -> Unit,
+    onNavigateToDirectory: (String) -> Unit,
     onNavigateBack: () -> Unit,
     onNavigateToTop: () -> Unit,
-    moviesViewModel: MoviesViewModel = koinViewModel(parameters = {
-        parametersOf(connectedDeviceId, path, movieBatch, freeSpace)
-    })
+    moviesViewModel: MoviesViewModel = koinViewModel(parameters = { parametersOf(path) })
 ) {
 
     val movieBatch by moviesViewModel.movieBatch.collectAsStateWithLifecycle()
@@ -83,24 +77,15 @@ fun MoviesDirectoryPage(
     val searchHistory by moviesViewModel.searchHistory.collectAsStateWithLifecycle()
     val connectionState by moviesViewModel.connectionState.collectAsStateWithLifecycle()
     val highlightedWords by moviesViewModel.highlightedWords.collectAsStateWithLifecycle()
-    val preloadBatches by moviesViewModel.preloadBatches.collectAsStateWithLifecycle()
     val freeSpace by moviesViewModel.freeSpace.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(Unit) {
-        moviesViewModel.checkConnection(false)
-    }
-
-    LaunchedEffect(connectionState) {
-        if (connectionState == ConnectionState.CONNECTED) {
-            moviesViewModel.fetchData(false)
-        }
-    }
+    ObserveActiveState(moviesViewModel)
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(connectionState) { moviesViewModel.fetchData(true) }
+        FloatingReloadButton(connectionState) { moviesViewModel.fetchData() }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
             enabled = movieBatch?.movies?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED,
@@ -185,7 +170,6 @@ fun MoviesDirectoryPage(
                 bookmarks = movieBatch?.bookmarks ?: emptyList(),
                 directory = movieBatch?.directory ?: "",
                 paddingValues = innerPadding,
-                preloadBatches = preloadBatches,
                 onStreamMovie = { movie ->
                     scope.launch {
                         IntentUtils.playMedia(
@@ -208,10 +192,8 @@ fun MoviesDirectoryPage(
                     )
                 },
                 onDownloadMovie = { movie -> moviesViewModel.download(movie) },
-                onNavigateToDirectory = { path, preloadBatch ->
-                    onNavigateToDirectory(
-                        moviesViewModel.connectedDeviceId, path, preloadBatch, freeSpace
-                    )
+                onNavigateToDirectory = { path ->
+                    onNavigateToDirectory(path)
                 })
         } else {
             ConnectionDisplay(
@@ -219,7 +201,7 @@ fun MoviesDirectoryPage(
                     .consumeWindowInsets(innerPadding)
                     .padding(innerPadding),
                 onCheckConnection = {
-                    moviesViewModel.checkConnection(true)
+                    moviesViewModel.checkConnection()
                 },
                 connectionState = connectionState
             )

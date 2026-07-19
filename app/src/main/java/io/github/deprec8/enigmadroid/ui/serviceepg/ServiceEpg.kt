@@ -26,7 +26,6 @@ import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -36,6 +35,7 @@ import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
+import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.ArrowNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
@@ -62,18 +62,10 @@ fun ServiceEpgPage(
     val searchHistory by serviceEpgViewModel.searchHistory.collectAsStateWithLifecycle()
     val highlightedWords by serviceEpgViewModel.highlightedWords.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
-        serviceEpgViewModel.checkConnection(false)
-    }
-
-    LaunchedEffect(connectionState) {
-        if (connectionState == ConnectionState.CONNECTED) {
-            serviceEpgViewModel.fetchData(false)
-        }
-    }
+    ObserveActiveState(serviceEpgViewModel)
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(connectionState) { serviceEpgViewModel.fetchData(true) }
+        FloatingReloadButton(connectionState) { serviceEpgViewModel.fetchData() }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
             enabled = eventBatch?.events?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED,
@@ -116,7 +108,7 @@ fun ServiceEpgPage(
                     .padding(innerPadding)
                     .consumeWindowInsets(innerPadding),
                 onCheckConnection = {
-                    serviceEpgViewModel.checkConnection(true)
+                    serviceEpgViewModel.checkConnection()
                 },
                 connectionState = connectionState
             )

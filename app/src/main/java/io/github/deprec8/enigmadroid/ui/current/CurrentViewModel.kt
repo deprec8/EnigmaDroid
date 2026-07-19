@@ -44,8 +44,4 @@ class CurrentViewModel(
     override suspend fun onGetData() {
         _currentInfo.value = apiRepository.fetchCurrentInfo()
     }
-
-    override fun shouldGetData(): Boolean {
-        return _currentInfo.value == null
-    }
 }

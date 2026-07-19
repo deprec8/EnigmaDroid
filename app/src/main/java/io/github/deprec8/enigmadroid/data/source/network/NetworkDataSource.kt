@@ -27,6 +27,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.request.get
+import io.ktor.client.request.head
 import io.ktor.client.request.header
 import io.ktor.client.statement.bodyAsText
 import io.ktor.client.statement.readRawBytes
@@ -40,6 +41,7 @@ class NetworkDataSource(
     private val connectionStateHolder: ConnectionStateHolder,
     private val devicesLocalDataSource: DevicesLocalDataSource
 ) {
+
     private suspend fun handleException(e: Exception) {
         val hasDevices = devicesLocalDataSource.getCount() > 0
 
@@ -88,19 +90,17 @@ class NetworkDataSource(
         }
     }
 
-    suspend fun checkConnection(forced: Boolean = true) {
-        if (connectionStateHolder.connectionState.value == ConnectionState.CONNECTING || forced) {
-            connectionStateHolder.updateConnectionState(ConnectionState.CONNECTING)
-            try {
-                val url = devicesLocalDataSource.getCurrentStatic()?.buildUrl("currenttime")
-                    ?: throw NullPointerException()
-                checkClient.get(url) {
-                    header(HttpHeaders.Connection, "close")
-                }
-                connectionStateHolder.updateConnectionState(ConnectionState.CONNECTED)
-            } catch (e: Exception) {
-                handleException(e)
+    suspend fun checkConnection() {
+        connectionStateHolder.updateConnectionState(ConnectionState.CONNECTING)
+        try {
+            val url = devicesLocalDataSource.getCurrentStatic()?.buildUrl("currenttime")
+                ?: throw NullPointerException()
+            checkClient.head(url) {
+                header(HttpHeaders.Connection, "close")
             }
+            connectionStateHolder.updateConnectionState(ConnectionState.CONNECTED)
+        } catch (e: Exception) {
+            handleException(e)
         }
     }
 
@@ -128,26 +128,36 @@ class NetworkDataSource(
         }
     }
 
-    suspend fun fetchJson(endpoint: String): String = try {
-        val url = devicesLocalDataSource.getCurrentStatic()?.buildUrl(endpoint)
-            ?: throw NoCurrentDeviceException()
-        client.get(url) {
-            header(HttpHeaders.Connection, "close")
-        }.bodyAsText()
-    } catch (e: Exception) {
-        handleException(e)
-        ""
+    suspend fun fetchJson(endpoint: String): String {
+        val currentState = connectionStateHolder.connectionState.value
+        if ((currentState != ConnectionState.CONNECTED) && (currentState != ConnectionState.CONNECTING)) {
+            connectionStateHolder.updateConnectionState(ConnectionState.CONNECTING)
+        }
+        return try {
+            val url = devicesLocalDataSource.getCurrentStatic()?.buildUrl(endpoint)
+                ?: throw NoCurrentDeviceException()
+            val response = client.get(url) {
+                header(HttpHeaders.Connection, "close")
+            }.bodyAsText()
+            connectionStateHolder.updateConnectionState(ConnectionState.CONNECTED)
+            response
+        } catch (e: Exception) {
+            handleException(e)
+            ""
+        }
     }
 
-    suspend fun fetchScreenshot(): ByteArray = try {
-        val url = devicesLocalDataSource.getCurrentStatic()?.buildScreenshotUrl()
-            ?: throw NoCurrentDeviceException()
-        client.get(url) {
-            header(HttpHeaders.Connection, "close")
-        }.readRawBytes()
-    } catch (e: Exception) {
-        handleException(e)
-        ByteArray(0)
+    suspend fun fetchScreenshot(): ByteArray {
+        return try {
+            val url = devicesLocalDataSource.getCurrentStatic()?.buildScreenshotUrl()
+                ?: throw NoCurrentDeviceException()
+            client.get(url) {
+                header(HttpHeaders.Connection, "close")
+            }.readRawBytes()
+        } catch (e: Exception) {
+            handleException(e)
+            ByteArray(0)
+        }
     }
 
     companion object {

@@ -22,17 +22,27 @@ package io.github.deprec8.enigmadroid.data.repositories
 import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.data.ConnectionStateHolder
 import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ConnectionRepository(
     private val connectionStateHolder: ConnectionStateHolder,
     private val networkDataSource: NetworkDataSource
 ) {
+    private var checkJob: Job? = null
+
     fun getConnectionState(): Flow<ConnectionState> {
         return connectionStateHolder.connectionState
     }
 
-    suspend fun checkConnection(forced: Boolean) {
-        networkDataSource.checkConnection(forced)
+    suspend fun checkConnection() {
+        if (checkJob?.isActive == true) return
+        withContext(Dispatchers.IO) {
+            checkJob = launch { networkDataSource.checkConnection() }
+            checkJob?.join()
+        }
     }
 }

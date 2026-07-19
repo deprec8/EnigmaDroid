@@ -100,12 +100,14 @@ class LiveViewModel(
     }
 
     override suspend fun onGetData() {
+        var first = true
         apiRepository.fetchEventBatches(contentType).collect { events ->
-            _eventBatches.value = _eventBatches.value?.plus(events) ?: listOf(events)
+            if (first) {
+                _eventBatches.value = listOf(events)
+                first = false
+            } else {
+                _eventBatches.value = _eventBatches.value?.plus(events) ?: listOf(events)
+            }
         }
-    }
-
-    override fun shouldGetData(): Boolean {
-        return _eventBatches.value == null
     }
 }

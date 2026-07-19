@@ -53,7 +53,6 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -116,10 +115,6 @@ fun RemoteControlPage(
     val savedString = stringResource(R.string.screenshot_saved)
     val failedString = stringResource(R.string.screenshot_failed)
 
-    LaunchedEffect(Unit) {
-        remoteControlViewModel.checkConnection(false)
-    }
-
     fun performHaptic() {
         if (remoteControlVibration) {
             view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
@@ -178,7 +173,7 @@ fun RemoteControlPage(
             }, scrollBehavior = scrollBehavior, actions = {
                 Row {
                     DeviceText(connectionState, currentDevice) {
-                        remoteControlViewModel.checkConnection(true)
+                        remoteControlViewModel.checkConnection()
                     }
                     if (!windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)) {
                         TooltipBox(

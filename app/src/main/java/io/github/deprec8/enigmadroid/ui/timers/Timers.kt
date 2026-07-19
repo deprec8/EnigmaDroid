@@ -43,7 +43,6 @@ import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -56,6 +55,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
+import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
@@ -84,15 +84,7 @@ fun TimersPage(
         mutableStateOf(false)
     }
 
-    LaunchedEffect(Unit) {
-        timersViewModel.checkConnection(false)
-    }
-
-    LaunchedEffect(connectionState) {
-        if (connectionState == ConnectionState.CONNECTED) {
-            timersViewModel.fetchData(false)
-        }
-    }
+    ObserveActiveState(timersViewModel)
 
     Scaffold(contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
@@ -154,7 +146,7 @@ fun TimersPage(
                     )
                 ) {
                     SmallFloatingActionButton(onClick = {
-                        timersViewModel.fetchData(true)
+                        timersViewModel.fetchData()
                     }) {
                         Icon(
                             Icons.Default.Refresh,
@@ -206,9 +198,7 @@ fun TimersPage(
                     .consumeWindowInsets(innerPadding)
                     .padding(innerPadding),
                 onCheckConnection = {
-                    timersViewModel.checkConnection(
-                        true
-                    )
+                    timersViewModel.checkConnection()
                 },
                 connectionState = connectionState
             )

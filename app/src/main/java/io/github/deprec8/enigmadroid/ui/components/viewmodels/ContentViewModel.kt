@@ -20,43 +20,65 @@
 package io.github.deprec8.enigmadroid.ui.components.viewmodels
 
 import androidx.lifecycle.viewModelScope
-import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
+import io.github.deprec8.enigmadroid.data.ConnectionState
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
-import org.koin.core.component.inject
 
-abstract class ContentViewModel(
-    connectedDeviceId: Int? = null
-) : ConnectionViewModel() {
+abstract class ContentViewModel : ConnectionViewModel() {
 
-    private val devicesRepository: DevicesRepository by inject()
-
-    var connectedDeviceId = connectedDeviceId
-        private set
+    private var isActive = false
+    private var isDirty = false
+    private var lastFetchedAt = 0L
+    private val staleThresholdMs = 300_000L
 
     protected var fetchJob: Job? = null
 
-    fun fetchData(forced: Boolean) {
+    init {
         viewModelScope.launch {
-            val currentDeviceId = devicesRepository.getCurrentDeviceId().firstOrNull()
-            if (currentDeviceId != connectedDeviceId || forced) {
-                onClearData()
-                connectedDeviceId = currentDeviceId
-            }
-
-            if (shouldGetData()) {
-                fetchJob?.cancel()
-                fetchJob = launch {
-                    onGetData()
+            connectionState.filter { it == ConnectionState.CONNECTED }.collectLatest {
+                if (isActive) {
+                    fetchData(showLoading = true)
+                } else {
+                    isDirty = true
                 }
             }
         }
     }
 
+    fun fetchData(showLoading: Boolean = true) {
+        if (!showLoading && (fetchJob?.isActive == true)) return
+        viewModelScope.launch {
+            fetchJob?.cancel()
+            fetchJob = launch {
+                if (showLoading) onClearData()
+                onGetData()
+                if (connectionState.value == ConnectionState.CONNECTED) {
+                    lastFetchedAt = System.currentTimeMillis()
+                }
+            }
+        }
+    }
+
+
+    fun onActive() {
+        isActive = true
+        if (connectionState.value != ConnectionState.CONNECTED) {
+            checkConnection()
+        }
+        val stale = (System.currentTimeMillis() - lastFetchedAt) > staleThresholdMs
+        if (isDirty || stale || lastFetchedAt == 0L) {
+            fetchData(showLoading = isDirty || lastFetchedAt == 0L)
+        }
+        isDirty = false
+    }
+
+    fun onInactive() {
+        isActive = false
+    }
+
     protected abstract fun onClearData()
 
     protected abstract suspend fun onGetData()
-
-    protected abstract fun shouldGetData(): Boolean
 }

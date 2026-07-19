@@ -62,7 +62,7 @@ class RemoteControlViewModel(
     fun onPowerKeyClicked(powerKey: RemoteControlPowerKey) {
         viewModelScope.launch {
             apiRepository.setPowerState(powerKey)
-            checkConnection(true)
+            checkConnection()
         }
     }
 }

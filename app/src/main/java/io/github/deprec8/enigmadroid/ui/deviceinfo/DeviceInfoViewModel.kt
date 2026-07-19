@@ -40,8 +40,4 @@ class DeviceInfoViewModel(
     override suspend fun onGetData() {
         _deviceInfo.value = apiRepository.fetchDeviceInfo()
     }
-
-    override fun shouldGetData(): Boolean {
-        return _deviceInfo.value == null
-    }
 }

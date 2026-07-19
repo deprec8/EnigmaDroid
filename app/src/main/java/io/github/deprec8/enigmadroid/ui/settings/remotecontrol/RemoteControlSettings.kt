@@ -80,7 +80,7 @@ fun RemoteControlSettingsPage(
                 .verticalScroll(scrollState)
                 .padding(innerPadding)
         ) {
-            remoteControlVibration?.let { remoteControlVibration ->
+            remoteControlVibration.let { remoteControlVibration ->
                 ListItem(headlineContent = {
                     Text(stringResource(R.string.haptic_feedback))
                 }, supportingContent = {

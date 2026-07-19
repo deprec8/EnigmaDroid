@@ -99,7 +99,7 @@ fun SearchSettingsPage(
                 .verticalScroll(scrollState)
                 .padding(innerPadding)
         ) {
-            useSearchHistory?.let {
+            useSearchHistory.let {
                 ListItem(headlineContent = {
                     Text(stringResource(R.string.use_search_histories))
                 }, supportingContent = {
@@ -120,7 +120,7 @@ fun SearchSettingsPage(
                     Text(stringResource(R.string.select_which_search_histories_to_clear))
                 }, modifier = Modifier.clickable(onClick = { showSearchHistoriesDialog = true })
             )
-            useSearchHighlighting?.let {
+            useSearchHighlighting.let {
                 ListItem(headlineContent = {
                     Text(stringResource(R.string.highlight_matches))
                 }, supportingContent = {

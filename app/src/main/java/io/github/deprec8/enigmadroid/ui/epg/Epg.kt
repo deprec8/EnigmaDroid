@@ -44,7 +44,6 @@ import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -63,6 +62,7 @@ import io.github.deprec8.enigmadroid.model.api.Bouquet
 import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
 import io.github.deprec8.enigmadroid.ui.components.NoResults
+import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
 import io.github.deprec8.enigmadroid.ui.components.content.ContentTab
 import io.github.deprec8.enigmadroid.ui.components.content.ContentTabRow
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
@@ -100,19 +100,11 @@ fun EpgPage(
         }
     }
 
-    LaunchedEffect(Unit) {
-        epgViewModel.checkConnection(false)
-    }
-
-    LaunchedEffect(connectionState) {
-        if (connectionState == ConnectionState.CONNECTED) {
-            epgViewModel.fetchData(false)
-        }
-    }
+    ObserveActiveState(epgViewModel)
 
     Scaffold(floatingActionButton = {
         FloatingReloadButton(connectionState) {
-            epgViewModel.fetchData(true)
+            epgViewModel.fetchData()
         }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
@@ -194,9 +186,7 @@ fun EpgPage(
                     .consumeWindowInsets(innerPadding)
                     .padding(innerPadding),
                 onCheckConnection = {
-                    epgViewModel.checkConnection(
-                        true
-                    )
+                    epgViewModel.checkConnection()
                 },
                 connectionState = connectionState
             )

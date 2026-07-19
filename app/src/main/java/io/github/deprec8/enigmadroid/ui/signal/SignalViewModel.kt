@@ -40,8 +40,4 @@ class SignalViewModel(
     override suspend fun onGetData() {
         _signalInfo.value = apiRepository.fetchSignalInfo()
     }
-
-    override fun shouldGetData(): Boolean {
-        return _signalInfo.value == null
-    }
 }

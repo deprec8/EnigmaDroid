@@ -162,11 +162,9 @@ fun MainNavigationDisplay(
         ) {
             MoviesPage(
                 onNavigateToRemoteControl = { onNavigateToRemoteControl() },
-                onNavigateToDirectory = { connectedDeviceId, path, preloadBatch, freeSpace ->
+                onNavigateToDirectory = { path ->
                     drawerNavigator.navigate(
-                        MainKeys.MoviesDirectory(
-                            connectedDeviceId, path, preloadBatch, freeSpace
-                        )
+                        MainKeys.MoviesDirectory(path)
                     )
                 },
                 modalDrawerState
@@ -176,16 +174,11 @@ fun MainNavigationDisplay(
             metadata = sharedAxisXTransition()
         ) { backStackEntry ->
             MoviesDirectoryPage(
-                connectedDeviceId = backStackEntry.connectedDeviceId,
                 path = backStackEntry.path,
-                movieBatch = backStackEntry.preloadBatch,
-                freeSpace = backStackEntry.freeSpace,
                 onNavigateToRemoteControl = { onNavigateToRemoteControl() },
-                onNavigateToDirectory = { connectedDeviceId, path, preloadBatch, freeSpace ->
+                onNavigateToDirectory = { path ->
                     drawerNavigator.navigate(
-                        MainKeys.MoviesDirectory(
-                            connectedDeviceId, path, preloadBatch, freeSpace
-                        )
+                        MainKeys.MoviesDirectory(path)
                     )
                 },
                 onNavigateBack = {
@@ -293,7 +286,7 @@ fun MainNavigationDisplay(
                     drawerNavigator.navigate(route)
                 },
                 onCheckConnection = {
-                    mainViewModel.checkConnection(true)
+                    mainViewModel.checkConnection()
                 },
                 onOpenOwif = {
                     scope.launch { IntentUtils.openOwif(context, mainViewModel.buildOwifUrl()) }

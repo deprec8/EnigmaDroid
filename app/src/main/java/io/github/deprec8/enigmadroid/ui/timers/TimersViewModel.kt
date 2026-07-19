@@ -59,20 +59,14 @@ class TimersViewModel(
     fun deleteTimer(timer: Timer) {
         viewModelScope.launch {
             apiRepository.deleteTimer(timer)
-            fetchJob?.cancel()
-            fetchJob = viewModelScope.launch {
-                _timerBatch.value = apiRepository.fetchTimerBatch()
-            }
+            fetchData(false)
         }
     }
 
     fun toggleTimerStatus(timer: Timer) {
         viewModelScope.launch {
             apiRepository.toggleTimerStatus(timer)
-            fetchJob?.cancel()
-            fetchJob = viewModelScope.launch {
-                _timerBatch.value = apiRepository.fetchTimerBatch()
-            }
+            fetchData(false)
         }
     }
 
@@ -80,10 +74,7 @@ class TimersViewModel(
     fun addTimer(newTimer: Timer) {
         viewModelScope.launch {
             apiRepository.addTimer(newTimer)
-            fetchJob?.cancel()
-            fetchJob = viewModelScope.launch {
-                _timerBatch.value = apiRepository.fetchTimerBatch()
-            }
+            fetchData(false)
         }
     }
 
@@ -111,9 +102,5 @@ class TimersViewModel(
     override suspend fun onGetData() {
         _timerBatch.value = apiRepository.fetchTimerBatch()
         _serviceBatchSet.value = apiRepository.fetchServiceBatchSet()
-    }
-
-    override fun shouldGetData(): Boolean {
-        return _timerBatch.value == null || _serviceBatchSet.value == null
     }
 }

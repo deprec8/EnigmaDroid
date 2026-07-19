@@ -28,7 +28,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -40,6 +39,7 @@ import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.model.api.DeviceInfo
 import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
+import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.DrawerNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
@@ -59,18 +59,10 @@ fun DeviceInfoPage(
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
-    LaunchedEffect(Unit) {
-        deviceInfoViewModel.checkConnection(false)
-    }
-
-    LaunchedEffect(connectionState) {
-        if (connectionState == ConnectionState.CONNECTED) {
-            deviceInfoViewModel.fetchData(false)
-        }
-    }
+    ObserveActiveState(deviceInfoViewModel)
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(connectionState) { deviceInfoViewModel.fetchData(true) }
+        FloatingReloadButton(connectionState) { deviceInfoViewModel.fetchData() }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         TopAppBar(windowInsets = topAppBarWithDrawerWindowInsets(), title = {
             Text(
@@ -96,7 +88,7 @@ fun DeviceInfoPage(
                     .padding(innerPadding)
                     .consumeWindowInsets(innerPadding),
                 onCheckConnection = {
-                    deviceInfoViewModel.checkConnection(true)
+                    deviceInfoViewModel.checkConnection()
                 },
                 connectionState = connectionState
             )

@@ -28,7 +28,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -39,6 +38,7 @@ import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.model.api.SignalInfo
 import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
+import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.DrawerNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
@@ -59,17 +59,10 @@ fun SignalPage(
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
-    LaunchedEffect(Unit) {
-        signalViewModel.checkConnection(false)
-    }
-    LaunchedEffect(connectionState) {
-        if (connectionState == ConnectionState.CONNECTED) {
-            signalViewModel.fetchData(false)
-        }
-    }
+    ObserveActiveState(signalViewModel)
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(connectionState) { signalViewModel.fetchData(true) }
+        FloatingReloadButton(connectionState) { signalViewModel.fetchData() }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         TopAppBar(
             windowInsets = topAppBarWithDrawerWindowInsets(),
@@ -95,7 +88,7 @@ fun SignalPage(
                     .padding(innerPadding),
                 connectionState = connectionState,
                 onCheckConnection = {
-                    signalViewModel.checkConnection(true)
+                    signalViewModel.checkConnection()
                 })
         }
     }

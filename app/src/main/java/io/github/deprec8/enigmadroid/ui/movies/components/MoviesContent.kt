@@ -51,14 +51,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.model.MenuItem
 import io.github.deprec8.enigmadroid.model.MenuItemGroup
 import io.github.deprec8.enigmadroid.model.api.Movie
-import io.github.deprec8.enigmadroid.model.api.MovieBatch
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.content.ContentItem
 import io.github.deprec8.enigmadroid.ui.components.dialogs.ConfirmDeleteDialog
@@ -70,14 +68,13 @@ fun MoviesContent(
     directory: String = "",
     paddingValues: PaddingValues,
     highlightedWords: List<String> = emptyList(),
-    preloadBatches: Map<String, MovieBatch> = emptyMap(),
     onStreamMovie: (Movie) -> Unit,
     onPlayMovieOnDevice: (Movie) -> Unit,
     onDeleteMovie: (Movie) -> Unit,
     onRenameMovie: (Movie, String) -> Unit,
     onMoveMovie: (Movie, String) -> Unit,
     onDownloadMovie: (Movie) -> Unit,
-    onNavigateToDirectory: (String, MovieBatch?) -> Unit = { _, _ -> }
+    onNavigateToDirectory: (String) -> Unit = { _ -> }
 ) {
     if (movies.isNotEmpty() || bookmarks.isNotEmpty()) {
         LazyVerticalGrid(
@@ -94,11 +91,7 @@ fun MoviesContent(
                 }, leadingContent = {
                     Icon(Icons.Outlined.Folder, stringResource(R.string.directory))
                 }, modifier = Modifier.clickable {
-                    onNavigateToDirectory("$directory$bookmark", preloadBatches[bookmark])
-                }, supportingContent = {
-                    preloadBatches[bookmark]?.let {
-                        Text(pluralStringResource(R.plurals.files, it.movies.size, it.movies.size))
-                    }
+                    onNavigateToDirectory("$directory$bookmark")
                 })
             }
             items(movies) { movie ->

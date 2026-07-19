@@ -29,8 +29,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import org.koin.core.component.inject
 
-abstract class SearchableContentViewModel(connectedDeviceId: Int? = null) :
-    ContentViewModel(connectedDeviceId) {
+abstract class SearchableContentViewModel : ContentViewModel() {
 
     private val settingsRepository: SettingsRepository by inject()
 

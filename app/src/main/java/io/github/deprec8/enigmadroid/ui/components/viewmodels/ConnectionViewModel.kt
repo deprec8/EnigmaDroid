@@ -24,6 +24,7 @@ import androidx.lifecycle.viewModelScope
 import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.data.repositories.ConnectionRepository
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
@@ -37,9 +38,17 @@ abstract class ConnectionViewModel : ViewModel(), KoinComponent {
         viewModelScope, SharingStarted.WhileSubscribed(5000), ConnectionState.CONNECTING
     )
 
-    fun checkConnection(forced: Boolean) {
+    init {
         viewModelScope.launch {
-            connectionRepository.checkConnection(forced)
+            if (connectionRepository.getConnectionState().first() == ConnectionState.CONNECTING) {
+                connectionRepository.checkConnection()
+            }
+        }
+    }
+
+    fun checkConnection() {
+        viewModelScope.launch {
+            connectionRepository.checkConnection()
         }
     }
 }

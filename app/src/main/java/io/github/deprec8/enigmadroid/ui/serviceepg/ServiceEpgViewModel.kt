@@ -75,8 +75,4 @@ class ServiceEpgViewModel(
     override suspend fun onGetData() {
         _eventBatch.value = apiRepository.fetchServiceEpgBatch(serviceReference)
     }
-
-    override fun shouldGetData(): Boolean {
-        return _eventBatch.value == null
-    }
 }

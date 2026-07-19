@@ -44,6 +44,7 @@ import io.github.deprec8.enigmadroid.common.enums.ContentType
 import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
+import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
 import io.github.deprec8.enigmadroid.ui.components.content.ContentTab
 import io.github.deprec8.enigmadroid.ui.components.content.ContentTabRow
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
@@ -79,21 +80,14 @@ fun LivePage(
         }
     }
 
-    LaunchedEffect(Unit) {
-        liveViewModel.checkConnection(false)
-    }
-    LaunchedEffect(connectionState) {
-        if (connectionState == ConnectionState.CONNECTED) {
-            liveViewModel.fetchData(false)
-        }
-    }
+    ObserveActiveState(liveViewModel)
 
     LaunchedEffect(selectedTabIndex) {
         liveViewModel.updateCurrentBouquetIndex(selectedTabIndex)
     }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(connectionState) { liveViewModel.fetchData(true) }
+        FloatingReloadButton(connectionState) { liveViewModel.fetchData() }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
             textFieldState = liveViewModel.searchFieldState,
@@ -185,9 +179,7 @@ fun LivePage(
                     .consumeWindowInsets(innerPadding)
                     .padding(innerPadding),
                 onCheckConnection = {
-                    liveViewModel.checkConnection(
-                        true
-                    )
+                    liveViewModel.checkConnection()
                 },
                 connectionState = connectionState
             )
