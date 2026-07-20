@@ -29,6 +29,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
+import io.github.deprec8.enigmadroid.utils.FuzzySearchUtils
 
 @Composable
 fun HighlightedText(
@@ -42,23 +43,23 @@ fun HighlightedText(
     val annotatedString = remember(text, highlightedWords) {
         if (highlightedWords.isNotEmpty()) {
             buildAnnotatedString {
-                var index = 0
-                val regex = highlightedWords.joinToString("|", "(", ")") { Regex.escape(it) }
-                    .toRegex(RegexOption.IGNORE_CASE)
-                regex.findAll(text).forEach { matchResult ->
-                    val start = matchResult.range.first
-                    val end = matchResult.range.last + 1
-                    if (index < start) append(text.substring(index, start))
-                    withStyle(
-                        SpanStyle(
-                            color = highlightColor, fontWeight = FontWeight.Bold
-                        )
-                    ) {
-                        append(text.substring(start, end))
+                val words = text.split(Regex("(?<=\\W)|(?=\\W)"))
+                for (word in words) {
+                    val normalizedWord = FuzzySearchUtils.normalize(word)
+                    if (word.isNotEmpty() && highlightedWords.any { term ->
+                            FuzzySearchUtils.fuzzyMatch(normalizedWord, term)
+                        }) {
+                        withStyle(
+                            SpanStyle(
+                                color = highlightColor, fontWeight = FontWeight.Bold
+                            )
+                        ) {
+                            append(word)
+                        }
+                    } else {
+                        append(word)
                     }
-                    index = end
                 }
-                if (index < text.length) append(text.substring(index))
             }
         } else {
             AnnotatedString(text)

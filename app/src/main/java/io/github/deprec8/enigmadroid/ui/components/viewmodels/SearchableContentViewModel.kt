@@ -24,6 +24,7 @@ import androidx.lifecycle.viewModelScope
 import io.github.deprec8.enigmadroid.common.enums.ContentType
 import io.github.deprec8.enigmadroid.data.repositories.SearchRepository
 import io.github.deprec8.enigmadroid.data.source.local.SearchHistoryItem
+import io.github.deprec8.enigmadroid.utils.FuzzySearchUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -48,7 +49,8 @@ abstract class SearchableContentViewModel(private val type: ContentType) : Conte
     val searchFieldState = TextFieldState()
 
     val highlightedWords = combine(searchInput, useSearchHighlighting) { input, enabled ->
-        if (enabled) input.split(" ").filter { it.isNotBlank() } else emptyList()
+        if (enabled) input.split(" ").filter { it.isNotBlank() }
+            .map { FuzzySearchUtils.normalize(it) } else emptyList()
     }.stateIn(
         viewModelScope, started = SharingStarted.WhileSubscribed(5000), initialValue = emptyList()
     )
