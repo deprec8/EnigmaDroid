@@ -23,7 +23,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.deprec8.enigmadroid.common.enums.ContentType
 import io.github.deprec8.enigmadroid.data.repositories.SearchRepository
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -32,7 +34,7 @@ class SearchSettingsViewModel(
 ) : ViewModel() {
 
     val typesWithHistory = searchRepository.getTypesWithHistory().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
+        viewModelScope, SharingStarted.WhileSubscribed(5000), emptySet()
     )
 
     val useSearchHistories = searchRepository.getUseHistories().stateIn(
@@ -42,6 +44,25 @@ class SearchSettingsViewModel(
     val useSearchHighlighting = searchRepository.getUseHighlighting().stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000), true
     )
+
+    private val _selectedTypes = MutableStateFlow<Set<ContentType>>(emptySet())
+    val selectedTypes = _selectedTypes.asStateFlow()
+
+    fun toggleTypeSelection(type: ContentType) {
+        _selectedTypes.value = if (_selectedTypes.value.contains(type)) {
+            _selectedTypes.value - type
+        } else {
+            _selectedTypes.value + type
+        }
+    }
+
+    fun toggleAllSelection(availableTypes: Set<ContentType>) {
+        _selectedTypes.value = if (_selectedTypes.value.size == availableTypes.size) {
+            emptySet()
+        } else {
+            availableTypes
+        }
+    }
 
     fun setUseSearchHistory(value: Boolean) {
         viewModelScope.launch {
@@ -55,15 +76,10 @@ class SearchSettingsViewModel(
         }
     }
 
-    fun clearSearchHistory(type: ContentType) {
+    fun clearSelectedHistories() {
         viewModelScope.launch {
-            searchRepository.clearHistory(type)
-        }
-    }
-
-    fun clearAllSearchHistories() {
-        viewModelScope.launch {
-            searchRepository.clearHistories()
+            searchRepository.clearHistories(_selectedTypes.value)
+            _selectedTypes.value = emptySet()
         }
     }
 }

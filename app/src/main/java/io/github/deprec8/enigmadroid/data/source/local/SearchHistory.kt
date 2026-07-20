@@ -87,6 +87,9 @@ interface SearchHistoriesDao {
     @Query("DELETE FROM search_histories WHERE type = :type")
     suspend fun clear(type: ContentType)
 
+    @Query("DELETE FROM search_histories WHERE type IN (:types)")
+    suspend fun clear(types: Collection<ContentType>)
+
     @Query("DELETE FROM search_histories")
     suspend fun clearAll()
 }

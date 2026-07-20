@@ -26,13 +26,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Scaffold
@@ -69,6 +66,7 @@ fun SearchSettingsPage(
     val typesWithHistory by searchSettingsViewModel.typesWithHistory.collectAsStateWithLifecycle()
     val useSearchHistories by searchSettingsViewModel.useSearchHistories.collectAsStateWithLifecycle()
     val useSearchHighlighting by searchSettingsViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
+    val selectedTypes by searchSettingsViewModel.selectedTypes.collectAsStateWithLifecycle()
 
     var showSearchHistoriesDialog by rememberSaveable { mutableStateOf(false) }
     val searchHistoriesDialogScrollState = rememberScrollState()
@@ -112,9 +110,9 @@ fun SearchSettingsPage(
             })
             ListItem(
                 headlineContent = {
-                    Text(stringResource(R.string.view_search_histories))
+                    Text(stringResource(R.string.clear_search_histories))
                 }, supportingContent = {
-                    Text(stringResource(R.string.view_and_clear_your_search_histories))
+                    Text(stringResource(R.string.select_which_search_histories_to_clear))
                 }, modifier = Modifier.clickable(
                     onClick = { showSearchHistoriesDialog = true })
             )
@@ -136,120 +134,70 @@ fun SearchSettingsPage(
     if (showSearchHistoriesDialog) {
         AlertDialog(
             onDismissRequest = { showSearchHistoriesDialog = false },
-            title = { Text(stringResource(R.string.search_histories)) },
+            title = { Text(stringResource(R.string.clear_search_histories)) },
             confirmButton = {
+                TextButton(
+                    onClick = {
+                        searchSettingsViewModel.clearSelectedHistories()
+                        showSearchHistoriesDialog = false
+                    }, enabled = selectedTypes.isNotEmpty()
+                ) {
+                    Text(stringResource(R.string.clear))
+                }
+            },
+            dismissButton = {
                 TextButton(onClick = { showSearchHistoriesDialog = false }) {
-                    Text(stringResource(R.string.close))
+                    Text(stringResource(R.string.cancel))
                 }
             },
             text = {
                 Column(Modifier.verticalScroll(searchHistoriesDialogScrollState)) {
                     ListItem(
+                        modifier = Modifier.clickable(enabled = typesWithHistory.isNotEmpty()) {
+                            searchSettingsViewModel.toggleAllSelection(typesWithHistory)
+                        },
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                         headlineContent = { Text(stringResource(R.string.all)) },
                         trailingContent = {
-                            FilledTonalIconButton(onClick = {
-                                searchSettingsViewModel.clearAllSearchHistories()
-                            }, enabled = typesWithHistory.isNotEmpty()) {
-                                Icon(
-                                    Icons.Filled.DeleteForever,
-                                    contentDescription = stringResource(R.string.clear)
-                                )
-                            }
+                            Checkbox(
+                                checked = selectedTypes.size == typesWithHistory.size && typesWithHistory.isNotEmpty(),
+                                onCheckedChange = {
+                                    searchSettingsViewModel.toggleAllSelection(typesWithHistory)
+                                },
+                                enabled = typesWithHistory.isNotEmpty()
+                            )
                         })
                     HorizontalDivider(Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
-                    ListItem(
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        headlineContent = { Text(stringResource(R.string.tv)) },
-                        trailingContent = {
-                            FilledTonalIconButton(onClick = {
-                                searchSettingsViewModel.clearSearchHistory(ContentType.Tv)
-                            }, enabled = typesWithHistory.contains(ContentType.Tv)) {
-                                Icon(
-                                    Icons.Filled.DeleteForever,
-                                    contentDescription = stringResource(R.string.clear)
+                    ContentType.entries.forEach { type ->
+                        val hasHistory = typesWithHistory.contains(type)
+                        ListItem(
+                            modifier = Modifier.clickable(enabled = hasHistory) {
+                                searchSettingsViewModel.toggleTypeSelection(type)
+                            },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                            headlineContent = {
+                                Text(
+                                    stringResource(
+                                        when (type) {
+                                            ContentType.Radio -> R.string.radio
+                                            ContentType.Tv -> R.string.tv
+                                            ContentType.Movies -> R.string.movies
+                                            ContentType.Timers -> R.string.timers
+                                            ContentType.ServiceEpg -> R.string.service_epg
+                                            ContentType.TvEpg -> R.string.tv_epg
+                                            ContentType.RadioEpg -> R.string.radio_epg
+                                        }
+                                    )
                                 )
-                            }
-                        })
-                    ListItem(
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        headlineContent = { Text(stringResource(R.string.radio)) },
-                        trailingContent = {
-                            FilledTonalIconButton(onClick = {
-                                searchSettingsViewModel.clearSearchHistory(ContentType.Radio)
-                            }, enabled = typesWithHistory.contains(ContentType.Radio)) {
-                                Icon(
-                                    Icons.Filled.DeleteForever,
-                                    contentDescription = stringResource(R.string.clear)
+                            },
+                            trailingContent = {
+                                Checkbox(
+                                    checked = selectedTypes.contains(type), onCheckedChange = {
+                                        searchSettingsViewModel.toggleTypeSelection(type)
+                                    }, enabled = hasHistory
                                 )
-                            }
-                        })
-                    ListItem(
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        headlineContent = { Text(stringResource(R.string.movies)) },
-                        trailingContent = {
-                            FilledTonalIconButton(onClick = {
-                                searchSettingsViewModel.clearSearchHistory(ContentType.Movies)
-                            }, enabled = typesWithHistory.contains(ContentType.Movies)) {
-                                Icon(
-                                    Icons.Filled.DeleteForever,
-                                    contentDescription = stringResource(R.string.clear)
-                                )
-                            }
-                        })
-                    ListItem(
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        headlineContent = { Text(stringResource(R.string.timers)) },
-                        trailingContent = {
-                            FilledTonalIconButton(onClick = {
-                                searchSettingsViewModel.clearSearchHistory(ContentType.Timers)
-                            }, enabled = typesWithHistory.contains(ContentType.Timers)) {
-                                Icon(
-                                    Icons.Filled.DeleteForever,
-                                    contentDescription = stringResource(R.string.clear)
-                                )
-                            }
-                        })
-                    ListItem(
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        headlineContent = { Text(stringResource(R.string.tv_epg)) },
-                        trailingContent = {
-                            FilledTonalIconButton(onClick = {
-                                searchSettingsViewModel.clearSearchHistory(ContentType.TvEpg)
-                            }, enabled = typesWithHistory.contains(ContentType.TvEpg)) {
-                                Icon(
-                                    Icons.Filled.DeleteForever,
-                                    contentDescription = stringResource(R.string.clear)
-                                )
-                            }
-                        })
-                    ListItem(
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        headlineContent = { Text(stringResource(R.string.radio_epg)) },
-                        trailingContent = {
-                            FilledTonalIconButton(onClick = {
-                                searchSettingsViewModel.clearSearchHistory(ContentType.RadioEpg)
-                            }, enabled = typesWithHistory.contains(ContentType.RadioEpg)) {
-                                Icon(
-                                    Icons.Filled.DeleteForever,
-                                    contentDescription = stringResource(R.string.clear)
-                                )
-                            }
-                        })
-                    ListItem(
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        headlineContent = { Text(stringResource(R.string.service_epg)) },
-                        trailingContent = {
-                            FilledTonalIconButton(onClick = {
-                                searchSettingsViewModel.clearSearchHistory(ContentType.ServiceEpg)
-                            }, enabled = typesWithHistory.contains(ContentType.ServiceEpg)) {
-                                Icon(
-                                    Icons.Filled.DeleteForever,
-                                    contentDescription = stringResource(R.string.clear)
-                                )
-                            }
-                        })
-
+                            })
+                    }
                 }
             })
     }

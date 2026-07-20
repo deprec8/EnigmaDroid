@@ -67,7 +67,8 @@ class SearchRepository(
     fun getHistory(type: ContentType) = searchHistoriesDatabase.searchHistoriesDao().get(type)
 
 
-    fun getTypesWithHistory() = searchHistoriesDatabase.searchHistoriesDao().getTypesWithItems()
+    fun getTypesWithHistory() =
+        searchHistoriesDatabase.searchHistoriesDao().getTypesWithItems().map { it.toSet() }
 
     suspend fun addToHistory(type: ContentType, query: String) {
         if (getUseHistories().first()) {
@@ -79,8 +80,8 @@ class SearchRepository(
         }
     }
 
-    suspend fun clearHistory(type: ContentType) {
-        searchHistoriesDatabase.searchHistoriesDao().clear(type)
+    suspend fun clearHistories(types: Collection<ContentType>) {
+        searchHistoriesDatabase.searchHistoriesDao().clear(types)
     }
 
     suspend fun clearHistories() {
