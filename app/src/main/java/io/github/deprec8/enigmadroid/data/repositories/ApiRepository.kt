@@ -250,9 +250,9 @@ class ApiRepository(
 
     suspend fun fetchBouquets(type: ContentType): List<Bouquet> {
         val rawUserJson =
-            networkDataSource.fetchJson("bouquets?stype=${if (type == ContentType.Tv) "tv" else "radio"}")
+            networkDataSource.fetchJson("bouquets?stype=${if (type == ContentType.Tv || type == ContentType.TvEpg) "tv" else "radio"}")
         val rawProviderJson = networkDataSource.fetchJson(
-            if (type == ContentType.Tv) {
+            if (type == ContentType.Tv || type == ContentType.TvEpg) {
                 "epgnow?bRef=$ALL_PROVIDERS_TV"
             } else {
                 "epgnow?bRef=$ALL_PROVIDERS_RADIO"

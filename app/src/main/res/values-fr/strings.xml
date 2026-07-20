@@ -171,8 +171,6 @@
     <string name="insert">Insérer</string>
     <string name="type_something_to_search">Tapez quelque chose à rechercher</string>
     <string name="clear">Effacer</string>
-    <string name="clear_search_histories">Effacer l’historique de recherche</string>
-    <string name="select_which_search_histories_to_clear">Sélectionnez les historiques de recherche à effacer.</string>
     <string name="search">Rechercher</string>
     <string name="manage_search_settings_and_histories">Gérer les paramètres et l’historique de recherche.</string>
     <string name="use_search_histories">Utiliser l’historique de recherche</string>
@@ -238,8 +236,4 @@
     <string name="no_device_selected">Aucun appareil sélectionné</string>
     <string name="first_add_a_device">Tout d\'abord, ajoutez un appareil.</string>
     <string name="first_select_a_device">Tout d\'abord, sélectionnez un périphérique.</string>
-    <plurals name="files">
-        <item quantity="one">%1$d fichier</item>
-        <item quantity="other">%1$d fichiers</item>
-    </plurals>
 </resources>

@@ -31,8 +31,6 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
 
     private val remoteControlVibrationKey =
         booleanPreferencesKey(PreferenceKeys.REMOTE_CONTROL_VIBRATION)
-    private val useSearchHighlightingKey =
-        booleanPreferencesKey(PreferenceKeys.USE_SEARCH_HIGHLIGHTING)
 
     fun getRemoteControlVibration(): Flow<Boolean> = dataStore.data.map { preferences ->
         preferences[remoteControlVibrationKey] ?: true
@@ -41,16 +39,6 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
     suspend fun setRemoteControlVibration(value: Boolean) {
         dataStore.edit { preferences ->
             preferences[remoteControlVibrationKey] = value
-        }
-    }
-
-    fun getUseSearchHighlighting(): Flow<Boolean> = dataStore.data.map { preferences ->
-        preferences[useSearchHighlightingKey] ?: true
-    }
-
-    suspend fun setUseSearchHighlighting(value: Boolean) {
-        dataStore.edit { preferences ->
-            preferences[useSearchHighlightingKey] = value
         }
     }
 }

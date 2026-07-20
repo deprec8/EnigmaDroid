@@ -115,13 +115,15 @@ fun LivePage(
                             liveViewModel.buildLiveStreamUrl(it)
                         })
                 } ?: run {
-                    SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
+                    SearchHistory(searchHistory = searchHistory, onSearchQuery = {
                         liveViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
                         liveViewModel.updateSearchInput()
-                    }, onTermInsertClick = {
+                    }, onInsertQuery = {
                         liveViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
                             it
                         )
+                    }, onRemoveItem = {
+                        liveViewModel.deleteFromSearchHistory(it)
                     })
                 }
             },

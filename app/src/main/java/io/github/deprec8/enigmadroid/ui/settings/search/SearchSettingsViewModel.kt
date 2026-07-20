@@ -21,96 +21,49 @@ package io.github.deprec8.enigmadroid.ui.settings.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.deprec8.enigmadroid.data.repositories.SearchHistoryRepository
-import io.github.deprec8.enigmadroid.data.repositories.SettingsRepository
+import io.github.deprec8.enigmadroid.common.enums.ContentType
+import io.github.deprec8.enigmadroid.data.repositories.SearchRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class SearchSettingsViewModel(
-    private var searchHistoryRepository: SearchHistoryRepository,
-    private var settingsRepository: SettingsRepository
+    private var searchRepository: SearchRepository
 ) : ViewModel() {
 
-    val tvSearchHistory = searchHistoryRepository.getTvSearchHistory().stateIn(
+    val typesWithHistory = searchRepository.getTypesWithHistory().stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
     )
 
-    val radioSearchHistory = searchHistoryRepository.getRadioSearchHistory().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
-    )
-
-    val moviesSearchHistory = searchHistoryRepository.getMoviesSearchHistory().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
-    )
-
-    val timersSearchHistory = searchHistoryRepository.getTimersSearchHistory().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
-    )
-
-    val tvEpgSearchHistory = searchHistoryRepository.getTvEpgSearchHistory().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
-    )
-
-    val radioEpgSearchHistory = searchHistoryRepository.getRadioEpgSearchHistory().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
-    )
-
-    val serviceEpgSearchHistory = searchHistoryRepository.getServiceEpgSearchHistory().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
-    )
-
-    val useSearchHistory = searchHistoryRepository.getUseSearchHistory().stateIn(
+    val useSearchHistories = searchRepository.getUseHistories().stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000), true
     )
 
-    val useSearchHighlighting = settingsRepository.getUseSearchHighlighting().stateIn(
+    val useSearchHighlighting = searchRepository.getUseHighlighting().stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000), true
     )
 
-    fun setUseSearchHistory(useSearchHistory: Boolean) {
+    fun setUseSearchHistory(value: Boolean) {
         viewModelScope.launch {
-            searchHistoryRepository.setUseSearchHistory(useSearchHistory)
+            searchRepository.setUseHistories(value)
         }
     }
 
-    fun setUseSearchHighlighting(useSearchHighlighting: Boolean) {
+    fun setUseSearchHighlighting(value: Boolean) {
         viewModelScope.launch {
-            settingsRepository.setUseSearchHighlighting(useSearchHighlighting)
+            searchRepository.setUseHighlighting(value)
         }
     }
 
-    fun clearSearchHistory(
-        tv: Boolean,
-        radio: Boolean,
-        movies: Boolean,
-        timers: Boolean,
-        tvEpg: Boolean,
-        radioEpg: Boolean,
-        serviceEpg: Boolean
-    ) {
+    fun clearSearchHistory(type: ContentType) {
         viewModelScope.launch {
-            if (tv) {
-                searchHistoryRepository.clearTvSearchHistory()
-            }
-            if (radio) {
-                searchHistoryRepository.clearRadioSearchHistory()
-            }
-            if (movies) {
-                searchHistoryRepository.clearMoviesSearchHistory()
-            }
-            if (timers) {
-                searchHistoryRepository.clearTimersSearchHistory()
-            }
-            if (tvEpg) {
-                searchHistoryRepository.clearTvEpgSearchHistory()
-            }
-            if (radioEpg) {
-                searchHistoryRepository.clearRadioEpgSearchHistory()
-            }
-            if (serviceEpg) {
-                searchHistoryRepository.clearServiceEpgSearchHistory()
-            }
+            searchRepository.clearHistory(type)
+        }
+    }
+
+    fun clearAllSearchHistories() {
+        viewModelScope.launch {
+            searchRepository.clearHistories()
         }
     }
 }

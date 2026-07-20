@@ -184,8 +184,6 @@
     <string name="insert">Insert</string>
     <string name="type_something_to_search">Type something to search</string>
     <string name="clear">Clear</string>
-    <string name="clear_search_histories">Clear search histories</string>
-    <string name="select_which_search_histories_to_clear">Select which search histories to clear.</string>
     <string name="search">Search</string>
     <string name="manage_search_settings_and_histories">Manage search settings and histories.</string>
     <string name="use_search_histories">Use search histories</string>
@@ -257,8 +255,9 @@
     <string name="screenshot_failed">Screenshot failed</string>
     <string name="view">View</string>
     <string name="no_image_viewer_found">No image viewer found</string>
-    <plurals name="files">
-        <item quantity="one">%1$d file</item>
-        <item quantity="other">%1$d files</item>
-    </plurals>
+    <string name="search_histories">Search histories</string>
+    <string name="remove">Remove</string>
+    <string name="remove_query">Remove query?</string>
+    <string name="view_and_clear_your_search_histories">View and clear your search histories.</string>
+    <string name="view_search_histories">View search histories</string>
 </resources>

@@ -80,13 +80,15 @@ fun ServiceEpgPage(
                         highlightedWords = highlightedWords,
                         onAddTimerForEvent = { event -> serviceEpgViewModel.addTimerForEvent(event) })
                 } ?: run {
-                    SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
+                    SearchHistory(searchHistory = searchHistory, onSearchQuery = {
                         serviceEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
                         serviceEpgViewModel.updateSearchInput()
-                    }, onTermInsertClick = {
+                    }, onInsertQuery = {
                         serviceEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
                             it
                         )
+                    }, onRemoveItem = {
+                        serviceEpgViewModel.deleteFromSearchHistory(it)
                     })
                 }
             },

@@ -199,7 +199,7 @@ fun MainNavigationDisplay(
             metadata = fadeThroughTransition()
         ) {
             EpgPage(
-                contentType = ContentType.Tv,
+                contentType = ContentType.TvEpg,
                 onNavigateToRemoteControl = { onNavigateToRemoteControl() },
                 modalDrawerState
             )
@@ -208,7 +208,7 @@ fun MainNavigationDisplay(
             metadata = fadeThroughTransition()
         ) {
             EpgPage(
-                contentType = ContentType.Radio,
+                contentType = ContentType.RadioEpg,
                 onNavigateToRemoteControl = { onNavigateToRemoteControl() },
                 modalDrawerState
             )

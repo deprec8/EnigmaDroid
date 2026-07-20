@@ -171,8 +171,6 @@
     <string name="insert">Einfügen</string>
     <string name="type_something_to_search">Geben Sie etwas ein, um zu suchen</string>
     <string name="clear">Löschen</string>
-    <string name="clear_search_histories">Suchverläufe löschen</string>
-    <string name="select_which_search_histories_to_clear">Wählen Sie aus, welche Suchverläufe gelöscht werden sollen.</string>
     <string name="search">Suche</string>
     <string name="manage_search_settings_and_histories">Sucheinstellungen und -verläufe verwalten.</string>
     <string name="use_search_histories">Suchverläufe nutzen</string>
@@ -238,8 +236,4 @@
     <string name="no_device_selected">Kein Gerät ausgewählt</string>
     <string name="first_add_a_device">Zuerst ein Gerät hinzufügen.</string>
     <string name="first_select_a_device">Wählen Sie zuerst ein Gerät aus.</string>
-    <plurals name="files">
-        <item quantity="one">%1$d Datei</item>
-        <item quantity="other">%1$d Dateien</item>
-    </plurals>
 </resources>

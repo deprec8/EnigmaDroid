@@ -22,7 +22,6 @@ package io.github.deprec8.enigmadroid.ui.epg
 import androidx.lifecycle.viewModelScope
 import io.github.deprec8.enigmadroid.common.enums.ContentType
 import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
-import io.github.deprec8.enigmadroid.data.repositories.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.model.api.Bouquet
 import io.github.deprec8.enigmadroid.model.api.Event
 import io.github.deprec8.enigmadroid.model.api.EventBatchSet
@@ -39,9 +38,8 @@ import org.koin.core.annotation.InjectedParam
 
 class EpgViewModel(
     @InjectedParam private val contentType: ContentType,
-    private val apiRepository: ApiRepository,
-    private val searchHistoryRepository: SearchHistoryRepository
-) : SearchableContentViewModel() {
+    private val apiRepository: ApiRepository
+) : SearchableContentViewModel(contentType) {
 
     private val _eventBatchSet = MutableStateFlow<EventBatchSet?>(null)
     val eventBatchSet: StateFlow<EventBatchSet?> = _eventBatchSet.asStateFlow()
@@ -58,14 +56,6 @@ class EpgViewModel(
         eventBatchSet?.eventBatches?.flatMap { it.events }?.search(searchInput)
     }.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000), null
-    )
-
-    override val searchHistory = if (contentType == ContentType.Tv) {
-        searchHistoryRepository.getTvEpgSearchHistory()
-    } else {
-        searchHistoryRepository.getRadioEpgSearchHistory()
-    }.stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
     )
 
     private suspend fun fetchBouquets() {
@@ -102,16 +92,6 @@ class EpgViewModel(
         _eventBatchSet.value = null
         fetchJob = viewModelScope.launch {
             fetchEpgBatchSet()
-        }
-    }
-
-    override fun onAddToSearchHistory(input: String) {
-        viewModelScope.launch {
-            if (contentType == ContentType.Tv) {
-                searchHistoryRepository.addToTvEpgSearchHistory(input)
-            } else {
-                searchHistoryRepository.addToRadioEpgSearchHistory(input)
-            }
         }
     }
 

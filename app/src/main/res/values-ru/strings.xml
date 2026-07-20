@@ -171,8 +171,6 @@
     <string name="insert">Вставить</string>
     <string name="type_something_to_search">Введите текст для поиска</string>
     <string name="clear">Очистить</string>
-    <string name="clear_search_histories">Очистить историю поиска</string>
-    <string name="select_which_search_histories_to_clear">Выберите истории поиска для очистки.</string>
     <string name="search">Поиск</string>
     <string name="manage_search_settings_and_histories">Управление настройками и историей поиска.</string>
     <string name="use_search_histories">Использовать историю поиска</string>
@@ -238,10 +236,4 @@
     <string name="no_device_selected">Устройство не выбрано</string>
     <string name="first_add_a_device">Сначала добавьте устройство.</string>
     <string name="first_select_a_device">Сначала выберите устройство.</string>
-    <plurals name="files">
-        <item quantity="one">%1$d файл</item>
-        <item quantity="few">%1$d Файла</item>
-        <item quantity="many">%1$d Файлов</item>
-        <item quantity="other">%1$d файлов</item>
-    </plurals>
 </resources>

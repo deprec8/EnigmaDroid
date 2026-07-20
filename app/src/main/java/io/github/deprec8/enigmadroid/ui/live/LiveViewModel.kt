@@ -22,7 +22,6 @@ package io.github.deprec8.enigmadroid.ui.live
 import androidx.lifecycle.viewModelScope
 import io.github.deprec8.enigmadroid.common.enums.ContentType
 import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
-import io.github.deprec8.enigmadroid.data.repositories.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.model.api.Event
 import io.github.deprec8.enigmadroid.model.api.EventBatch
 import io.github.deprec8.enigmadroid.model.api.search
@@ -37,10 +36,8 @@ import kotlinx.coroutines.launch
 import org.koin.core.annotation.InjectedParam
 
 class LiveViewModel(
-    @InjectedParam private val contentType: ContentType,
-    private val apiRepository: ApiRepository,
-    private val searchHistoryRepository: SearchHistoryRepository
-) : SearchableContentViewModel() {
+    @InjectedParam private val contentType: ContentType, private val apiRepository: ApiRepository
+) : SearchableContentViewModel(contentType) {
 
     private val _eventBatches = MutableStateFlow<List<EventBatch>?>(null)
     val eventBatches: StateFlow<List<EventBatch>?> = _eventBatches.asStateFlow()
@@ -53,14 +50,6 @@ class LiveViewModel(
         eventBatches?.getOrNull(currentBouquetIndex)?.events?.search(searchInput)
     }.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000), null
-    )
-
-    override val searchHistory = if (contentType == ContentType.Tv) {
-        searchHistoryRepository.getTvSearchHistory()
-    } else {
-        searchHistoryRepository.getRadioSearchHistory()
-    }.stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
     )
 
     suspend fun buildLiveStreamUrl(serviceReference: String): String {
@@ -83,16 +72,6 @@ class LiveViewModel(
 
     fun updateCurrentBouquetIndex(index: Int) {
         currentBouquetIndex.value = index
-    }
-
-    override fun onAddToSearchHistory(input: String) {
-        viewModelScope.launch {
-            if (contentType == ContentType.Tv) {
-                searchHistoryRepository.addToTvSearchHistory(input)
-            } else {
-                searchHistoryRepository.addToRadioSearchHistory(input)
-            }
-        }
     }
 
     override fun onClearData() {

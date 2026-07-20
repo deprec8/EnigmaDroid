@@ -120,13 +120,15 @@ fun EpgPage(
                         highlightedWords = highlightedWords,
                         onAddTimerForEvent = { event -> epgViewModel.addTimerForEvent(event) })
                 } ?: run {
-                    SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
+                    SearchHistory(searchHistory = searchHistory, onSearchQuery = {
                         epgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
                         epgViewModel.updateSearchInput()
-                    }, onTermInsertClick = {
+                    }, onInsertQuery = {
                         epgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
                             it
                         )
+                    }, onRemoveItem = {
+                        epgViewModel.deleteFromSearchHistory(it)
                     })
                 }
             },

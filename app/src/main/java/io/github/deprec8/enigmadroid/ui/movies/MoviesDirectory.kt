@@ -121,13 +121,15 @@ fun MoviesDirectoryPage(
                         onDownloadMovie = { movie -> moviesViewModel.download(movie) })
 
                 } ?: run {
-                    SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
+                    SearchHistory(searchHistory = searchHistory, onSearchQuery = {
                         moviesViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
                         moviesViewModel.updateSearchInput()
-                    }, onTermInsertClick = {
+                    }, onInsertQuery = {
                         moviesViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
                             it
                         )
+                    }, onRemoveItem = {
+                        moviesViewModel.deleteFromSearchHistory(it)
                     })
                 }
             },

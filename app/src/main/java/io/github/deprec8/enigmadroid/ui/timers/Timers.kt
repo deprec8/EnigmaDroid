@@ -109,13 +109,15 @@ fun TimersPage(
                         serviceBatchSet = serviceBatchSet
                     )
                 } ?: run {
-                    SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
+                    SearchHistory(searchHistory = searchHistory, onSearchQuery = {
                         timersViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
                         timersViewModel.updateSearchInput()
-                    }, onTermInsertClick = {
+                    }, onInsertQuery = {
                         timersViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
                             it
                         )
+                    }, onRemoveItem = {
+                        timersViewModel.deleteFromSearchHistory(it)
                     })
                 }
             },

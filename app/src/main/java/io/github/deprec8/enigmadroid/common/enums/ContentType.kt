@@ -17,13 +17,8 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.common.constant
+package io.github.deprec8.enigmadroid.common.enums
 
-object PreferenceKeys {
-
-    const val CURRENT_DEVICE = "current_device"
-    const val ONBOARDING_NEEDED = "onboarding_needed"
-    const val REMOTE_CONTROL_VIBRATION = "remote_control_vibration"
-    const val USE_SEARCH_HISTORIES = "save_search_history"
-    const val USE_SEARCH_HIGHLIGHTING = "use_search_highlighting"
+enum class ContentType {
+    Radio, Tv, Movies, Timers, ServiceEpg, TvEpg, RadioEpg
 }
