@@ -259,4 +259,5 @@
     <string name="remove_query">Remove query?</string>
     <string name="clear_search_histories">Clear search histories</string>
     <string name="select_which_search_histories_to_clear">Select which search histories to clear.</string>
+    <string name="voice_search">Voice search</string>
 </resources>

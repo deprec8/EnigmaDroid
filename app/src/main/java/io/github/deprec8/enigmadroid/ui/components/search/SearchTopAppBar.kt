@@ -19,6 +19,11 @@
 
 package io.github.deprec8.enigmadroid.ui.components.search
 
+import android.app.Activity
+import android.content.Intent
+import android.speech.RecognizerIntent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,6 +35,7 @@ import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExpandedDockedSearchBar
@@ -217,6 +223,19 @@ private fun SearchTopAppBarInputField(
     val isExpanded = searchBarState.currentValue == SearchBarValue.Expanded
     val scope = rememberCoroutineScope()
 
+    val voiceSearchLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val spokenText =
+                result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.get(0)
+            if (spokenText != null) {
+                textFieldState.setTextAndPlaceCursorAtEnd(spokenText)
+                onSearch()
+            }
+        }
+    }
+
     SearchBarDefaults.InputField(
         searchBarState = searchBarState,
         colors = SearchBarDefaults.inputFieldColors(
@@ -244,24 +263,54 @@ private fun SearchTopAppBarInputField(
         },
         trailingIcon = {
             if (isExpanded) {
-                TooltipBox(
-                    tooltip = {
-                        PlainTooltip {
-                            Text(stringResource(id = R.string.clear))
-                        }
-                    },
-                    state = rememberTooltipState(),
-                    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-                        TooltipAnchorPosition.Below, 4.dp
-                    )
-                ) {
-                    IconButton(onClick = {
-                        textFieldState.setTextAndPlaceCursorAtEnd("")
-                        onSearch()
-                    }, enabled = textFieldState.text.isNotEmpty()) {
-                        Icon(
-                            Icons.Default.Clear, contentDescription = stringResource(R.string.clear)
+                if (textFieldState.text.isNotEmpty()) {
+                    TooltipBox(
+                        tooltip = {
+                            PlainTooltip {
+                                Text(stringResource(id = R.string.clear))
+                            }
+                        },
+                        state = rememberTooltipState(),
+                        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                            TooltipAnchorPosition.Below, 4.dp
                         )
+                    ) {
+                        IconButton(onClick = {
+                            textFieldState.setTextAndPlaceCursorAtEnd("")
+                            onSearch()
+                        }) {
+                            Icon(
+                                Icons.Default.Clear,
+                                contentDescription = stringResource(R.string.clear)
+                            )
+                        }
+                    }
+                } else {
+                    TooltipBox(
+                        tooltip = {
+                            PlainTooltip {
+                                Text(stringResource(id = R.string.voice_search))
+                            }
+                        },
+                        state = rememberTooltipState(),
+                        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                            TooltipAnchorPosition.Below, 4.dp
+                        )
+                    ) {
+                        IconButton(onClick = {
+                            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                                putExtra(
+                                    RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                                    RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+                                )
+                            }
+                            voiceSearchLauncher.launch(intent)
+                        }) {
+                            Icon(
+                                Icons.Filled.Mic,
+                                contentDescription = stringResource(R.string.voice_search)
+                            )
+                        }
                     }
                 }
             } else {
