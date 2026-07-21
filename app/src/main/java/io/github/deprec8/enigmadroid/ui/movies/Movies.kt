@@ -112,9 +112,7 @@ fun MoviesPage(
                         moviesViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
                         moviesViewModel.updateSearchInput()
                     }, onInsertQuery = {
-                        moviesViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
-                            it
-                        )
+                        moviesViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
                     }, onRemoveItem = {
                         moviesViewModel.deleteFromSearchHistory(it)
                     })

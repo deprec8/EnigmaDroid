@@ -113,9 +113,7 @@ fun TimersPage(
                         timersViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
                         timersViewModel.updateSearchInput()
                     }, onInsertQuery = {
-                        timersViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
-                            it
-                        )
+                        timersViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
                     }, onRemoveItem = {
                         timersViewModel.deleteFromSearchHistory(it)
                     })

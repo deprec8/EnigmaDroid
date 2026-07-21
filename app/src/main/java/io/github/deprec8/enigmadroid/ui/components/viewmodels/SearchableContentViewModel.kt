@@ -20,6 +20,7 @@
 package io.github.deprec8.enigmadroid.ui.components.viewmodels
 
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
 import io.github.deprec8.enigmadroid.common.enums.ContentType
 import io.github.deprec8.enigmadroid.data.repositories.SearchRepository
@@ -42,7 +43,16 @@ abstract class SearchableContentViewModel(private val type: ContentType) : Conte
 
     protected val searchInput = MutableStateFlow("")
 
-    val searchHistory = searchRepository.getHistory(type).stateIn(
+    val searchHistory = combine(
+        searchRepository.getHistory(type),
+        searchInput,
+        snapshotFlow { searchFieldState.text }) { history, query, input ->
+        if (query.isNotBlank() || input.isBlank()) return@combine history
+        val normalizedInput = FuzzySearchUtils.normalize(input.toString())
+        return@combine history.filter {
+            FuzzySearchUtils.fuzzyMatch(FuzzySearchUtils.normalize(it.query), normalizedInput)
+        }
+    }.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
     )
 

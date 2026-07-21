@@ -84,9 +84,7 @@ fun ServiceEpgPage(
                         serviceEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
                         serviceEpgViewModel.updateSearchInput()
                     }, onInsertQuery = {
-                        serviceEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
-                            it
-                        )
+                        serviceEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
                     }, onRemoveItem = {
                         serviceEpgViewModel.deleteFromSearchHistory(it)
                     })

@@ -124,9 +124,7 @@ fun EpgPage(
                         epgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
                         epgViewModel.updateSearchInput()
                     }, onInsertQuery = {
-                        epgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
-                            it
-                        )
+                        epgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
                     }, onRemoveItem = {
                         epgViewModel.deleteFromSearchHistory(it)
                     })

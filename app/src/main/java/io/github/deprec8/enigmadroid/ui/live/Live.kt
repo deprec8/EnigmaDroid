@@ -119,9 +119,7 @@ fun LivePage(
                         liveViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
                         liveViewModel.updateSearchInput()
                     }, onInsertQuery = {
-                        liveViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
-                            it
-                        )
+                        liveViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
                     }, onRemoveItem = {
                         liveViewModel.deleteFromSearchHistory(it)
                     })
