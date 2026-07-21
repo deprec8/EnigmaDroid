@@ -43,7 +43,8 @@ abstract class SearchableContentViewModel(private val type: ContentType) : Conte
         searchRepository.getHistory(type),
         searchInput,
         snapshotFlow { searchFieldState.text }) { history, query, input ->
-        if (query.isNotBlank() || input.isBlank()) return@combine history
+        if (query.isNotBlank()) return@combine emptyList()
+        if (input.isBlank()) return@combine history
         val normalizedInput = FuzzySearchUtils.normalize(input.toString())
         return@combine history.filter {
             FuzzySearchUtils.fuzzyMatch(FuzzySearchUtils.normalize(it.query), normalizedInput)

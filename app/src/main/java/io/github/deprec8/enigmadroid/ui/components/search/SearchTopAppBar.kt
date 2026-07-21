@@ -24,6 +24,7 @@ import android.content.Intent
 import android.speech.RecognizerIntent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -43,12 +44,12 @@ import androidx.compose.material3.ExpandedFullScreenSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SearchBarState
 import androidx.compose.material3.SearchBarValue
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TooltipAnchorPosition
@@ -79,26 +80,38 @@ fun SearchTopAppBar(
     actionButtons: @Composable (() -> Unit)? = null,
     actionBar: @Composable (() -> Unit)? = null,
     onSearch: () -> Unit,
-    enabled: Boolean = true,
-    content: @Composable (() -> Unit)? = null,
+    enabled: Boolean,
+    content: @Composable (() -> Unit),
 ) {
 
     val searchBarState = rememberSearchBarState()
-
     val isSmallScreenLayout = isSmallScreenLayout()
 
-    Surface {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .windowInsetsPadding(topAppBarWithDrawerWindowInsets())
-        ) {
-            SearchBar(
-                searchBarState,
-                modifier = Modifier
-                    .padding(top = 8.dp, start = 16.dp, end = 16.dp)
-                    .then(if (!isSmallScreenLayout) Modifier.align(Alignment.End) else Modifier.fillMaxWidth()),
-                inputField = {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .background(color = MaterialTheme.colorScheme.surface)
+            .windowInsetsPadding(topAppBarWithDrawerWindowInsets())
+    ) {
+        SearchBar(
+            searchBarState,
+            modifier = Modifier
+                .padding(top = 8.dp, start = 16.dp, end = 16.dp)
+                .then(if (!isSmallScreenLayout) Modifier.align(Alignment.End) else Modifier.fillMaxWidth()),
+            inputField = {
+                SearchTopAppBarInputField(
+                    searchBarState = searchBarState,
+                    enabled = enabled,
+                    textFieldState = textFieldState,
+                    onSearch = onSearch,
+                    placeholder = placeholder,
+                    navigationButton = navigationButton,
+                    actionButtons = actionButtons
+                )
+            })
+        if (isSmallScreenLayout) {
+            ExpandedFullScreenSearchBar(
+                state = searchBarState, inputField = {
                     SearchTopAppBarInputField(
                         searchBarState = searchBarState,
                         enabled = enabled,
@@ -108,51 +121,37 @@ fun SearchTopAppBar(
                         navigationButton = navigationButton,
                         actionButtons = actionButtons
                     )
-                })
-            if (isSmallScreenLayout) {
-                ExpandedFullScreenSearchBar(
-                    state = searchBarState, inputField = {
-                        SearchTopAppBarInputField(
-                            searchBarState = searchBarState,
-                            enabled = enabled,
-                            textFieldState = textFieldState,
-                            onSearch = onSearch,
-                            placeholder = placeholder,
-                            navigationButton = navigationButton,
-                            actionButtons = actionButtons
-                        )
-                    }) {
-                    if (content != null && enabled) {
-                        content()
-                    } else {
-                        NoResults()
-                    }
-                }
-            } else {
-                ExpandedDockedSearchBar(
-                    state = searchBarState, {
-                        SearchTopAppBarInputField(
-                            searchBarState = searchBarState,
-                            enabled = enabled,
-                            textFieldState = textFieldState,
-                            onSearch = onSearch,
-                            placeholder = placeholder,
-                            navigationButton = navigationButton,
-                            actionButtons = actionButtons
-                        )
-                    }) {
-                    if (content != null && enabled) {
-                        content()
-                    } else {
-                        NoResults()
-                    }
+                }) {
+                if (enabled) {
+                    content()
+                } else {
+                    NoResults()
                 }
             }
-            if (actionBar != null) {
-                actionBar()
-            } else {
-                Spacer(Modifier.size(8.dp))
+        } else {
+            ExpandedDockedSearchBar(
+                state = searchBarState, {
+                    SearchTopAppBarInputField(
+                        searchBarState = searchBarState,
+                        enabled = enabled,
+                        textFieldState = textFieldState,
+                        onSearch = onSearch,
+                        placeholder = placeholder,
+                        navigationButton = navigationButton,
+                        actionButtons = actionButtons
+                    )
+                }) {
+                if (enabled) {
+                    content()
+                } else {
+                    NoResults()
+                }
             }
+        }
+        if (actionBar != null) {
+            actionBar()
+        } else {
+            Spacer(Modifier.size(8.dp))
         }
     }
 }
