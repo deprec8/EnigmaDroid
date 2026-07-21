@@ -69,7 +69,6 @@ import io.github.deprec8.enigmadroid.utils.TimestampUtils
 fun TimersContent(
     timers: List<Timer>,
     paddingValues: PaddingValues,
-    highlightedWords: List<String> = emptyList(),
     onToggleTimerStatus: (Timer) -> Unit,
     onEditTimer: (Timer, Timer) -> Unit,
     onDeleteTimer: (Timer) -> Unit,
@@ -91,7 +90,6 @@ fun TimersContent(
                 var showLogDialog by rememberSaveable { mutableStateOf(false) }
 
                 ContentItem(
-                    highlightedWords = highlightedWords,
                     headlineText = timer.title,
                     overlineText = "${timer.serviceName} - ${timer.getState()}${
                         if (timer.cancelled) {

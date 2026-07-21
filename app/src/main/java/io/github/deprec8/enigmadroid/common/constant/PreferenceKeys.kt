@@ -25,5 +25,4 @@ object PreferenceKeys {
     const val ONBOARDING_NEEDED = "onboarding_needed"
     const val REMOTE_CONTROL_VIBRATION = "remote_control_vibration"
     const val USE_SEARCH_HISTORIES = "save_search_history"
-    const val USE_SEARCH_HIGHLIGHTING = "use_search_highlighting"
 }

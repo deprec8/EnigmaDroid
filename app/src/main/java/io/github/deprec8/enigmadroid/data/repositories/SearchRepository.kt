@@ -38,7 +38,6 @@ class SearchRepository(
 ) {
 
     private val useHistoriesKey = booleanPreferencesKey(PreferenceKeys.USE_SEARCH_HISTORIES)
-    private val useHighlightingKey = booleanPreferencesKey(PreferenceKeys.USE_SEARCH_HIGHLIGHTING)
 
     fun getUseHistories() = dataStore.data.map { preferences ->
         preferences[useHistoriesKey] ?: true
@@ -50,16 +49,6 @@ class SearchRepository(
         }
         dataStore.edit { preferences ->
             preferences[useHistoriesKey] = value
-        }
-    }
-
-    fun getUseHighlighting() = dataStore.data.map { preferences ->
-        preferences[useHighlightingKey] ?: true
-    }
-
-    suspend fun setUseHighlighting(value: Boolean) {
-        dataStore.edit { preferences ->
-            preferences[useHighlightingKey] = value
         }
     }
 

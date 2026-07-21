@@ -78,7 +78,6 @@ fun TimersPage(
     val serviceBatchSet by timersViewModel.serviceBatchSet.collectAsStateWithLifecycle()
     val searchHistory by timersViewModel.searchHistory.collectAsStateWithLifecycle()
     val connectionState by timersViewModel.connectionState.collectAsStateWithLifecycle()
-    val highlightedWords by timersViewModel.highlightedWords.collectAsStateWithLifecycle()
 
     var showTimerSetupDialog by rememberSaveable {
         mutableStateOf(false)
@@ -96,7 +95,6 @@ fun TimersPage(
                     TimersContent(
                         timers = filteredTimers,
                         paddingValues = PaddingValues(0.dp),
-                        highlightedWords = highlightedWords,
                         onToggleTimerStatus = {
                             timersViewModel.toggleTimerStatus(it)
                         },

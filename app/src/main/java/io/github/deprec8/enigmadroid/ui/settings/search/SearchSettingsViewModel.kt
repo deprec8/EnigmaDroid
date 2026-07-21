@@ -41,10 +41,6 @@ class SearchSettingsViewModel(
         viewModelScope, SharingStarted.WhileSubscribed(5000), true
     )
 
-    val useSearchHighlighting = searchRepository.getUseHighlighting().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), true
-    )
-
     private val _selectedTypes = MutableStateFlow<Set<ContentType>>(emptySet())
     val selectedTypes = _selectedTypes.asStateFlow()
 
@@ -67,12 +63,6 @@ class SearchSettingsViewModel(
     fun setUseSearchHistory(value: Boolean) {
         viewModelScope.launch {
             searchRepository.setUseHistories(value)
-        }
-    }
-
-    fun setUseSearchHighlighting(value: Boolean) {
-        viewModelScope.launch {
-            searchRepository.setUseHighlighting(value)
         }
     }
 

@@ -37,10 +37,6 @@ abstract class SearchableContentViewModel(private val type: ContentType) : Conte
 
     private val searchRepository: SearchRepository by inject()
 
-    protected val useSearchHighlighting = searchRepository.getUseHighlighting().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), true
-    )
-
     protected val searchInput = MutableStateFlow("")
 
     val searchHistory = combine(
@@ -57,13 +53,6 @@ abstract class SearchableContentViewModel(private val type: ContentType) : Conte
     )
 
     val searchFieldState = TextFieldState()
-
-    val highlightedWords = combine(searchInput, useSearchHighlighting) { input, enabled ->
-        if (enabled) input.split(" ").filter { it.isNotBlank() }
-            .map { FuzzySearchUtils.normalize(it) } else emptyList()
-    }.stateIn(
-        viewModelScope, started = SharingStarted.WhileSubscribed(5000), initialValue = emptyList()
-    )
 
     fun updateSearchInput() {
         val input = searchFieldState.text.toString()

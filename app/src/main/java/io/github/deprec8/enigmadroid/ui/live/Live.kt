@@ -70,7 +70,6 @@ fun LivePage(
     val eventBatches by liveViewModel.eventBatches.collectAsStateWithLifecycle()
     val connectionState by liveViewModel.connectionState.collectAsStateWithLifecycle()
     val searchHistory by liveViewModel.searchHistory.collectAsStateWithLifecycle()
-    val highlightedWords by liveViewModel.highlightedWords.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { eventBatches?.size ?: 0 })
@@ -99,7 +98,6 @@ fun LivePage(
                         events = filterEvents,
                         paddingValues = PaddingValues(0.dp),
                         showChannelNumbers = false,
-                        highlightedWords = highlightedWords,
                         onNavigateToServiceEpg = { serviceReference, serviceName ->
                             onNavigateToServiceEpg(
                                 serviceReference, serviceName

@@ -175,8 +175,6 @@
     <string name="manage_search_settings_and_histories">Gérer les paramètres et l’historique de recherche.</string>
     <string name="use_search_histories">Utiliser l’historique de recherche</string>
     <string name="disabling_this_will_clear_all_search_histories">Désactiver cela effacera tout l’historique de recherche.</string>
-    <string name="highlight_matches">Surligner les correspondances</string>
-    <string name="highlight_matches_in_search_results">Surligner les correspondances dans les résultats de recherche.</string>
     <string name="translation">Traduction</string>
     <string name="view_epg">Voir EPG</string>
     <string name="all">Tous</string>

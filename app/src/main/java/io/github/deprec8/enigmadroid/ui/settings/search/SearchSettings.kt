@@ -65,7 +65,6 @@ fun SearchSettingsPage(
 
     val typesWithHistory by searchSettingsViewModel.typesWithHistory.collectAsStateWithLifecycle()
     val useSearchHistories by searchSettingsViewModel.useSearchHistories.collectAsStateWithLifecycle()
-    val useSearchHighlighting by searchSettingsViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
     val selectedTypes by searchSettingsViewModel.selectedTypes.collectAsStateWithLifecycle()
 
     var showSearchHistoriesDialog by rememberSaveable { mutableStateOf(false) }
@@ -116,18 +115,6 @@ fun SearchSettingsPage(
                 }, modifier = Modifier.clickable(
                     onClick = { showSearchHistoriesDialog = true })
             )
-            ListItem(headlineContent = {
-                Text(stringResource(R.string.highlight_matches))
-            }, supportingContent = {
-                Text(stringResource(R.string.highlight_matches_in_search_results))
-            }, trailingContent = {
-                Switch(
-                    checked = useSearchHighlighting, onCheckedChange = { value ->
-                        searchSettingsViewModel.setUseSearchHighlighting(value)
-                    })
-            }, modifier = Modifier.clickable {
-                searchSettingsViewModel.setUseSearchHighlighting(!useSearchHighlighting)
-            })
         }
     }
 

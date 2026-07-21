@@ -175,8 +175,6 @@
     <string name="manage_search_settings_and_histories">Gestisci impostazioni e cronologia ricerche.</string>
     <string name="use_search_histories">Usa cronologia ricerche</string>
     <string name="disabling_this_will_clear_all_search_histories">Disabilitando verrà cancellata tutta la cronologia ricerche.</string>
-    <string name="highlight_matches">Evidenzia corrispondenze</string>
-    <string name="highlight_matches_in_search_results">Evidenzia corrispondenze nei risultati della ricerca.</string>
     <string name="translation">Traduzione</string>
     <string name="view_epg">Visualizza EPG</string>
     <string name="all">Tutti</string>
