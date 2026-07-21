@@ -69,7 +69,7 @@ fun SearchHistory(
                 .fillMaxSize()
                 .imePadding()
         ) {
-            items(searchHistory) { item ->
+            items(searchHistory, key = { item -> item.id }) { item ->
                 var showRemoveDialog by rememberSaveable { mutableStateOf(false) }
 
                 ListItem(
@@ -97,11 +97,13 @@ fun SearchHistory(
                     leadingContent = {
                         Icon(Icons.Default.History, contentDescription = null)
                     },
-                    modifier = Modifier.combinedClickable(
-                        onClick = { onSearchQuery(item.query) },
-                        onLongClick = {
-                            showRemoveDialog = true
-                        }),
+                    modifier = Modifier
+                        .combinedClickable(
+                            onClick = { onSearchQuery(item.query) },
+                            onLongClick = {
+                                showRemoveDialog = true
+                            })
+                        .animateItem(),
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                 )
 
