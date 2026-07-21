@@ -21,6 +21,7 @@ package io.github.deprec8.enigmadroid.model.api
 
 import androidx.compose.runtime.Immutable
 import io.github.deprec8.enigmadroid.data.serialization.HtmlDecodedStringSerializer
+import io.github.deprec8.enigmadroid.utils.FuzzySearchUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerialName
@@ -55,38 +56,41 @@ suspend fun List<Movie>.search(filter: String): List<Movie>? {
     return withContext(Dispatchers.Default) {
         if (filter.isBlank() || movies.isEmpty()) return@withContext null
 
-        val filterTerms = filter.lowercase().split(" ").filter { it.isNotBlank() }
+        val filterTerms =
+            filter.split(" ").filter { it.isNotBlank() }.map { FuzzySearchUtils.normalize(it) }
 
         return@withContext movies.asSequence().map { movie ->
-            val lcService = movie.serviceName.lowercase()
-            val lcLongDesc = movie.longDescription.lowercase()
-            val lcShortDesc = movie.shortDescription.lowercase()
-            val lcTags = movie.tags.lowercase()
-            val lcBegin = movie.begin.lowercase()
-            val lcEventName = movie.eventName.lowercase()
+            val nService = FuzzySearchUtils.normalize(movie.serviceName)
+            val nLongDesc = FuzzySearchUtils.normalize(movie.longDescription)
+            val nShortDesc = FuzzySearchUtils.normalize(movie.shortDescription)
+            val nTags = FuzzySearchUtils.normalize(movie.tags)
+            val nBegin = FuzzySearchUtils.normalize(movie.begin)
+            val nEventName = FuzzySearchUtils.normalize(movie.eventName)
 
             val matches = filterTerms.all { term ->
-                lcService.contains(term) || lcLongDesc.contains(term) || lcShortDesc.contains(
-                    term
-                ) || lcTags.contains(term) || lcBegin.contains(term) || lcEventName.contains(
-                    term
-                )
+                FuzzySearchUtils.fuzzyMatch(
+                    nService, term
+                ) || FuzzySearchUtils.fuzzyMatch(nLongDesc, term) || FuzzySearchUtils.fuzzyMatch(
+                    nShortDesc, term
+                ) || FuzzySearchUtils.fuzzyMatch(nTags, term) || FuzzySearchUtils.fuzzyMatch(
+                    nBegin, term
+                ) || FuzzySearchUtils.fuzzyMatch(nEventName, term)
             }
 
             val score = if (matches) {
-                filterTerms.count { lcService.contains(it) } * 6 + filterTerms.count {
-                    lcLongDesc.contains(
-                        it
-                    )
-                } * 5 + filterTerms.count { lcShortDesc.contains(it) } * 4 + filterTerms.count {
-                    lcTags.contains(
-                        it
-                    )
-                } * 3 + filterTerms.count { lcBegin.contains(it) } * 2 + filterTerms.count {
-                    lcEventName.contains(
-                        it
-                    )
-                } * 1
+                filterTerms.sumOf { term ->
+                    FuzzySearchUtils.calculateScore(
+                        nService, term
+                    ) * 6 + FuzzySearchUtils.calculateScore(
+                        nLongDesc, term
+                    ) * 5 + FuzzySearchUtils.calculateScore(
+                        nShortDesc, term
+                    ) * 4 + FuzzySearchUtils.calculateScore(
+                        nTags, term
+                    ) * 3 + FuzzySearchUtils.calculateScore(
+                        nBegin, term
+                    ) * 2 + FuzzySearchUtils.calculateScore(nEventName, term) * 1
+                }
             } else 0
 
             Triple(movie, matches, score)

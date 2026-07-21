@@ -19,6 +19,12 @@
 
 package io.github.deprec8.enigmadroid.ui.components.search
 
+import android.app.Activity
+import android.content.Intent
+import android.speech.RecognizerIntent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,6 +36,7 @@ import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExpandedDockedSearchBar
@@ -37,12 +44,12 @@ import androidx.compose.material3.ExpandedFullScreenSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SearchBarState
 import androidx.compose.material3.SearchBarValue
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TooltipAnchorPosition
@@ -73,26 +80,38 @@ fun SearchTopAppBar(
     actionButtons: @Composable (() -> Unit)? = null,
     actionBar: @Composable (() -> Unit)? = null,
     onSearch: () -> Unit,
-    enabled: Boolean = true,
-    content: @Composable (() -> Unit)? = null,
+    enabled: Boolean,
+    content: @Composable (() -> Unit),
 ) {
 
     val searchBarState = rememberSearchBarState()
-
     val isSmallScreenLayout = isSmallScreenLayout()
 
-    Surface {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .windowInsetsPadding(topAppBarWithDrawerWindowInsets())
-        ) {
-            SearchBar(
-                searchBarState,
-                modifier = Modifier
-                    .padding(top = 8.dp, start = 16.dp, end = 16.dp)
-                    .then(if (!isSmallScreenLayout) Modifier.align(Alignment.End) else Modifier.fillMaxWidth()),
-                inputField = {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .background(color = MaterialTheme.colorScheme.surface)
+            .windowInsetsPadding(topAppBarWithDrawerWindowInsets())
+    ) {
+        SearchBar(
+            searchBarState,
+            modifier = Modifier
+                .padding(top = 8.dp, start = 16.dp, end = 16.dp)
+                .then(if (!isSmallScreenLayout) Modifier.align(Alignment.End) else Modifier.fillMaxWidth()),
+            inputField = {
+                SearchTopAppBarInputField(
+                    searchBarState = searchBarState,
+                    enabled = enabled,
+                    textFieldState = textFieldState,
+                    onSearch = onSearch,
+                    placeholder = placeholder,
+                    navigationButton = navigationButton,
+                    actionButtons = actionButtons
+                )
+            })
+        if (isSmallScreenLayout) {
+            ExpandedFullScreenSearchBar(
+                state = searchBarState, inputField = {
                     SearchTopAppBarInputField(
                         searchBarState = searchBarState,
                         enabled = enabled,
@@ -102,51 +121,37 @@ fun SearchTopAppBar(
                         navigationButton = navigationButton,
                         actionButtons = actionButtons
                     )
-                })
-            if (isSmallScreenLayout) {
-                ExpandedFullScreenSearchBar(
-                    state = searchBarState, inputField = {
-                        SearchTopAppBarInputField(
-                            searchBarState = searchBarState,
-                            enabled = enabled,
-                            textFieldState = textFieldState,
-                            onSearch = onSearch,
-                            placeholder = placeholder,
-                            navigationButton = navigationButton,
-                            actionButtons = actionButtons
-                        )
-                    }) {
-                    if (content != null && enabled) {
-                        content()
-                    } else {
-                        NoResults()
-                    }
-                }
-            } else {
-                ExpandedDockedSearchBar(
-                    state = searchBarState, {
-                        SearchTopAppBarInputField(
-                            searchBarState = searchBarState,
-                            enabled = enabled,
-                            textFieldState = textFieldState,
-                            onSearch = onSearch,
-                            placeholder = placeholder,
-                            navigationButton = navigationButton,
-                            actionButtons = actionButtons
-                        )
-                    }) {
-                    if (content != null && enabled) {
-                        content()
-                    } else {
-                        NoResults()
-                    }
+                }) {
+                if (enabled) {
+                    content()
+                } else {
+                    NoResults()
                 }
             }
-            if (actionBar != null) {
-                actionBar()
-            } else {
-                Spacer(Modifier.size(8.dp))
+        } else {
+            ExpandedDockedSearchBar(
+                state = searchBarState, {
+                    SearchTopAppBarInputField(
+                        searchBarState = searchBarState,
+                        enabled = enabled,
+                        textFieldState = textFieldState,
+                        onSearch = onSearch,
+                        placeholder = placeholder,
+                        navigationButton = navigationButton,
+                        actionButtons = actionButtons
+                    )
+                }) {
+                if (enabled) {
+                    content()
+                } else {
+                    NoResults()
+                }
             }
+        }
+        if (actionBar != null) {
+            actionBar()
+        } else {
+            Spacer(Modifier.size(8.dp))
         }
     }
 }
@@ -217,6 +222,19 @@ private fun SearchTopAppBarInputField(
     val isExpanded = searchBarState.currentValue == SearchBarValue.Expanded
     val scope = rememberCoroutineScope()
 
+    val voiceSearchLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val spokenText =
+                result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.get(0)
+            if (spokenText != null) {
+                textFieldState.setTextAndPlaceCursorAtEnd(spokenText)
+                onSearch()
+            }
+        }
+    }
+
     SearchBarDefaults.InputField(
         searchBarState = searchBarState,
         colors = SearchBarDefaults.inputFieldColors(
@@ -244,24 +262,54 @@ private fun SearchTopAppBarInputField(
         },
         trailingIcon = {
             if (isExpanded) {
-                TooltipBox(
-                    tooltip = {
-                        PlainTooltip {
-                            Text(stringResource(id = R.string.clear))
-                        }
-                    },
-                    state = rememberTooltipState(),
-                    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-                        TooltipAnchorPosition.Below, 4.dp
-                    )
-                ) {
-                    IconButton(onClick = {
-                        textFieldState.setTextAndPlaceCursorAtEnd("")
-                        onSearch()
-                    }, enabled = textFieldState.text.isNotEmpty()) {
-                        Icon(
-                            Icons.Default.Clear, contentDescription = stringResource(R.string.clear)
+                if (textFieldState.text.isNotEmpty()) {
+                    TooltipBox(
+                        tooltip = {
+                            PlainTooltip {
+                                Text(stringResource(id = R.string.clear))
+                            }
+                        },
+                        state = rememberTooltipState(),
+                        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                            TooltipAnchorPosition.Below, 4.dp
                         )
+                    ) {
+                        IconButton(onClick = {
+                            textFieldState.setTextAndPlaceCursorAtEnd("")
+                            onSearch()
+                        }) {
+                            Icon(
+                                Icons.Default.Clear,
+                                contentDescription = stringResource(R.string.clear)
+                            )
+                        }
+                    }
+                } else {
+                    TooltipBox(
+                        tooltip = {
+                            PlainTooltip {
+                                Text(stringResource(id = R.string.voice_search))
+                            }
+                        },
+                        state = rememberTooltipState(),
+                        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                            TooltipAnchorPosition.Below, 4.dp
+                        )
+                    ) {
+                        IconButton(onClick = {
+                            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                                putExtra(
+                                    RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                                    RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+                                )
+                            }
+                            voiceSearchLauncher.launch(intent)
+                        }) {
+                            Icon(
+                                Icons.Filled.Mic,
+                                contentDescription = stringResource(R.string.voice_search)
+                            )
+                        }
                     }
                 }
             } else {

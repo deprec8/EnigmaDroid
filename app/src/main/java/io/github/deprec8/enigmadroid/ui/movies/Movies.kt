@@ -63,7 +63,6 @@ fun MoviesPage(
     val filteredMovies by moviesViewModel.filteredMovies.collectAsStateWithLifecycle()
     val searchHistory by moviesViewModel.searchHistory.collectAsStateWithLifecycle()
     val connectionState by moviesViewModel.connectionState.collectAsStateWithLifecycle()
-    val highlightedWords by moviesViewModel.highlightedWords.collectAsStateWithLifecycle()
     val freeSpace by moviesViewModel.freeSpace.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
@@ -83,7 +82,6 @@ fun MoviesPage(
                     MoviesContent(
                         movies = it,
                         paddingValues = PaddingValues(0.dp),
-                        highlightedWords = highlightedWords,
                         onStreamMovie = { movie ->
                             scope.launch {
                                 IntentUtils.playMedia(
@@ -108,13 +106,13 @@ fun MoviesPage(
                         onDownloadMovie = { movie -> moviesViewModel.download(movie) })
 
                 } ?: run {
-                    SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
+                    SearchHistory(searchHistory = searchHistory, onSearchQuery = {
                         moviesViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
                         moviesViewModel.updateSearchInput()
-                    }, onTermInsertClick = {
-                        moviesViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
-                            it
-                        )
+                    }, onInsertQuery = {
+                        moviesViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
+                    }, onRemoveItem = {
+                        moviesViewModel.deleteFromSearchHistory(it)
                     })
                 }
             },

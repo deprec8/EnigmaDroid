@@ -62,7 +62,6 @@ fun LiveContent(
     events: List<Event>,
     paddingValues: PaddingValues,
     showChannelNumbers: Boolean = true,
-    highlightedWords: List<String> = emptyList(),
     onPlayOnDevice: (String) -> Unit,
     onAddTimerForEvent: (Event) -> Unit,
     onNavigateToServiceEpg: (String, String) -> Unit,
@@ -94,7 +93,6 @@ fun LiveContent(
                 when (event.flag) {
                     ContentFlag.Channel -> {
                         ContentItem(
-                            highlightedWords = highlightedWords,
                             headlineText = event.serviceName,
                             leadingContent = if (showChannelNumbers) {
                                 {

@@ -29,8 +29,9 @@ import io.github.deprec8.enigmadroid.data.repositories.ConnectionRepository
 import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
 import io.github.deprec8.enigmadroid.data.repositories.DownloadRepository
 import io.github.deprec8.enigmadroid.data.repositories.OnboardingRepository
-import io.github.deprec8.enigmadroid.data.repositories.SearchHistoryRepository
+import io.github.deprec8.enigmadroid.data.repositories.SearchRepository
 import io.github.deprec8.enigmadroid.data.repositories.SettingsRepository
+import io.github.deprec8.enigmadroid.data.source.local.SearchHistoriesDatabase
 import io.github.deprec8.enigmadroid.data.source.local.dataStore
 import io.github.deprec8.enigmadroid.data.source.local.devices.DeviceDatabase
 import io.github.deprec8.enigmadroid.data.source.local.devices.DevicesLocalDataSource
@@ -61,6 +62,9 @@ val appModule = module {
     single<DeviceDatabase> {
         create(::provideDevicesDatabase)
     }
+    single<SearchHistoriesDatabase> {
+        create(::provideSearchHistoriesDatabase)
+    }
     single<ConnectionStateHolder>()
 
     single<DevicesLocalDataSource>()
@@ -71,7 +75,7 @@ val appModule = module {
     single<OnboardingRepository>()
     single<ApiRepository>()
     single<DownloadRepository>()
-    single<SearchHistoryRepository>()
+    single<SearchRepository>()
     single<SettingsRepository>()
 
     viewModel<MainViewModel>()
@@ -97,5 +101,11 @@ private fun provideDataStore(context: Context): DataStore<Preferences> {
 private fun provideDevicesDatabase(context: Context): DeviceDatabase {
     return Room.databaseBuilder(
         context, DeviceDatabase::class.java, "devices-database"
+    ).build()
+}
+
+private fun provideSearchHistoriesDatabase(context: Context): SearchHistoriesDatabase {
+    return Room.databaseBuilder(
+        context, SearchHistoriesDatabase::class.java, "search_histories"
     ).build()
 }

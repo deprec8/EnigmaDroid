@@ -60,7 +60,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.model.MenuItemGroup
-import io.github.deprec8.enigmadroid.ui.components.search.HighlightedText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,7 +74,6 @@ fun ContentDetails(
     shortDescription: String,
     longDescription: String,
     editMenuItemGroup: MenuItemGroup? = null,
-    highlightedWords: List<String> = emptyList(),
     onHideBottomSheet: () -> Unit,
     additionalDescription: String? = null,
 ) {
@@ -88,28 +86,27 @@ fun ContentDetails(
         ) {
             ListItem(
                 headlineContent = {
-                    HighlightedText(
-                        text = headlineText, highlightedWords = highlightedWords
+                    Text(
+                        text = headlineText
                     )
                 }, leadingContent = leadingContent, overlineContent = if (overlineText != null) {
                     {
-                        HighlightedText(
+                        Text(
                             text = overlineText,
                             maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            highlightedWords
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 } else {
                     null
                 }, supportingContent = {
                     Column {
-                        HighlightedText(
-                            text = supportingText, highlightedWords = highlightedWords
+                        Text(
+                            text = supportingText
                         )
                         if (additionalInfo != null) {
-                            HighlightedText(
-                                text = additionalInfo, highlightedWords = highlightedWords
+                            Text(
+                                text = additionalInfo
                             )
                         }
                     }
@@ -211,8 +208,8 @@ fun ContentDetails(
                 ) {
                     if (shortDescription.isNotBlank()) {
                         item {
-                            HighlightedText(
-                                text = shortDescription, highlightedWords = highlightedWords
+                            Text(
+                                text = shortDescription
                             )
                         }
                     }
@@ -223,8 +220,8 @@ fun ContentDetails(
                     }
                     if (longDescription.isNotBlank()) {
                         item {
-                            HighlightedText(
-                                text = longDescription, highlightedWords = highlightedWords
+                            Text(
+                                text = longDescription
                             )
                         }
                     }
@@ -235,8 +232,8 @@ fun ContentDetails(
                     }
                     if (!additionalDescription.isNullOrBlank()) {
                         item {
-                            HighlightedText(
-                                text = additionalDescription, highlightedWords = highlightedWords
+                            Text(
+                                text = additionalDescription
                             )
                         }
                     }

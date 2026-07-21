@@ -53,7 +53,6 @@ fun EpgContent(
     events: List<Event>,
     paddingValues: PaddingValues,
     showChannelName: Boolean = false,
-    highlightedWords: List<String> = emptyList(),
     onAddTimerForEvent: (Event) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -70,7 +69,6 @@ fun EpgContent(
         ) {
             items(events) { event ->
                 ContentItem(
-                    highlightedWords = highlightedWords,
                     headlineText = event.title,
                     supportingText = TimestampUtils.formatApiTimestampToDate(event.beginTimestamp),
                     overlineText = if (event.beginTimestamp * 1000 <= System.currentTimeMillis()) {

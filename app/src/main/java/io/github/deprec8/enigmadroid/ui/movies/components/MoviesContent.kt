@@ -67,7 +67,6 @@ fun MoviesContent(
     bookmarks: List<String> = emptyList(),
     directory: String = "",
     paddingValues: PaddingValues,
-    highlightedWords: List<String> = emptyList(),
     onStreamMovie: (Movie) -> Unit,
     onPlayMovieOnDevice: (Movie) -> Unit,
     onDeleteMovie: (Movie) -> Unit,
@@ -100,7 +99,6 @@ fun MoviesContent(
                 var showMoveDialog by rememberSaveable { mutableStateOf(false) }
 
                 ContentItem(
-                    highlightedWords = highlightedWords,
                     headlineText = movie.eventName,
                     overlineText = "${movie.serviceName} - ${movie.begin}",
                     supportingText = "${movie.length} (${movie.filesizeReadable})",

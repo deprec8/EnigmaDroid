@@ -60,7 +60,6 @@ fun ServiceEpgPage(
     val connectionState by serviceEpgViewModel.connectionState.collectAsStateWithLifecycle()
     val filteredEvents by serviceEpgViewModel.filteredEvents.collectAsStateWithLifecycle()
     val searchHistory by serviceEpgViewModel.searchHistory.collectAsStateWithLifecycle()
-    val highlightedWords by serviceEpgViewModel.highlightedWords.collectAsStateWithLifecycle()
 
     ObserveActiveState(serviceEpgViewModel)
 
@@ -77,16 +76,15 @@ fun ServiceEpgPage(
                         events = it,
                         paddingValues = PaddingValues(0.dp),
                         showChannelName = true,
-                        highlightedWords = highlightedWords,
                         onAddTimerForEvent = { event -> serviceEpgViewModel.addTimerForEvent(event) })
                 } ?: run {
-                    SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
+                    SearchHistory(searchHistory = searchHistory, onSearchQuery = {
                         serviceEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
                         serviceEpgViewModel.updateSearchInput()
-                    }, onTermInsertClick = {
-                        serviceEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
-                            it
-                        )
+                    }, onInsertQuery = {
+                        serviceEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
+                    }, onRemoveItem = {
+                        serviceEpgViewModel.deleteFromSearchHistory(it)
                     })
                 }
             },

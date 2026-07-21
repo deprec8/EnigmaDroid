@@ -22,6 +22,7 @@ package io.github.deprec8.enigmadroid.model.api
 import androidx.compose.runtime.Immutable
 import io.github.deprec8.enigmadroid.common.enums.ContentFlag
 import io.github.deprec8.enigmadroid.data.serialization.HtmlDecodedStringSerializer
+import io.github.deprec8.enigmadroid.utils.FuzzySearchUtils
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -63,39 +64,48 @@ suspend fun List<Event>.search(filter: String): List<Event>? {
     return withContext(Dispatchers.Default) {
         if (filter.isBlank() || events.isEmpty()) return@withContext null
 
-        val filterTerms = filter.lowercase().split(" ").filter { it.isNotBlank() }
+        val filterTerms =
+            filter.split(" ").filter { it.isNotBlank() }.map { FuzzySearchUtils.normalize(it) }
 
         events.filter { it.flag == ContentFlag.Channel }.asSequence().map { event ->
-            val lcService = event.serviceName.lowercase()
-            val lcTitle = event.title.lowercase()
-            val lcLongDesc = event.longDescription.lowercase()
-            val lcShortDesc = event.shortDescription.lowercase()
-            val lcGenre = event.genre.lowercase()
-            val lcBegin = TimestampUtils.formatApiTimestampToTime(event.beginTimestamp).lowercase()
-            val lcEnd =
-                TimestampUtils.formatApiTimestampToTime(event.beginTimestamp + event.durationInSeconds)
-                    .lowercase()
+            val nService = FuzzySearchUtils.normalize(event.serviceName)
+            val nTitle = FuzzySearchUtils.normalize(event.title)
+            val nLongDesc = FuzzySearchUtils.normalize(event.longDescription)
+            val nShortDesc = FuzzySearchUtils.normalize(event.shortDescription)
+            val nGenre = FuzzySearchUtils.normalize(event.genre)
+            val nBegin =
+                FuzzySearchUtils.normalize(TimestampUtils.formatApiTimestampToTime(event.beginTimestamp))
+            val nEnd =
+                FuzzySearchUtils.normalize(TimestampUtils.formatApiTimestampToTime(event.beginTimestamp + event.durationInSeconds))
 
             val matches = filterTerms.all { term ->
-                lcService.contains(term) || lcTitle.contains(term) || lcLongDesc.contains(term) || lcShortDesc.contains(
-                    term
-                ) || lcGenre.contains(term) || lcBegin.contains(term) || lcEnd.contains(term)
+                FuzzySearchUtils.fuzzyMatch(nService, term) || FuzzySearchUtils.fuzzyMatch(
+                    nTitle, term
+                ) || FuzzySearchUtils.fuzzyMatch(nLongDesc, term) || FuzzySearchUtils.fuzzyMatch(
+                    nShortDesc, term
+                ) || FuzzySearchUtils.fuzzyMatch(
+                    nGenre, term
+                ) || FuzzySearchUtils.fuzzyMatch(nBegin, term) || FuzzySearchUtils.fuzzyMatch(
+                    nEnd, term
+                )
             }
 
             val score = if (matches) {
-                filterTerms.count { lcService.contains(it) } * 7 + filterTerms.count {
-                    lcTitle.contains(
-                        it
-                    )
-                } * 6 + filterTerms.count { lcLongDesc.contains(it) } * 5 + filterTerms.count {
-                    lcShortDesc.contains(
-                        it
-                    )
-                } * 4 + filterTerms.count { lcGenre.contains(it) } * 3 + filterTerms.count {
-                    lcBegin.contains(
-                        it
-                    )
-                } * 2 + filterTerms.count { lcEnd.contains(it) }
+                filterTerms.sumOf { term ->
+                    FuzzySearchUtils.calculateScore(
+                        nService, term
+                    ) * 7 + FuzzySearchUtils.calculateScore(
+                        nTitle, term
+                    ) * 6 + FuzzySearchUtils.calculateScore(
+                        nLongDesc, term
+                    ) * 5 + FuzzySearchUtils.calculateScore(
+                        nShortDesc, term
+                    ) * 4 + FuzzySearchUtils.calculateScore(
+                        nGenre, term
+                    ) * 3 + FuzzySearchUtils.calculateScore(
+                        nBegin, term
+                    ) * 2 + FuzzySearchUtils.calculateScore(nEnd, term) * 1
+                }
             } else 0
 
             Triple(event, matches, score)

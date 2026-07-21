@@ -88,7 +88,6 @@ fun EpgPage(
     val filteredEvents by epgViewModel.filteredEvents.collectAsStateWithLifecycle()
     val searchHistory by epgViewModel.searchHistory.collectAsStateWithLifecycle()
     val connectionState by epgViewModel.connectionState.collectAsStateWithLifecycle()
-    val highlightedWords by epgViewModel.highlightedWords.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { eventBatchSet?.eventBatches?.size ?: 0 })
@@ -117,16 +116,15 @@ fun EpgPage(
                         events = it,
                         paddingValues = PaddingValues(0.dp),
                         showChannelName = true,
-                        highlightedWords = highlightedWords,
                         onAddTimerForEvent = { event -> epgViewModel.addTimerForEvent(event) })
                 } ?: run {
-                    SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
+                    SearchHistory(searchHistory = searchHistory, onSearchQuery = {
                         epgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
                         epgViewModel.updateSearchInput()
-                    }, onTermInsertClick = {
-                        epgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
-                            it
-                        )
+                    }, onInsertQuery = {
+                        epgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
+                    }, onRemoveItem = {
+                        epgViewModel.deleteFromSearchHistory(it)
                     })
                 }
             },

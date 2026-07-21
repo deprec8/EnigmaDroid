@@ -20,8 +20,8 @@
 package io.github.deprec8.enigmadroid.ui.serviceepg
 
 import androidx.lifecycle.viewModelScope
+import io.github.deprec8.enigmadroid.common.enums.ContentType
 import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
-import io.github.deprec8.enigmadroid.data.repositories.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.model.api.Event
 import io.github.deprec8.enigmadroid.model.api.EventBatch
 import io.github.deprec8.enigmadroid.model.api.search
@@ -36,10 +36,8 @@ import kotlinx.coroutines.launch
 import org.koin.core.annotation.InjectedParam
 
 class ServiceEpgViewModel(
-    @InjectedParam private val serviceReference: String,
-    private val apiRepository: ApiRepository,
-    private val searchHistoryRepository: SearchHistoryRepository
-) : SearchableContentViewModel() {
+    @InjectedParam private val serviceReference: String, private val apiRepository: ApiRepository
+) : SearchableContentViewModel(ContentType.ServiceEpg) {
 
     private val _eventBatch = MutableStateFlow<EventBatch?>(null)
     val eventBatch: StateFlow<EventBatch?> = _eventBatch.asStateFlow()
@@ -50,21 +48,11 @@ class ServiceEpgViewModel(
         viewModelScope, SharingStarted.WhileSubscribed(5000), null
     )
 
-    override val searchHistory = searchHistoryRepository.getServiceEpgSearchHistory().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
-    )
-
     fun addTimerForEvent(event: Event) {
         viewModelScope.launch {
             apiRepository.addTimerForEvent(
                 event.serviceReference, event.id
             )
-        }
-    }
-
-    override fun onAddToSearchHistory(input: String) {
-        viewModelScope.launch {
-            searchHistoryRepository.addToServiceEpgSearchHistory(input)
         }
     }
 

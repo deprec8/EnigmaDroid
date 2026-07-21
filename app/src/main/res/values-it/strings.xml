@@ -171,14 +171,10 @@
     <string name="insert">Inserisci</string>
     <string name="type_something_to_search">Digita qualcosa da cercare</string>
     <string name="clear">Cancella</string>
-    <string name="clear_search_histories">Cancella cronologia ricerche</string>
-    <string name="select_which_search_histories_to_clear">Seleziona quale cronologia cancellare.</string>
     <string name="search">Cerca</string>
     <string name="manage_search_settings_and_histories">Gestisci impostazioni e cronologia ricerche.</string>
     <string name="use_search_histories">Usa cronologia ricerche</string>
     <string name="disabling_this_will_clear_all_search_histories">Disabilitando verrà cancellata tutta la cronologia ricerche.</string>
-    <string name="highlight_matches">Evidenzia corrispondenze</string>
-    <string name="highlight_matches_in_search_results">Evidenzia corrispondenze nei risultati della ricerca.</string>
     <string name="translation">Traduzione</string>
     <string name="view_epg">Visualizza EPG</string>
     <string name="all">Tutti</string>
@@ -238,8 +234,4 @@
     <string name="no_device_selected">Nessun dispositivo selezionato</string>
     <string name="first_add_a_device">Innanzitutto, aggiungi un dispositivo.</string>
     <string name="first_select_a_device">Per prima cosa, seleziona un dispositivo.</string>
-    <plurals name="files">
-        <item quantity="one">%1$d file</item>
-        <item quantity="other">%1$d file</item>
-    </plurals>
 </resources>

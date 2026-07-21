@@ -20,42 +20,54 @@
 package io.github.deprec8.enigmadroid.ui.components.viewmodels
 
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
-import io.github.deprec8.enigmadroid.data.repositories.SettingsRepository
+import io.github.deprec8.enigmadroid.common.enums.ContentType
+import io.github.deprec8.enigmadroid.data.repositories.SearchRepository
+import io.github.deprec8.enigmadroid.data.source.local.SearchHistoryItem
+import io.github.deprec8.enigmadroid.utils.FuzzySearchUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import org.koin.core.component.inject
 
-abstract class SearchableContentViewModel : ContentViewModel() {
+abstract class SearchableContentViewModel(private val type: ContentType) : ContentViewModel() {
 
-    private val settingsRepository: SettingsRepository by inject()
+    private val searchRepository: SearchRepository by inject()
 
-    protected val useSearchHighlighting = settingsRepository.getUseSearchHighlighting().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), true
+    protected val searchInput = MutableStateFlow("")
+
+    val searchHistory = combine(
+        searchRepository.getHistory(type),
+        searchInput,
+        snapshotFlow { searchFieldState.text }) { history, query, input ->
+        if (query.isNotBlank()) return@combine emptyList()
+        if (input.isBlank()) return@combine history
+        val normalizedInput = FuzzySearchUtils.normalize(input.toString())
+        return@combine history.filter {
+            FuzzySearchUtils.fuzzyMatch(FuzzySearchUtils.normalize(it.query), normalizedInput)
+        }
+    }.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
     )
 
     val searchFieldState = TextFieldState()
 
-    protected val searchInput = MutableStateFlow("")
-
-    val highlightedWords = combine(searchInput, useSearchHighlighting) { input, enabled ->
-        if (enabled) input.split(" ").filter { it.isNotBlank() } else emptyList()
-    }.stateIn(
-        viewModelScope, started = SharingStarted.WhileSubscribed(5000), initialValue = emptyList()
-    )
-
-    abstract val searchHistory: StateFlow<List<String>>
-
     fun updateSearchInput() {
         val input = searchFieldState.text.toString()
         if (input.isNotBlank()) {
-            onAddToSearchHistory(input)
+            viewModelScope.launch {
+                searchRepository.addToHistory(type, input)
+            }
         }
         searchInput.value = input
     }
 
-    abstract fun onAddToSearchHistory(input: String)
+    fun deleteFromSearchHistory(item: SearchHistoryItem) {
+        viewModelScope.launch {
+            searchRepository.deleteFromHistory(item)
+        }
+    }
 }

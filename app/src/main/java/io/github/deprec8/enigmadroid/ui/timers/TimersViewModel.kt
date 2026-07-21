@@ -20,8 +20,8 @@
 package io.github.deprec8.enigmadroid.ui.timers
 
 import androidx.lifecycle.viewModelScope
+import io.github.deprec8.enigmadroid.common.enums.ContentType
 import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
-import io.github.deprec8.enigmadroid.data.repositories.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.model.api.ServiceBatchSet
 import io.github.deprec8.enigmadroid.model.api.Timer
 import io.github.deprec8.enigmadroid.model.api.TimerBatch
@@ -36,9 +36,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class TimersViewModel(
-    private val apiRepository: ApiRepository,
-    private val searchHistoryRepository: SearchHistoryRepository
-) : SearchableContentViewModel() {
+    private val apiRepository: ApiRepository
+) : SearchableContentViewModel(ContentType.Timers) {
 
     private val _timerBatch = MutableStateFlow<TimerBatch?>(null)
     val timerBatch: StateFlow<TimerBatch?> = _timerBatch.asStateFlow()
@@ -50,10 +49,6 @@ class TimersViewModel(
         timerBatch?.timers?.search(searchInput)
     }.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000), null
-    )
-
-    override val searchHistory = searchHistoryRepository.getTimersSearchHistory().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
     )
 
     fun deleteTimer(timer: Timer) {
@@ -85,12 +80,6 @@ class TimersViewModel(
             fetchJob = viewModelScope.launch {
                 _timerBatch.value = apiRepository.fetchTimerBatch()
             }
-        }
-    }
-
-    override fun onAddToSearchHistory(input: String) {
-        viewModelScope.launch {
-            searchHistoryRepository.addToTimersSearchHistory(input)
         }
     }
 

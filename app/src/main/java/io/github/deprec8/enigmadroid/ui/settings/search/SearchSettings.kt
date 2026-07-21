@@ -51,6 +51,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
+import io.github.deprec8.enigmadroid.common.enums.ContentType
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.ArrowNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
@@ -62,15 +63,9 @@ fun SearchSettingsPage(
     onNavigateBack: () -> Unit, searchSettingsViewModel: SearchSettingsViewModel = koinViewModel()
 ) {
 
-    val tvSearchHistory by searchSettingsViewModel.tvSearchHistory.collectAsStateWithLifecycle()
-    val radioSearchHistory by searchSettingsViewModel.radioSearchHistory.collectAsStateWithLifecycle()
-    val moviesSearchHistory by searchSettingsViewModel.moviesSearchHistory.collectAsStateWithLifecycle()
-    val timersSearchHistory by searchSettingsViewModel.timersSearchHistory.collectAsStateWithLifecycle()
-    val tvEpgSearchHistory by searchSettingsViewModel.tvEpgSearchHistory.collectAsStateWithLifecycle()
-    val radioEpgSearchHistory by searchSettingsViewModel.radioEpgSearchHistory.collectAsStateWithLifecycle()
-    val serviceEpgSearchHistory by searchSettingsViewModel.serviceEpgSearchHistory.collectAsStateWithLifecycle()
-    val useSearchHistory by searchSettingsViewModel.useSearchHistory.collectAsStateWithLifecycle()
-    val useSearchHighlighting by searchSettingsViewModel.useSearchHighlighting.collectAsStateWithLifecycle()
+    val typesWithHistory by searchSettingsViewModel.typesWithHistory.collectAsStateWithLifecycle()
+    val useSearchHistories by searchSettingsViewModel.useSearchHistories.collectAsStateWithLifecycle()
+    val selectedTypes by searchSettingsViewModel.selectedTypes.collectAsStateWithLifecycle()
 
     var showSearchHistoriesDialog by rememberSaveable { mutableStateOf(false) }
     val searchHistoriesDialogScrollState = rememberScrollState()
@@ -90,7 +85,7 @@ fun SearchSettingsPage(
                 ArrowNavigationButton { onNavigateBack() }
             })
         },
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = Modifier,
     ) { innerPadding ->
         Column(
             Modifier
@@ -98,107 +93,44 @@ fun SearchSettingsPage(
                 .consumeWindowInsets(innerPadding)
                 .verticalScroll(scrollState)
                 .padding(innerPadding)
+                .nestedScroll(scrollBehavior.nestedScrollConnection)
         ) {
-            useSearchHistory.let {
-                ListItem(headlineContent = {
-                    Text(stringResource(R.string.use_search_histories))
-                }, supportingContent = {
-                    Text(stringResource(R.string.disabling_this_will_clear_all_search_histories))
-                }, trailingContent = {
-                    Switch(
-                        checked = it, onCheckedChange = { value ->
-                            searchSettingsViewModel.setUseSearchHistory(value)
-                        })
-                }, modifier = Modifier.clickable {
-                    searchSettingsViewModel.setUseSearchHistory(!it)
-                })
-            }
+            ListItem(headlineContent = {
+                Text(stringResource(R.string.use_search_histories))
+            }, supportingContent = {
+                Text(stringResource(R.string.disabling_this_will_clear_all_search_histories))
+            }, trailingContent = {
+                Switch(
+                    checked = useSearchHistories, onCheckedChange = { value ->
+                        searchSettingsViewModel.setUseSearchHistory(value)
+                    })
+            }, modifier = Modifier.clickable {
+                searchSettingsViewModel.setUseSearchHistory(!useSearchHistories)
+            })
             ListItem(
                 headlineContent = {
                     Text(stringResource(R.string.clear_search_histories))
                 }, supportingContent = {
                     Text(stringResource(R.string.select_which_search_histories_to_clear))
-                }, modifier = Modifier.clickable(onClick = { showSearchHistoriesDialog = true })
+                }, modifier = Modifier.clickable(
+                    onClick = { showSearchHistoriesDialog = true })
             )
-            useSearchHighlighting.let {
-                ListItem(headlineContent = {
-                    Text(stringResource(R.string.highlight_matches))
-                }, supportingContent = {
-                    Text(stringResource(R.string.highlight_matches_in_search_results))
-                }, trailingContent = {
-                    Switch(
-                        checked = it, onCheckedChange = { value ->
-                            searchSettingsViewModel.setUseSearchHighlighting(value)
-                        })
-                })
-            }
         }
     }
 
     if (showSearchHistoriesDialog) {
-        var tv by rememberSaveable { mutableStateOf(false) }
-        var radio by rememberSaveable { mutableStateOf(false) }
-        var movies by rememberSaveable { mutableStateOf(false) }
-        var timers by rememberSaveable { mutableStateOf(false) }
-        var tvEpg by rememberSaveable { mutableStateOf(false) }
-        var radioEpg by rememberSaveable { mutableStateOf(false) }
-        var serviceEpg by rememberSaveable { mutableStateOf(false) }
-
-        fun isAnyEnabled(): Boolean {
-            return tvSearchHistory.isNotEmpty() || radioSearchHistory.isNotEmpty() || moviesSearchHistory.isNotEmpty() || timersSearchHistory.isNotEmpty() || tvEpgSearchHistory.isNotEmpty() || radioEpgSearchHistory.isNotEmpty() || serviceEpgSearchHistory.isNotEmpty()
-        }
-
-        fun setAllEnabled(state: Boolean) {
-            if (tvSearchHistory.isNotEmpty()) {
-                tv = state
-            }
-            if (radioSearchHistory.isNotEmpty()) {
-                radio = state
-            }
-            if (moviesSearchHistory.isNotEmpty()) {
-                movies = state
-            }
-            if (timersSearchHistory.isNotEmpty()) {
-                timers = state
-            }
-            if (tvEpgSearchHistory.isNotEmpty()) {
-                tvEpg = state
-            }
-            if (radioEpgSearchHistory.isNotEmpty()) {
-                radioEpg = state
-            }
-            if (serviceEpgSearchHistory.isNotEmpty()) {
-                serviceEpg = state
-            }
-        }
-
-        fun getAllEnabled(): Boolean {
-            if (!isAnyEnabled()) {
-                return false
-            }
-            var allEnabled = true
-            if (tvSearchHistory.isNotEmpty()) allEnabled = allEnabled && tv
-            if (radioSearchHistory.isNotEmpty()) allEnabled = allEnabled && radio
-            if (moviesSearchHistory.isNotEmpty()) allEnabled = allEnabled && movies
-            if (timersSearchHistory.isNotEmpty()) allEnabled = allEnabled && timers
-            if (tvEpgSearchHistory.isNotEmpty()) allEnabled = allEnabled && tvEpg
-            if (radioEpgSearchHistory.isNotEmpty()) allEnabled = allEnabled && radioEpg
-            if (serviceEpgSearchHistory.isNotEmpty()) allEnabled = allEnabled && serviceEpg
-            return allEnabled
-        }
-
         AlertDialog(
             onDismissRequest = { showSearchHistoriesDialog = false },
             title = { Text(stringResource(R.string.clear_search_histories)) },
             confirmButton = {
                 TextButton(
                     onClick = {
-                        searchSettingsViewModel.clearSearchHistory(
-                            tv, radio, movies, timers, tvEpg, radioEpg, serviceEpg
-                        )
+                        searchSettingsViewModel.clearSelectedHistories()
                         showSearchHistoriesDialog = false
-                    }, enabled = tv || radio || movies || timers || tvEpg || radioEpg || serviceEpg
-                ) { Text(stringResource(R.string.clear)) }
+                    }, enabled = selectedTypes.isNotEmpty()
+                ) {
+                    Text(stringResource(R.string.clear))
+                }
             },
             dismissButton = {
                 TextButton(onClick = { showSearchHistoriesDialog = false }) {
@@ -208,104 +140,51 @@ fun SearchSettingsPage(
             text = {
                 Column(Modifier.verticalScroll(searchHistoriesDialogScrollState)) {
                     ListItem(
-                        modifier = Modifier.clickable(enabled = isAnyEnabled()) {
-                            setAllEnabled(!getAllEnabled())
+                        modifier = Modifier.clickable(enabled = typesWithHistory.isNotEmpty()) {
+                            searchSettingsViewModel.toggleAllSelection(typesWithHistory)
                         },
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                         headlineContent = { Text(stringResource(R.string.all)) },
                         trailingContent = {
                             Checkbox(
-                                enabled = isAnyEnabled(),
-                                checked = getAllEnabled(),
+                                checked = selectedTypes.size == typesWithHistory.size && typesWithHistory.isNotEmpty(),
                                 onCheckedChange = {
-                                    setAllEnabled(it)
-                                })
+                                    searchSettingsViewModel.toggleAllSelection(typesWithHistory)
+                                },
+                                enabled = typesWithHistory.isNotEmpty()
+                            )
                         })
                     HorizontalDivider(Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
-                    ListItem(
-                        modifier = Modifier.clickable(enabled = tvSearchHistory.isNotEmpty()) {
-                            tv = !tv
-                        },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        headlineContent = { Text(stringResource(R.string.tv)) },
-                        trailingContent = {
-                            Checkbox(
-                                enabled = tvSearchHistory.isNotEmpty(),
-                                checked = tv,
-                                onCheckedChange = { tv = it })
-                        })
-                    ListItem(
-                        modifier = Modifier.clickable(enabled = radioSearchHistory.isNotEmpty()) {
-                            radio = !radio
-                        },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        headlineContent = { Text(stringResource(R.string.radio)) },
-                        trailingContent = {
-                            Checkbox(
-                                enabled = radioSearchHistory.isNotEmpty(),
-                                checked = radio,
-                                onCheckedChange = { radio = it })
-                        })
-                    ListItem(
-                        modifier = Modifier.clickable(enabled = moviesSearchHistory.isNotEmpty()) {
-                            movies = !movies
-                        },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        headlineContent = { Text(stringResource(R.string.movies)) },
-                        trailingContent = {
-                            Checkbox(
-                                enabled = moviesSearchHistory.isNotEmpty(),
-                                checked = movies,
-                                onCheckedChange = { movies = it })
-                        })
-                    ListItem(
-                        modifier = Modifier.clickable(enabled = timersSearchHistory.isNotEmpty()) {
-                            timers = !timers
-                        },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        headlineContent = { Text(stringResource(R.string.timers)) },
-                        trailingContent = {
-                            Checkbox(
-                                enabled = timersSearchHistory.isNotEmpty(),
-                                checked = timers,
-                                onCheckedChange = { timers = it })
-                        })
-                    ListItem(
-                        modifier = Modifier.clickable(enabled = tvEpgSearchHistory.isNotEmpty()) {
-                            tvEpg = !tvEpg
-                        },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        headlineContent = { Text(stringResource(R.string.tv_epg)) },
-                        trailingContent = {
-                            Checkbox(
-                                enabled = tvEpgSearchHistory.isNotEmpty(),
-                                checked = tvEpg,
-                                onCheckedChange = { tvEpg = it })
-                        })
-                    ListItem(
-                        modifier = Modifier.clickable(enabled = radioEpgSearchHistory.isNotEmpty()) {
-                            radioEpg = !radioEpg
-                        },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        headlineContent = { Text(stringResource(R.string.radio_epg)) },
-                        trailingContent = {
-                            Checkbox(
-                                enabled = radioEpgSearchHistory.isNotEmpty(),
-                                checked = radioEpg,
-                                onCheckedChange = { radioEpg = it })
-                        })
-                    ListItem(
-                        modifier = Modifier.clickable(enabled = serviceEpgSearchHistory.isNotEmpty()) {
-                            serviceEpg = !serviceEpg
-                        },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        headlineContent = { Text(stringResource(R.string.service_epg)) },
-                        trailingContent = {
-                            Checkbox(
-                                enabled = serviceEpgSearchHistory.isNotEmpty(),
-                                checked = serviceEpg,
-                                onCheckedChange = { serviceEpg = it })
-                        })
+                    ContentType.entries.forEach { type ->
+                        val hasHistory = typesWithHistory.contains(type)
+                        ListItem(
+                            modifier = Modifier.clickable(enabled = hasHistory) {
+                                searchSettingsViewModel.toggleTypeSelection(type)
+                            },
+                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                            headlineContent = {
+                                Text(
+                                    stringResource(
+                                        when (type) {
+                                            ContentType.Radio -> R.string.radio
+                                            ContentType.Tv -> R.string.tv
+                                            ContentType.Movies -> R.string.movies
+                                            ContentType.Timers -> R.string.timers
+                                            ContentType.ServiceEpg -> R.string.service_epg
+                                            ContentType.TvEpg -> R.string.tv_epg
+                                            ContentType.RadioEpg -> R.string.radio_epg
+                                        }
+                                    )
+                                )
+                            },
+                            trailingContent = {
+                                Checkbox(
+                                    checked = selectedTypes.contains(type), onCheckedChange = {
+                                        searchSettingsViewModel.toggleTypeSelection(type)
+                                    }, enabled = hasHistory
+                                )
+                            })
+                    }
                 }
             })
     }

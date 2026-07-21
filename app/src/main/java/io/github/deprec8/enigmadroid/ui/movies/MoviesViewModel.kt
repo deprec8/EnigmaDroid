@@ -20,14 +20,13 @@
 package io.github.deprec8.enigmadroid.ui.movies
 
 import androidx.lifecycle.viewModelScope
+import io.github.deprec8.enigmadroid.common.enums.ContentType
 import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
 import io.github.deprec8.enigmadroid.data.repositories.DownloadRepository
-import io.github.deprec8.enigmadroid.data.repositories.SearchHistoryRepository
 import io.github.deprec8.enigmadroid.model.api.Movie
 import io.github.deprec8.enigmadroid.model.api.MovieBatch
 import io.github.deprec8.enigmadroid.model.api.search
 import io.github.deprec8.enigmadroid.ui.components.viewmodels.SearchableContentViewModel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -40,9 +39,8 @@ import org.koin.core.annotation.InjectedParam
 class MoviesViewModel(
     @InjectedParam private var path: String? = null,
     private val apiRepository: ApiRepository,
-    private val downloadRepository: DownloadRepository,
-    private val searchHistoryRepository: SearchHistoryRepository
-) : SearchableContentViewModel() {
+    private val downloadRepository: DownloadRepository
+) : SearchableContentViewModel(ContentType.Movies) {
 
     private val _movieBatch = MutableStateFlow<MovieBatch?>(null)
     val movieBatch: StateFlow<MovieBatch?> = _movieBatch.asStateFlow()
@@ -50,16 +48,10 @@ class MoviesViewModel(
     private val _freeSpace = MutableStateFlow<String?>(null)
     val freeSpace: StateFlow<String?> = _freeSpace.asStateFlow()
 
-    private var preloadJob: Job? = null
-
     val filteredMovies = combine(_movieBatch, searchInput) { movieBatch, searchInput ->
         movieBatch?.movies?.search(searchInput)
     }.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000), null
-    )
-
-    override val searchHistory = searchHistoryRepository.getMoviesSearchHistory().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
     )
 
     fun rename(serviceReference: String, newName: String) {
@@ -96,12 +88,6 @@ class MoviesViewModel(
     fun playOnDevice(serviceReference: String) {
         viewModelScope.launch {
             apiRepository.playOnDevice(serviceReference)
-        }
-    }
-
-    override fun onAddToSearchHistory(input: String) {
-        viewModelScope.launch {
-            searchHistoryRepository.addToMoviesSearchHistory(input)
         }
     }
 

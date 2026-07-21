@@ -21,96 +21,55 @@ package io.github.deprec8.enigmadroid.ui.settings.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.deprec8.enigmadroid.data.repositories.SearchHistoryRepository
-import io.github.deprec8.enigmadroid.data.repositories.SettingsRepository
+import io.github.deprec8.enigmadroid.common.enums.ContentType
+import io.github.deprec8.enigmadroid.data.repositories.SearchRepository
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class SearchSettingsViewModel(
-    private var searchHistoryRepository: SearchHistoryRepository,
-    private var settingsRepository: SettingsRepository
+    private var searchRepository: SearchRepository
 ) : ViewModel() {
 
-    val tvSearchHistory = searchHistoryRepository.getTvSearchHistory().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
+    val typesWithHistory = searchRepository.getTypesWithHistory().stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000), emptySet()
     )
 
-    val radioSearchHistory = searchHistoryRepository.getRadioSearchHistory().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
-    )
-
-    val moviesSearchHistory = searchHistoryRepository.getMoviesSearchHistory().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
-    )
-
-    val timersSearchHistory = searchHistoryRepository.getTimersSearchHistory().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
-    )
-
-    val tvEpgSearchHistory = searchHistoryRepository.getTvEpgSearchHistory().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
-    )
-
-    val radioEpgSearchHistory = searchHistoryRepository.getRadioEpgSearchHistory().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
-    )
-
-    val serviceEpgSearchHistory = searchHistoryRepository.getServiceEpgSearchHistory().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
-    )
-
-    val useSearchHistory = searchHistoryRepository.getUseSearchHistory().stateIn(
+    val useSearchHistories = searchRepository.getUseHistories().stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000), true
     )
 
-    val useSearchHighlighting = settingsRepository.getUseSearchHighlighting().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), true
-    )
+    private val _selectedTypes = MutableStateFlow<Set<ContentType>>(emptySet())
+    val selectedTypes = _selectedTypes.asStateFlow()
 
-    fun setUseSearchHistory(useSearchHistory: Boolean) {
-        viewModelScope.launch {
-            searchHistoryRepository.setUseSearchHistory(useSearchHistory)
+    fun toggleTypeSelection(type: ContentType) {
+        _selectedTypes.value = if (_selectedTypes.value.contains(type)) {
+            _selectedTypes.value - type
+        } else {
+            _selectedTypes.value + type
         }
     }
 
-    fun setUseSearchHighlighting(useSearchHighlighting: Boolean) {
-        viewModelScope.launch {
-            settingsRepository.setUseSearchHighlighting(useSearchHighlighting)
+    fun toggleAllSelection(availableTypes: Set<ContentType>) {
+        _selectedTypes.value = if (_selectedTypes.value.size == availableTypes.size) {
+            emptySet()
+        } else {
+            availableTypes
         }
     }
 
-    fun clearSearchHistory(
-        tv: Boolean,
-        radio: Boolean,
-        movies: Boolean,
-        timers: Boolean,
-        tvEpg: Boolean,
-        radioEpg: Boolean,
-        serviceEpg: Boolean
-    ) {
+    fun setUseSearchHistory(value: Boolean) {
         viewModelScope.launch {
-            if (tv) {
-                searchHistoryRepository.clearTvSearchHistory()
-            }
-            if (radio) {
-                searchHistoryRepository.clearRadioSearchHistory()
-            }
-            if (movies) {
-                searchHistoryRepository.clearMoviesSearchHistory()
-            }
-            if (timers) {
-                searchHistoryRepository.clearTimersSearchHistory()
-            }
-            if (tvEpg) {
-                searchHistoryRepository.clearTvEpgSearchHistory()
-            }
-            if (radioEpg) {
-                searchHistoryRepository.clearRadioEpgSearchHistory()
-            }
-            if (serviceEpg) {
-                searchHistoryRepository.clearServiceEpgSearchHistory()
-            }
+            searchRepository.setUseHistories(value)
+        }
+    }
+
+    fun clearSelectedHistories() {
+        viewModelScope.launch {
+            searchRepository.clearHistories(_selectedTypes.value)
+            _selectedTypes.value = emptySet()
         }
     }
 }
