@@ -72,7 +72,6 @@
     <string name="editing_menu">Bearbeitungsmenü</string>
     <string name="no_results">Keine Ergebnisse</string>
     <string name="delete_movie">Film löschen</string>
-    <string name="delete_movie_warning">Wenn sie diesen Film löschen wird er nicht wiederherstellbar sein.</string>
     <string name="confirm">Bestätigen</string>
     <string name="cancel">Abbrechen</string>
     <string name="rename_movie">Film umbenennen</string>
@@ -112,7 +111,6 @@
     <string name="no_device_available">Kein Gerät verfügbar</string>
     <string name="version_not_found">Version nicht gefunden.</string>
     <string name="delete_timer">Timer löschen</string>
-    <string name="delete_timer_warning">Wenn sie diesen Timer löschen wird er nicht wiederherstellbar sein.</string>
     <string name="third_party_libraries">Drittanbieter Bibliotheken</string>
     <string name="source_code">Quellcode</string>
     <string name="libraries_amount">%1$s Bibliotheken</string>

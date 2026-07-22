@@ -29,12 +29,9 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.SkipNext
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -130,8 +127,6 @@ fun OnboardingPage(
             }) {
                 Text(stringResource(R.string.skip))
             }
-        }, icon = {
-            Icon(Icons.Outlined.SkipNext, null)
         }, title = {
             Text(stringResource(R.string.setup_skip_title))
         }, text = {

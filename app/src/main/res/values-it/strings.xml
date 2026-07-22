@@ -72,7 +72,6 @@
     <string name="editing_menu">Menu modifica</string>
     <string name="no_results">Nessun risultato</string>
     <string name="delete_movie">Elimina film</string>
-    <string name="delete_movie_warning">Se elimini questo film non sarà recuperabile.</string>
     <string name="confirm">Conferma</string>
     <string name="cancel">Annulla</string>
     <string name="rename_movie">Rinomina film</string>
@@ -112,7 +111,6 @@
     <string name="no_device_available">Nessun dispositivo disponibile</string>
     <string name="version_not_found">Versione non trovata.</string>
     <string name="delete_timer">Elimina timer</string>
-    <string name="delete_timer_warning">Se elimini questo timer non sarà recuperabile.</string>
     <string name="third_party_libraries">Librerie di terze parti</string>
     <string name="source_code">Codice sorgente</string>
     <string name="libraries_amount">%1$s Librerie</string>

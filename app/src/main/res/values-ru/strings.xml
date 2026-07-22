@@ -72,7 +72,6 @@
     <string name="editing_menu">Изменить меню</string>
     <string name="no_results">Нет результатов</string>
     <string name="delete_movie">Удалить фильм</string>
-    <string name="delete_movie_warning">Если вы удалите этот фильм, его будет невозможно восстановить.</string>
     <string name="confirm">Подтвердить</string>
     <string name="cancel">Отмена</string>
     <string name="rename_movie">Переименовать фильм</string>
@@ -112,7 +111,6 @@
     <string name="no_device_available">Устройство недоступно</string>
     <string name="version_not_found">Версия не найдена.</string>
     <string name="delete_timer">Удалить таймер</string>
-    <string name="delete_timer_warning">Если вы удалите этот таймер, его будет уже не восстановить.</string>
     <string name="third_party_libraries">Сторонние библиотеки</string>
     <string name="source_code">Исходный код</string>
     <string name="libraries_amount">%1$s Библиотеки кода</string>

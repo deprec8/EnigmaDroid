@@ -20,7 +20,7 @@
 package io.github.deprec8.enigmadroid.ui.components.dialogs
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -30,17 +30,17 @@ import androidx.compose.ui.res.stringResource
 import io.github.deprec8.enigmadroid.R
 
 @Composable
-fun ConfirmDeleteDialog(
+fun DeleteDialog(
     title: String, text: String, onDismissRequest: () -> Unit, onConfirmRequest: () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onDismissRequest,
         title = { Text(text = title) },
         text = { Text(text = text) },
-        icon = { Icon(Icons.Outlined.Delete, contentDescription = null) },
+        icon = { Icon(Icons.Outlined.DeleteForever, contentDescription = null) },
         confirmButton = {
             TextButton(onClick = onConfirmRequest) {
-                Text(stringResource(R.string.confirm))
+                Text(stringResource(R.string.delete))
             }
         },
         dismissButton = {

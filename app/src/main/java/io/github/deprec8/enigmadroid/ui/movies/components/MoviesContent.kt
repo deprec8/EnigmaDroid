@@ -64,7 +64,7 @@ import io.github.deprec8.enigmadroid.model.MenuItemGroup
 import io.github.deprec8.enigmadroid.model.api.Movie
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.content.ContentItem
-import io.github.deprec8.enigmadroid.ui.components.dialogs.ConfirmDeleteDialog
+import io.github.deprec8.enigmadroid.ui.components.dialogs.DeleteDialog
 import kotlinx.coroutines.launch
 
 @Composable
@@ -181,9 +181,11 @@ fun MoviesContent(
                 )
 
                 if (showDeleteDialog) {
-                    ConfirmDeleteDialog(
+                    DeleteDialog(
                         title = stringResource(R.string.delete_movie),
-                        text = stringResource(R.string.delete_movie_warning),
+                        text = stringResource(
+                            R.string.the_movie_will_be_permanently_deleted, movie.eventName
+                        ),
                         onDismissRequest = { showDeleteDialog = false },
                         onConfirmRequest = {
                             showDeleteDialog = false

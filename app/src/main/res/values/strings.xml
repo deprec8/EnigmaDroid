@@ -74,8 +74,7 @@
     <string name="current_device">Current device</string>
     <string name="editing_menu">Editing menu</string>
     <string name="no_results">No results</string>
-    <string name="delete_movie">Delete movie</string>
-    <string name="delete_movie_warning">If you delete this movie it will not be recoverable.</string>
+    <string name="delete_movie">Delete movie?</string>
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
     <string name="rename_movie">Rename movie</string>
@@ -116,8 +115,7 @@
     <string name="no_device_available">No device available</string>
     <string name="version_not_found">Version not found.</string>
     <string name="openwebif" translatable="false">OpenWebif</string>
-    <string name="delete_timer">Delete timer</string>
-    <string name="delete_timer_warning">If you delete this timer it will not be recoverable.</string>
+    <string name="delete_timer">Delete timer?</string>
     <string name="third_party_libraries">Third Party Libraries</string>
     <string name="source_code">Source Code</string>
     <string name="libraries_amount">%1$s Libraries</string>
@@ -126,7 +124,7 @@
     <string name="retry">Retry</string>
     <string name="no_devices_found">No devices found</string>
     <string name="skip">Skip</string>
-    <string name="delete_device">Delete device</string>
+    <string name="delete_device">Delete device?</string>
     <string name="delete_device_warning">You can add this device again at any time.</string>
     <string name="pin_webif">Pin WebIf</string>
     <string name="standby">Standby</string>
@@ -253,4 +251,6 @@
     <string name="unable_to_open_url">Unable to open URL</string>
     <string name="unable_to_play_media">Unable to play media</string>
     <string name="please_make_sure_that_you_have_at_least_one_media_player_installed_on_your_device">Please make sure that you have at least one media player installed on your device.</string>
+    <string name="the_timer_for_will_be_permanently_deleted">The timer for \"%1$s\" will be permanently deleted.</string>
+    <string name="the_movie_will_be_permanently_deleted">The movie \"%1$s\" will be permanently deleted.</string>
 </resources>

@@ -72,7 +72,6 @@
     <string name="editing_menu">Menu d’édition</string>
     <string name="no_results">Aucun résultat</string>
     <string name="delete_movie">Supprimer le film</string>
-    <string name="delete_movie_warning">Si vous supprimez ce film, il ne pourra pas être récupéré.</string>
     <string name="confirm">Confirmer</string>
     <string name="cancel">Annuler</string>
     <string name="rename_movie">Renommer le film</string>
@@ -112,7 +111,6 @@
     <string name="no_device_available">Aucun appareil disponible</string>
     <string name="version_not_found">Version introuvable.</string>
     <string name="delete_timer">Supprimer la minuterie</string>
-    <string name="delete_timer_warning">Si vous supprimez cette minuterie, elle ne pourra pas être récupérée.</string>
     <string name="third_party_libraries">Bibliothèques tierces</string>
     <string name="source_code">Code source</string>
     <string name="libraries_amount">%1$s Bibliothèques</string>

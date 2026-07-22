@@ -72,7 +72,6 @@
     <string name="editing_menu">Menú de edición</string>
     <string name="no_results">Sin resultados</string>
     <string name="delete_movie">Eliminar película</string>
-    <string name="delete_movie_warning">Si eliminas esta película, no se podrá recuperar.</string>
     <string name="confirm">Confirmar</string>
     <string name="cancel">Cancelar</string>
     <string name="rename_movie">Renombrar película</string>
@@ -112,7 +111,6 @@
     <string name="no_device_available">No hay dispositivos disponibles</string>
     <string name="version_not_found">Versión no encontrada.</string>
     <string name="delete_timer">Eliminar temporizador</string>
-    <string name="delete_timer_warning">Si eliminas este temporizador, no se podrá recuperar.</string>
     <string name="third_party_libraries">Librerías de terceros</string>
     <string name="source_code">Código fuente</string>
     <string name="libraries_amount">%1$s Librerías</string>
