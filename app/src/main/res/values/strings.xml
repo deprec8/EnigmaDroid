@@ -109,14 +109,12 @@
     <string name="bouquet_down">Bouquet down</string>
     <string name="bouquet_up">Bouquet up</string>
     <string name="license">License</string>
-    <string name="app_source" translatable="false">github.com/deprec8/EnigmaDroid/</string>
     <string name="app_license" translatable="false">GNU General Public License 3</string>
     <string name="action_menu">Action menu</string>
     <string name="enabled">Enabled</string>
     <string name="unable_to_connect">Unable to connect</string>
     <string name="no_device_available">No device available</string>
     <string name="version_not_found">Version not found.</string>
-    <string name="app_developer" translatable="false">github.com/deprec8</string>
     <string name="openwebif" translatable="false">OpenWebif</string>
     <string name="delete_timer">Delete timer</string>
     <string name="delete_timer_warning">If you delete this timer it will not be recoverable.</string>
@@ -135,27 +133,19 @@
     <string name="automatic">Automatic</string>
     <string name="after_event">After event</string>
     <string name="screenshot">Screenshot</string>
-    <string name="app_license_url" translatable="false">https://www.gnu.org/licenses/gpl-3.0.de.html</string>
-    <string name="app_source_url" translatable="false">https://github.com/deprec8/EnigmaDroid/</string>
-    <string name="app_developer_url" translatable="false">https://github.com/deprec8</string>
     <string name="no_channel_is_playing">No channel is playing</string>
     <string name="edit_timer">Edit Timer</string>
     <string name="tv_epg">TV EPG</string>
     <string name="radio_epg">Radio EPG</string>
-    <string name="add_reminder">Add Reminder</string>
+    <string name="add_reminder">Add reminder</string>
     <string name="search_epg">Search EPG</string>
     <string name="search_events">Search events</string>
     <string name="switch_channel">Switch</string>
     <string name="service">Service</string>
-    <string name="no_browser_found">No browser found</string>
-    <string name="no_calendar_found">No calendar found</string>
-    <string name="no_media_player_found">No media player found</string>
     <string name="download">Download</string>
     <string name="downloading">Downloading \"%1$s\"…</string>
     <string name="reload">Reload</string>
-    <string name="app_issue" translatable="false">github.com/deprec8/EnigmaDroid/issues</string>
     <string name="issue_tracker">Issue Tracker</string>
-    <string name="app_issue_url" translatable="false">https://github.com/deprec8/EnigmaDroid/issues</string>
     <string name="ok">OK</string>
     <string name="begin_date">Begin date</string>
     <string name="begin_time">Begin time</string>
@@ -189,8 +179,6 @@
     <string name="use_search_histories">Use search histories</string>
     <string name="disabling_this_will_clear_all_search_histories">Disabling this will clear all search histories.</string>
     <string name="translation">Translation</string>
-    <string name="app_translation" translatable="false">crowdin.com/project/enigmadroid</string>
-    <string name="app_translation_url" translatable="false">https://crowdin.com/project/enigmadroid</string>
     <string name="view_epg">View EPG</string>
     <string name="all">All</string>
     <string name="waiting">Waiting</string>
@@ -252,10 +240,17 @@
     <string name="screenshot_saved">Screenshot saved</string>
     <string name="screenshot_failed">Screenshot failed</string>
     <string name="view">View</string>
-    <string name="no_image_viewer_found">No image viewer found</string>
     <string name="remove">Remove</string>
     <string name="remove_query">Remove query?</string>
     <string name="clear_search_histories">Clear search histories</string>
     <string name="select_which_search_histories_to_clear">Select which search histories to clear.</string>
     <string name="voice_search">Voice search</string>
+    <string name="unable_to_view_image">Unable to view image</string>
+    <string name="please_make_sure_that_you_have_at_least_one_image_viewer_installed_on_your_device">Please make sure that you have at least one image viewer installed on your device.</string>
+    <string name="please_make_sure_that_you_have_at_least_one_calendar_app_installed_on_your_device">Please make sure that you have at least one calendar app installed on your device.</string>
+    <string name="unable_to_add_reminder">Unable to add reminder</string>
+    <string name="please_make_sure_that_you_have_at_least_one_browser_installed_on_your_device">Please make sure that you have at least one browser installed on your device.</string>
+    <string name="unable_to_open_url">Unable to open URL</string>
+    <string name="unable_to_play_media">Unable to play media</string>
+    <string name="please_make_sure_that_you_have_at_least_one_media_player_installed_on_your_device">Please make sure that you have at least one media player installed on your device.</string>
 </resources>

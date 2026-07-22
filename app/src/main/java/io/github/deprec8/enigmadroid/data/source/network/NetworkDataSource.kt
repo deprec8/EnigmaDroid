@@ -22,6 +22,7 @@ package io.github.deprec8.enigmadroid.data.source.network
 import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
 import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.data.ConnectionStateHolder
+import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.data.source.local.devices.DevicesLocalDataSource
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
@@ -147,16 +148,18 @@ class NetworkDataSource(
         }
     }
 
-    suspend fun fetchScreenshot(): ByteArray {
+    suspend fun fetchScreenshot(): Result<Pair<ByteArray, Device>> {
         return try {
-            val url = devicesLocalDataSource.getCurrentStatic()?.buildScreenshotUrl()
-                ?: throw NoCurrentDeviceException()
-            client.get(url) {
+            val currentDevice =
+                devicesLocalDataSource.getCurrentStatic() ?: throw NoCurrentDeviceException()
+            val url = currentDevice.buildScreenshotUrl()
+            val result = client.get(url) {
                 header(HttpHeaders.Connection, "close")
             }.readRawBytes()
+            Result.success(Pair(result, currentDevice))
         } catch (e: Exception) {
             handleException(e)
-            ByteArray(0)
+            Result.failure(e)
         }
     }
 

@@ -19,6 +19,8 @@
 
 package io.github.deprec8.enigmadroid.ui.current
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -38,7 +40,11 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
@@ -46,10 +52,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.model.api.CurrentInfo
+import io.github.deprec8.enigmadroid.ui.components.dialogs.MediaIntentErrorDialog
 import io.github.deprec8.enigmadroid.ui.components.isSmallScreenLayout
-import io.github.deprec8.enigmadroid.utils.IntentUtils
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
 import kotlinx.coroutines.launch
 
@@ -59,13 +66,31 @@ fun CurrentContent(
     modifier: Modifier = Modifier,
     currentEventInfo: CurrentInfo,
     paddingValues: PaddingValues,
-    onBuildLiveStreamUrl: suspend (String) -> String,
+    buildLiveStreamUrl: suspend (String) -> String,
     onNavigateToServiceEpg: (String, String) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val scrollState = rememberScrollState()
     val isExpandedScreenLayout = !isSmallScreenLayout()
+    var showMediaIntentErrorDialog by rememberSaveable { mutableStateOf(false) }
+
+    fun playMedia() {
+        scope.launch {
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndTypeAndNormalize(
+                    buildLiveStreamUrl(currentEventInfo.now.serviceReference).toUri(), "video/mp4"
+                )
+                putExtra("title", currentEventInfo.now.title)
+            }
+
+            try {
+                context.startActivity(intent)
+            } catch (_: ActivityNotFoundException) {
+                showMediaIntentErrorDialog = true
+            }
+        }
+    }
 
     if (currentEventInfo.info.result == true) {
         Column(
@@ -229,13 +254,7 @@ fun CurrentContent(
                 Row {
                     FilledTonalButton(
                         onClick = {
-                            scope.launch {
-                                IntentUtils.playMedia(
-                                    context,
-                                    onBuildLiveStreamUrl(currentEventInfo.now.serviceReference),
-                                    currentEventInfo.now.serviceName
-                                )
-                            }
+                            playMedia()
                         }, Modifier
                             .fillMaxWidth(0.5f)
                             .padding(start = 16.dp)
@@ -262,13 +281,7 @@ fun CurrentContent(
             } else {
                 FilledTonalButton(
                     onClick = {
-                        scope.launch {
-                            IntentUtils.playMedia(
-                                context,
-                                onBuildLiveStreamUrl(currentEventInfo.now.serviceReference),
-                                currentEventInfo.now.serviceName
-                            )
-                        }
+                        playMedia()
                     }, Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
@@ -308,10 +321,12 @@ fun CurrentContent(
                 .padding(paddingValues), contentAlignment = Alignment.Center
         ) {
             Text(
-                text = stringResource(R.string.no_channel_is_playing),
-                textAlign = TextAlign.Center
+                text = stringResource(R.string.no_channel_is_playing), textAlign = TextAlign.Center
             )
         }
     }
 
+    if (showMediaIntentErrorDialog) {
+        MediaIntentErrorDialog { showMediaIntentErrorDialog = false }
+    }
 }

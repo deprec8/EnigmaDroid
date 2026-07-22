@@ -19,6 +19,8 @@
 
 package io.github.deprec8.enigmadroid.ui.live
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,12 +41,17 @@ import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.Videocam
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.common.enums.ContentFlag
 import io.github.deprec8.enigmadroid.model.MenuItem
@@ -53,7 +60,7 @@ import io.github.deprec8.enigmadroid.model.api.Event
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.content.ContentFlagItem
 import io.github.deprec8.enigmadroid.ui.components.content.ContentItem
-import io.github.deprec8.enigmadroid.utils.IntentUtils
+import io.github.deprec8.enigmadroid.ui.components.dialogs.MediaIntentErrorDialog
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
 import kotlinx.coroutines.launch
 
@@ -69,6 +76,24 @@ fun LiveContent(
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    var showMediaIntentErrorDialog by rememberSaveable { mutableStateOf(false) }
+
+    fun playMedia(event: Event) {
+        scope.launch {
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndTypeAndNormalize(
+                    buildLiveStreamUrl(event.serviceReference).toUri(), "video/mp4"
+                )
+                putExtra("title", event.title)
+            }
+
+            try {
+                context.startActivity(intent)
+            } catch (_: ActivityNotFoundException) {
+                showMediaIntentErrorDialog = true
+            }
+        }
+    }
 
     if (events.isNotEmpty()) {
         LazyVerticalGrid(
@@ -117,11 +142,7 @@ fun LiveContent(
                                             filledIcon = Icons.Filled.Cast,
                                             action = {
                                                 scope.launch {
-                                                    IntentUtils.playMedia(
-                                                        context,
-                                                        buildLiveStreamUrl(event.serviceReference),
-                                                        event.serviceName
-                                                    )
+                                                    playMedia(event)
                                                 }
                                             }), MenuItem(
                                             text = stringResource(R.string.switch_channel),
@@ -170,5 +191,9 @@ fun LiveContent(
                 .consumeWindowInsets(paddingValues)
                 .padding(paddingValues)
         )
+    }
+
+    if (showMediaIntentErrorDialog) {
+        MediaIntentErrorDialog { showMediaIntentErrorDialog = false }
     }
 }

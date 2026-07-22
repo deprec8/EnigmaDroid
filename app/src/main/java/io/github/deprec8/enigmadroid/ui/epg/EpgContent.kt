@@ -19,6 +19,9 @@
 
 package io.github.deprec8.enigmadroid.ui.epg
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.provider.CalendarContract
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,8 +35,14 @@ import androidx.compose.material.icons.filled.AddAlert
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.outlined.AddAlert
 import androidx.compose.material.icons.outlined.Timer
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -44,9 +53,7 @@ import io.github.deprec8.enigmadroid.model.MenuItemGroup
 import io.github.deprec8.enigmadroid.model.api.Event
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.content.ContentItem
-import io.github.deprec8.enigmadroid.utils.IntentUtils
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
-import kotlinx.coroutines.launch
 
 @Composable
 fun EpgContent(
@@ -55,8 +62,35 @@ fun EpgContent(
     showChannelName: Boolean = false,
     onAddTimerForEvent: (Event) -> Unit,
 ) {
-    val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    var showReminderIntentErrorDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    fun addReminderForEvent(event: Event) {
+        val calendarIntent = Intent(Intent.ACTION_INSERT).apply {
+            data = CalendarContract.Events.CONTENT_URI
+            putExtra(
+                CalendarContract.Events.TITLE, event.title
+            )
+            putExtra(
+                CalendarContract.Events.DESCRIPTION, event.shortDescription
+            )
+            putExtra(
+                CalendarContract.EXTRA_EVENT_BEGIN_TIME, event.beginTimestamp * 1000
+            )
+            putExtra(
+                CalendarContract.EXTRA_EVENT_END_TIME,
+                (event.beginTimestamp + event.durationInSeconds) * 1000
+            )
+        }
+
+        try {
+            context.startActivity(calendarIntent)
+        } catch (_: ActivityNotFoundException) {
+            showReminderIntentErrorDialog = true
+        }
+    }
 
     if (events.isNotEmpty()) {
         LazyVerticalGrid(
@@ -99,9 +133,7 @@ fun EpgContent(
                                         outlinedIcon = Icons.Outlined.AddAlert,
                                         filledIcon = Icons.Filled.AddAlert,
                                         action = {
-                                            scope.launch {
-                                                IntentUtils.addReminder(context, event)
-                                            }
+                                            addReminderForEvent(event)
                                         })
                                 )
                             )
@@ -124,5 +156,17 @@ fun EpgContent(
                 .consumeWindowInsets(paddingValues)
                 .padding(paddingValues)
         )
+    }
+
+    if (showReminderIntentErrorDialog) {
+        AlertDialog(onDismissRequest = { showReminderIntentErrorDialog = false }, title = {
+            Text(text = stringResource(R.string.unable_to_add_reminder))
+        }, text = {
+            Text(stringResource(R.string.please_make_sure_that_you_have_at_least_one_calendar_app_installed_on_your_device))
+        }, confirmButton = {
+            TextButton(onClick = { showReminderIntentErrorDialog = false }) {
+                Text(stringResource(R.string.ok))
+            }
+        })
     }
 }

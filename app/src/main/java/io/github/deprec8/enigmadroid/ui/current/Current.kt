@@ -87,7 +87,7 @@ fun CurrentPage(
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 currentEventInfo ?: CurrentInfo(),
                 innerPadding,
-                onBuildLiveStreamUrl = {
+                buildLiveStreamUrl = {
                     currentViewModel.buildLiveStreamUrl(it)
                 },
                 onNavigateToServiceEpg = { serviceReference, serviceName ->

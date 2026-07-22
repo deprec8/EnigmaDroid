@@ -28,9 +28,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -46,8 +44,6 @@ import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarDrawerNavigationButton
 import io.github.deprec8.enigmadroid.ui.movies.components.MoviesActionBar
 import io.github.deprec8.enigmadroid.ui.movies.components.MoviesContent
-import io.github.deprec8.enigmadroid.utils.IntentUtils
-import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -65,9 +61,6 @@ fun MoviesPage(
     val connectionState by moviesViewModel.connectionState.collectAsStateWithLifecycle()
     val freeSpace by moviesViewModel.freeSpace.collectAsStateWithLifecycle()
 
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-
     ObserveActiveState(moviesViewModel)
 
     Scaffold(floatingActionButton = {
@@ -82,15 +75,6 @@ fun MoviesPage(
                     MoviesContent(
                         movies = it,
                         paddingValues = PaddingValues(0.dp),
-                        onStreamMovie = { movie ->
-                            scope.launch {
-                                IntentUtils.playMedia(
-                                    context,
-                                    moviesViewModel.buildMovieStreamUrl(movie.fileName),
-                                    movie.eventName
-                                )
-                            }
-                        },
                         onPlayMovieOnDevice = { movie -> moviesViewModel.playOnDevice(movie.serviceReference) },
                         onDeleteMovie = { movie -> moviesViewModel.delete(movie.serviceReference) },
                         onRenameMovie = { movie, newName ->
@@ -103,7 +87,13 @@ fun MoviesPage(
                                 movie.serviceReference, newLocation
                             )
                         },
-                        onDownloadMovie = { movie -> moviesViewModel.download(movie) })
+                        onDownloadMovie = { movie -> moviesViewModel.download(movie) },
+                        buildMovieStreamUrl = { fileName ->
+                            moviesViewModel.buildMovieStreamUrl(
+                                fileName
+                            )
+                        }
+                    )
 
                 } ?: run {
                     SearchHistory(searchHistory = searchHistory, onSearchQuery = {
@@ -137,15 +127,6 @@ fun MoviesPage(
                 bookmarks = movieBatch?.bookmarks ?: emptyList(),
                 directory = movieBatch?.directory ?: "",
                 paddingValues = innerPadding,
-                onStreamMovie = { movie ->
-                    scope.launch {
-                        IntentUtils.playMedia(
-                            context,
-                            moviesViewModel.buildMovieStreamUrl(movie.fileName),
-                            movie.eventName
-                        )
-                    }
-                },
                 onPlayMovieOnDevice = { movie -> moviesViewModel.playOnDevice(movie.serviceReference) },
                 onDeleteMovie = { movie -> moviesViewModel.delete(movie.serviceReference) },
                 onRenameMovie = { movie, newName ->
@@ -163,7 +144,8 @@ fun MoviesPage(
                     onNavigateToDirectory(
                         path
                     )
-                })
+                },
+                buildMovieStreamUrl = { fileName -> moviesViewModel.buildMovieStreamUrl(fileName) })
         } else {
             ConnectionDisplay(
                 Modifier

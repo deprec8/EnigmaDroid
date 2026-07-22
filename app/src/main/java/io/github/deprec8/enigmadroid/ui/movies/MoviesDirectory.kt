@@ -38,9 +38,7 @@ import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -56,8 +54,6 @@ import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.movies.components.MoviesActionBar
 import io.github.deprec8.enigmadroid.ui.movies.components.MoviesContent
-import io.github.deprec8.enigmadroid.utils.IntentUtils
-import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -78,9 +74,6 @@ fun MoviesDirectoryPage(
     val connectionState by moviesViewModel.connectionState.collectAsStateWithLifecycle()
     val freeSpace by moviesViewModel.freeSpace.collectAsStateWithLifecycle()
 
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-
     ObserveActiveState(moviesViewModel)
 
     Scaffold(floatingActionButton = {
@@ -95,15 +88,6 @@ fun MoviesDirectoryPage(
                     MoviesContent(
                         movies = it,
                         paddingValues = PaddingValues(0.dp),
-                        onStreamMovie = { movie ->
-                            scope.launch {
-                                IntentUtils.playMedia(
-                                    context,
-                                    moviesViewModel.buildMovieStreamUrl(movie.fileName),
-                                    movie.eventName
-                                )
-                            }
-                        },
                         onPlayMovieOnDevice = { movie -> moviesViewModel.playOnDevice(movie.serviceReference) },
                         onDeleteMovie = { movie -> moviesViewModel.delete(movie.serviceReference) },
                         onRenameMovie = { movie, newName ->
@@ -116,7 +100,12 @@ fun MoviesDirectoryPage(
                                 movie.serviceReference, newLocation
                             )
                         },
-                        onDownloadMovie = { movie -> moviesViewModel.download(movie) })
+                        onDownloadMovie = { movie -> moviesViewModel.download(movie) },
+                        buildMovieStreamUrl = { fileName ->
+                            moviesViewModel.buildMovieStreamUrl(
+                                fileName
+                            )
+                        })
 
                 } ?: run {
                     SearchHistory(searchHistory = searchHistory, onSearchQuery = {
@@ -168,15 +157,6 @@ fun MoviesDirectoryPage(
                 bookmarks = movieBatch?.bookmarks ?: emptyList(),
                 directory = movieBatch?.directory ?: "",
                 paddingValues = innerPadding,
-                onStreamMovie = { movie ->
-                    scope.launch {
-                        IntentUtils.playMedia(
-                            context,
-                            moviesViewModel.buildMovieStreamUrl(movie.fileName),
-                            movie.eventName
-                        )
-                    }
-                },
                 onPlayMovieOnDevice = { movie -> moviesViewModel.playOnDevice(movie.serviceReference) },
                 onDeleteMovie = { movie -> moviesViewModel.delete(movie.serviceReference) },
                 onRenameMovie = { movie, newName ->
@@ -192,7 +172,8 @@ fun MoviesDirectoryPage(
                 onDownloadMovie = { movie -> moviesViewModel.download(movie) },
                 onNavigateToDirectory = { path ->
                     onNavigateToDirectory(path)
-                })
+                },
+                buildMovieStreamUrl = { fileName -> moviesViewModel.buildMovieStreamUrl(fileName) })
         } else {
             ConnectionDisplay(
                 Modifier

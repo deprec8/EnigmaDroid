@@ -22,6 +22,7 @@ package io.github.deprec8.enigmadroid.ui.settings.devices
 import android.content.Intent
 import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
+import android.graphics.drawable.Icon
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandIn
 import androidx.compose.animation.fadeIn
@@ -82,7 +83,6 @@ import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.ArrowNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.utils.IntentUtils
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -228,8 +228,18 @@ fun DevicesPage(
                                         },
                                         onClick = {
                                             showDropDownMenu = false
-                                            IntentUtils.pinDevice(
-                                                context, device
+                                            shortcutManager.requestPinShortcut(
+                                                ShortcutInfo.Builder(
+                                                    context, "device_${device.id}"
+                                                ).setIcon(
+                                                    Icon.createWithResource(
+                                                        context, R.mipmap.ic_shortcut_device
+                                                    )
+                                                ).setShortLabel(device.name).setIntent(
+                                                    Intent(
+                                                        "io.github.deprec8.enigmadroid.OPEN_WITH_DEVICE",
+                                                    ).putExtra("device_id", device.id)
+                                                ).build(), null
                                             )
 
                                         })
@@ -242,9 +252,19 @@ fun DevicesPage(
                                         },
                                         onClick = {
                                             showDropDownMenu = false
-                                            IntentUtils.pinOwifDevice(
-                                                context,
-                                                device
+                                            shortcutManager.requestPinShortcut(
+                                                ShortcutInfo.Builder(
+                                                    context, "openwebif_${device.id}"
+                                                ).setIcon(
+                                                    Icon.createWithResource(
+                                                        context, R.mipmap.ic_shortcut_owif
+                                                    )
+                                                ).setShortLabel(device.name).setIntent(
+                                                    Intent(
+                                                        Intent.ACTION_VIEW,
+                                                        device.buildOwifUrl().toUri()
+                                                    )
+                                                ).build(), null
                                             )
 
                                         })
@@ -318,9 +338,9 @@ fun DevicesPage(
                                     shortcutManager.updateShortcuts(
                                         listOf(
                                             ShortcutInfo.Builder(context, "openwebif_${it.id}")
-                                                .setShortLabel("${newDevice.name} (Web)").setIntent(
+                                                .setShortLabel(newDevice.name).setIntent(
                                                     Intent(
-                                                        Intent.ACTION_DEFAULT,
+                                                        Intent.ACTION_VIEW,
                                                         devicesViewModel.buildDeviceOwifUrl(
                                                             newDevice
                                                         ).toUri()

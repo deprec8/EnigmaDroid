@@ -137,9 +137,6 @@
     <string name="search_events">Rechercher événements</string>
     <string name="switch_channel">Changer</string>
     <string name="service">Service</string>
-    <string name="no_browser_found">Aucun navigateur trouvé.</string>
-    <string name="no_calendar_found">Aucun calendrier trouvé.</string>
-    <string name="no_media_player_found">Aucun lecteur multimédia trouvé.</string>
     <string name="download">Télécharger</string>
     <string name="downloading">Téléchargement de «%1$s»…</string>
     <string name="reload">Redémarrer</string>

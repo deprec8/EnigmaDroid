@@ -19,6 +19,8 @@
 
 package io.github.deprec8.enigmadroid.ui.remotecontrol
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.os.Build
 import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.layout.Arrangement
@@ -33,6 +35,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dialpad
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -44,6 +47,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
@@ -80,7 +84,6 @@ import io.github.deprec8.enigmadroid.ui.remotecontrol.components.ControlButtons
 import io.github.deprec8.enigmadroid.ui.remotecontrol.components.DeviceText
 import io.github.deprec8.enigmadroid.ui.remotecontrol.components.MediaButtons
 import io.github.deprec8.enigmadroid.ui.remotecontrol.components.NumberButtons
-import io.github.deprec8.enigmadroid.utils.IntentUtils
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -95,6 +98,9 @@ fun RemoteControlPage(
     val remoteControlVibration by remoteControlViewModel.remoteControlVibration.collectAsStateWithLifecycle()
 
     var showNumbers by rememberSaveable {
+        mutableStateOf(false)
+    }
+    var showScreenshotIntentErrorDialog by rememberSaveable {
         mutableStateOf(false)
     }
     val scrollState = rememberScrollState()
@@ -123,8 +129,7 @@ fun RemoteControlPage(
 
     fun fetchScreenshot() {
         scope.launch {
-            val uri = remoteControlViewModel.fetchScreenshot()
-            if (uri != null) {
+            remoteControlViewModel.fetchScreenshot().onSuccess { uri ->
                 if (remoteControlVibration) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                         view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
@@ -137,9 +142,18 @@ fun RemoteControlPage(
                     duration = SnackbarDuration.Short
                 )
                 if (result == SnackbarResult.ActionPerformed) {
-                    IntentUtils.openImage(context, uri)
+                    val intent = Intent(Intent.ACTION_VIEW).apply {
+                        setDataAndType(uri, "image/*")
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    }
+
+                    try {
+                        context.startActivity(intent)
+                    } catch (_: ActivityNotFoundException) {
+                        showScreenshotIntentErrorDialog = true
+                    }
                 }
-            } else {
+            }.onFailure {
                 if (remoteControlVibration) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                         view.performHapticFeedback(HapticFeedbackConstants.REJECT)
@@ -340,5 +354,17 @@ fun RemoteControlPage(
                 }
             }
         }
+    }
+
+    if (showScreenshotIntentErrorDialog) {
+        AlertDialog(onDismissRequest = { showScreenshotIntentErrorDialog = false }, title = {
+            Text(text = stringResource(R.string.unable_to_view_image))
+        }, text = {
+            Text(stringResource(R.string.please_make_sure_that_you_have_at_least_one_image_viewer_installed_on_your_device))
+        }, confirmButton = {
+            TextButton(onClick = { showScreenshotIntentErrorDialog = false }) {
+                Text(stringResource(R.string.ok))
+            }
+        })
     }
 }

@@ -137,9 +137,6 @@
     <string name="search_events">Поиск событий</string>
     <string name="switch_channel">Переключить</string>
     <string name="service">Сервис</string>
-    <string name="no_browser_found">Обозреватель не найден.</string>
-    <string name="no_calendar_found">Календарь не найден.</string>
-    <string name="no_media_player_found">Видеоплейер не найден.</string>
     <string name="download">Скачать</string>
     <string name="downloading">Загрузка \"%1$s\"…</string>
     <string name="reload">Обновить</string>

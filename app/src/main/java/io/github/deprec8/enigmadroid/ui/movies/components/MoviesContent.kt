@@ -19,6 +19,8 @@
 
 package io.github.deprec8.enigmadroid.ui.movies.components
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -48,11 +50,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.model.MenuItem
 import io.github.deprec8.enigmadroid.model.MenuItemGroup
@@ -60,6 +65,7 @@ import io.github.deprec8.enigmadroid.model.api.Movie
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.content.ContentItem
 import io.github.deprec8.enigmadroid.ui.components.dialogs.ConfirmDeleteDialog
+import kotlinx.coroutines.launch
 
 @Composable
 fun MoviesContent(
@@ -67,14 +73,35 @@ fun MoviesContent(
     bookmarks: List<String> = emptyList(),
     directory: String = "",
     paddingValues: PaddingValues,
-    onStreamMovie: (Movie) -> Unit,
     onPlayMovieOnDevice: (Movie) -> Unit,
     onDeleteMovie: (Movie) -> Unit,
     onRenameMovie: (Movie, String) -> Unit,
     onMoveMovie: (Movie, String) -> Unit,
     onDownloadMovie: (Movie) -> Unit,
-    onNavigateToDirectory: (String) -> Unit = { _ -> }
+    onNavigateToDirectory: (String) -> Unit = { _ -> },
+    buildMovieStreamUrl: suspend (String) -> String,
 ) {
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    var showMediaIntentErrorDialog by rememberSaveable { mutableStateOf(false) }
+
+    fun playMedia(movie: Movie) {
+        scope.launch {
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndTypeAndNormalize(
+                    buildMovieStreamUrl(movie.fileName).toUri(), "video/mp4"
+                )
+                putExtra("title", movie.eventName)
+            }
+
+            try {
+                context.startActivity(intent)
+            } catch (_: ActivityNotFoundException) {
+                showMediaIntentErrorDialog = true
+            }
+        }
+    }
+
     if (movies.isNotEmpty() || bookmarks.isNotEmpty()) {
         LazyVerticalGrid(
             columns = GridCells.Adaptive(310.dp),
@@ -112,7 +139,7 @@ fun MoviesContent(
                                     outlinedIcon = Icons.Outlined.Cast,
                                     filledIcon = Icons.Filled.Cast,
                                     action = {
-                                        onStreamMovie(movie)
+                                        playMedia(movie)
                                     }), MenuItem(
                                     text = stringResource(R.string.switch_channel),
                                     outlinedIcon = Icons.Outlined.PlayArrow,

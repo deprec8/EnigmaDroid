@@ -49,7 +49,7 @@ class RemoteControlViewModel(
             viewModelScope, SharingStarted.WhileSubscribed(5000), false
         )
 
-    suspend fun fetchScreenshot(): Uri? {
+    suspend fun fetchScreenshot(): Result<Uri> {
         return downloadRepository.fetchScreenshot()
     }
 
