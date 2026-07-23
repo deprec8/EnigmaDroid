@@ -22,7 +22,7 @@ package io.github.deprec8.enigmadroid.data.source.local.devices
 import androidx.room3.Database
 import androidx.room3.RoomDatabase
 
-@Database(entities = [Device::class], version = 1, exportSchema = false)
+@Database(entities = [Device::class], version = 1)
 abstract class DeviceDatabase : RoomDatabase() {
 
     abstract fun deviceDao(): DeviceDao
