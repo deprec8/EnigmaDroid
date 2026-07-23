@@ -89,7 +89,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun checkIsOnboardingNeeded(): Boolean = runBlocking {
-        return@runBlocking onboardingRepository.isOnboardingNeeded()
+        return@runBlocking onboardingRepository.getOnboardingNeeded()
     }
 
     private fun handleDeviceIntent(intent: Intent?) = runBlocking {

@@ -31,10 +31,12 @@ import io.github.deprec8.enigmadroid.common.constant.DefaultPorts
 import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
 import io.github.deprec8.enigmadroid.data.repositories.OnboardingRepository
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class OnboardingViewModel(
     private val onboardingRepository: OnboardingRepository,
@@ -42,36 +44,28 @@ class OnboardingViewModel(
 ) : ViewModel() {
 
     val nameState = TextFieldState("")
-
-    val ipState = TextFieldState("")
-
+    val hostState = TextFieldState("")
     val portState = TextFieldState(DefaultPorts.HTTP)
-
     val livePortState = TextFieldState(DefaultPorts.LIVE)
-
-    var isHttps by mutableStateOf(false)
+    var https by mutableStateOf(false)
         private set
-
-    var isLogin by mutableStateOf(false)
+    var login by mutableStateOf(false)
         private set
-
     val userState = TextFieldState("")
-
     val passwordState = TextFieldState("")
 
     val baseFlow = combine(
         snapshotFlow { nameState.text },
-        snapshotFlow { ipState.text },
+        snapshotFlow { hostState.text },
         snapshotFlow { portState.text },
-        snapshotFlow { livePortState.text }) { name, ip, port, livePort ->
-        listOf(name, ip, port, livePort).all { it.isNotBlank() }
+        snapshotFlow { livePortState.text }) { name, host, port, livePort ->
+        listOf(name, host, port, livePort).all { it.isNotBlank() }
     }
-
     val loginFlow = combine(
         snapshotFlow { userState.text },
         snapshotFlow { passwordState.text },
-        snapshotFlow { isLogin }) { user, password, isLogin ->
-        !isLogin || (user.isNotBlank() && password.isNotBlank())
+        snapshotFlow { login }) { user, password, login ->
+        !login || (user.isNotBlank() && password.isNotBlank())
     }
 
     val isEveryFieldFilled = combine(baseFlow, loginFlow) { baseFilled, loginFilled ->
@@ -81,40 +75,44 @@ class OnboardingViewModel(
     )
 
     fun toggleHttps() {
-        isHttps = !isHttps
-        if (portState.text == DefaultPorts.HTTP && isHttps) {
+        https = !https
+        if (portState.text == DefaultPorts.HTTP && https) {
             portState.setTextAndPlaceCursorAtEnd(DefaultPorts.HTTPS)
-        } else if (portState.text == DefaultPorts.HTTPS && !isHttps) {
+        } else if (portState.text == DefaultPorts.HTTPS && !https) {
             portState.setTextAndPlaceCursorAtEnd(DefaultPorts.HTTP)
         }
     }
 
     fun toggleLogin() {
-        isLogin = !isLogin
+        login = !login
     }
 
     fun finishOnboardingWithDevice() {
         viewModelScope.launch {
-            onboardingRepository.finishOnboarding()
-            val newDevice = Device(
-                0,
-                nameState.text.toString(),
-                ipState.text.toString().trim(),
-                portState.text.toString().trim().toInt(),
-                livePortState.text.toString().trim().toInt(),
-                isHttps,
-                isLogin,
-                userState.text.toString(),
-                passwordState.text.toString(),
-            )
-            devicesRepository.addDevice(newDevice)
+            withContext(NonCancellable) {
+                onboardingRepository.finishOnboarding()
+                val newDevice = Device(
+                    0,
+                    nameState.text.toString(),
+                    hostState.text.toString(),
+                    portState.text.toString().toInt(),
+                    livePortState.text.toString().toInt(),
+                    https,
+                    login,
+                    userState.text.toString(),
+                    passwordState.text.toString(),
+                )
+                devicesRepository.addDevice(newDevice)
+            }
         }
     }
 
 
     fun finishOnboarding() {
         viewModelScope.launch {
-            onboardingRepository.finishOnboarding()
+            withContext(NonCancellable) {
+                onboardingRepository.finishOnboarding()
+            }
         }
     }
 }

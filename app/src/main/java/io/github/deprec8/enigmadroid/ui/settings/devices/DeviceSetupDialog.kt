@@ -25,8 +25,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -42,37 +44,29 @@ import io.github.deprec8.enigmadroid.ui.components.dialogs.AdaptiveDialog
 fun DeviceSetupDialog(
     oldDevice: Device? = null, onDismissRequest: () -> Unit, onSave: (Device, Device?) -> Unit
 ) {
-    var isHttps by rememberSaveable { mutableStateOf(oldDevice?.https == true) }
-    var isLogin by rememberSaveable { mutableStateOf(oldDevice?.login == true) }
+    var https by rememberSaveable { mutableStateOf(oldDevice?.https == true) }
+    var login by rememberSaveable { mutableStateOf(oldDevice?.login == true) }
 
     val nameState = rememberTextFieldState(oldDevice?.name ?: "")
-    val ipState = rememberTextFieldState(oldDevice?.host ?: "")
+    val hostState = rememberTextFieldState(oldDevice?.host ?: "")
     val portState = rememberTextFieldState((oldDevice?.port ?: DefaultPorts.HTTP).toString())
     val livePortState =
         rememberTextFieldState((oldDevice?.livePort ?: DefaultPorts.LIVE).toString())
     val userState = rememberTextFieldState(oldDevice?.user ?: "")
     val passwordState = rememberTextFieldState(oldDevice?.password ?: "")
 
-    fun isSaveReady(): Boolean {
-        return if (Device(
-                oldDevice?.id ?: 0,
-                nameState.text.toString(),
-                ipState.text.toString(),
-                portState.text.toString().toInt(),
-                livePortState.text.toString().toInt(),
-                isHttps,
-                isLogin,
-                userState.text.toString(),
-                passwordState.text.toString(),
-            ) != oldDevice && nameState.text.isNotBlank() && ipState.text.isNotBlank() && portState.text.isNotBlank() && livePortState.text.isNotBlank()
-        ) {
-            if (isLogin) {
-                userState.text.isNotBlank() && passwordState.text.isNotBlank()
+    val ready by remember {
+        derivedStateOf {
+            if (nameState.text.isBlank() || hostState.text.isBlank() || portState.text.isBlank() || livePortState.text.isBlank()) return@derivedStateOf false
+
+            val baseNotEqual =
+                oldDevice == null || nameState.text != oldDevice.name || hostState.text != oldDevice.host || portState.text != oldDevice.port.toString() || livePortState.text != oldDevice.livePort.toString()
+
+            return@derivedStateOf if (login) {
+                baseNotEqual && userState.text.isNotBlank() && passwordState.text.isNotBlank() && if (oldDevice != null) userState.text != oldDevice.user || passwordState.text != oldDevice.password else true
             } else {
-                true
+                baseNotEqual
             }
-        } else {
-            false
         }
     }
 
@@ -86,22 +80,21 @@ fun DeviceSetupDialog(
         }, actionButton = {
             TextButton(
                 onClick = {
-                    if (isSaveReady()) {
+                    if (ready) {
                         onSave(
                             Device(
-                                0,
-                                nameState.text.toString(),
-                                ipState.text.toString().trim(),
-                                portState.text.toString().trim().toInt(),
-                                livePortState.text.toString().trim().toInt(),
-                                isHttps,
-                                isLogin,
-                                userState.text.toString(),
-                                passwordState.text.toString(),
+                                name = nameState.text.toString(),
+                                host = hostState.text.toString(),
+                                port = portState.text.toString().toInt(),
+                                livePort = livePortState.text.toString().toInt(),
+                                https = https,
+                                login = login,
+                                user = userState.text.toString(),
+                                password = passwordState.text.toString(),
                             ), oldDevice
                         )
                     }
-                }, enabled = isSaveReady()
+                }, enabled = ready
             ) {
                 Text(
                     text = if (oldDevice == null) {
@@ -115,24 +108,24 @@ fun DeviceSetupDialog(
         DeviceSetupCard(
             modifier = Modifier,
             nameState = nameState,
-            ipState = ipState,
+            hostState = hostState,
             portState = portState,
             livePortState = livePortState,
-            isHttps = isHttps,
-            isLogin = isLogin,
+            https = https,
+            login = login,
             userState = userState,
             passwordState = passwordState,
             onHttpsChange = {
-                isHttps = !isHttps
-                if (portState.text == DefaultPorts.HTTP && isHttps) {
+                https = !https
+                if (portState.text == DefaultPorts.HTTP && https) {
                     portState.setTextAndPlaceCursorAtEnd(DefaultPorts.HTTPS)
-                } else if (portState.text == DefaultPorts.HTTPS && !isHttps) {
+                } else if (portState.text == DefaultPorts.HTTPS && !https) {
                     portState.setTextAndPlaceCursorAtEnd(DefaultPorts.HTTP)
 
                 }
             },
             onLoginChange = {
-                isLogin = !isLogin
+                login = !login
             })
     }
 }

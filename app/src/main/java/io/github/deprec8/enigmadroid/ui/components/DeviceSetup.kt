@@ -24,12 +24,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.TextObfuscationMode
+import androidx.compose.foundation.text.input.maxLength
+import androidx.compose.foundation.text.input.then
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Visibility
@@ -59,6 +61,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentType
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -71,11 +74,11 @@ import io.github.deprec8.enigmadroid.R
 fun DeviceSetupCard(
     modifier: Modifier,
     nameState: TextFieldState,
-    ipState: TextFieldState,
+    hostState: TextFieldState,
     portState: TextFieldState,
     livePortState: TextFieldState,
-    isHttps: Boolean,
-    isLogin: Boolean,
+    https: Boolean,
+    login: Boolean,
     userState: TextFieldState,
     passwordState: TextFieldState,
     onHttpsChange: () -> Unit,
@@ -83,248 +86,163 @@ fun DeviceSetupCard(
 ) {
 
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-    var passwordVisible by rememberSaveable { mutableStateOf(false) }
     val isExpandedScreenLayout =
         windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)
+    var passwordVisible by rememberSaveable { mutableStateOf(false) }
 
     Column(
         modifier = modifier
     ) {
         if (isExpandedScreenLayout) {
             Row {
-                OutlinedTextField(
-                    state = nameState,
-                    lineLimits = TextFieldLineLimits.SingleLine,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Text, imeAction = ImeAction.Next
-                    ),
-                    label = {
-                        Text(
-                            text = stringResource(R.string.name),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    },
-                    modifier = Modifier
-                        .padding(end = 8.dp)
-                        .fillMaxWidth(0.5f)
+                NameField(
+                    nameState, Modifier.fillMaxWidth(0.5f)
                 )
-                OutlinedTextField(
-                    state = ipState,
-                    lineLimits = TextFieldLineLimits.SingleLine,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Text, imeAction = ImeAction.Next
-                    ),
-                    label = {
-                        Text(
-                            text = stringResource(R.string.ip_address_or_hostname),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    },
-                    modifier = Modifier
-                        .padding(start = 8.dp)
-                        .fillMaxWidth(1f)
+                Spacer(Modifier.size(8.dp))
+                HostField(
+                    hostState, Modifier.fillMaxWidth(1f)
                 )
             }
             Spacer(modifier = Modifier.size(8.dp))
-            FormPortSettings(
-                portState = portState, livePortState = livePortState, isLogin = isLogin
+            PortFields(
+                portState = portState, livePortState = livePortState, last = !login
             )
-            FormAdditionalSettings(
-                isHttps = isHttps,
-                isLogin = isLogin,
+            Settings(
+                https = https,
+                login = login,
                 onHttpsChange = { onHttpsChange() },
                 onLoginChange = {
                     passwordVisible = false
                     onLoginChange()
                 })
             Row {
-                OutlinedTextField(
-                    enabled = isLogin,
-                    state = userState,
-                    lineLimits = TextFieldLineLimits.SingleLine,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Text, imeAction = ImeAction.Next
-                    ),
-                    label = {
-                        Text(
-                            text = stringResource(R.string.username),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth(0.5f)
-                        .semantics {
-                            contentType = ContentType.Username
-                        })
+                UserField(
+                    userState, Modifier.fillMaxWidth(0.5f), login
+                )
                 Spacer(Modifier.size(16.dp))
-                OutlinedSecureTextField(
-                    state = passwordState, enabled = isLogin, trailingIcon = {
-                        PasswordVisibilityToggleButton(
-                            passwordVisible, { passwordVisible = it }, isLogin
-                        )
-                    }, keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Done
-                    ), textObfuscationMode = if (!passwordVisible) {
-                        TextObfuscationMode.Hidden
-                    } else {
-                        TextObfuscationMode.Visible
-                    }, label = {
-                        Text(
-                            text = stringResource(R.string.password),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }, modifier = Modifier
-                        .fillMaxWidth(1f)
-                        .semantics {
-                            contentType = ContentType.Password
-                        })
-
+                PasswordField(
+                    passwordState, Modifier.fillMaxWidth(1f), login, passwordVisible
+                ) { passwordVisible = it }
             }
         } else {
-            OutlinedTextField(
-                state = nameState,
-                lineLimits = TextFieldLineLimits.SingleLine,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text, imeAction = ImeAction.Next
-                ),
-                label = {
-                    Text(
-                        text = stringResource(R.string.name),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                },
-                modifier = Modifier.fillMaxWidth()
+            NameField(
+                nameState, Modifier.fillMaxWidth()
+            )
+            Spacer(Modifier.size(8.dp))
+            HostField(
+                hostState, Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.size(8.dp))
-            OutlinedTextField(
-                state = ipState,
-                lineLimits = TextFieldLineLimits.SingleLine,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text, imeAction = ImeAction.Next
-                ),
-                label = {
-                    Text(
-                        text = stringResource(R.string.ip_address_or_hostname),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                },
-                modifier = Modifier.fillMaxWidth()
+            PortFields(
+                portState = portState, livePortState = livePortState, last = !login
             )
-            Spacer(modifier = Modifier.size(8.dp))
-            FormPortSettings(
-                portState = portState, livePortState = livePortState, isLogin = isLogin
-            )
-            FormAdditionalSettings(
-                isHttps = isHttps,
-                isLogin = isLogin,
+            Settings(
+                https = https,
+                login = login,
                 onHttpsChange = { onHttpsChange() },
                 onLoginChange = {
                     passwordVisible = false
                     onLoginChange()
                 })
-            OutlinedTextField(
-                enabled = isLogin,
-                state = userState,
-                lineLimits = TextFieldLineLimits.SingleLine,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text, imeAction = ImeAction.Next
-                ),
-                label = {
-                    Text(
-                        text = stringResource(R.string.username),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .semantics {
-                        contentType = ContentType.Username
-                    })
-            Spacer(modifier = Modifier.size(8.dp))
-            OutlinedSecureTextField(
-                state = passwordState, enabled = isLogin, trailingIcon = {
-                    PasswordVisibilityToggleButton(
-                        passwordVisible, { passwordVisible = it }, isLogin
-                    )
-                }, keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Done
-                ), textObfuscationMode = if (!passwordVisible) {
-                    TextObfuscationMode.Hidden
-                } else {
-                    TextObfuscationMode.Visible
-                }, label = {
-                    Text(
-                        text = stringResource(R.string.password),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }, modifier = Modifier
-                    .fillMaxWidth()
-                    .semantics {
-                        contentType = ContentType.Password
-                    })
+            UserField(
+                userState, Modifier.fillMaxWidth(), login
+            )
+            Spacer(Modifier.size(16.dp))
+            PasswordField(
+                passwordState, Modifier.fillMaxWidth(), login, passwordVisible
+            ) { passwordVisible = it }
         }
     }
 }
 
 @Composable
-private fun FormAdditionalSettings(
-    isHttps: Boolean,
-    isLogin: Boolean,
-    onHttpsChange: () -> Unit,
-    onLoginChange: () -> Unit,
+private fun NameField(state: TextFieldState, modifier: Modifier) {
+    OutlinedTextField(
+        state = state,
+        lineLimits = TextFieldLineLimits.SingleLine,
+        keyboardOptions = KeyboardOptions(
+            autoCorrectEnabled = false,
+            capitalization = KeyboardCapitalization.None,
+            keyboardType = KeyboardType.Text,
+            imeAction = ImeAction.Next
+        ),
+        label = {
+            Text(text = stringResource(R.string.name))
+        },
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun HostField(state: TextFieldState, modifier: Modifier) {
+    OutlinedTextField(
+        state = state,
+        lineLimits = TextFieldLineLimits.SingleLine,
+        keyboardOptions = KeyboardOptions(
+            autoCorrectEnabled = false,
+            capitalization = KeyboardCapitalization.None,
+            keyboardType = KeyboardType.Text,
+            imeAction = ImeAction.Next
+        ),
+        label = {
+            Text(text = stringResource(R.string.ip_address_or_hostname))
+        },
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun UserField(state: TextFieldState, modifier: Modifier, enabled: Boolean) {
+    OutlinedTextField(
+        enabled = enabled,
+        state = state,
+        lineLimits = TextFieldLineLimits.SingleLine,
+        keyboardOptions = KeyboardOptions(
+            autoCorrectEnabled = false,
+            capitalization = KeyboardCapitalization.None,
+            keyboardType = KeyboardType.Text,
+            imeAction = ImeAction.Next
+        ),
+        label = {
+            Text(text = stringResource(R.string.username))
+        },
+        modifier = modifier.semantics {
+            contentType = ContentType.Password
+        })
+}
+
+@Composable
+private fun PasswordField(
+    state: TextFieldState,
+    modifier: Modifier,
+    enabled: Boolean,
+    visible: Boolean,
+    onVisibilityChange: (value: Boolean) -> Unit,
 ) {
-    Column {
-        Spacer(modifier = Modifier.size(8.dp))
-        Row {
-            FilterChip(selected = isHttps, onClick = onHttpsChange, label = {
-                Text(
-                    text = stringResource(R.string.https),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }, leadingIcon = {
-                AnimatedVisibility(isHttps) {
-                    Icon(
-                        Icons.Default.Check, contentDescription = null, Modifier.size(
-                            FilterChipDefaults.IconSize
-                        )
-                    )
-                }
-            })
-            Spacer(Modifier.size(8.dp))
-            FilterChip(selected = isLogin, onClick = {
-                onLoginChange()
-            }, label = {
-                Text(
-                    text = stringResource(R.string.login),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }, leadingIcon = {
-                AnimatedVisibility(isLogin) {
-                    Icon(
-                        Icons.Default.Check, contentDescription = null, Modifier.size(
-                            FilterChipDefaults.IconSize
-                        )
-                    )
-                }
-            })
-        }
-        Spacer(modifier = Modifier.size(8.dp))
-    }
+    OutlinedSecureTextField(
+        state = state, enabled = enabled, trailingIcon = {
+            PasswordVisibilityToggleButton(
+                visible, onVisibilityChange, enabled
+            )
+        }, keyboardOptions = KeyboardOptions(
+            autoCorrectEnabled = false,
+            capitalization = KeyboardCapitalization.None,
+            keyboardType = KeyboardType.Password,
+            imeAction = ImeAction.Done
+        ), textObfuscationMode = if (!visible) {
+            TextObfuscationMode.Hidden
+        } else {
+            TextObfuscationMode.Visible
+        }, label = {
+            Text(text = stringResource(R.string.password))
+        }, modifier = modifier.semantics {
+            contentType = ContentType.Password
+        })
 }
 
 @Composable
-private fun FormPortSettings(
-    portState: TextFieldState, livePortState: TextFieldState, isLogin: Boolean
+private fun PortFields(
+    portState: TextFieldState, livePortState: TextFieldState, last: Boolean
 ) {
     Row {
         OutlinedTextField(
@@ -334,11 +252,17 @@ private fun FormPortSettings(
                 keyboardType = KeyboardType.Number, imeAction = ImeAction.Next
             ),
             label = {
-                Text(
-                    text = stringResource(R.string.port),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                Text(text = stringResource(R.string.port))
+            },
+            inputTransformation = InputTransformation.maxLength(5).then {
+                if (!asCharSequence().all { it.isDigit() }) {
+                    revertAllChanges()
+                    return@then
+                }
+
+                if (asCharSequence().toString().toIntOrNull()?.let { it > 65535 } == true) {
+                    revertAllChanges()
+                }
             },
             modifier = Modifier.fillMaxWidth(0.5f)
         )
@@ -347,49 +271,104 @@ private fun FormPortSettings(
             state = livePortState,
             lineLimits = TextFieldLineLimits.SingleLine,
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number, imeAction = if (!isLogin) {
+                keyboardType = KeyboardType.Number, imeAction = if (last) {
                     ImeAction.Done
                 } else {
                     ImeAction.Next
                 }
             ),
             label = {
-                Text(
-                    text = stringResource(R.string.live_port),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                Text(text = stringResource(R.string.live_port))
+            },
+            inputTransformation = InputTransformation.maxLength(5).then {
+                if (!asCharSequence().all { it.isDigit() }) {
+                    revertAllChanges()
+                    return@then
+                }
+
+                if (asCharSequence().toString().toIntOrNull()?.let { it > 65535 } == true) {
+                    revertAllChanges()
+                }
             },
             modifier = Modifier.fillMaxWidth(1f)
         )
     }
 }
 
+@Composable
+private fun Settings(
+    https: Boolean,
+    login: Boolean,
+    onHttpsChange: () -> Unit,
+    onLoginChange: () -> Unit,
+) {
+    Column {
+        Spacer(modifier = Modifier.size(8.dp))
+        Row {
+            FilterChip(selected = https, onClick = onHttpsChange, label = {
+                Text(
+                    text = stringResource(R.string.https),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }, leadingIcon = {
+                AnimatedVisibility(https) {
+                    Icon(
+                        Icons.Default.Check, contentDescription = null, Modifier.size(
+                            FilterChipDefaults.IconSize
+                        )
+                    )
+                }
+            })
+            Spacer(Modifier.size(8.dp))
+            FilterChip(selected = login, onClick = {
+                onLoginChange()
+            }, label = {
+                Text(
+                    text = stringResource(R.string.login),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }, leadingIcon = {
+                AnimatedVisibility(login) {
+                    Icon(
+                        Icons.Default.Check, contentDescription = null, Modifier.size(
+                            FilterChipDefaults.IconSize
+                        )
+                    )
+                }
+            })
+        }
+        Spacer(modifier = Modifier.size(8.dp))
+    }
+}
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PasswordVisibilityToggleButton(
-    passwordVisible: Boolean, onVisibilityChange: (value: Boolean) -> Unit, isLogin: Boolean
+    visible: Boolean, onVisibilityChange: (value: Boolean) -> Unit, enabled: Boolean
 ) {
     TooltipBox(
         tooltip = {
             PlainTooltip {
                 Text(
-                    if (passwordVisible) stringResource(id = R.string.hide_password) else stringResource(
+                    if (visible) stringResource(id = R.string.hide_password) else stringResource(
                         id = R.string.show_password
                     )
                 )
             }
         },
-        enableUserInput = isLogin,
+        enableUserInput = enabled,
         state = rememberTooltipState(),
         positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
             TooltipAnchorPosition.Above, 4.dp
         )
     ) {
         IconButton(
-            onClick = { onVisibilityChange(!passwordVisible) }, enabled = isLogin
+            onClick = { onVisibilityChange(!visible) }, enabled = enabled
         ) {
-            when (passwordVisible) {
+            when (visible) {
                 true -> {
 
                     Icon(

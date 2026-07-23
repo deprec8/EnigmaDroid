@@ -36,7 +36,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Entity(tableName = "devices")
 data class Device(
-    @PrimaryKey(autoGenerate = true) val id: Long,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0L,
     val name: String,
     val host: String,
     val port: Int,
