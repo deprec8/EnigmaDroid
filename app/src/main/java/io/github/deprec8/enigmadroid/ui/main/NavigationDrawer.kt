@@ -264,7 +264,7 @@ fun DeviceItem(
                     ConnectionState.CONNECTED -> {
                         currentDevice?.let { device ->
                             Text(
-                                "${device.ip}:${device.port}",
+                                "${device.host}:${device.port}",
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )

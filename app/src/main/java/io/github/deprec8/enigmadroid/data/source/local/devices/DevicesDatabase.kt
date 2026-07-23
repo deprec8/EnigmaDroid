@@ -28,72 +28,75 @@ import androidx.room3.PrimaryKey
 import androidx.room3.Query
 import androidx.room3.RoomDatabase
 import androidx.room3.Update
+import androidx.room3.migration.Migration
+import androidx.sqlite.SQLiteConnection
+import androidx.sqlite.execSQL
 import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
 import kotlinx.coroutines.flow.Flow
 
-@Entity
+@Entity(tableName = "devices")
 data class Device(
-    @PrimaryKey(autoGenerate = true) val id: Int,
-    val name: String = "",
-    val ip: String = "",
-    val isHttps: Boolean = false,
-    val isLogin: Boolean = false,
-    val user: String = "",
-    val password: String = "",
-    val port: String = "",
-    val livePort: String = "",
+    @PrimaryKey(autoGenerate = true) val id: Long,
+    val name: String,
+    val host: String,
+    val port: Int,
+    val livePort: Int,
+    val https: Boolean,
+    val login: Boolean,
+    val user: String,
+    val password: String
 ) {
 
     fun buildUrl(endpoint: String) = buildString {
-        append(if (isHttps) "https://" else "http://")
-        if (isLogin) {
+        append(if (https) "https://" else "http://")
+        if (login) {
             append("${user}:${password}@")
         }
-        append("${ip}:${port}/api/${endpoint.replace(" ", "%20")}")
+        append("${host}:${port}/api/${endpoint.replace(" ", "%20")}")
     }
 
     fun buildUrl(button: RemoteControlKey) = buildString {
-        append(if (isHttps) "https://" else "http://")
-        if (isLogin) {
+        append(if (https) "https://" else "http://")
+        if (login) {
             append("${user}:${password}@")
         }
-        append("${ip}:${port}/web/remotecontrol?command=${button.id}")
+        append("${host}:${port}/web/remotecontrol?command=${button.id}")
     }
 
     fun buildOwifUrl() = buildString {
-        append(if (isHttps) "https://" else "http://")
-        if (isLogin) {
+        append(if (https) "https://" else "http://")
+        if (login) {
             append("${user}:${password}@")
         }
-        append("${ip}:${port}")
+        append("${host}:${port}")
     }
 
     fun buildMovieStreamUrl(file: String) = buildString {
-        append(if (isHttps) "https://" else "http://")
-        if (isLogin) {
+        append(if (https) "https://" else "http://")
+        if (login) {
             append("${user}:${password}@")
         }
-        append("${ip}:${port}/file?file=${file.replace(" ", "%20")}")
+        append("${host}:${port}/file?file=${file.replace(" ", "%20")}")
     }
 
     fun buildLiveStreamUrl(serviceReference: String) = buildString {
         append("http://")
-        if (isLogin) {
+        if (login) {
             append("${user}:${password}@")
         }
-        append("${ip}:${livePort}/${serviceReference.replace(" ", "%20")}")
+        append("${host}:${livePort}/${serviceReference.replace(" ", "%20")}")
     }
 
     fun buildScreenshotUrl() = buildString {
-        append(if (isHttps) "https://" else "http://")
-        if (isLogin) {
+        append(if (https) "https://" else "http://")
+        if (login) {
             append("${user}:${password}@")
         }
-        append("${ip}:${port}/grab?format=png")
+        append("${host}:${port}/grab?format=png")
     }
 }
 
-@Database(entities = [Device::class], version = 1)
+@Database(entities = [Device::class], version = 2)
 abstract class DevicesDatabase : RoomDatabase() {
 
     abstract fun devicesDao(): DevicesDao
@@ -111,18 +114,67 @@ interface DevicesDao {
     @Delete
     suspend fun delete(device: Device)
 
-    @Query("SELECT * FROM Device")
+    @Query("SELECT * FROM devices")
     fun getAll(): Flow<List<Device>>
 
-    @Query("SELECT * FROM Device")
-    suspend fun getAllStatic(): List<Device>
+    @Query(
+        """ 
+        SELECT COALESCE(
+        (
+            SELECT id
+            FROM devices
+            WHERE id < :id
+            ORDER BY id DESC
+            LIMIT 1
+        ),
+        (
+            SELECT id
+            FROM devices
+            WHERE id > :id
+            ORDER BY id ASC
+            LIMIT 1
+        )
+    )
+    """
+    )
+    suspend fun getPreviousOrNextId(id: Long): Long?
 
-    @Query("SELECT * FROM Device WHERE id = :id")
-    fun get(id: Int): Flow<Device?>
+    @Query("SELECT * FROM devices WHERE id = :id")
+    fun get(id: Long): Flow<Device?>
 
-    @Query("SELECT * FROM Device WHERE id = :id")
-    suspend fun getStatic(id: Int): Device?
+    @Query("SELECT * FROM devices WHERE id = :id")
+    suspend fun getStatic(id: Long): Device?
 
-    @Query("SELECT COUNT(*) FROM Device")
+    @Query("SELECT COUNT(*) FROM devices")
     suspend fun getCount(): Int
+}
+
+val DEVICES_MIGRATION_1_2 = object : Migration(1, 2) {
+    override suspend fun migrate(connection: SQLiteConnection) {
+        connection.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `devices` (
+                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                `name` TEXT NOT NULL,
+                `host` TEXT NOT NULL,
+                `port` INTEGER NOT NULL,
+                `livePort` INTEGER NOT NULL,
+                `https` INTEGER NOT NULL,
+                `login` INTEGER NOT NULL,
+                `user` TEXT NOT NULL,
+                `password` TEXT NOT NULL
+            )
+            """.trimIndent()
+        )
+
+        connection.execSQL(
+            """
+            INSERT INTO `devices` (`id`, `name`, `host`, `port`, `livePort`, `https`, `login`, `user`, `password`)
+            SELECT `id`, `name`, `ip`, CAST(`port` AS INTEGER), CAST(`livePort` AS INTEGER), `isHttps`, `isLogin`, `user`, `password`
+            FROM `Device`
+            """.trimIndent()
+        )
+
+        connection.execSQL("DROP TABLE IF EXISTS `Device`")
+    }
 }

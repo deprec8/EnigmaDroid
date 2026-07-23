@@ -23,7 +23,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
-import io.github.deprec8.enigmadroid.common.constant.PreferenceKeys
+import io.github.deprec8.enigmadroid.common.constant.Keys
 import io.github.deprec8.enigmadroid.common.enums.ContentType
 import io.github.deprec8.enigmadroid.data.source.local.SearchHistoriesDatabase
 import io.github.deprec8.enigmadroid.data.source.local.SearchHistoryItem
@@ -37,7 +37,7 @@ class SearchRepository(
     private val dataStore: DataStore<Preferences>
 ) {
 
-    private val useHistoriesKey = booleanPreferencesKey(PreferenceKeys.USE_SEARCH_HISTORIES)
+    private val useHistoriesKey = booleanPreferencesKey(Keys.USE_SEARCH_HISTORIES)
 
     fun getUseHistories() = dataStore.data.map { preferences ->
         preferences[useHistoriesKey] ?: true

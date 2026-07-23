@@ -46,7 +46,7 @@ class MainViewModel(
 
     fun setCurrentDevice(device: Device) {
         viewModelScope.launch {
-            devicesRepository.setCurrentDevice(device)
+            devicesRepository.setCurrentDeviceId(device.id)
         }
     }
 }

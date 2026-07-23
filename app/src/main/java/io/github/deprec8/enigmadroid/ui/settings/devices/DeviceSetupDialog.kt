@@ -42,13 +42,14 @@ import io.github.deprec8.enigmadroid.ui.components.dialogs.AdaptiveDialog
 fun DeviceSetupDialog(
     oldDevice: Device? = null, onDismissRequest: () -> Unit, onSave: (Device, Device?) -> Unit
 ) {
-    var isHttps by rememberSaveable { mutableStateOf(oldDevice?.isHttps == true) }
-    var isLogin by rememberSaveable { mutableStateOf(oldDevice?.isLogin == true) }
+    var isHttps by rememberSaveable { mutableStateOf(oldDevice?.https == true) }
+    var isLogin by rememberSaveable { mutableStateOf(oldDevice?.login == true) }
 
     val nameState = rememberTextFieldState(oldDevice?.name ?: "")
-    val ipState = rememberTextFieldState(oldDevice?.ip ?: "")
-    val portState = rememberTextFieldState(oldDevice?.port ?: DefaultPorts.HTTP)
-    val livePortState = rememberTextFieldState(oldDevice?.livePort ?: DefaultPorts.LIVE)
+    val ipState = rememberTextFieldState(oldDevice?.host ?: "")
+    val portState = rememberTextFieldState((oldDevice?.port ?: DefaultPorts.HTTP).toString())
+    val livePortState =
+        rememberTextFieldState((oldDevice?.livePort ?: DefaultPorts.LIVE).toString())
     val userState = rememberTextFieldState(oldDevice?.user ?: "")
     val passwordState = rememberTextFieldState(oldDevice?.password ?: "")
 
@@ -57,12 +58,12 @@ fun DeviceSetupDialog(
                 oldDevice?.id ?: 0,
                 nameState.text.toString(),
                 ipState.text.toString(),
+                portState.text.toString().toInt(),
+                livePortState.text.toString().toInt(),
                 isHttps,
                 isLogin,
                 userState.text.toString(),
                 passwordState.text.toString(),
-                portState.text.toString(),
-                livePortState.text.toString()
             ) != oldDevice && nameState.text.isNotBlank() && ipState.text.isNotBlank() && portState.text.isNotBlank() && livePortState.text.isNotBlank()
         ) {
             if (isLogin) {
@@ -91,12 +92,12 @@ fun DeviceSetupDialog(
                                 0,
                                 nameState.text.toString(),
                                 ipState.text.toString().trim(),
+                                portState.text.toString().trim().toInt(),
+                                livePortState.text.toString().trim().toInt(),
                                 isHttps,
                                 isLogin,
                                 userState.text.toString(),
                                 passwordState.text.toString(),
-                                portState.text.toString().trim(),
-                                livePortState.text.toString().trim()
                             ), oldDevice
                         )
                     }

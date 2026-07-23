@@ -80,6 +80,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
+import io.github.deprec8.enigmadroid.common.constant.Keys
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.ArrowNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
@@ -176,13 +177,13 @@ fun DevicesPage(
                     ListItem(
                         headlineContent = { Text(text = device.name) }, supportingContent = {
                             Text(
-                                text = "${device.ip}:${device.port}"
+                                text = "${device.host}:${device.port}"
                             )
                         }, modifier = Modifier
                             .clickable(
                                 onClick = {
                                     if (device.id != currentDevice) {
-                                        devicesViewModel.setCurrentDevice(device)
+                                        devicesViewModel.setCurrentDeviceId(device.id)
                                     }
                                 })
                             .animateItem(), leadingContent = {
@@ -237,7 +238,7 @@ fun DevicesPage(
                                                     )
                                                 ).setShortLabel(device.name).setIntent(
                                                     Intent(
-                                                        "io.github.deprec8.enigmadroid.OPEN_WITH_DEVICE",
+                                                        Keys.OPEN_WITH_DEVICE,
                                                     ).putExtra("device_id", device.id)
                                                 ).build(), null
                                             )

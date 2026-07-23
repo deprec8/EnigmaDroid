@@ -22,32 +22,23 @@ package io.github.deprec8.enigmadroid.data.source.local.devices
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
-import io.github.deprec8.enigmadroid.common.constant.PreferenceKeys
+import androidx.datastore.preferences.core.longPreferencesKey
+import io.github.deprec8.enigmadroid.common.constant.Keys
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DevicesLocalDataSource(
     private val devicesDatabase: DevicesDatabase, private val dataStore: DataStore<Preferences>
 ) {
+    private val currentDeviceIdKey = longPreferencesKey(Keys.CURRENT_DEVICE_ID)
 
-    private val currentDeviceKey = intPreferencesKey(PreferenceKeys.CURRENT_DEVICE)
-
-    suspend fun setCurrent(device: Device) = withContext(NonCancellable) {
+    suspend fun setCurrentId(id: Long) {
         dataStore.edit { preferences ->
-            preferences[currentDeviceKey] = device.id
-        }
-    }
-
-    suspend fun setCurrentId(id: Int) = withContext(NonCancellable) {
-        dataStore.edit { preferences ->
-            preferences[currentDeviceKey] = id
+            preferences[currentDeviceIdKey] = id
         }
     }
 
@@ -61,15 +52,15 @@ class DevicesLocalDataSource(
         return devicesDatabase.devicesDao().getStatic(getCurrentIdStatic())
     }
 
-    fun getCurrentId(): Flow<Int> {
+    fun getCurrentId(): Flow<Long> {
         return dataStore.data.map { preferences ->
-            preferences[currentDeviceKey] ?: -1
+            preferences[currentDeviceIdKey] ?: -1L
         }
     }
 
-    suspend fun getCurrentIdStatic(): Int {
+    suspend fun getCurrentIdStatic(): Long {
         return dataStore.data.map { preferences ->
-            preferences[currentDeviceKey] ?: -1
+            preferences[currentDeviceIdKey] ?: -1L
         }.first()
     }
 
@@ -77,33 +68,38 @@ class DevicesLocalDataSource(
         return devicesDatabase.devicesDao().getAll()
     }
 
-    suspend fun getAllStatic(): List<Device> {
-        return devicesDatabase.devicesDao().getAllStatic()
-    }
-
     suspend fun getCount(): Int {
         return devicesDatabase.devicesDao().getCount()
     }
 
-    suspend fun delete(device: Device) = withContext(NonCancellable) {
+    suspend fun add(device: Device): Boolean {
+        val id = devicesDatabase.devicesDao().insert(device)
+
+        if (getCurrentIdStatic() == -1L) {
+            setCurrentId(id)
+            return true
+        }
+
+        return false
+    }
+
+    suspend fun edit(oldDevice: Device, newDevice: Device): Boolean {
+        devicesDatabase.devicesDao().update(newDevice.copy(id = oldDevice.id))
+
+        return getCurrentIdStatic() == oldDevice.id
+    }
+
+    suspend fun delete(device: Device): Boolean {
         devicesDatabase.devicesDao().delete(device)
 
         if (getCurrentIdStatic() == device.id) {
             dataStore.edit { preferences ->
-                preferences[currentDeviceKey] = getAllStatic().firstOrNull()?.id ?: -1
+                preferences[currentDeviceIdKey] =
+                    devicesDatabase.devicesDao().getPreviousOrNextId(device.id) ?: -1L
             }
+            return true
         }
-    }
 
-    suspend fun edit(oldDevice: Device, newDevice: Device) = withContext(NonCancellable) {
-        devicesDatabase.devicesDao().update(newDevice.copy(id = oldDevice.id))
-    }
-
-    suspend fun add(device: Device) = withContext(NonCancellable) {
-        val id = devicesDatabase.devicesDao().insert(device).toInt()
-
-        if (devicesDatabase.devicesDao().getCount() == 1) {
-            setCurrentId(id)
-        }
+        return false
     }
 }

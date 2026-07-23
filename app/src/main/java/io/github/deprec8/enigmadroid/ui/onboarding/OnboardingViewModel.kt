@@ -100,12 +100,12 @@ class OnboardingViewModel(
                 0,
                 nameState.text.toString(),
                 ipState.text.toString().trim(),
+                portState.text.toString().trim().toInt(),
+                livePortState.text.toString().trim().toInt(),
                 isHttps,
                 isLogin,
                 userState.text.toString(),
                 passwordState.text.toString(),
-                portState.text.toString().trim(),
-                livePortState.text.toString().trim()
             )
             devicesRepository.addDevice(newDevice)
         }

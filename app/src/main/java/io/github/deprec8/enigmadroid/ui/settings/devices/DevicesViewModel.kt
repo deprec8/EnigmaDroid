@@ -39,9 +39,9 @@ class DevicesViewModel(private val devicesRepository: DevicesRepository) : ViewM
 
     fun buildDeviceOwifUrl(device: Device) = device.buildOwifUrl()
 
-    fun setCurrentDevice(device: Device) {
+    fun setCurrentDeviceId(id: Long) {
         viewModelScope.launch {
-            devicesRepository.setCurrentDevice(device)
+            devicesRepository.setCurrentDeviceId(id)
         }
     }
 
