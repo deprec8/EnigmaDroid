@@ -19,9 +19,17 @@
 
 package io.github.deprec8.enigmadroid.data.source.local.devices
 
+import androidx.room3.Dao
+import androidx.room3.Database
+import androidx.room3.Delete
 import androidx.room3.Entity
+import androidx.room3.Insert
 import androidx.room3.PrimaryKey
+import androidx.room3.Query
+import androidx.room3.RoomDatabase
+import androidx.room3.Update
 import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
+import kotlinx.coroutines.flow.Flow
 
 @Entity
 data class Device(
@@ -83,4 +91,38 @@ data class Device(
         }
         append("${ip}:${port}/grab?format=png")
     }
+}
+
+@Database(entities = [Device::class], version = 1)
+abstract class DevicesDatabase : RoomDatabase() {
+
+    abstract fun devicesDao(): DevicesDao
+}
+
+@Dao
+interface DevicesDao {
+
+    @Insert
+    suspend fun insert(device: Device): Long
+
+    @Update
+    suspend fun update(device: Device)
+
+    @Delete
+    suspend fun delete(device: Device)
+
+    @Query("SELECT * FROM Device")
+    fun getAll(): Flow<List<Device>>
+
+    @Query("SELECT * FROM Device")
+    suspend fun getAllStatic(): List<Device>
+
+    @Query("SELECT * FROM Device WHERE id = :id")
+    fun get(id: Int): Flow<Device?>
+
+    @Query("SELECT * FROM Device WHERE id = :id")
+    suspend fun getStatic(id: Int): Device?
+
+    @Query("SELECT COUNT(*) FROM Device")
+    suspend fun getCount(): Int
 }

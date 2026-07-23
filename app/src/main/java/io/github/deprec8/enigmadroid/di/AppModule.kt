@@ -33,7 +33,7 @@ import io.github.deprec8.enigmadroid.data.repositories.SearchRepository
 import io.github.deprec8.enigmadroid.data.repositories.SettingsRepository
 import io.github.deprec8.enigmadroid.data.source.local.SearchHistoriesDatabase
 import io.github.deprec8.enigmadroid.data.source.local.dataStore
-import io.github.deprec8.enigmadroid.data.source.local.devices.DeviceDatabase
+import io.github.deprec8.enigmadroid.data.source.local.devices.DevicesDatabase
 import io.github.deprec8.enigmadroid.data.source.local.devices.DevicesLocalDataSource
 import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
 import io.github.deprec8.enigmadroid.ui.current.CurrentViewModel
@@ -59,7 +59,7 @@ val appModule = module {
     single<DataStore<Preferences>> {
         create(::provideDataStore)
     }
-    single<DeviceDatabase> {
+    single<DevicesDatabase> {
         create(::provideDevicesDatabase)
     }
     single<SearchHistoriesDatabase> {
@@ -98,9 +98,9 @@ private fun provideDataStore(context: Context): DataStore<Preferences> {
     return context.dataStore
 }
 
-private fun provideDevicesDatabase(context: Context): DeviceDatabase {
+private fun provideDevicesDatabase(context: Context): DevicesDatabase {
     return Room.databaseBuilder(
-        context, DeviceDatabase::class.java, "devices-database"
+        context, DevicesDatabase::class.java, "devices-database"
     ).build()
 }
 

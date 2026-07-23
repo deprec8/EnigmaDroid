@@ -34,7 +34,7 @@ import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DevicesLocalDataSource(
-    private val deviceDatabase: DeviceDatabase, private val dataStore: DataStore<Preferences>
+    private val devicesDatabase: DevicesDatabase, private val dataStore: DataStore<Preferences>
 ) {
 
     private val currentDeviceKey = intPreferencesKey(PreferenceKeys.CURRENT_DEVICE)
@@ -53,12 +53,12 @@ class DevicesLocalDataSource(
 
     fun getCurrent(): Flow<Device?> {
         return getCurrentId().flatMapLatest { id ->
-            deviceDatabase.deviceDao().get(id)
+            devicesDatabase.devicesDao().get(id)
         }
     }
 
     suspend fun getCurrentStatic(): Device? {
-        return deviceDatabase.deviceDao().getStatic(getCurrentIdStatic())
+        return devicesDatabase.devicesDao().getStatic(getCurrentIdStatic())
     }
 
     fun getCurrentId(): Flow<Int> {
@@ -74,19 +74,19 @@ class DevicesLocalDataSource(
     }
 
     fun getAll(): Flow<List<Device>> {
-        return deviceDatabase.deviceDao().getAll()
+        return devicesDatabase.devicesDao().getAll()
     }
 
     suspend fun getAllStatic(): List<Device> {
-        return deviceDatabase.deviceDao().getAllStatic()
+        return devicesDatabase.devicesDao().getAllStatic()
     }
 
     suspend fun getCount(): Int {
-        return deviceDatabase.deviceDao().getCount()
+        return devicesDatabase.devicesDao().getCount()
     }
 
     suspend fun delete(device: Device) = withContext(NonCancellable) {
-        deviceDatabase.deviceDao().delete(device)
+        devicesDatabase.devicesDao().delete(device)
 
         if (getCurrentIdStatic() == device.id) {
             dataStore.edit { preferences ->
@@ -96,13 +96,13 @@ class DevicesLocalDataSource(
     }
 
     suspend fun edit(oldDevice: Device, newDevice: Device) = withContext(NonCancellable) {
-        deviceDatabase.deviceDao().update(newDevice.copy(id = oldDevice.id))
+        devicesDatabase.devicesDao().update(newDevice.copy(id = oldDevice.id))
     }
 
     suspend fun add(device: Device) = withContext(NonCancellable) {
-        val id = deviceDatabase.deviceDao().insert(device).toInt()
+        val id = devicesDatabase.devicesDao().insert(device).toInt()
 
-        if (deviceDatabase.deviceDao().getCount() == 1) {
+        if (devicesDatabase.devicesDao().getCount() == 1) {
             setCurrentId(id)
         }
     }
