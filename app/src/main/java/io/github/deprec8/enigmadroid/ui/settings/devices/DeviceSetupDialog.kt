@@ -60,7 +60,7 @@ fun DeviceSetupDialog(
             if (nameState.text.isBlank() || hostState.text.isBlank() || portState.text.isBlank() || livePortState.text.isBlank()) return@derivedStateOf false
 
             val baseNotEqual =
-                oldDevice == null || nameState.text != oldDevice.name || hostState.text != oldDevice.host || portState.text != oldDevice.port.toString() || livePortState.text != oldDevice.livePort.toString()
+                oldDevice == null || nameState.text.trim() != oldDevice.name || hostState.text != oldDevice.host || portState.text != oldDevice.port.toString() || livePortState.text != oldDevice.livePort.toString()
 
             return@derivedStateOf if (login) {
                 baseNotEqual && userState.text.isNotBlank() && passwordState.text.isNotBlank() && if (oldDevice != null) userState.text != oldDevice.user || passwordState.text != oldDevice.password else true
@@ -83,7 +83,7 @@ fun DeviceSetupDialog(
                     if (ready) {
                         onSave(
                             Device(
-                                name = nameState.text.toString(),
+                                name = nameState.text.toString().trim(),
                                 host = hostState.text.toString(),
                                 port = portState.text.toString().toInt(),
                                 livePort = livePortState.text.toString().toInt(),

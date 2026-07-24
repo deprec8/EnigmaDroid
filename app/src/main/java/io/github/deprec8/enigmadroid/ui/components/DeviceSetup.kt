@@ -169,7 +169,12 @@ private fun NameField(state: TextFieldState, modifier: Modifier) {
         label = {
             Text(text = stringResource(R.string.name))
         },
-        modifier = modifier
+        modifier = modifier,
+        inputTransformation = InputTransformation.maxLength(64).then {
+            if (asCharSequence().any { it == '/' || it.code == 0 }) {
+                revertAllChanges()
+            }
+        },
     )
 }
 
@@ -187,7 +192,12 @@ private fun HostField(state: TextFieldState, modifier: Modifier) {
         label = {
             Text(text = stringResource(R.string.ip_address_or_hostname))
         },
-        modifier = modifier
+        modifier = modifier,
+        inputTransformation = InputTransformation.maxLength(253).then {
+            if (!asCharSequence().all { it in ('a'..'z') || it in ('A'..'Z') || it in ('0'..'9') || it == '.' || it == '-' || it == ':' || it == '[' || it == ']' }) {
+                revertAllChanges()
+            }
+        },
     )
 }
 

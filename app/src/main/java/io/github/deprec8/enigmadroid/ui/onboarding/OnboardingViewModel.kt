@@ -93,7 +93,7 @@ class OnboardingViewModel(
                 onboardingRepository.finishOnboarding()
                 val newDevice = Device(
                     0,
-                    nameState.text.toString(),
+                    nameState.text.toString().trim(),
                     hostState.text.toString(),
                     portState.text.toString().toInt(),
                     livePortState.text.toString().toInt(),
