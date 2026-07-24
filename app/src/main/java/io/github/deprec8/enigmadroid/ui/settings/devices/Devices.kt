@@ -77,9 +77,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
+import io.github.deprec8.enigmadroid.common.constant.IntentKeys
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.ArrowNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
@@ -176,13 +176,13 @@ fun DevicesPage(
                     ListItem(
                         headlineContent = { Text(text = device.name) }, supportingContent = {
                             Text(
-                                text = "${device.ip}:${device.port}"
+                                text = "${device.host}:${device.port}"
                             )
                         }, modifier = Modifier
                             .clickable(
                                 onClick = {
                                     if (device.id != currentDevice) {
-                                        devicesViewModel.setCurrentDevice(device)
+                                        devicesViewModel.setCurrentDeviceId(device.id)
                                     }
                                 })
                             .animateItem(), leadingContent = {
@@ -237,7 +237,7 @@ fun DevicesPage(
                                                     )
                                                 ).setShortLabel(device.name).setIntent(
                                                     Intent(
-                                                        "io.github.deprec8.enigmadroid.OPEN_WITH_DEVICE",
+                                                        IntentKeys.OPEN_WITH_DEVICE_ACTION,
                                                     ).putExtra("device_id", device.id)
                                                 ).build(), null
                                             )
@@ -262,7 +262,7 @@ fun DevicesPage(
                                                 ).setShortLabel(device.name).setIntent(
                                                     Intent(
                                                         Intent.ACTION_VIEW,
-                                                        device.buildOwifUrl().toUri()
+                                                        device.buildOWifUri()
                                                     )
                                                 ).build(), null
                                             )
@@ -341,9 +341,7 @@ fun DevicesPage(
                                                 .setShortLabel(newDevice.name).setIntent(
                                                     Intent(
                                                         Intent.ACTION_VIEW,
-                                                        devicesViewModel.buildDeviceOwifUrl(
-                                                            newDevice
-                                                        ).toUri()
+                                                        newDevice.buildOWifUri()
                                                     )
                                                 ).build(),
                                             ShortcutInfo.Builder(context, "device_${it.id}")

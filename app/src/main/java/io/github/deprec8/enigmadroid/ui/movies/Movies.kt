@@ -88,8 +88,8 @@ fun MoviesPage(
                             )
                         },
                         onDownloadMovie = { movie -> moviesViewModel.download(movie) },
-                        buildMovieStreamUrl = { fileName ->
-                            moviesViewModel.buildMovieStreamUrl(
+                        buildMovieStreamUri = { fileName ->
+                            moviesViewModel.buildMovieStreamUri(
                                 fileName
                             )
                         }
@@ -145,7 +145,7 @@ fun MoviesPage(
                         path
                     )
                 },
-                buildMovieStreamUrl = { fileName -> moviesViewModel.buildMovieStreamUrl(fileName) })
+                buildMovieStreamUri = { fileName -> moviesViewModel.buildMovieStreamUri(fileName) })
         } else {
             ConnectionDisplay(
                 Modifier

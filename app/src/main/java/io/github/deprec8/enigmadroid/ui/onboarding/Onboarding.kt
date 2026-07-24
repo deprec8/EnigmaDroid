@@ -104,15 +104,15 @@ fun OnboardingPage(
             DeviceSetupCard(
                 modifier = Modifier.padding(16.dp),
                 nameState = onboardingViewModel.nameState,
-                ipState = onboardingViewModel.ipState,
+                hostState = onboardingViewModel.hostState,
                 portState = onboardingViewModel.portState,
                 livePortState = onboardingViewModel.livePortState,
-                isHttps = onboardingViewModel.isHttps,
-                isLogin = onboardingViewModel.isLogin,
+                https = onboardingViewModel.https,
+                login = onboardingViewModel.login,
                 userState = onboardingViewModel.userState,
                 passwordState = onboardingViewModel.passwordState,
-                onHttpsChange = { onboardingViewModel.toggleHttps() },
-                onLoginChange = { onboardingViewModel.toggleLogin() },
+                onHttpsChange = onboardingViewModel::toggleHttps,
+                onLoginChange = onboardingViewModel::toggleLogin,
             )
         }
 

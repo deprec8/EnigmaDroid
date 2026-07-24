@@ -19,6 +19,7 @@
 
 package io.github.deprec8.enigmadroid.ui.live
 
+import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import io.github.deprec8.enigmadroid.common.enums.ContentType
 import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
@@ -52,8 +53,8 @@ class LiveViewModel(
         viewModelScope, SharingStarted.WhileSubscribed(5000), null
     )
 
-    suspend fun buildLiveStreamUrl(serviceReference: String): String {
-        return apiRepository.buildLiveStreamUrl(serviceReference)
+    suspend fun buildLiveStreamUri(serviceReference: String): Uri? {
+        return apiRepository.buildLiveStreamUri(serviceReference)
     }
 
     fun playOnDevice(serviceReference: String) {

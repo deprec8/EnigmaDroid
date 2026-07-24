@@ -37,7 +37,7 @@ import kotlinx.coroutines.flow.Flow
     tableName = "search_histories", indices = [Index(value = ["type", "query"], unique = true)]
 )
 data class SearchHistoryItem(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0L,
     val type: ContentType,
     val query: String,
     val timestamp: Long

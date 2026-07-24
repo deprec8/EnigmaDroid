@@ -21,6 +21,7 @@ package io.github.deprec8.enigmadroid.ui.live
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -51,7 +52,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.common.enums.ContentFlag
 import io.github.deprec8.enigmadroid.model.MenuItem
@@ -72,7 +72,7 @@ fun LiveContent(
     onPlayOnDevice: (String) -> Unit,
     onAddTimerForEvent: (Event) -> Unit,
     onNavigateToServiceEpg: (String, String) -> Unit,
-    buildLiveStreamUrl: suspend (String) -> String,
+    buildLiveStreamUri: suspend (String) -> Uri?,
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -80,9 +80,10 @@ fun LiveContent(
 
     fun playMedia(event: Event) {
         scope.launch {
+            val uri = buildLiveStreamUri(event.serviceReference) ?: return@launch
             val intent = Intent(Intent.ACTION_VIEW).apply {
                 setDataAndTypeAndNormalize(
-                    buildLiveStreamUrl(event.serviceReference).toUri(), "video/mp4"
+                    uri, "video/mp4"
                 )
                 putExtra("title", event.title)
             }

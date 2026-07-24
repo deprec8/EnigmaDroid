@@ -19,8 +19,6 @@
 
 package io.github.deprec8.enigmadroid.ui.main
 
-import android.content.ActivityNotFoundException
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -36,14 +34,9 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.movableContentOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.scene.DialogSceneStrategy
@@ -51,7 +44,6 @@ import androidx.navigation3.ui.NavDisplay
 import io.github.deprec8.enigmadroid.common.constant.MainKeys
 import io.github.deprec8.enigmadroid.common.constant.SettingsKeys
 import io.github.deprec8.enigmadroid.common.enums.ContentType
-import io.github.deprec8.enigmadroid.ui.components.dialogs.UrlIntentErrorDialog
 import io.github.deprec8.enigmadroid.ui.components.isSmallScreenLayout
 import io.github.deprec8.enigmadroid.ui.components.navigation.DrawerNavigator
 import io.github.deprec8.enigmadroid.ui.components.navigation.fadeThroughTransition
@@ -87,7 +79,6 @@ fun MainNavigationDisplay(
     val isSmallScreenLayout = isSmallScreenLayout()
     val modalDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    val context = LocalContext.current
     val drawerScrollState = rememberScrollState()
 
     val drawerNavigationState = rememberDrawerNavigationState(
@@ -106,7 +97,6 @@ fun MainNavigationDisplay(
     )
 
     val drawerNavigator = remember { DrawerNavigator(drawerNavigationState) }
-    var showUrlIntentErrorDialog by rememberSaveable { mutableStateOf(false) }
 
     val entryProvider = entryProvider {
         entry<MainKeys.Tv>(
@@ -295,21 +285,7 @@ fun MainNavigationDisplay(
                 onCheckConnection = {
                     mainViewModel.checkConnection()
                 },
-                onOpenOwif = {
-                    scope.launch {
-                        try {
-                            CustomTabsIntent.Builder().setShowTitle(true)
-                                .setDownloadButtonEnabled(false).setBookmarksButtonEnabled(false)
-                                .setShareState(
-                                    CustomTabsIntent.SHARE_STATE_ON
-                                ).setUrlBarHidingEnabled(true).build()
-                                .launchUrl(context, mainViewModel.buildOwifUrl().toUri())
-                        } catch (_: ActivityNotFoundException) {
-                            showUrlIntentErrorDialog = true
-                        }
-                    }
-                },
-                onSetCurrentDevice = mainViewModel::setCurrentDevice
+                onSetCurrentDeviceId = mainViewModel::setCurrentDeviceId
             )
         }
     }
@@ -352,12 +328,6 @@ fun MainNavigationDisplay(
                 entries = drawerNavigationState.toEntries(entryProvider),
                 onBack = { drawerNavigator.goBack() },
                 sceneStrategies = remember { listOf(DialogSceneStrategy()) })
-        }
-    }
-
-    if (showUrlIntentErrorDialog) {
-        UrlIntentErrorDialog {
-            showUrlIntentErrorDialog = false
         }
     }
 }

@@ -19,6 +19,7 @@
 
 package io.github.deprec8.enigmadroid.ui.movies
 
+import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import io.github.deprec8.enigmadroid.common.enums.ContentType
 import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
@@ -81,8 +82,8 @@ class MoviesViewModel(
         }
     }
 
-    suspend fun buildMovieStreamUrl(fileName: String): String {
-        return apiRepository.buildMovieStreamUrl(fileName)
+    suspend fun buildMovieStreamUri(fileName: String): Uri? {
+        return apiRepository.buildMovieStreamUri(fileName)
     }
 
     fun playOnDevice(serviceReference: String) {

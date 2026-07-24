@@ -33,6 +33,7 @@ import io.github.deprec8.enigmadroid.data.repositories.SearchRepository
 import io.github.deprec8.enigmadroid.data.repositories.SettingsRepository
 import io.github.deprec8.enigmadroid.data.source.local.SearchHistoriesDatabase
 import io.github.deprec8.enigmadroid.data.source.local.dataStore
+import io.github.deprec8.enigmadroid.data.source.local.devices.DEVICES_MIGRATION_1_2
 import io.github.deprec8.enigmadroid.data.source.local.devices.DevicesDatabase
 import io.github.deprec8.enigmadroid.data.source.local.devices.DevicesLocalDataSource
 import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
@@ -101,7 +102,7 @@ private fun provideDataStore(context: Context): DataStore<Preferences> {
 private fun provideDevicesDatabase(context: Context): DevicesDatabase {
     return Room.databaseBuilder(
         context, DevicesDatabase::class.java, "devices-database"
-    ).build()
+    ).addMigrations(DEVICES_MIGRATION_1_2).build()
 }
 
 private fun provideSearchHistoriesDatabase(context: Context): SearchHistoriesDatabase {
