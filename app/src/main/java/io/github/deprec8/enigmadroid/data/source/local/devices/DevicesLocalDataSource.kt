@@ -23,7 +23,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
-import io.github.deprec8.enigmadroid.common.constant.Keys
+import io.github.deprec8.enigmadroid.common.constant.PreferenceKeys
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -34,7 +34,7 @@ import kotlinx.coroutines.flow.map
 class DevicesLocalDataSource(
     private val devicesDatabase: DevicesDatabase, private val dataStore: DataStore<Preferences>
 ) {
-    private val currentDeviceIdKey = longPreferencesKey(Keys.CURRENT_DEVICE_ID)
+    private val currentDeviceIdKey = longPreferencesKey(PreferenceKeys.CURRENT_DEVICE_ID)
 
     suspend fun setCurrentId(id: Long) {
         dataStore.edit { preferences ->

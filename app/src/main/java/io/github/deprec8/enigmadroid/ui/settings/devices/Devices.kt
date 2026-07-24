@@ -79,7 +79,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.constant.Keys
+import io.github.deprec8.enigmadroid.common.constant.IntentKeys
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.ArrowNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
@@ -237,7 +237,7 @@ fun DevicesPage(
                                                     )
                                                 ).setShortLabel(device.name).setIntent(
                                                     Intent(
-                                                        Keys.OPEN_WITH_DEVICE_ACTION,
+                                                        IntentKeys.OPEN_WITH_DEVICE_ACTION,
                                                     ).putExtra("device_id", device.id)
                                                 ).build(), null
                                             )

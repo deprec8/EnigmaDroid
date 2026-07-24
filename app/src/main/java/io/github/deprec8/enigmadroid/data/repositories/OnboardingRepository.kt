@@ -23,14 +23,14 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
-import io.github.deprec8.enigmadroid.common.constant.Keys
+import io.github.deprec8.enigmadroid.common.constant.PreferenceKeys
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 class OnboardingRepository(
     private val dataStore: DataStore<Preferences>
 ) {
-    private val onboardingNeededKey = booleanPreferencesKey(Keys.ONBOARDING_NEEDED)
+    private val onboardingNeededKey = booleanPreferencesKey(PreferenceKeys.ONBOARDING_NEEDED)
 
     suspend fun getOnboardingNeeded() = dataStore.data.map { preferences ->
         preferences[onboardingNeededKey] ?: true

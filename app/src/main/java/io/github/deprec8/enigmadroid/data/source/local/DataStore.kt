@@ -26,13 +26,13 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import io.github.deprec8.enigmadroid.common.constant.Keys
+import io.github.deprec8.enigmadroid.common.constant.PreferenceKeys
 
 
 class CurrentDeviceIdMigration1 : DataMigration<Preferences> {
 
     private val oldKey = intPreferencesKey("current_device")
-    private val newKey = longPreferencesKey(Keys.CURRENT_DEVICE_ID)
+    private val newKey = longPreferencesKey(PreferenceKeys.CURRENT_DEVICE_ID)
 
     override suspend fun shouldMigrate(currentData: Preferences): Boolean =
         currentData.contains(oldKey)

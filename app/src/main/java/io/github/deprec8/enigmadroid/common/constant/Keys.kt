@@ -19,11 +19,14 @@
 
 package io.github.deprec8.enigmadroid.common.constant
 
-object Keys {
-    const val OPEN_WITH_DEVICE_ACTION = "io.github.deprec8.enigmadroid.OPEN_WITH_DEVICE"
-    const val DEVICE_ID_EXTRA = "device_id"
+object PreferenceKeys {
     const val CURRENT_DEVICE_ID = "current_device_id"
     const val ONBOARDING_NEEDED = "onboarding_needed"
     const val REMOTE_CONTROL_VIBRATION = "remote_control_vibration"
     const val USE_SEARCH_HISTORIES = "save_search_history"
+}
+
+object IntentKeys {
+    const val OPEN_WITH_DEVICE_ACTION = "io.github.deprec8.enigmadroid.OPEN_WITH_DEVICE"
+    const val DEVICE_ID_EXTRA = "device_id"
 }

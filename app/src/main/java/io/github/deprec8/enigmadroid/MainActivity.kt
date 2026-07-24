@@ -28,7 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import io.github.deprec8.enigmadroid.common.constant.Keys
+import io.github.deprec8.enigmadroid.common.constant.IntentKeys
 import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
 import io.github.deprec8.enigmadroid.data.repositories.OnboardingRepository
 import io.github.deprec8.enigmadroid.ui.root.RootNavigationDisplay
@@ -94,10 +94,11 @@ class MainActivity : ComponentActivity() {
 
     private fun handleDeviceIntent(intent: Intent?) = runBlocking {
         intent ?: return@runBlocking
-        if (intent.action != Keys.OPEN_WITH_DEVICE_ACTION) return@runBlocking
+        if (intent.action != IntentKeys.OPEN_WITH_DEVICE_ACTION) return@runBlocking
 
-        intent.getLongExtra(Keys.DEVICE_ID_EXTRA, -1L).takeIf { it != -1L } ?: intent.getIntExtra(
-            Keys.DEVICE_ID_EXTRA, -1
+        intent.getLongExtra(IntentKeys.DEVICE_ID_EXTRA, -1L).takeIf { it != -1L }
+            ?: intent.getIntExtra(
+                IntentKeys.DEVICE_ID_EXTRA, -1
         ).takeIf { it != -1 }?.toLong()?.let { id ->
             val currentDeviceId = devicesRepository.getCurrentDeviceIdStatic()
             if (id != currentDeviceId) {
