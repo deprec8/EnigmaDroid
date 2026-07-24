@@ -30,14 +30,14 @@ class SignalViewModel(
     private val apiRepository: ApiRepository
 ) : ContentViewModel() {
 
-    private val _signalInfo = MutableStateFlow<SignalInfo?>(null)
-    val signalInfo: StateFlow<SignalInfo?> = _signalInfo.asStateFlow()
+    private val _signalInfoResult = MutableStateFlow<Result<SignalInfo>?>(null)
+    val signalInfoResult: StateFlow<Result<SignalInfo>?> = _signalInfoResult.asStateFlow()
 
     override fun onClearData() {
-        _signalInfo.value = null
+        _signalInfoResult.value = null
     }
 
     override suspend fun onGetData() {
-        _signalInfo.value = apiRepository.fetchSignalInfo()
+        _signalInfoResult.value = apiRepository.fetchSignalInfo()
     }
 }

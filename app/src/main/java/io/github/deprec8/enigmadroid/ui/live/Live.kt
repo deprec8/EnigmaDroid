@@ -44,6 +44,7 @@ import io.github.deprec8.enigmadroid.common.enums.ContentType
 import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
+import io.github.deprec8.enigmadroid.ui.components.InvalidResponse
 import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
 import io.github.deprec8.enigmadroid.ui.components.content.ContentTab
 import io.github.deprec8.enigmadroid.ui.components.content.ContentTabRow
@@ -67,15 +68,17 @@ fun LivePage(
 ) {
 
     val filteredEvents by liveViewModel.filteredEvents.collectAsStateWithLifecycle()
-    val eventBatches by liveViewModel.eventBatches.collectAsStateWithLifecycle()
+    val eventBatchesResult by liveViewModel.eventBatchesResult.collectAsStateWithLifecycle()
     val connectionState by liveViewModel.connectionState.collectAsStateWithLifecycle()
     val searchHistory by liveViewModel.searchHistory.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
-    val pagerState = rememberPagerState(pageCount = { eventBatches?.size ?: 0 })
+    val pagerState = rememberPagerState(pageCount = { eventBatchesResult?.getOrNull()?.size ?: 0 })
     val selectedTabIndex by remember {
         derivedStateOf {
-            pagerState.currentPage.coerceIn(0, ((eventBatches?.size ?: 0) - 1).coerceAtLeast(0))
+            pagerState.currentPage.coerceIn(
+                0, ((eventBatchesResult?.getOrNull()?.size ?: 0) - 1).coerceAtLeast(0)
+            )
         }
     }
 
@@ -90,7 +93,8 @@ fun LivePage(
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
             textFieldState = liveViewModel.searchFieldState,
-            enabled = eventBatches?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED,
+            enabled = eventBatchesResult?.getOrNull()
+                ?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED,
             placeholder = stringResource(R.string.search_events),
             content = {
                 filteredEvents?.let { filterEvents ->
@@ -133,14 +137,16 @@ fun LivePage(
                 liveViewModel.updateSearchInput()
             },
             actionBar = {
-                if (eventBatches?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED) {
-                    ContentTabRow(selectedTabIndex) {
-                        eventBatches?.forEachIndexed { index, eventBatch ->
-                            ContentTab(
-                                name = eventBatch.name, selected = index == selectedTabIndex
-                            ) {
-                                scope.launch {
-                                    pagerState.animateScrollToPage(index)
+                eventBatchesResult?.onSuccess { eventBatches ->
+                    if (eventBatches.isNotEmpty() && connectionState == ConnectionState.CONNECTED) {
+                        ContentTabRow(selectedTabIndex) {
+                            eventBatches.forEachIndexed { index, eventBatch ->
+                                ContentTab(
+                                    name = eventBatch.name, selected = index == selectedTabIndex
+                                ) {
+                                    scope.launch {
+                                        pagerState.animateScrollToPage(index)
+                                    }
                                 }
                             }
                         }
@@ -149,27 +155,35 @@ fun LivePage(
             })
 
     }) { innerPadding ->
-        if (eventBatches != null && connectionState == ConnectionState.CONNECTED) {
-            HorizontalPager(
-                modifier = Modifier.fillMaxSize(), state = pagerState
-            ) { index ->
-                LiveContent(
-                    events = eventBatches?.get(index)?.events ?: emptyList(),
-                    paddingValues = innerPadding,
-                    onNavigateToServiceEpg = { serviceReference, serviceName ->
-                        onNavigateToServiceEpg(
-                            serviceReference, serviceName
-                        )
-                    },
-                    onPlayOnDevice = {
-                        liveViewModel.playOnDevice(it)
-                    },
-                    onAddTimerForEvent = {
-                        liveViewModel.addTimerForEvent(it)
-                    },
-                    buildLiveStreamUri = {
-                        liveViewModel.buildLiveStreamUri(it)
-                    })
+        if (eventBatchesResult != null && connectionState == ConnectionState.CONNECTED) {
+            eventBatchesResult?.onSuccess { eventBatches ->
+                HorizontalPager(
+                    modifier = Modifier.fillMaxSize(), state = pagerState
+                ) { index ->
+                    LiveContent(
+                        events = eventBatches.getOrNull(index)?.events ?: emptyList(),
+                        paddingValues = innerPadding,
+                        onNavigateToServiceEpg = { serviceReference, serviceName ->
+                            onNavigateToServiceEpg(
+                                serviceReference, serviceName
+                            )
+                        },
+                        onPlayOnDevice = {
+                            liveViewModel.playOnDevice(it)
+                        },
+                        onAddTimerForEvent = {
+                            liveViewModel.addTimerForEvent(it)
+                        },
+                        buildLiveStreamUri = {
+                            liveViewModel.buildLiveStreamUri(it)
+                        })
+                }
+            }?.onFailure {
+                InvalidResponse(
+                    Modifier
+                        .padding(innerPadding)
+                        .consumeWindowInsets(innerPadding),
+                )
             }
         } else {
             ConnectionDisplay(

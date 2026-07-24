@@ -61,6 +61,7 @@ import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.model.api.Bouquet
 import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
+import io.github.deprec8.enigmadroid.ui.components.InvalidResponse
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
 import io.github.deprec8.enigmadroid.ui.components.content.ContentTab
@@ -82,19 +83,22 @@ fun EpgPage(
     drawerState: DrawerState,
     epgViewModel: EpgViewModel = koinViewModel(parameters = { parametersOf(contentType) })
 ) {
-    val eventBatchSet by epgViewModel.eventBatchSet.collectAsStateWithLifecycle()
-    val bouquets by epgViewModel.bouquets.collectAsStateWithLifecycle()
+    val eventBatchSetResult by epgViewModel.eventBatchSetResult.collectAsStateWithLifecycle()
+    val bouquetsResult by epgViewModel.bouquetsResult.collectAsStateWithLifecycle()
     val currentBouquetReference by epgViewModel.currentBouquetReference.collectAsStateWithLifecycle()
     val filteredEvents by epgViewModel.filteredEvents.collectAsStateWithLifecycle()
     val searchHistory by epgViewModel.searchHistory.collectAsStateWithLifecycle()
     val connectionState by epgViewModel.connectionState.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
-    val pagerState = rememberPagerState(pageCount = { eventBatchSet?.eventBatches?.size ?: 0 })
+    val pagerState = rememberPagerState(pageCount = {
+        eventBatchSetResult?.getOrNull()?.eventBatches?.size ?: 0
+    })
     val selectedTabIndex by remember {
         derivedStateOf {
             pagerState.currentPage.coerceIn(
-                0, ((eventBatchSet?.eventBatches?.size ?: 0) - 1).coerceAtLeast(0)
+                0,
+                ((eventBatchSetResult?.getOrNull()?.eventBatches?.size ?: 0) - 1).coerceAtLeast(0)
             )
         }
     }
@@ -107,7 +111,7 @@ fun EpgPage(
         }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = eventBatchSet?.eventBatches?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED,
+            enabled = eventBatchSetResult?.getOrNull()?.eventBatches?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED,
             textFieldState = epgViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_epg),
             content = {
@@ -134,7 +138,7 @@ fun EpgPage(
             actionButtons = {
                 Row {
                     BouquetMenu(
-                        bouquets, currentBouquetReference, connectionState
+                        bouquetsResult?.getOrNull(), currentBouquetReference, connectionState
                     ) { bouquetReference -> epgViewModel.setCurrentBouquet(bouquetReference) }
                     RemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
                 }
@@ -143,14 +147,16 @@ fun EpgPage(
                 epgViewModel.updateSearchInput()
             },
             actionBar = {
-                if (eventBatchSet?.eventBatches?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED) {
-                    ContentTabRow(selectedTabIndex) {
-                        eventBatchSet?.eventBatches?.forEachIndexed { index, eventBatch ->
-                            ContentTab(
-                                name = eventBatch.name, selected = index == selectedTabIndex
-                            ) {
-                                scope.launch {
-                                    pagerState.animateScrollToPage(index)
+                eventBatchSetResult?.onSuccess { eventBatchSet ->
+                    if (eventBatchSet.eventBatches.isNotEmpty() && connectionState == ConnectionState.CONNECTED) {
+                        ContentTabRow(selectedTabIndex) {
+                            eventBatchSet.eventBatches.forEachIndexed { index, eventBatch ->
+                                ContentTab(
+                                    name = eventBatch.name, selected = index == selectedTabIndex
+                                ) {
+                                    scope.launch {
+                                        pagerState.animateScrollToPage(index)
+                                    }
                                 }
                             }
                         }
@@ -160,22 +166,30 @@ fun EpgPage(
     }
 
     ) { innerPadding ->
-        if (eventBatchSet != null && connectionState == ConnectionState.CONNECTED) {
-            if (eventBatchSet?.eventBatches?.isNotEmpty() == true) {
-                HorizontalPager(
-                    modifier = Modifier.fillMaxSize(),
-                    state = pagerState,
-                ) { service ->
-                    EpgContent(
-                        events = eventBatchSet?.eventBatches[service]?.events ?: emptyList(),
-                        innerPadding,
-                        onAddTimerForEvent = { epgViewModel.addTimerForEvent(it) })
+        if (eventBatchSetResult != null && connectionState == ConnectionState.CONNECTED) {
+            eventBatchSetResult?.onSuccess { eventBatchSet ->
+                if (eventBatchSet.eventBatches.isNotEmpty()) {
+                    HorizontalPager(
+                        modifier = Modifier.fillMaxSize(),
+                        state = pagerState,
+                    ) { service ->
+                        EpgContent(
+                            events = eventBatchSet.eventBatches[service].events,
+                            innerPadding,
+                            onAddTimerForEvent = { epgViewModel.addTimerForEvent(it) })
+                    }
+                } else {
+                    NoResults(
+                        Modifier
+                            .consumeWindowInsets(innerPadding)
+                            .padding(innerPadding)
+                    )
                 }
-            } else {
-                NoResults(
+            }?.onFailure {
+                InvalidResponse(
                     Modifier
-                        .consumeWindowInsets(innerPadding)
                         .padding(innerPadding)
+                        .consumeWindowInsets(innerPadding),
                 )
             }
         } else {

@@ -23,21 +23,20 @@ import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
 import io.github.deprec8.enigmadroid.model.api.DeviceInfo
 import io.github.deprec8.enigmadroid.ui.components.viewmodels.ContentViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class DeviceInfoViewModel(
     private val apiRepository: ApiRepository,
 ) : ContentViewModel() {
 
-    private val _deviceInfo = MutableStateFlow<DeviceInfo?>(null)
-    val deviceInfo: StateFlow<DeviceInfo?> = _deviceInfo.asStateFlow()
+    private val _deviceInfoResult = MutableStateFlow<Result<DeviceInfo>?>(null)
+    val deviceInfoResult = _deviceInfoResult.asStateFlow()
 
     override fun onClearData() {
-        _deviceInfo.value = null
+        _deviceInfoResult.value = null
     }
 
     override suspend fun onGetData() {
-        _deviceInfo.value = apiRepository.fetchDeviceInfo()
+        _deviceInfoResult.value = apiRepository.fetchDeviceInfo()
     }
 }

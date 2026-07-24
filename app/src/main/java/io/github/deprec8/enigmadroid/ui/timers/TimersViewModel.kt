@@ -39,14 +39,15 @@ class TimersViewModel(
     private val apiRepository: ApiRepository
 ) : SearchableContentViewModel(ContentType.Timers) {
 
-    private val _timerBatch = MutableStateFlow<TimerBatch?>(null)
-    val timerBatch: StateFlow<TimerBatch?> = _timerBatch.asStateFlow()
+    private val _timerBatchResult = MutableStateFlow<Result<TimerBatch>?>(null)
+    val timerBatchResult: StateFlow<Result<TimerBatch>?> = _timerBatchResult.asStateFlow()
 
-    private val _serviceBatchSet = MutableStateFlow<ServiceBatchSet?>(null)
-    val serviceBatchSet: StateFlow<ServiceBatchSet?> = _serviceBatchSet.asStateFlow()
+    private val _serviceBatchSetResult = MutableStateFlow<Result<ServiceBatchSet>?>(null)
+    val serviceBatchSetResult: StateFlow<Result<ServiceBatchSet>?> =
+        _serviceBatchSetResult.asStateFlow()
 
-    val filteredTimers = combine(_timerBatch, searchInput) { timerBatch, searchInput ->
-        timerBatch?.timers?.search(searchInput)
+    val filteredTimers = combine(_timerBatchResult, searchInput) { timerBatchResult, searchInput ->
+        timerBatchResult?.getOrNull()?.timers?.search(searchInput)
     }.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000), null
     )
@@ -78,18 +79,18 @@ class TimersViewModel(
             apiRepository.editTimer(oldTimer, newTimer)
             fetchJob?.cancel()
             fetchJob = viewModelScope.launch {
-                _timerBatch.value = apiRepository.fetchTimerBatch()
+                _timerBatchResult.value = apiRepository.fetchTimerBatch()
             }
         }
     }
 
     override fun onClearData() {
-        _timerBatch.value = null
-        _serviceBatchSet.value = null
+        _timerBatchResult.value = null
+        _serviceBatchSetResult.value = null
     }
 
     override suspend fun onGetData() {
-        _timerBatch.value = apiRepository.fetchTimerBatch()
-        _serviceBatchSet.value = apiRepository.fetchServiceBatchSet()
+        _timerBatchResult.value = apiRepository.fetchTimerBatch()
+        _serviceBatchSetResult.value = apiRepository.fetchServiceBatchSet()
     }
 }

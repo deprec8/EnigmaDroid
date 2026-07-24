@@ -24,25 +24,24 @@ import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
 import io.github.deprec8.enigmadroid.model.api.CurrentInfo
 import io.github.deprec8.enigmadroid.ui.components.viewmodels.ContentViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class CurrentViewModel(
     private val apiRepository: ApiRepository
 ) : ContentViewModel() {
 
-    private val _currentInfo = MutableStateFlow<CurrentInfo?>(null)
-    val currentInfo: StateFlow<CurrentInfo?> = _currentInfo.asStateFlow()
+    private val _currentInfoResult = MutableStateFlow<Result<CurrentInfo>?>(null)
+    val currentInfoResult = _currentInfoResult.asStateFlow()
 
     suspend fun buildLiveStreamUri(serviceReference: String): Uri? {
         return apiRepository.buildLiveStreamUri(serviceReference)
     }
 
     override fun onClearData() {
-        _currentInfo.value = null
+        _currentInfoResult.value = null
     }
 
     override suspend fun onGetData() {
-        _currentInfo.value = apiRepository.fetchCurrentInfo()
+        _currentInfoResult.value = apiRepository.fetchCurrentInfo()
     }
 }

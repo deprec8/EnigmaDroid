@@ -36,9 +36,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.ConnectionState
-import io.github.deprec8.enigmadroid.model.api.CurrentInfo
 import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
+import io.github.deprec8.enigmadroid.ui.components.InvalidResponse
 import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.DrawerNavigationButton
@@ -55,7 +55,7 @@ fun CurrentPage(
     currentViewModel: CurrentViewModel = koinViewModel()
 ) {
 
-    val currentEventInfo by currentViewModel.currentInfo.collectAsStateWithLifecycle()
+    val currentInfoResult by currentViewModel.currentInfoResult.collectAsStateWithLifecycle()
     val connectionState by currentViewModel.connectionState.collectAsStateWithLifecycle()
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -82,19 +82,28 @@ fun CurrentPage(
                 RemoteControlActionButton { onNavigateToRemoteControl() }
             })
     }) { innerPadding ->
-        if (currentEventInfo != null && connectionState == ConnectionState.CONNECTED) {
-            CurrentContent(
-                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                currentEventInfo ?: CurrentInfo(),
-                innerPadding,
-                buildLiveStreamUri = {
-                    currentViewModel.buildLiveStreamUri(it)
-                },
-                onNavigateToServiceEpg = { serviceReference, serviceName ->
-                    onNavigateToServiceEpg(
-                        serviceReference, serviceName
-                    )
-                })
+        if (currentInfoResult != null && connectionState == ConnectionState.CONNECTED) {
+            currentInfoResult?.onSuccess { currentInfo ->
+                CurrentContent(
+                    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                    currentInfo,
+                    innerPadding,
+                    buildLiveStreamUri = {
+                        currentViewModel.buildLiveStreamUri(it)
+                    },
+                    onNavigateToServiceEpg = { serviceReference, serviceName ->
+                        onNavigateToServiceEpg(
+                            serviceReference, serviceName
+                        )
+                    })
+            }?.onFailure {
+                InvalidResponse(
+                    Modifier
+                        .consumeWindowInsets(innerPadding)
+                        .padding(innerPadding)
+                )
+            }
+
         } else {
             ConnectionDisplay(
                 Modifier

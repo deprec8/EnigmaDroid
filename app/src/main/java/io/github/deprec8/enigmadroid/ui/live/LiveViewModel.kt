@@ -40,15 +40,15 @@ class LiveViewModel(
     @InjectedParam private val contentType: ContentType, private val apiRepository: ApiRepository
 ) : SearchableContentViewModel(contentType) {
 
-    private val _eventBatches = MutableStateFlow<List<EventBatch>?>(null)
-    val eventBatches: StateFlow<List<EventBatch>?> = _eventBatches.asStateFlow()
+    private val _eventBatchesResult = MutableStateFlow<Result<List<EventBatch>>?>(null)
+    val eventBatchesResult: StateFlow<Result<List<EventBatch>>?> = _eventBatchesResult.asStateFlow()
 
     private val currentBouquetIndex = MutableStateFlow(0)
 
     val filteredEvents = combine(
-        _eventBatches, searchInput, currentBouquetIndex
-    ) { eventBatches, searchInput, currentBouquetIndex ->
-        eventBatches?.getOrNull(currentBouquetIndex)?.events?.search(searchInput)
+        _eventBatchesResult, searchInput, currentBouquetIndex
+    ) { eventBatchesResult, searchInput, currentBouquetIndex ->
+        eventBatchesResult?.getOrNull()?.getOrNull(currentBouquetIndex)?.events?.search(searchInput)
     }.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000), null
     )
@@ -76,17 +76,17 @@ class LiveViewModel(
     }
 
     override fun onClearData() {
-        _eventBatches.value = null
+        _eventBatchesResult.value = null
     }
 
     override suspend fun onGetData() {
-        var first = true
-        apiRepository.fetchEventBatches(contentType).collect { events ->
-            if (first) {
-                _eventBatches.value = listOf(events)
-                first = false
-            } else {
-                _eventBatches.value = _eventBatches.value?.plus(events) ?: listOf(events)
+        val accumulatedBatches = mutableListOf<EventBatch>()
+        apiRepository.fetchEventBatches(contentType).collect { result ->
+            result.onSuccess { batch ->
+                accumulatedBatches.add(batch)
+                _eventBatchesResult.value = Result.success(accumulatedBatches.toList())
+            }.onFailure {
+                _eventBatchesResult.value = Result.failure(it)
             }
         }
     }

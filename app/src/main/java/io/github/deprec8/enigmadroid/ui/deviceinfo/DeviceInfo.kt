@@ -36,9 +36,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.ConnectionState
-import io.github.deprec8.enigmadroid.model.api.DeviceInfo
 import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
+import io.github.deprec8.enigmadroid.ui.components.InvalidResponse
 import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.DrawerNavigationButton
@@ -55,7 +55,7 @@ fun DeviceInfoPage(
 ) {
 
     val connectionState by deviceInfoViewModel.connectionState.collectAsStateWithLifecycle()
-    val deviceInfo by deviceInfoViewModel.deviceInfo.collectAsStateWithLifecycle()
+    val deviceInfoResult by deviceInfoViewModel.deviceInfoResult.collectAsStateWithLifecycle()
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
@@ -76,12 +76,21 @@ fun DeviceInfoPage(
             RemoteControlActionButton { onNavigateToRemoteControl() }
         })
     }) { innerPadding ->
-        if (deviceInfo != null && connectionState == ConnectionState.CONNECTED) {
-            DeviceInfoContent(
-                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                deviceInfo ?: DeviceInfo(),
-                innerPadding
-            )
+        if (deviceInfoResult != null && connectionState == ConnectionState.CONNECTED) {
+            deviceInfoResult?.onSuccess { deviceInfo ->
+                DeviceInfoContent(
+                    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                    deviceInfo,
+                    innerPadding
+                )
+            }?.onFailure {
+                InvalidResponse(
+                    Modifier
+                        .padding(innerPadding)
+                        .consumeWindowInsets(innerPadding),
+                )
+            }
+
         } else {
             ConnectionDisplay(
                 Modifier

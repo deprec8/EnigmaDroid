@@ -39,11 +39,11 @@ class ServiceEpgViewModel(
     @InjectedParam private val serviceReference: String, private val apiRepository: ApiRepository
 ) : SearchableContentViewModel(ContentType.ServiceEpg) {
 
-    private val _eventBatch = MutableStateFlow<EventBatch?>(null)
-    val eventBatch: StateFlow<EventBatch?> = _eventBatch.asStateFlow()
+    private val _eventBatchResult = MutableStateFlow<Result<EventBatch>?>(null)
+    val eventBatchResult: StateFlow<Result<EventBatch>?> = _eventBatchResult.asStateFlow()
 
-    val filteredEvents = combine(_eventBatch, searchInput) { eventBatch, searchInput ->
-        eventBatch?.events?.search(searchInput)
+    val filteredEvents = combine(_eventBatchResult, searchInput) { eventBatchResult, searchInput ->
+        eventBatchResult?.getOrNull()?.events?.search(searchInput)
     }.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000), null
     )
@@ -57,10 +57,10 @@ class ServiceEpgViewModel(
     }
 
     override fun onClearData() {
-        _eventBatch.value = null
+        _eventBatchResult.value = null
     }
 
     override suspend fun onGetData() {
-        _eventBatch.value = apiRepository.fetchServiceEpgBatch(serviceReference)
+        _eventBatchResult.value = apiRepository.fetchServiceEpgBatch(serviceReference)
     }
 }

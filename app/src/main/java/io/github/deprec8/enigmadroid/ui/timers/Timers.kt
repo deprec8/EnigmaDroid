@@ -55,6 +55,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
+import io.github.deprec8.enigmadroid.ui.components.InvalidResponse
 import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
@@ -74,8 +75,8 @@ fun TimersPage(
 ) {
 
     val filteredTimers by timersViewModel.filteredTimers.collectAsStateWithLifecycle()
-    val timerBatch by timersViewModel.timerBatch.collectAsStateWithLifecycle()
-    val serviceBatchSet by timersViewModel.serviceBatchSet.collectAsStateWithLifecycle()
+    val timerBatchResult by timersViewModel.timerBatchResult.collectAsStateWithLifecycle()
+    val serviceBatchSetResult by timersViewModel.serviceBatchSetResult.collectAsStateWithLifecycle()
     val searchHistory by timersViewModel.searchHistory.collectAsStateWithLifecycle()
     val connectionState by timersViewModel.connectionState.collectAsStateWithLifecycle()
 
@@ -87,7 +88,7 @@ fun TimersPage(
 
     Scaffold(contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = timerBatch?.timers?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED,
+            enabled = timerBatchResult?.getOrNull()?.timers?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED,
             textFieldState = timersViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_timers),
             content = {
@@ -104,7 +105,7 @@ fun TimersPage(
                         onDeleteTimer = {
                             timersViewModel.deleteTimer(it)
                         },
-                        serviceBatchSet = serviceBatchSet
+                        serviceBatchSet = serviceBatchSetResult?.getOrNull()
                     )
                 } ?: run {
                     SearchHistory(searchHistory = searchHistory, onSearchQuery = {
@@ -175,21 +176,29 @@ fun TimersPage(
     }
 
     ) { innerPadding ->
-        if (timerBatch != null && connectionState == ConnectionState.CONNECTED) {
-            TimersContent(
-                timers = timerBatch?.timers ?: emptyList(),
-                paddingValues = innerPadding,
-                onToggleTimerStatus = {
-                    timersViewModel.toggleTimerStatus(it)
-                },
-                onEditTimer = { oldTimer, newTimer ->
-                    timersViewModel.editTimer(oldTimer, newTimer)
-                },
-                onDeleteTimer = {
-                    timersViewModel.deleteTimer(it)
-                },
-                serviceBatchSet = serviceBatchSet
-            )
+        if (timerBatchResult != null && connectionState == ConnectionState.CONNECTED) {
+            timerBatchResult?.onSuccess { timerBatch ->
+                TimersContent(
+                    timers = timerBatch.timers,
+                    paddingValues = innerPadding,
+                    onToggleTimerStatus = {
+                        timersViewModel.toggleTimerStatus(it)
+                    },
+                    onEditTimer = { oldTimer, newTimer ->
+                        timersViewModel.editTimer(oldTimer, newTimer)
+                    },
+                    onDeleteTimer = {
+                        timersViewModel.deleteTimer(it)
+                    },
+                    serviceBatchSet = serviceBatchSetResult?.getOrNull()
+                )
+            }?.onFailure {
+                InvalidResponse(
+                    Modifier
+                        .padding(innerPadding)
+                        .consumeWindowInsets(innerPadding),
+                )
+            }
         } else {
             ConnectionDisplay(
                 Modifier
@@ -210,7 +219,7 @@ fun TimersPage(
                 timersViewModel.addTimer(newTimer)
                 showTimerSetupDialog = false
             },
-            serviceBatchSet = serviceBatchSet,
+            serviceBatchSet = serviceBatchSetResult?.getOrNull(),
         )
     }
 }

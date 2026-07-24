@@ -36,6 +36,7 @@ import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
+import io.github.deprec8.enigmadroid.ui.components.InvalidResponse
 import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
@@ -55,11 +56,11 @@ fun MoviesPage(
     moviesViewModel: MoviesViewModel = koinViewModel()
 ) {
 
-    val movieBatch by moviesViewModel.movieBatch.collectAsStateWithLifecycle()
+    val movieBatchResult by moviesViewModel.movieBatchResult.collectAsStateWithLifecycle()
     val filteredMovies by moviesViewModel.filteredMovies.collectAsStateWithLifecycle()
     val searchHistory by moviesViewModel.searchHistory.collectAsStateWithLifecycle()
     val connectionState by moviesViewModel.connectionState.collectAsStateWithLifecycle()
-    val freeSpace by moviesViewModel.freeSpace.collectAsStateWithLifecycle()
+    val freeSpaceResult by moviesViewModel.freeSpaceResult.collectAsStateWithLifecycle()
 
     ObserveActiveState(moviesViewModel)
 
@@ -67,7 +68,7 @@ fun MoviesPage(
         FloatingReloadButton(connectionState) { moviesViewModel.fetchData() }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = movieBatch?.movies?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED,
+            enabled = movieBatchResult?.getOrNull()?.movies?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED,
             textFieldState = moviesViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_movies),
             content = {
@@ -116,36 +117,48 @@ fun MoviesPage(
                 moviesViewModel.updateSearchInput()
             },
             actionBar = {
-                MoviesActionBar(movieBatch, freeSpace, connectionState)
+                MoviesActionBar(
+                    movieBatchResult?.getOrNull(),
+                    freeSpaceResult?.getOrNull(),
+                    connectionState
+                )
             })
     }
 
     ) { innerPadding ->
-        if (movieBatch != null && connectionState == ConnectionState.CONNECTED) {
-            MoviesContent(
-                movies = movieBatch?.movies ?: emptyList(),
-                bookmarks = movieBatch?.bookmarks ?: emptyList(),
-                directory = movieBatch?.directory ?: "",
-                paddingValues = innerPadding,
-                onPlayMovieOnDevice = { movie -> moviesViewModel.playOnDevice(movie.serviceReference) },
-                onDeleteMovie = { movie -> moviesViewModel.delete(movie.serviceReference) },
-                onRenameMovie = { movie, newName ->
-                    moviesViewModel.rename(
-                        movie.serviceReference, newName
-                    )
-                },
-                onMoveMovie = { movie, newLocation ->
-                    moviesViewModel.move(
-                        movie.serviceReference, newLocation
-                    )
-                },
-                onDownloadMovie = { movie -> moviesViewModel.download(movie) },
-                onNavigateToDirectory = { path ->
-                    onNavigateToDirectory(
-                        path
-                    )
-                },
-                buildMovieStreamUri = { fileName -> moviesViewModel.buildMovieStreamUri(fileName) })
+        if (movieBatchResult != null && connectionState == ConnectionState.CONNECTED) {
+            movieBatchResult?.onSuccess { movieBatch ->
+                MoviesContent(
+                    movies = movieBatch.movies,
+                    bookmarks = movieBatch.bookmarks,
+                    directory = movieBatch.directory,
+                    paddingValues = innerPadding,
+                    onPlayMovieOnDevice = { movie -> moviesViewModel.playOnDevice(movie.serviceReference) },
+                    onDeleteMovie = { movie -> moviesViewModel.delete(movie.serviceReference) },
+                    onRenameMovie = { movie, newName ->
+                        moviesViewModel.rename(
+                            movie.serviceReference, newName
+                        )
+                    },
+                    onMoveMovie = { movie, newLocation ->
+                        moviesViewModel.move(
+                            movie.serviceReference, newLocation
+                        )
+                    },
+                    onDownloadMovie = { movie -> moviesViewModel.download(movie) },
+                    onNavigateToDirectory = { path ->
+                        onNavigateToDirectory(
+                            path
+                        )
+                    },
+                    buildMovieStreamUri = { fileName -> moviesViewModel.buildMovieStreamUri(fileName) })
+            }?.onFailure {
+                InvalidResponse(
+                    Modifier
+                        .padding(innerPadding)
+                        .consumeWindowInsets(innerPadding),
+                )
+            }
         } else {
             ConnectionDisplay(
                 Modifier

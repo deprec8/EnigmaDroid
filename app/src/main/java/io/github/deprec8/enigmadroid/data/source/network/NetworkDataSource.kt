@@ -126,7 +126,7 @@ class NetworkDataSource(
         }
     }
 
-    suspend fun get(addEndpoint: URLBuilder.() -> Unit): String {
+    suspend fun get(addEndpoint: URLBuilder.() -> Unit): Result<String> {
         val currentState = connectionStateHolder.connectionState.value
         if ((currentState != ConnectionState.CONNECTED) && (currentState != ConnectionState.CONNECTING)) {
             connectionStateHolder.updateConnectionState(ConnectionState.CONNECTING)
@@ -140,10 +140,10 @@ class NetworkDataSource(
                 url.addEndpoint()
             }.bodyAsText()
             connectionStateHolder.updateConnectionState(ConnectionState.CONNECTED)
-            response
+            Result.success(response)
         } catch (e: Exception) {
             handleException(e)
-            ""
+            Result.failure(e)
         }
     }
 

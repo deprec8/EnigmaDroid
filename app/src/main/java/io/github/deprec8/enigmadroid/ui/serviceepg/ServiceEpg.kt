@@ -35,6 +35,7 @@ import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
+import io.github.deprec8.enigmadroid.ui.components.InvalidResponse
 import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.ArrowNavigationButton
@@ -56,7 +57,7 @@ fun ServiceEpgPage(
         )
     })
 ) {
-    val eventBatch by serviceEpgViewModel.eventBatch.collectAsStateWithLifecycle()
+    val eventBatchResult by serviceEpgViewModel.eventBatchResult.collectAsStateWithLifecycle()
     val connectionState by serviceEpgViewModel.connectionState.collectAsStateWithLifecycle()
     val filteredEvents by serviceEpgViewModel.filteredEvents.collectAsStateWithLifecycle()
     val searchHistory by serviceEpgViewModel.searchHistory.collectAsStateWithLifecycle()
@@ -67,7 +68,7 @@ fun ServiceEpgPage(
         FloatingReloadButton(connectionState) { serviceEpgViewModel.fetchData() }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = eventBatch?.events?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED,
+            enabled = eventBatchResult?.getOrNull()?.events?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED,
             textFieldState = serviceEpgViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_epg_from, serviceName),
             content = {
@@ -95,11 +96,19 @@ fun ServiceEpgPage(
                 serviceEpgViewModel.updateSearchInput()
             })
     }) { innerPadding ->
-        if (eventBatch != null && connectionState == ConnectionState.CONNECTED) {
-            EpgContent(
-                events = eventBatch?.events ?: emptyList(),
-                innerPadding,
-                onAddTimerForEvent = { serviceEpgViewModel.addTimerForEvent(it) })
+        if (eventBatchResult != null && connectionState == ConnectionState.CONNECTED) {
+            eventBatchResult?.onSuccess { eventBatch ->
+                EpgContent(
+                    events = eventBatch.events,
+                    innerPadding,
+                    onAddTimerForEvent = { serviceEpgViewModel.addTimerForEvent(it) })
+            }?.onFailure {
+                InvalidResponse(
+                    Modifier
+                        .padding(innerPadding)
+                        .consumeWindowInsets(innerPadding),
+                )
+            }
         } else {
             ConnectionDisplay(
                 Modifier

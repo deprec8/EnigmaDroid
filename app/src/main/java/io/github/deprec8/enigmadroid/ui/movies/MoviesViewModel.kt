@@ -43,14 +43,14 @@ class MoviesViewModel(
     private val downloadRepository: DownloadRepository
 ) : SearchableContentViewModel(ContentType.Movies) {
 
-    private val _movieBatch = MutableStateFlow<MovieBatch?>(null)
-    val movieBatch: StateFlow<MovieBatch?> = _movieBatch.asStateFlow()
+    private val _movieBatchResult = MutableStateFlow<Result<MovieBatch>?>(null)
+    val movieBatchResult: StateFlow<Result<MovieBatch>?> = _movieBatchResult.asStateFlow()
 
-    private val _freeSpace = MutableStateFlow<String?>(null)
-    val freeSpace: StateFlow<String?> = _freeSpace.asStateFlow()
+    private val _freeSpaceResult = MutableStateFlow<Result<String>?>(null)
+    val freeSpaceResult: StateFlow<Result<String>?> = _freeSpaceResult.asStateFlow()
 
-    val filteredMovies = combine(_movieBatch, searchInput) { movieBatch, searchInput ->
-        movieBatch?.movies?.search(searchInput)
+    val filteredMovies = combine(_movieBatchResult, searchInput) { movieBatchResult, searchInput ->
+        movieBatchResult?.getOrNull()?.movies?.search(searchInput)
     }.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000), null
     )
@@ -93,14 +93,18 @@ class MoviesViewModel(
     }
 
     override fun onClearData() {
-        _movieBatch.value = null
-        _freeSpace.value = null
+        _movieBatchResult.value = null
+        _freeSpaceResult.value = null
     }
 
     override suspend fun onGetData() {
-        val batch = apiRepository.fetchMovieBatch(path)
-        _movieBatch.value = batch
+        val movieBatchResult = apiRepository.fetchMovieBatch(path)
+        _movieBatchResult.value = movieBatchResult
 
-        _freeSpace.value = apiRepository.fetchFreeSpace(batch.directory)
+        movieBatchResult.onSuccess { batch ->
+            _freeSpaceResult.value = apiRepository.fetchFreeSpace(batch.directory)
+        }.onFailure {
+            _freeSpaceResult.value = Result.failure(it)
+        }
     }
 }
