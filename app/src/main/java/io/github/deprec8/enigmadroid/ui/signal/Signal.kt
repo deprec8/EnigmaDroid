@@ -35,7 +35,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.ConnectionState
-import io.github.deprec8.enigmadroid.model.api.SignalInfo
 import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
 import io.github.deprec8.enigmadroid.ui.components.InvalidResponse
@@ -77,13 +76,13 @@ fun SignalPage(
             })
     }) { innerPadding ->
         if (signalInfoResult != null && connectionState == ConnectionState.CONNECTED) {
-            signalInfoResult?.onFailure { signalInfo ->
+            signalInfoResult?.onSuccess { signalInfo ->
                 SignalContent(
                     modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                    SignalInfo(),
+                    signalInfo,
                     innerPadding
                 )
-            }?.onSuccess {
+            }?.onFailure {
                 InvalidResponse(
                     Modifier
                         .padding(innerPadding)
