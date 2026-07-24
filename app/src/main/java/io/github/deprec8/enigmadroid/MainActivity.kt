@@ -99,11 +99,11 @@ class MainActivity : ComponentActivity() {
         intent.getLongExtra(IntentKeys.DEVICE_ID_EXTRA, -1L).takeIf { it != -1L }
             ?: intent.getIntExtra(
                 IntentKeys.DEVICE_ID_EXTRA, -1
-        ).takeIf { it != -1 }?.toLong()?.let { id ->
-            val currentDeviceId = devicesRepository.getCurrentDeviceIdStatic()
-            if (id != currentDeviceId) {
-                devicesRepository.setCurrentDeviceId(id)
+            ).takeIf { it != -1 }?.toLong()?.let { id ->
+                val currentDeviceId = devicesRepository.getCurrentDeviceIdStatic()
+                if (id != currentDeviceId) {
+                    devicesRepository.setCurrentDeviceId(id)
+                }
             }
-        }
     }
 }
