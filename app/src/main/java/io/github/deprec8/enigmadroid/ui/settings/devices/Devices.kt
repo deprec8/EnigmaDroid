@@ -237,7 +237,7 @@ fun DevicesPage(
                                                     )
                                                 ).setShortLabel(device.name).setIntent(
                                                     Intent(
-                                                        Keys.OPEN_WITH_DEVICE,
+                                                        Keys.OPEN_WITH_DEVICE_ACTION,
                                                     ).putExtra("device_id", device.id)
                                                 ).build(), null
                                             )

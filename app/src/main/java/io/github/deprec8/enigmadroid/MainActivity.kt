@@ -94,10 +94,10 @@ class MainActivity : ComponentActivity() {
 
     private fun handleDeviceIntent(intent: Intent?) = runBlocking {
         intent ?: return@runBlocking
-        if (intent.action != Keys.OPEN_WITH_DEVICE) return@runBlocking
+        if (intent.action != Keys.OPEN_WITH_DEVICE_ACTION) return@runBlocking
 
-        intent.getLongExtra(Keys.DEVICE_ID, -1L).takeIf { it != -1L } ?: intent.getIntExtra(
-            Keys.DEVICE_ID, -1
+        intent.getLongExtra(Keys.DEVICE_ID_EXTRA, -1L).takeIf { it != -1L } ?: intent.getIntExtra(
+            Keys.DEVICE_ID_EXTRA, -1
         ).takeIf { it != -1 }?.toLong()?.let { id ->
             val currentDeviceId = devicesRepository.getCurrentDeviceIdStatic()
             if (id != currentDeviceId) {

@@ -20,14 +20,10 @@
 package io.github.deprec8.enigmadroid.common.constant
 
 object Keys {
-    const val DB_DEVICES = "devices"
-    const val DB_SEARCH_HISTORIES = "search_histories"
-    const val OPEN_WITH_DEVICE = "io.github.deprec8.enigmadroid.OPEN_WITH_DEVICE"
-    const val DATASTORE = "settings"
-    const val DEVICE_ID = "device_id"
+    const val OPEN_WITH_DEVICE_ACTION = "io.github.deprec8.enigmadroid.OPEN_WITH_DEVICE"
+    const val DEVICE_ID_EXTRA = "device_id"
     const val CURRENT_DEVICE_ID = "current_device_id"
     const val ONBOARDING_NEEDED = "onboarding_needed"
     const val REMOTE_CONTROL_VIBRATION = "remote_control_vibration"
     const val USE_SEARCH_HISTORIES = "save_search_history"
-    const val DEPRECATED_CURRENT_DEVICE = "current_device"
 }

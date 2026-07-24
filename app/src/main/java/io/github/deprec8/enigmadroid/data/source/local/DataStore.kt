@@ -50,7 +50,7 @@ class CurrentDeviceIdMigration1 : DataMigration<Preferences> {
 }
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
-    name = Keys.DATASTORE, produceMigrations = {
+    name = "settings", produceMigrations = {
         listOf(
             CurrentDeviceIdMigration1()
         )
