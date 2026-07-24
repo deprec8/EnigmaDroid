@@ -21,6 +21,7 @@ package io.github.deprec8.enigmadroid.ui.movies.components
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -57,7 +58,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.model.MenuItem
 import io.github.deprec8.enigmadroid.model.MenuItemGroup
@@ -79,7 +79,7 @@ fun MoviesContent(
     onMoveMovie: (Movie, String) -> Unit,
     onDownloadMovie: (Movie) -> Unit,
     onNavigateToDirectory: (String) -> Unit = { _ -> },
-    buildMovieStreamUrl: suspend (String) -> String,
+    buildMovieStreamUri: suspend (String) -> Uri?,
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -87,9 +87,10 @@ fun MoviesContent(
 
     fun playMedia(movie: Movie) {
         scope.launch {
+            val uri = buildMovieStreamUri(movie.fileName) ?: return@launch
             val intent = Intent(Intent.ACTION_VIEW).apply {
                 setDataAndTypeAndNormalize(
-                    buildMovieStreamUrl(movie.fileName).toUri(), "video/mp4"
+                    uri, "video/mp4"
                 )
                 putExtra("title", movie.eventName)
             }

@@ -21,6 +21,7 @@ package io.github.deprec8.enigmadroid.ui.current
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -52,7 +53,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.model.api.CurrentInfo
 import io.github.deprec8.enigmadroid.ui.components.dialogs.MediaIntentErrorDialog
@@ -66,7 +66,7 @@ fun CurrentContent(
     modifier: Modifier = Modifier,
     currentEventInfo: CurrentInfo,
     paddingValues: PaddingValues,
-    buildLiveStreamUrl: suspend (String) -> String,
+    buildLiveStreamUri: suspend (String) -> Uri?,
     onNavigateToServiceEpg: (String, String) -> Unit
 ) {
     val scope = rememberCoroutineScope()
@@ -77,9 +77,11 @@ fun CurrentContent(
 
     fun playMedia() {
         scope.launch {
+            val uri = buildLiveStreamUri(currentEventInfo.now.serviceReference) ?: return@launch
+
             val intent = Intent(Intent.ACTION_VIEW).apply {
                 setDataAndTypeAndNormalize(
-                    buildLiveStreamUrl(currentEventInfo.now.serviceReference).toUri(), "video/mp4"
+                    uri, "video/mp4"
                 )
                 putExtra("title", currentEventInfo.now.title)
             }

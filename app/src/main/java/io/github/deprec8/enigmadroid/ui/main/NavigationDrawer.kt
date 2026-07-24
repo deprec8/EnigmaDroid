@@ -19,6 +19,8 @@
 
 package io.github.deprec8.enigmadroid.ui.main
 
+import android.content.ActivityNotFoundException
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -83,10 +85,12 @@ import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -97,6 +101,8 @@ import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.model.DrawerPage
 import io.github.deprec8.enigmadroid.model.DrawerPageGroup
+import io.github.deprec8.enigmadroid.ui.components.dialogs.UrlIntentErrorDialog
+import kotlinx.coroutines.launch
 
 @Composable
 fun DrawerContent(
@@ -105,10 +111,9 @@ fun DrawerContent(
     connectionState: ConnectionState,
     currentTopLevelRoute: NavKey,
     scrollState: ScrollState,
-    onOpenOwif: () -> Unit,
     onCheckConnection: () -> Unit,
     onNavigate: (NavKey) -> Unit,
-    onSetCurrentDevice: (Device) -> Unit
+    onSetCurrentDeviceId: (Long) -> Unit
 ) {
     Column(
         Modifier
@@ -121,9 +126,8 @@ fun DrawerContent(
             currentDevice = currentDevice,
             devices = devices,
             connectionState = connectionState,
-            onOpenOwif = { onOpenOwif() },
             onCheckConnection = { onCheckConnection() },
-            onSetCurrentDevice = onSetCurrentDevice
+            onSetCurrentDeviceId = onSetCurrentDeviceId
         )
 
         drawerPageGroups.forEachIndexed { index, group ->
@@ -174,11 +178,15 @@ fun DeviceItem(
     currentDevice: Device?,
     devices: List<Device>,
     connectionState: ConnectionState,
-    onOpenOwif: () -> Unit,
     onCheckConnection: () -> Unit,
-    onSetCurrentDevice: (Device) -> Unit
+    onSetCurrentDeviceId: (Long) -> Unit
 ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     var showDevicesMenu by rememberSaveable {
+        mutableStateOf(false)
+    }
+    var showUrlIntentErrorDialog by rememberSaveable {
         mutableStateOf(false)
     }
 
@@ -202,7 +210,7 @@ fun DeviceItem(
                 ) + fadeIn() togetherWith scaleOut(targetScale = 0f) + fadeOut()
             }) {
                 when (it) {
-                    ConnectionState.CONNECTED -> {
+                    ConnectionState.CONNECTED if currentDevice != null -> {
                         TooltipBox(
                             tooltip = {
                                 PlainTooltip {
@@ -215,7 +223,19 @@ fun DeviceItem(
                             )
                         ) {
                             IconButton(onClick = {
-                                onOpenOwif()
+                                scope.launch {
+                                    try {
+                                        CustomTabsIntent.Builder().setShowTitle(true)
+                                            .setDownloadButtonEnabled(false)
+                                            .setBookmarksButtonEnabled(false).setShareState(
+                                                CustomTabsIntent.SHARE_STATE_ON
+                                            ).setUrlBarHidingEnabled(true).build().launchUrl(
+                                                context, currentDevice.buildOWifUri()
+                                            )
+                                    } catch (_: ActivityNotFoundException) {
+                                        showUrlIntentErrorDialog = true
+                                    }
+                                }
                             }) {
                                 Icon(
                                     Icons.Default.Web,
@@ -338,7 +358,7 @@ fun DeviceItem(
                                 DropdownMenuItem(text = {
                                     Text(device.name)
                                 }, onClick = {
-                                    if (device.id != currentDevice?.id) onSetCurrentDevice(device)
+                                    if (device.id != currentDevice?.id) onSetCurrentDeviceId(device.id)
                                     showDevicesMenu = false
                                 }, leadingIcon = {
                                     if (device.id == currentDevice?.id) {
@@ -361,6 +381,12 @@ fun DeviceItem(
         modifier = Modifier.padding(
             horizontal = 12.dp
         ))
+
+    if (showUrlIntentErrorDialog) {
+        UrlIntentErrorDialog {
+            showUrlIntentErrorDialog = false
+        }
+    }
 }
 
 private val drawerPageGroups = listOf(

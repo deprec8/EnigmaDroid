@@ -77,7 +77,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.common.constant.Keys
@@ -263,7 +262,7 @@ fun DevicesPage(
                                                 ).setShortLabel(device.name).setIntent(
                                                     Intent(
                                                         Intent.ACTION_VIEW,
-                                                        device.buildOwifUrl().toUri()
+                                                        device.buildOWifUri()
                                                     )
                                                 ).build(), null
                                             )
@@ -342,9 +341,7 @@ fun DevicesPage(
                                                 .setShortLabel(newDevice.name).setIntent(
                                                     Intent(
                                                         Intent.ACTION_VIEW,
-                                                        devicesViewModel.buildDeviceOwifUrl(
-                                                            newDevice
-                                                        ).toUri()
+                                                        newDevice.buildOWifUri()
                                                     )
                                                 ).build(),
                                             ShortcutInfo.Builder(context, "device_${it.id}")

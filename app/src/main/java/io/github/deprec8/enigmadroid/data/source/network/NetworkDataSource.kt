@@ -95,7 +95,7 @@ class NetworkDataSource(
         connectionStateHolder.updateConnectionState(ConnectionState.CONNECTING)
         try {
             val url = devicesLocalDataSource.getCurrentStatic()?.buildUrl("currenttime")
-                ?: throw NullPointerException()
+                ?: throw NoCurrentDeviceException()
             checkClient.head(url) {
                 header(HttpHeaders.Connection, "close")
             }

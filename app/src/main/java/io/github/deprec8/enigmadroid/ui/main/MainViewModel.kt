@@ -20,16 +20,14 @@
 package io.github.deprec8.enigmadroid.ui.main
 
 import androidx.lifecycle.viewModelScope
-import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
 import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
-import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.ui.components.viewmodels.ConnectionViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class MainViewModel(
-    private val devicesRepository: DevicesRepository, private val apiRepository: ApiRepository
+    private val devicesRepository: DevicesRepository
 ) : ConnectionViewModel() {
 
     val currentDevice = devicesRepository.getCurrentDevice().stateIn(
@@ -40,13 +38,9 @@ class MainViewModel(
         viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
     )
 
-    suspend fun buildOwifUrl(): String {
-        return apiRepository.buildOwifUrl()
-    }
-
-    fun setCurrentDevice(device: Device) {
+    fun setCurrentDeviceId(id: Long) {
         viewModelScope.launch {
-            devicesRepository.setCurrentDeviceId(device.id)
+            devicesRepository.setCurrentDeviceId(id)
         }
     }
 }

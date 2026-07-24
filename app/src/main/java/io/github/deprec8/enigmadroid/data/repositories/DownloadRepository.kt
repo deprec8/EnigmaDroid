@@ -26,7 +26,6 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
-import androidx.core.net.toUri
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.data.source.local.devices.DevicesLocalDataSource
 import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
@@ -42,9 +41,9 @@ class DownloadRepository(
 ) {
 
     suspend fun downloadMovie(movie: Movie) {
-        val url =
-            devicesLocalDataSource.getCurrentStatic()?.buildMovieStreamUrl(movie.fileName) ?: return
-        val request = DownloadManager.Request(url.toUri()).apply {
+        val uri =
+            devicesLocalDataSource.getCurrentStatic()?.buildMovieStreamUri(movie.fileName) ?: return
+        val request = DownloadManager.Request(uri).apply {
             setTitle(context.getString(R.string.downloading, movie.eventName))
             setMimeType("video/mp4")
             setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)

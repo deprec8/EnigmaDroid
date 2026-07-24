@@ -19,6 +19,7 @@
 
 package io.github.deprec8.enigmadroid.data.source.local.devices
 
+import androidx.core.net.toUri
 import androidx.room3.Dao
 import androidx.room3.Database
 import androidx.room3.Delete
@@ -32,6 +33,9 @@ import androidx.room3.migration.Migration
 import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.execSQL
 import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
+import io.ktor.http.URLBuilder
+import io.ktor.http.URLProtocol
+import io.ktor.http.appendPathSegments
 import kotlinx.coroutines.flow.Flow
 
 @Entity(tableName = "devices")
@@ -47,53 +51,40 @@ data class Device(
     val password: String
 ) {
 
-    fun buildUrl(endpoint: String) = buildString {
-        append(if (https) "https://" else "http://")
+    private fun getBaseUrlBuilder() = URLBuilder().apply {
+        protocol = if (https) URLProtocol.HTTPS else URLProtocol.HTTP
+        host = this@Device.host
+        port = this@Device.port
         if (login) {
-            append("${user}:${password}@")
+            user = this@Device.user
+            password = this@Device.password
         }
-        append("${host}:${port}/api/${endpoint.replace(" ", "%20")}")
     }
 
-    fun buildUrl(button: RemoteControlKey) = buildString {
-        append(if (https) "https://" else "http://")
-        if (login) {
-            append("${user}:${password}@")
-        }
-        append("${host}:${port}/web/remotecontrol?command=${button.id}")
-    }
+    fun buildUrl(endpoint: String) = getBaseUrlBuilder().apply {
+        appendPathSegments("api", endpoint)
+    }.build()
 
-    fun buildOwifUrl() = buildString {
-        append(if (https) "https://" else "http://")
-        if (login) {
-            append("${user}:${password}@")
-        }
-        append("${host}:${port}")
-    }
+    fun buildUrl(button: RemoteControlKey) = getBaseUrlBuilder().apply {
+        appendPathSegments("web", "remotecontrol")
+        parameters.append("command", button.id.toString())
+    }.build()
 
-    fun buildMovieStreamUrl(file: String) = buildString {
-        append(if (https) "https://" else "http://")
-        if (login) {
-            append("${user}:${password}@")
-        }
-        append("${host}:${port}/file?file=${file.replace(" ", "%20")}")
-    }
+    fun buildScreenshotUrl() = getBaseUrlBuilder().apply {
+        parameters.append("grab", "format=png")
+    }.build()
 
-    fun buildLiveStreamUrl(serviceReference: String) = buildString {
-        append("http://")
-        if (login) {
-            append("${user}:${password}@")
-        }
-        append("${host}:${livePort}/${serviceReference.replace(" ", "%20")}")
-    }
+    fun buildOWifUri() = getBaseUrlBuilder().buildString().toUri()
 
-    fun buildScreenshotUrl() = buildString {
-        append(if (https) "https://" else "http://")
-        if (login) {
-            append("${user}:${password}@")
-        }
-        append("${host}:${port}/grab?format=png")
-    }
+    fun buildMovieStreamUri(file: String) = getBaseUrlBuilder().apply {
+        appendPathSegments("file")
+        parameters.append("file", file)
+    }.buildString().toUri()
+
+    fun buildLiveStreamUri(serviceReference: String) = getBaseUrlBuilder().apply {
+        port = livePort
+        appendPathSegments(serviceReference)
+    }.buildString().toUri()
 }
 
 @Database(entities = [Device::class], version = 2)

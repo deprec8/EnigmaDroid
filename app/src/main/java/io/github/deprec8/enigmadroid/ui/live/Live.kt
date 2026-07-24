@@ -109,8 +109,8 @@ fun LivePage(
                         onAddTimerForEvent = {
                             liveViewModel.addTimerForEvent(it)
                         },
-                        buildLiveStreamUrl = {
-                            liveViewModel.buildLiveStreamUrl(it)
+                        buildLiveStreamUri = {
+                            liveViewModel.buildLiveStreamUri(it)
                         })
                 } ?: run {
                     SearchHistory(searchHistory = searchHistory, onSearchQuery = {
@@ -167,8 +167,8 @@ fun LivePage(
                     onAddTimerForEvent = {
                         liveViewModel.addTimerForEvent(it)
                     },
-                    buildLiveStreamUrl = {
-                        liveViewModel.buildLiveStreamUrl(it)
+                    buildLiveStreamUri = {
+                        liveViewModel.buildLiveStreamUri(it)
                     })
             }
         } else {
