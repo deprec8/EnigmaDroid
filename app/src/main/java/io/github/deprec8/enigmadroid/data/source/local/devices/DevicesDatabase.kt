@@ -32,7 +32,6 @@ import androidx.room3.Update
 import androidx.room3.migration.Migration
 import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.execSQL
-import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
 import io.ktor.http.URLBuilder
 import io.ktor.http.URLProtocol
 import io.ktor.http.appendPathSegments
@@ -51,7 +50,7 @@ data class Device(
     val password: String
 ) {
 
-    private fun getBaseUrlBuilder() = URLBuilder().apply {
+    fun getUrlBuilder() = URLBuilder().apply {
         protocol = if (https) URLProtocol.HTTPS else URLProtocol.HTTP
         host = this@Device.host
         port = this@Device.port
@@ -61,27 +60,14 @@ data class Device(
         }
     }
 
-    fun buildUrl(endpoint: String) = getBaseUrlBuilder().apply {
-        appendPathSegments("api", endpoint)
-    }.build()
+    fun buildOWifUri() = getUrlBuilder().buildString().toUri()
 
-    fun buildUrl(button: RemoteControlKey) = getBaseUrlBuilder().apply {
-        appendPathSegments("web", "remotecontrol")
-        parameters.append("command", button.id.toString())
-    }.build()
-
-    fun buildScreenshotUrl() = getBaseUrlBuilder().apply {
-        parameters.append("grab", "format=png")
-    }.build()
-
-    fun buildOWifUri() = getBaseUrlBuilder().buildString().toUri()
-
-    fun buildMovieStreamUri(file: String) = getBaseUrlBuilder().apply {
+    fun buildMovieStreamUri(file: String) = getUrlBuilder().apply {
         appendPathSegments("file")
         parameters.append("file", file)
     }.buildString().toUri()
 
-    fun buildLiveStreamUri(serviceReference: String) = getBaseUrlBuilder().apply {
+    fun buildLiveStreamUri(serviceReference: String) = getUrlBuilder().apply {
         port = livePort
         appendPathSegments(serviceReference)
     }.buildString().toUri()

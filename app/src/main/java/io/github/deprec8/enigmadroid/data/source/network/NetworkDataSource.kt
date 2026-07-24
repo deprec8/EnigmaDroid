@@ -19,7 +19,6 @@
 
 package io.github.deprec8.enigmadroid.data.source.network
 
-import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
 import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.data.ConnectionStateHolder
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
@@ -30,9 +29,13 @@ import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.request.get
 import io.ktor.client.request.head
 import io.ktor.client.request.header
+import io.ktor.client.request.post
 import io.ktor.client.statement.bodyAsText
 import io.ktor.client.statement.readRawBytes
 import io.ktor.http.HttpHeaders
+import io.ktor.http.URLBuilder
+import io.ktor.http.appendPathSegments
+import io.ktor.http.takeFrom
 import io.ktor.utils.io.CancellationException
 import io.ktor.utils.io.ClosedByteChannelException
 import okhttp3.ConnectionPool
@@ -94,10 +97,14 @@ class NetworkDataSource(
     suspend fun checkConnection() {
         connectionStateHolder.updateConnectionState(ConnectionState.CONNECTING)
         try {
-            val url = devicesLocalDataSource.getCurrentStatic()?.buildUrl("currenttime")
-                ?: throw NoCurrentDeviceException()
-            checkClient.head(url) {
+            val currentDevice =
+                devicesLocalDataSource.getCurrentStatic() ?: throw NoCurrentDeviceException()
+            checkClient.head {
                 header(HttpHeaders.Connection, "close")
+                url {
+                    takeFrom(currentDevice.getUrlBuilder())
+                    appendPathSegments("api", "currenttime")
+                }
             }
             connectionStateHolder.updateConnectionState(ConnectionState.CONNECTED)
         } catch (e: Exception) {
@@ -105,40 +112,32 @@ class NetworkDataSource(
         }
     }
 
-    suspend fun post(endpoint: String) {
+    suspend fun post(addEndpoint: URLBuilder.() -> Unit) {
         try {
-            val url = devicesLocalDataSource.getCurrentStatic()?.buildUrl(endpoint)
-                ?: throw NoCurrentDeviceException()
-            client.get(url) {
+            val currentDevice =
+                devicesLocalDataSource.getCurrentStatic() ?: throw NoCurrentDeviceException()
+            client.post {
                 header(HttpHeaders.Connection, "close")
+                url.takeFrom(currentDevice.getUrlBuilder())
+                url.addEndpoint()
             }
         } catch (e: Exception) {
             handleException(e)
         }
     }
 
-    suspend fun post(key: RemoteControlKey) {
-        try {
-            val url = devicesLocalDataSource.getCurrentStatic()?.buildUrl(key)
-                ?: throw NoCurrentDeviceException()
-            client.get(url) {
-                header(HttpHeaders.Connection, "close")
-            }
-        } catch (e: Exception) {
-            handleException(e)
-        }
-    }
-
-    suspend fun fetchJson(endpoint: String): String {
+    suspend fun get(addEndpoint: URLBuilder.() -> Unit): String {
         val currentState = connectionStateHolder.connectionState.value
         if ((currentState != ConnectionState.CONNECTED) && (currentState != ConnectionState.CONNECTING)) {
             connectionStateHolder.updateConnectionState(ConnectionState.CONNECTING)
         }
         return try {
-            val url = devicesLocalDataSource.getCurrentStatic()?.buildUrl(endpoint)
-                ?: throw NoCurrentDeviceException()
-            val response = client.get(url) {
+            val currentDevice =
+                devicesLocalDataSource.getCurrentStatic() ?: throw NoCurrentDeviceException()
+            val response = client.get {
                 header(HttpHeaders.Connection, "close")
+                url.takeFrom(currentDevice.getUrlBuilder())
+                url.addEndpoint()
             }.bodyAsText()
             connectionStateHolder.updateConnectionState(ConnectionState.CONNECTED)
             response
@@ -148,13 +147,17 @@ class NetworkDataSource(
         }
     }
 
-    suspend fun fetchScreenshot(): Result<Pair<ByteArray, Device>> {
+    suspend fun getScreenshot(): Result<Pair<ByteArray, Device>> {
         return try {
             val currentDevice =
                 devicesLocalDataSource.getCurrentStatic() ?: throw NoCurrentDeviceException()
-            val url = currentDevice.buildScreenshotUrl()
-            val result = client.get(url) {
+            val result = client.get {
                 header(HttpHeaders.Connection, "close")
+                url {
+                    takeFrom(currentDevice.getUrlBuilder())
+                    appendPathSegments("grab")
+                    parameters.append("format", "png")
+                }
             }.readRawBytes()
             Result.success(Pair(result, currentDevice))
         } catch (e: Exception) {
@@ -163,7 +166,7 @@ class NetworkDataSource(
         }
     }
 
-    companion object {
+    private companion object {
         private class NoCurrentDeviceException : Exception()
     }
 }

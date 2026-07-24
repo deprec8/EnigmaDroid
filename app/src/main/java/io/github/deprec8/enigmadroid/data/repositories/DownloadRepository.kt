@@ -57,7 +57,7 @@ class DownloadRepository(
     }
 
     suspend fun fetchScreenshot(): Result<Uri> = withContext(Dispatchers.IO) {
-        networkDataSource.fetchScreenshot().mapCatching { pair ->
+        networkDataSource.getScreenshot().mapCatching { pair ->
             val bytes = pair.first
             val device = pair.second
 
