@@ -19,22 +19,12 @@
 
 package io.github.deprec8.enigmadroid.ui.onboarding
 
-import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.deprec8.enigmadroid.common.constant.DefaultPorts
 import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
 import io.github.deprec8.enigmadroid.data.repositories.OnboardingRepository
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -43,74 +33,18 @@ class OnboardingViewModel(
     private val devicesRepository: DevicesRepository
 ) : ViewModel() {
 
-    val nameState = TextFieldState("")
-    val hostState = TextFieldState("")
-    val portState = TextFieldState(DefaultPorts.HTTP)
-    val livePortState = TextFieldState(DefaultPorts.LIVE)
-    var https by mutableStateOf(false)
-        private set
-    var login by mutableStateOf(false)
-        private set
-    val userState = TextFieldState("")
-    val passwordState = TextFieldState("")
+    private var pendingDevice: Device? = null
 
-    val baseFlow = combine(
-        snapshotFlow { nameState.text },
-        snapshotFlow { hostState.text },
-        snapshotFlow { portState.text },
-        snapshotFlow { livePortState.text }) { name, host, port, livePort ->
-        listOf(name, host, port, livePort).all { it.isNotBlank() }
+    fun setDevice(device: Device?) {
+        pendingDevice = device
     }
-    val loginFlow = combine(
-        snapshotFlow { userState.text },
-        snapshotFlow { passwordState.text },
-        snapshotFlow { login }) { user, password, login ->
-        !login || (user.isNotBlank() && password.isNotBlank())
-    }
-
-    val isEveryFieldFilled = combine(baseFlow, loginFlow) { baseFilled, loginFilled ->
-        baseFilled && loginFilled
-    }.stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), false
-    )
-
-    fun toggleHttps() {
-        https = !https
-        if (portState.text == DefaultPorts.HTTP && https) {
-            portState.setTextAndPlaceCursorAtEnd(DefaultPorts.HTTPS)
-        } else if (portState.text == DefaultPorts.HTTPS && !https) {
-            portState.setTextAndPlaceCursorAtEnd(DefaultPorts.HTTP)
-        }
-    }
-
-    fun toggleLogin() {
-        login = !login
-    }
-
-    fun finishOnboardingWithDevice() {
-        viewModelScope.launch {
-            withContext(NonCancellable) {
-                onboardingRepository.finishOnboarding()
-                val newDevice = Device(
-                    0,
-                    nameState.text.toString().trim(),
-                    hostState.text.toString(),
-                    portState.text.toString().toInt(),
-                    livePortState.text.toString().toInt(),
-                    https,
-                    login,
-                    userState.text.toString(),
-                    passwordState.text.toString(),
-                )
-                devicesRepository.addDevice(newDevice)
-            }
-        }
-    }
-
 
     fun finishOnboarding() {
         viewModelScope.launch {
             withContext(NonCancellable) {
+                pendingDevice?.let {
+                    devicesRepository.addDevice(it)
+                }
                 onboardingRepository.finishOnboarding()
             }
         }

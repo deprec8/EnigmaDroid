@@ -20,6 +20,7 @@
 package io.github.deprec8.enigmadroid.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -72,7 +73,7 @@ import io.github.deprec8.enigmadroid.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeviceSetupCard(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     nameState: TextFieldState,
     hostState: TextFieldState,
     portState: TextFieldState,
@@ -314,7 +315,7 @@ private fun Settings(
 ) {
     Column {
         Spacer(modifier = Modifier.size(8.dp))
-        Row {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FilterChip(selected = https, onClick = onHttpsChange, label = {
                 Text(
                     text = stringResource(R.string.https),
@@ -330,10 +331,7 @@ private fun Settings(
                     )
                 }
             })
-            Spacer(Modifier.size(8.dp))
-            FilterChip(selected = login, onClick = {
-                onLoginChange()
-            }, label = {
+            FilterChip(selected = login, onClick = onLoginChange, label = {
                 Text(
                     text = stringResource(R.string.login),
                     maxLines = 1,
