@@ -1,6 +1,6 @@
 [versions]
 aboutlibraries = "15.0.4"
-agp = "9.3.0"
+agp = "9.3.1"
 browser = "1.10.0"
 coreSplashscreen = "1.2.0"
 datastorePreferences = "1.2.1"
