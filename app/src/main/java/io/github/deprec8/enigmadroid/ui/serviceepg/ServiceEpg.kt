@@ -32,10 +32,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.data.ConnectionState
-import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
 import io.github.deprec8.enigmadroid.ui.components.InvalidResponse
+import io.github.deprec8.enigmadroid.ui.components.Loading
 import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.ArrowNavigationButton
@@ -44,6 +43,7 @@ import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.epg.EpgContent
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import kotlin.onSuccess
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,17 +58,16 @@ fun ServiceEpgPage(
     })
 ) {
     val eventBatchResult by serviceEpgViewModel.eventBatchResult.collectAsStateWithLifecycle()
-    val connectionState by serviceEpgViewModel.connectionState.collectAsStateWithLifecycle()
     val filteredEvents by serviceEpgViewModel.filteredEvents.collectAsStateWithLifecycle()
     val searchHistory by serviceEpgViewModel.searchHistory.collectAsStateWithLifecycle()
 
     ObserveActiveState(serviceEpgViewModel)
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(connectionState) { serviceEpgViewModel.fetchData() }
+        FloatingReloadButton(eventBatchResult?.isSuccess == true) { serviceEpgViewModel.fetchData() }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = eventBatchResult?.getOrNull()?.events?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED,
+            enabled = eventBatchResult?.getOrNull()?.events?.isNotEmpty() == true,
             textFieldState = serviceEpgViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_epg_from, serviceName),
             content = {
@@ -96,28 +95,30 @@ fun ServiceEpgPage(
                 serviceEpgViewModel.updateSearchInput()
             })
     }) { innerPadding ->
-        if (eventBatchResult != null && connectionState == ConnectionState.CONNECTED) {
+        if (eventBatchResult != null) {
             eventBatchResult?.onSuccess { eventBatch ->
                 EpgContent(
                     events = eventBatch.events,
                     innerPadding,
                     onAddTimerForEvent = { serviceEpgViewModel.addTimerForEvent(it) })
-            }?.onFailure {
+            }?.onFailure { e ->
                 InvalidResponse(
-                    Modifier
-                        .padding(innerPadding)
-                        .consumeWindowInsets(innerPadding),
-                )
+                    throwable = e, modifier = Modifier
+                        .consumeWindowInsets(innerPadding)
+                        .padding(
+                            innerPadding
+                        )
+                ) {
+                    serviceEpgViewModel.fetchData(true)
+                }
             }
         } else {
-            ConnectionDisplay(
+            Loading(
                 Modifier
-                    .padding(innerPadding)
-                    .consumeWindowInsets(innerPadding),
-                onCheckConnection = {
-                    serviceEpgViewModel.checkConnection()
-                },
-                connectionState = connectionState
+                    .consumeWindowInsets(innerPadding)
+                    .padding(
+                        innerPadding
+                    )
             )
         }
     }

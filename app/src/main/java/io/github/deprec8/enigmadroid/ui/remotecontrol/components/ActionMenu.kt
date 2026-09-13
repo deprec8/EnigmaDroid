@@ -56,7 +56,6 @@ import io.github.deprec8.enigmadroid.common.enums.RemoteControlPowerKey
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ActionMenu(
-    enabled: Boolean,
     onFetchScreenshot: () -> Unit,
     onPowerKeyClicked: (RemoteControlPowerKey) -> Unit
 ) {
@@ -81,7 +80,7 @@ fun ActionMenu(
             )
         ) {
             IconButton(
-                onClick = { showMenu = true }, enabled = enabled
+                onClick = { showMenu = true }
             ) {
                 Icon(
                     Icons.Default.MoreVert,
@@ -186,7 +185,7 @@ fun ActionMenu(
                 )
             ) {
                 IconButton(
-                    onClick = { onFetchScreenshot() }, enabled = enabled
+                    onClick = { onFetchScreenshot() }
                 ) {
                     Icon(
                         Icons.Outlined.ScreenshotMonitor,
@@ -206,7 +205,7 @@ fun ActionMenu(
                 )
             ) {
                 IconButton(
-                    onClick = { showPowerMenu = true }, enabled = enabled
+                    onClick = { showPowerMenu = true }
                 ) {
                     Icon(
                         Icons.Default.SettingsPower,

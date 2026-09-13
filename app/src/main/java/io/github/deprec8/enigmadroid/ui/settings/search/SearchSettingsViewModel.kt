@@ -21,8 +21,7 @@ package io.github.deprec8.enigmadroid.ui.settings.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.deprec8.enigmadroid.common.enums.ContentType
-import io.github.deprec8.enigmadroid.data.repositories.SearchRepository
+import io.github.deprec8.enigmadroid.core.data.repositories.SearchRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow

@@ -14,7 +14,7 @@ To help us address issues efficiently, please follow these steps when reporting 
 
 * **Provide a detailed report:** If the bug is new, open an issue with a clear and descriptive
   title. Include the steps to reproduce the bug, the expected behavior, the actual behavior, and
-  details about your device's Android version and the EnigmaDroid app version. Screenshots or
+  details about your deviceEntity's Android version and the EnigmaDroid app version. Screenshots or
   `Logcat` output are highly valuable.
 
 ## Proposing New Features

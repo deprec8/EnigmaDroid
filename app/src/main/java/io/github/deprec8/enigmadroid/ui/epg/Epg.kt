@@ -56,12 +56,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.ContentType
-import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.model.api.Bouquet
-import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
 import io.github.deprec8.enigmadroid.ui.components.InvalidResponse
+import io.github.deprec8.enigmadroid.ui.components.Loading
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
 import io.github.deprec8.enigmadroid.ui.components.content.ContentTab
@@ -74,6 +72,8 @@ import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarDrawerN
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import kotlin.collections.isNotEmpty
+import kotlin.onSuccess
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -88,7 +88,6 @@ fun EpgPage(
     val currentBouquetReference by epgViewModel.currentBouquetReference.collectAsStateWithLifecycle()
     val filteredEvents by epgViewModel.filteredEvents.collectAsStateWithLifecycle()
     val searchHistory by epgViewModel.searchHistory.collectAsStateWithLifecycle()
-    val connectionState by epgViewModel.connectionState.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = {
@@ -106,12 +105,12 @@ fun EpgPage(
     ObserveActiveState(epgViewModel)
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(connectionState) {
+        FloatingReloadButton(eventBatchSetResult?.isSuccess == true) {
             epgViewModel.fetchData()
         }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = eventBatchSetResult?.getOrNull()?.eventBatches?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED,
+            enabled = eventBatchSetResult?.getOrNull()?.eventBatches?.isNotEmpty() == true,
             textFieldState = epgViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_epg),
             content = {
@@ -138,7 +137,7 @@ fun EpgPage(
             actionButtons = {
                 Row {
                     BouquetMenu(
-                        bouquetsResult?.getOrNull(), currentBouquetReference, connectionState
+                        bouquetsResult?.getOrNull(), currentBouquetReference
                     ) { bouquetReference -> epgViewModel.setCurrentBouquet(bouquetReference) }
                     RemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
                 }
@@ -148,7 +147,7 @@ fun EpgPage(
             },
             actionBar = {
                 eventBatchSetResult?.onSuccess { eventBatchSet ->
-                    if (eventBatchSet.eventBatches.isNotEmpty() && connectionState == ConnectionState.CONNECTED) {
+                    if (eventBatchSet.eventBatches.isNotEmpty()) {
                         ContentTabRow(selectedTabIndex) {
                             eventBatchSet.eventBatches.forEachIndexed { index, eventBatch ->
                                 ContentTab(
@@ -166,7 +165,7 @@ fun EpgPage(
     }
 
     ) { innerPadding ->
-        if (eventBatchSetResult != null && connectionState == ConnectionState.CONNECTED) {
+        if (eventBatchSetResult != null) {
             eventBatchSetResult?.onSuccess { eventBatchSet ->
                 if (eventBatchSet.eventBatches.isNotEmpty()) {
                     HorizontalPager(
@@ -185,22 +184,24 @@ fun EpgPage(
                             .padding(innerPadding)
                     )
                 }
-            }?.onFailure {
+            }?.onFailure { e ->
                 InvalidResponse(
-                    Modifier
-                        .padding(innerPadding)
-                        .consumeWindowInsets(innerPadding),
-                )
+                    throwable = e, modifier = Modifier
+                        .consumeWindowInsets(innerPadding)
+                        .padding(
+                            innerPadding
+                        )
+                ) {
+                    epgViewModel.fetchData(true)
+                }
             }
         } else {
-            ConnectionDisplay(
+            Loading(
                 Modifier
                     .consumeWindowInsets(innerPadding)
-                    .padding(innerPadding),
-                onCheckConnection = {
-                    epgViewModel.checkConnection()
-                },
-                connectionState = connectionState
+                    .padding(
+                        innerPadding
+                    )
             )
         }
     }
@@ -209,10 +210,7 @@ fun EpgPage(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun BouquetMenu(
-    bouquets: List<Bouquet>?,
-    currentBouquetReference: String,
-    connectionState: ConnectionState,
-    onBouquetChange: (String) -> Unit
+    bouquets: List<Bouquet>?, currentBouquetReference: String, onBouquetChange: (String) -> Unit
 ) {
     var showMenu by rememberSaveable { mutableStateOf(false) }
 
@@ -230,8 +228,7 @@ private fun BouquetMenu(
         IconButton(
             onClick = {
                 showMenu = true
-            },
-            enabled = bouquets?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED
+            }, enabled = bouquets?.isNotEmpty() == true
         ) {
             Icon(
                 Icons.Default.MoreVert, contentDescription = stringResource(R.string.bouquet_menu)

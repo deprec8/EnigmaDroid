@@ -20,7 +20,7 @@
 package io.github.deprec8.enigmadroid.ui.current
 
 import android.net.Uri
-import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
+import io.github.deprec8.enigmadroid.core.data.repositories.ApiRepository
 import io.github.deprec8.enigmadroid.model.api.CurrentInfo
 import io.github.deprec8.enigmadroid.ui.components.viewmodels.ContentViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

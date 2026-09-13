@@ -21,14 +21,6 @@ package io.github.deprec8.enigmadroid.ui.main
 
 import android.content.ActivityNotFoundException
 import androidx.browser.customtabs.CustomTabsIntent
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -38,7 +30,6 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Dvr
@@ -52,7 +43,6 @@ import androidx.compose.material.icons.filled.DeveloperBoard
 import androidx.compose.material.icons.filled.LiveTv
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.Radio
-import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.SwapVert
@@ -65,7 +55,6 @@ import androidx.compose.material.icons.outlined.Radio
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Speed
 import androidx.compose.material.icons.outlined.Timer
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -95,10 +84,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
+import io.github.deprec8.enigmadroid.Device
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.common.constant.MainKeys
-import io.github.deprec8.enigmadroid.data.ConnectionState
-import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.model.DrawerPage
 import io.github.deprec8.enigmadroid.model.DrawerPageGroup
 import io.github.deprec8.enigmadroid.ui.components.dialogs.UrlIntentErrorDialog
@@ -108,10 +96,8 @@ import kotlinx.coroutines.launch
 fun DrawerContent(
     currentDevice: Device?,
     devices: List<Device>,
-    connectionState: ConnectionState,
     currentTopLevelRoute: NavKey,
     scrollState: ScrollState,
-    onCheckConnection: () -> Unit,
     onNavigate: (NavKey) -> Unit,
     onSetCurrentDeviceId: (Long) -> Unit
 ) {
@@ -125,8 +111,6 @@ fun DrawerContent(
         DeviceItem(
             currentDevice = currentDevice,
             devices = devices,
-            connectionState = connectionState,
-            onCheckConnection = { onCheckConnection() },
             onSetCurrentDeviceId = onSetCurrentDeviceId
         )
 
@@ -175,11 +159,7 @@ fun DrawerItem(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeviceItem(
-    currentDevice: Device?,
-    devices: List<Device>,
-    connectionState: ConnectionState,
-    onCheckConnection: () -> Unit,
-    onSetCurrentDeviceId: (Long) -> Unit
+    currentDevice: Device?, devices: List<Device>, onSetCurrentDeviceId: (Long) -> Unit
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -201,136 +181,47 @@ fun DeviceItem(
             )
         },
         trailingContent = {
-            AnimatedContent(connectionState, label = "", transitionSpec = {
-                scaleIn(
-                    initialScale = 0f, animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioMediumBouncy,
-                        stiffness = Spring.StiffnessLow
+            currentDevice?.let {
+                TooltipBox(
+                    tooltip = {
+                        PlainTooltip {
+                            Text(stringResource(id = R.string.openwebif))
+                        }
+                    },
+                    state = rememberTooltipState(),
+                    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                        TooltipAnchorPosition.Below, 4.dp
                     )
-                ) + fadeIn() togetherWith scaleOut(targetScale = 0f) + fadeOut()
-            }) {
-                when (it) {
-                    ConnectionState.CONNECTED if currentDevice != null -> {
-                        TooltipBox(
-                            tooltip = {
-                                PlainTooltip {
-                                    Text(stringResource(id = R.string.openwebif))
-                                }
-                            },
-                            state = rememberTooltipState(),
-                            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-                                TooltipAnchorPosition.Below, 4.dp
-                            )
-                        ) {
-                            IconButton(onClick = {
-                                scope.launch {
-                                    try {
-                                        CustomTabsIntent.Builder().setShowTitle(true)
-                                            .setDownloadButtonEnabled(false)
-                                            .setBookmarksButtonEnabled(false).setShareState(
-                                                CustomTabsIntent.SHARE_STATE_ON
-                                            ).setUrlBarHidingEnabled(true).build().launchUrl(
-                                                context, currentDevice.buildOWifUri()
-                                            )
-                                    } catch (_: ActivityNotFoundException) {
-                                        showUrlIntentErrorDialog = true
-                                    }
-                                }
-                            }) {
-                                Icon(
-                                    Icons.Default.Web,
-                                    contentDescription = stringResource(R.string.openwebif),
-                                )
+                ) {
+                    IconButton(onClick = {
+                        scope.launch {
+                            try {
+                                CustomTabsIntent.Builder().setShowTitle(true)
+                                    .setDownloadButtonEnabled(false)
+                                    .setBookmarksButtonEnabled(false).setShareState(
+                                        CustomTabsIntent.SHARE_STATE_ON
+                                    ).setUrlBarHidingEnabled(true).build().launchUrl(
+                                        context, it.buildOWifUri()
+                                    )
+                            } catch (_: ActivityNotFoundException) {
+                                showUrlIntentErrorDialog = true
                             }
                         }
-                    }
-
-                    ConnectionState.CONNECTING -> {
-                        IconButton(onClick = {}, enabled = false) {
-                            CircularProgressIndicator(Modifier.size(24.dp))
-                        }
-                    }
-
-                    else -> {
-                        TooltipBox(
-                            tooltip = {
-                                PlainTooltip {
-                                    Text(stringResource(id = R.string.retry))
-                                }
-                            },
-                            state = rememberTooltipState(),
-                            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-                                TooltipAnchorPosition.Below, 4.dp
-                            )
-                        ) {
-                            IconButton(onClick = { onCheckConnection() }) {
-                                Icon(
-                                    Icons.Default.RestartAlt,
-                                    contentDescription = stringResource(R.string.retry),
-                                )
-                            }
-                        }
+                    }) {
+                        Icon(
+                            Icons.Default.Web,
+                            contentDescription = stringResource(R.string.openwebif),
+                        )
                     }
                 }
-
             }
         },
         supportingContent = {
-            AnimatedContent(
-                connectionState,
-                label = "",
-                transitionSpec = { fadeIn() togetherWith fadeOut() }) {
-                when (it) {
-                    ConnectionState.CONNECTED -> {
-                        currentDevice?.let { device ->
-                            Text(
-                                "${device.host}:${device.port}",
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                    }
+            currentDevice?.let { device ->
+                Text(
+                    "${device.host}:${device.port}", maxLines = 1, overflow = TextOverflow.Ellipsis
+                )
 
-                    ConnectionState.NOT_CONNECTED -> {
-                        Text(
-                            stringResource(id = R.string.unable_to_connect),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-
-                    ConnectionState.NO_DEVICE_AVAILABLE -> {
-                        Text(
-                            stringResource(R.string.first_add_a_device),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-
-                    ConnectionState.NO_DEVICE_SELECTED -> {
-                        Text(
-                            stringResource(R.string.first_select_a_device),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-
-                    ConnectionState.CONNECTING -> {
-                        Text(
-                            stringResource(R.string.connecting),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-
-                    ConnectionState.INVALID_DEVICE_RESPONSE -> {
-                        Text(
-                            stringResource(id = R.string.invalid_response),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                }
             }
         },
         leadingContent = if (devices.size > 1) {

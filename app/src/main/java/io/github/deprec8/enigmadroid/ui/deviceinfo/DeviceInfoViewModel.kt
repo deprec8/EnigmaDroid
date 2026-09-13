@@ -19,7 +19,7 @@
 
 package io.github.deprec8.enigmadroid.ui.deviceinfo
 
-import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
+import io.github.deprec8.enigmadroid.core.data.repositories.ApiRepository
 import io.github.deprec8.enigmadroid.model.api.DeviceInfo
 import io.github.deprec8.enigmadroid.ui.components.viewmodels.ContentViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

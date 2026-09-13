@@ -32,7 +32,7 @@ import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
 import io.github.deprec8.enigmadroid.model.RemoteControlButtonData
 
 @Composable
-fun ColorButtons(onKeyClicked: (RemoteControlKey) -> Unit, enabled: Boolean) {
+fun ColorButtons(onKeyClicked: (RemoteControlKey) -> Unit) {
     Row(
         Modifier.widthIn(0.dp, 500.dp)
     ) {
@@ -40,7 +40,6 @@ fun ColorButtons(onKeyClicked: (RemoteControlKey) -> Unit, enabled: Boolean) {
             RemoteControlButton(
                 button = button,
                 onClick = { onKeyClicked(button.key) },
-                enabled = enabled,
                 modifier = Modifier.weight(1f),
                 iconTint = button.iconTint,
                 aspectRatio = 1.5f

@@ -1,2 +1,2 @@
-- Added shortcuts for quick device changing
+- Added shortcuts for quick deviceEntity changing
 - Various fixes and updates

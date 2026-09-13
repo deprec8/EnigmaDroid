@@ -32,14 +32,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.data.ConnectionState
 import io.github.deprec8.enigmadroid.model.api.MovieBatch
 
 @Composable
-fun MoviesActionBar(movieBatch: MovieBatch?, freeSpace: String?, connectionState: ConnectionState) {
+fun MoviesActionBar(movieBatch: MovieBatch?, freeSpace: String?) {
 
-    if ((movieBatch != null || freeSpace != null) && connectionState == ConnectionState.CONNECTED) {
-
+    if ((movieBatch != null || freeSpace != null)) {
         OutlinedCard(
             modifier = Modifier
                 .padding(horizontal = 16.dp, vertical = 8.dp)

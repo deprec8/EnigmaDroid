@@ -1,26 +1,31 @@
 [versions]
-aboutlibraries = "15.0.4"
-agp = "9.3.1"
+# Android
+android-targetSdk = "37"
+android-minSdk = "29"
+android-compileSdk = "37"
+# Libraries
+aboutlibraries = "15.2.0"
+agp = "9.4.0"
 browser = "1.10.0"
 coreSplashscreen = "1.2.0"
 datastorePreferences = "1.2.1"
-kotlin = "2.4.10"
+kotlin = "2.4.20"
 coroutines = "1.11.0"
-ktor = "3.5.1"
+ktor = "3.5.2"
 re2j = "1.8"
-room = "3.0.0"
+room = "3.0.3"
 lifecycle = "2.11.0"
 coreKtx = "1.19.0"
 activity = "1.13.0"
-composeBom = "2026.06.01"
+composeBom = "2026.09.00"
 ksp = "2.3.9"
-jsoup = "1.22.2"
-navigation3 = "1.1.4"
+jsoup = "1.23.2"
+navigation3 = "1.1.7"
 kotlinxSerialization = "1.11.0"
 savedstateKtx = "1.5.0"
 window = "1.5.1"
 koin = "4.2.2"
-koin-plugin = "1.0.2"
+koin-plugin = "1.2.1"
 
 [libraries]
 # Room
@@ -43,12 +48,14 @@ androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 # Navigation3
 androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "navigation3" }
 androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
-# Serialization
-jetbrains-kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinxSerialization" }
-jetbrains-kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 # Ktor
-ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
-ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+ktor-bom = { module = "io.ktor:ktor-bom", version.ref = "ktor" }
+ktor-client-core = { module = "io.ktor:ktor-client-core" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation" }
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json" }
+ktor-client-encoding = { module = "io.ktor:ktor-client-encoding" }
 # Jsoup
 jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 re2j = { module = "com.google.re2j:re2j", version.ref = "re2j" }

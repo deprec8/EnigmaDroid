@@ -20,14 +20,14 @@
 package io.github.deprec8.enigmadroid.ui.remotecontrol
 
 import android.net.Uri
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
 import io.github.deprec8.enigmadroid.common.enums.RemoteControlPowerKey
-import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
-import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
-import io.github.deprec8.enigmadroid.data.repositories.DownloadRepository
-import io.github.deprec8.enigmadroid.data.repositories.SettingsRepository
-import io.github.deprec8.enigmadroid.ui.components.viewmodels.ConnectionViewModel
+import io.github.deprec8.enigmadroid.core.data.repositories.ApiRepository
+import io.github.deprec8.enigmadroid.core.data.repositories.DevicesRepository
+import io.github.deprec8.enigmadroid.core.data.repositories.DownloadRepository
+import io.github.deprec8.enigmadroid.core.data.repositories.SettingsRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -38,8 +38,7 @@ class RemoteControlViewModel(
     private val downloadRepository: DownloadRepository,
     devicesRepository: DevicesRepository,
     settingsRepository: SettingsRepository
-) : ConnectionViewModel() {
-
+) : ViewModel() {
     val currentDevice = devicesRepository.getCurrentDevice().stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000), null
     )
@@ -62,7 +61,6 @@ class RemoteControlViewModel(
     fun onPowerKeyClicked(powerKey: RemoteControlPowerKey) {
         viewModelScope.launch {
             apiRepository.setPowerState(powerKey)
-            checkConnection()
         }
     }
 }

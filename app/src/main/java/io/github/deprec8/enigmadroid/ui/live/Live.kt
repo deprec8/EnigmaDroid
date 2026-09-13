@@ -40,11 +40,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.ContentType
-import io.github.deprec8.enigmadroid.data.ConnectionState
-import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
 import io.github.deprec8.enigmadroid.ui.components.InvalidResponse
+import io.github.deprec8.enigmadroid.ui.components.Loading
 import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
 import io.github.deprec8.enigmadroid.ui.components.content.ContentTab
 import io.github.deprec8.enigmadroid.ui.components.content.ContentTabRow
@@ -56,6 +54,9 @@ import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarDrawerN
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import kotlin.collections.forEachIndexed
+import kotlin.collections.getOrNull
+import kotlin.collections.isNotEmpty
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,7 +70,6 @@ fun LivePage(
 
     val filteredEvents by liveViewModel.filteredEvents.collectAsStateWithLifecycle()
     val eventBatchesResult by liveViewModel.eventBatchesResult.collectAsStateWithLifecycle()
-    val connectionState by liveViewModel.connectionState.collectAsStateWithLifecycle()
     val searchHistory by liveViewModel.searchHistory.collectAsStateWithLifecycle()
 
     val scope = rememberCoroutineScope()
@@ -89,12 +89,11 @@ fun LivePage(
     }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(connectionState) { liveViewModel.fetchData() }
+        FloatingReloadButton(eventBatchesResult?.isSuccess == true) { liveViewModel.fetchData() }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
             textFieldState = liveViewModel.searchFieldState,
-            enabled = eventBatchesResult?.getOrNull()
-                ?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED,
+            enabled = eventBatchesResult?.getOrNull()?.isNotEmpty() == true,
             placeholder = stringResource(R.string.search_events),
             content = {
                 filteredEvents?.let { filterEvents ->
@@ -138,7 +137,7 @@ fun LivePage(
             },
             actionBar = {
                 eventBatchesResult?.onSuccess { eventBatches ->
-                    if (eventBatches.isNotEmpty() && connectionState == ConnectionState.CONNECTED) {
+                    if (eventBatches.isNotEmpty()) {
                         ContentTabRow(selectedTabIndex) {
                             eventBatches.forEachIndexed { index, eventBatch ->
                                 ContentTab(
@@ -155,7 +154,7 @@ fun LivePage(
             })
 
     }) { innerPadding ->
-        if (eventBatchesResult != null && connectionState == ConnectionState.CONNECTED) {
+        if (eventBatchesResult != null) {
             eventBatchesResult?.onSuccess { eventBatches ->
                 HorizontalPager(
                     modifier = Modifier.fillMaxSize(), state = pagerState
@@ -178,22 +177,24 @@ fun LivePage(
                             liveViewModel.buildLiveStreamUri(it)
                         })
                 }
-            }?.onFailure {
+            }?.onFailure { e ->
                 InvalidResponse(
-                    Modifier
-                        .padding(innerPadding)
-                        .consumeWindowInsets(innerPadding),
-                )
+                    throwable = e, modifier = Modifier
+                        .consumeWindowInsets(innerPadding)
+                        .padding(
+                            innerPadding
+                        )
+                ) {
+                    liveViewModel.fetchData(true)
+                }
             }
         } else {
-            ConnectionDisplay(
+            Loading(
                 Modifier
                     .consumeWindowInsets(innerPadding)
-                    .padding(innerPadding),
-                onCheckConnection = {
-                    liveViewModel.checkConnection()
-                },
-                connectionState = connectionState
+                    .padding(
+                        innerPadding
+                    )
             )
         }
     }

@@ -19,14 +19,13 @@
 
 package io.github.deprec8.enigmadroid.ui.components.viewmodels
 
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.deprec8.enigmadroid.data.ConnectionState
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
 
-abstract class ContentViewModel : ConnectionViewModel() {
+abstract class ContentViewModel : ViewModel(), KoinComponent {
 
     private var isActive = false
     private var isDirty = false
@@ -37,12 +36,10 @@ abstract class ContentViewModel : ConnectionViewModel() {
 
     init {
         viewModelScope.launch {
-            connectionState.filter { it == ConnectionState.CONNECTED }.collectLatest {
-                if (isActive) {
-                    fetchData(showLoading = true)
-                } else {
-                    isDirty = true
-                }
+            if (isActive) {
+                fetchData(showLoading = true)
+            } else {
+                isDirty = true
             }
         }
     }
@@ -54,9 +51,7 @@ abstract class ContentViewModel : ConnectionViewModel() {
             fetchJob = launch {
                 if (showLoading) onClearData()
                 onGetData()
-                if (connectionState.value == ConnectionState.CONNECTED) {
-                    lastFetchedAt = System.currentTimeMillis()
-                }
+                lastFetchedAt = System.currentTimeMillis()
             }
         }
     }
@@ -64,9 +59,6 @@ abstract class ContentViewModel : ConnectionViewModel() {
 
     fun onActive() {
         isActive = true
-        if (connectionState.value != ConnectionState.CONNECTED) {
-            checkConnection()
-        }
         val stale = (System.currentTimeMillis() - lastFetchedAt) > staleThresholdMs
         if (isDirty || stale || lastFetchedAt == 0L) {
             fetchData(showLoading = isDirty || lastFetchedAt == 0L)

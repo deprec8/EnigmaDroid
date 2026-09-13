@@ -21,7 +21,7 @@ package io.github.deprec8.enigmadroid.ui.settings.remotecontrol
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.deprec8.enigmadroid.data.repositories.SettingsRepository
+import io.github.deprec8.enigmadroid.core.data.repositories.SettingsRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch

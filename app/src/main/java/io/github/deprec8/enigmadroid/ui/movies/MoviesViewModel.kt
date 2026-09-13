@@ -21,9 +21,8 @@ package io.github.deprec8.enigmadroid.ui.movies
 
 import android.net.Uri
 import androidx.lifecycle.viewModelScope
-import io.github.deprec8.enigmadroid.common.enums.ContentType
-import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
-import io.github.deprec8.enigmadroid.data.repositories.DownloadRepository
+import io.github.deprec8.enigmadroid.core.data.repositories.ApiRepository
+import io.github.deprec8.enigmadroid.core.data.repositories.DownloadRepository
 import io.github.deprec8.enigmadroid.model.api.Movie
 import io.github.deprec8.enigmadroid.model.api.MovieBatch
 import io.github.deprec8.enigmadroid.model.api.search

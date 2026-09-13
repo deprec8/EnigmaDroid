@@ -21,8 +21,8 @@ package io.github.deprec8.enigmadroid.ui.settings.devices
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
-import io.github.deprec8.enigmadroid.data.source.local.devices.Device
+import io.github.deprec8.enigmadroid.Device
+import io.github.deprec8.enigmadroid.core.data.repositories.DevicesRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch

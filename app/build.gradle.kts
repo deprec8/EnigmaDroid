@@ -18,6 +18,7 @@
  */
 
 import com.android.build.gradle.internal.tasks.CompileArtProfileTask
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.application)
@@ -31,18 +32,16 @@ plugins {
 
 android {
     namespace = "io.github.deprec8.enigmadroid"
-    compileSdk = 37
+    compileSdk {
+        version = release(libs.versions.android.compileSdk.get().toInt())
+    }
 
     defaultConfig {
         applicationId = "io.github.deprec8.enigmadroid"
-        minSdk = 28
-        targetSdk = 37
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 19
         versionName = "1.9.2"
-
-        vectorDrawables {
-            useSupportLibrary = true
-        }
     }
 
     androidResources {
@@ -58,6 +57,18 @@ android {
         }
     }
 
+    flavorDimensions += "distribution"
+
+    productFlavors {
+        create("foss") {
+            dimension = "distribution"
+        }
+
+        create("play") {
+            dimension = "distribution"
+        }
+    }
+
     dependenciesInfo {
         includeInApk = false
         includeInBundle = false
@@ -66,22 +77,16 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            isDebuggable = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
-            isJniDebuggable = false
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs["release"]
             vcsInfo.include = false
         }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-    }
-    buildFeatures {
-        compose = true
-        resValues = true
     }
     packaging {
         resources {
@@ -91,7 +96,15 @@ android {
     }
 }
 
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_17
+    }
+}
+
 dependencies {
+
+    // Modules
 
     // Koin
     implementation(platform(libs.koin.bom))
@@ -100,10 +113,6 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.koin.compose)
     implementation(libs.koin.compose.viewmodel)
-
-    // Serialization
-    implementation(libs.jetbrains.kotlinx.serialization.core)
-    implementation(libs.jetbrains.kotlinx.serialization.json)
 
     // Navigation3
     implementation(libs.androidx.navigation3.ui)
@@ -121,8 +130,13 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
 
     // Ktor
+    implementation(platform(libs.ktor.bom))
     implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.cio)
     implementation(libs.ktor.client.okhttp)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.serialization.kotlinx.json)
+    implementation(libs.ktor.client.encoding)
 
     // Datastore
     implementation(libs.androidx.datastore.preferences)
@@ -169,6 +183,8 @@ room3 {
     schemaDirectory("$projectDir/schemas")
 }
 
-tasks.withType<CompileArtProfileTask> {
-    enabled = false
+tasks.withType<CompileArtProfileTask>().configureEach {
+    if (name.contains("fdroid")) {
+        enabled = false
+    }
 }

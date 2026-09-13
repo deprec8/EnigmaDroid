@@ -30,7 +30,7 @@ import io.github.deprec8.enigmadroid.model.RemoteControlButtonData
 
 @Composable
 fun NumberButtons(
-    onKeyClicked: (RemoteControlKey) -> Unit, enabled: Boolean
+    onKeyClicked: (RemoteControlKey) -> Unit
 ) {
     Row(Modifier.widthIn(0.dp, 500.dp)) {
         numberButtons.forEach { column ->
@@ -39,7 +39,6 @@ fun NumberButtons(
                     RemoteControlButton(
                         button = button,
                         onClick = { onKeyClicked(button.key) },
-                        enabled = enabled
                     )
                 }
             }

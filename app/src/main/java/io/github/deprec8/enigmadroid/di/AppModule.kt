@@ -19,24 +19,9 @@
 
 package io.github.deprec8.enigmadroid.di
 
-import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.room3.Room
-import io.github.deprec8.enigmadroid.data.ConnectionStateHolder
-import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
-import io.github.deprec8.enigmadroid.data.repositories.ConnectionRepository
-import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
-import io.github.deprec8.enigmadroid.data.repositories.DownloadRepository
-import io.github.deprec8.enigmadroid.data.repositories.OnboardingRepository
-import io.github.deprec8.enigmadroid.data.repositories.SearchRepository
-import io.github.deprec8.enigmadroid.data.repositories.SettingsRepository
-import io.github.deprec8.enigmadroid.data.source.local.SearchHistoriesDatabase
-import io.github.deprec8.enigmadroid.data.source.local.dataStore
-import io.github.deprec8.enigmadroid.data.source.local.devices.DEVICES_MIGRATION_1_2
-import io.github.deprec8.enigmadroid.data.source.local.devices.DevicesDatabase
-import io.github.deprec8.enigmadroid.data.source.local.devices.DevicesLocalDataSource
-import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
+import io.github.deprec8.enigmadroid.core.data.di.dataModule
+import io.github.deprec8.enigmadroid.core.database.di.databaseModule
+import io.github.deprec8.enigmadroid.core.network.di.networkModule
 import io.github.deprec8.enigmadroid.ui.current.CurrentViewModel
 import io.github.deprec8.enigmadroid.ui.deviceinfo.DeviceInfoViewModel
 import io.github.deprec8.enigmadroid.ui.epg.EpgViewModel
@@ -52,32 +37,10 @@ import io.github.deprec8.enigmadroid.ui.settings.search.SearchSettingsViewModel
 import io.github.deprec8.enigmadroid.ui.signal.SignalViewModel
 import io.github.deprec8.enigmadroid.ui.timers.TimersViewModel
 import org.koin.dsl.module
-import org.koin.plugin.module.dsl.create
-import org.koin.plugin.module.dsl.single
 import org.koin.plugin.module.dsl.viewModel
 
 val appModule = module {
-    single<DataStore<Preferences>> {
-        create(::provideDataStore)
-    }
-    single<DevicesDatabase> {
-        create(::provideDevicesDatabase)
-    }
-    single<SearchHistoriesDatabase> {
-        create(::provideSearchHistoriesDatabase)
-    }
-    single<ConnectionStateHolder>()
-
-    single<DevicesLocalDataSource>()
-    single<NetworkDataSource>()
-
-    single<DevicesRepository>()
-    single<ConnectionRepository>()
-    single<OnboardingRepository>()
-    single<ApiRepository>()
-    single<DownloadRepository>()
-    single<SearchRepository>()
-    single<SettingsRepository>()
+    includes(dataModule, databaseModule, networkModule)
 
     viewModel<MainViewModel>()
     viewModel<RemoteControlViewModel>()
@@ -93,20 +56,4 @@ val appModule = module {
     viewModel<DevicesViewModel>()
     viewModel<RemoteControlSettingsViewModel>()
     viewModel<SearchSettingsViewModel>()
-}
-
-private fun provideDataStore(context: Context): DataStore<Preferences> {
-    return context.dataStore
-}
-
-private fun provideDevicesDatabase(context: Context): DevicesDatabase {
-    return Room.databaseBuilder(
-        context, DevicesDatabase::class.java, "devices-database"
-    ).addMigrations(DEVICES_MIGRATION_1_2).build()
-}
-
-private fun provideSearchHistoriesDatabase(context: Context): SearchHistoriesDatabase {
-    return Room.databaseBuilder(
-        context, SearchHistoriesDatabase::class.java, "search_histories"
-    ).build()
 }

@@ -33,9 +33,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import io.github.deprec8.enigmadroid.Device
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.constant.DefaultPorts
-import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.ui.components.DeviceSetupCard
 import io.github.deprec8.enigmadroid.ui.components.dialogs.AdaptiveDialog
 

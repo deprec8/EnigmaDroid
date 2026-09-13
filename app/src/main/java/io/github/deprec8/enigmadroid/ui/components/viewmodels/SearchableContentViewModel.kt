@@ -22,10 +22,9 @@ package io.github.deprec8.enigmadroid.ui.components.viewmodels
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
-import io.github.deprec8.enigmadroid.common.enums.ContentType
-import io.github.deprec8.enigmadroid.data.repositories.SearchRepository
+import io.github.deprec8.enigmadroid.core.common.utils.FuzzySearchUtils
+import io.github.deprec8.enigmadroid.core.data.repositories.SearchRepository
 import io.github.deprec8.enigmadroid.data.source.local.SearchHistoryItem
-import io.github.deprec8.enigmadroid.utils.FuzzySearchUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine

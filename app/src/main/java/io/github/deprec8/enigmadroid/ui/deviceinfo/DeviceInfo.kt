@@ -35,16 +35,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.data.ConnectionState
-import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
 import io.github.deprec8.enigmadroid.ui.components.InvalidResponse
+import io.github.deprec8.enigmadroid.ui.components.Loading
 import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.DrawerNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.onSuccess
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,7 +54,6 @@ fun DeviceInfoPage(
     deviceInfoViewModel: DeviceInfoViewModel = koinViewModel()
 ) {
 
-    val connectionState by deviceInfoViewModel.connectionState.collectAsStateWithLifecycle()
     val deviceInfoResult by deviceInfoViewModel.deviceInfoResult.collectAsStateWithLifecycle()
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -62,7 +61,7 @@ fun DeviceInfoPage(
     ObserveActiveState(deviceInfoViewModel)
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(connectionState) { deviceInfoViewModel.fetchData() }
+        FloatingReloadButton(deviceInfoResult?.isSuccess == true) { deviceInfoViewModel.fetchData() }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         TopAppBar(windowInsets = topAppBarWithDrawerWindowInsets(), title = {
             Text(
@@ -76,30 +75,31 @@ fun DeviceInfoPage(
             RemoteControlActionButton { onNavigateToRemoteControl() }
         })
     }) { innerPadding ->
-        if (deviceInfoResult != null && connectionState == ConnectionState.CONNECTED) {
+        if (deviceInfoResult != null) {
             deviceInfoResult?.onSuccess { deviceInfo ->
                 DeviceInfoContent(
                     modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                     deviceInfo,
                     innerPadding
                 )
-            }?.onFailure {
+            }?.onFailure { e ->
                 InvalidResponse(
-                    Modifier
-                        .padding(innerPadding)
-                        .consumeWindowInsets(innerPadding),
-                )
+                    throwable = e, modifier = Modifier
+                        .consumeWindowInsets(innerPadding)
+                        .padding(
+                            innerPadding
+                        )
+                ) {
+                    deviceInfoViewModel.fetchData(true)
+                }
             }
-
         } else {
-            ConnectionDisplay(
+            Loading(
                 Modifier
-                    .padding(innerPadding)
-                    .consumeWindowInsets(innerPadding),
-                onCheckConnection = {
-                    deviceInfoViewModel.checkConnection()
-                },
-                connectionState = connectionState
+                    .consumeWindowInsets(innerPadding)
+                    .padding(
+                        innerPadding
+                    )
             )
         }
     }

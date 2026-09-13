@@ -35,7 +35,7 @@ import io.github.deprec8.enigmadroid.model.RemoteControlButtonData
 
 @Composable
 fun ArrowButtons(
-    onKeyClicked: (RemoteControlKey) -> Unit, enabled: Boolean
+    onKeyClicked: (RemoteControlKey) -> Unit
 ) {
     arrowButtons.forEach { row ->
         Row(
@@ -45,7 +45,6 @@ fun ArrowButtons(
                 RemoteControlButton(
                     button = button,
                     onClick = { onKeyClicked(button.key) },
-                    enabled = enabled,
                     modifier = Modifier.weight(1f)
                 )
             }

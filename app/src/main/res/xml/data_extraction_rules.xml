@@ -30,7 +30,7 @@
             path="datastore/" />
     </cloud-backup>
 
-    <device-transfer>
+    <deviceEntity-transfer>
         <include
             domain="database"
             path="." />
@@ -38,5 +38,5 @@
         <include
             domain="file"
             path="datastore/" />
-    </device-transfer>
+    </deviceEntity-transfer>
 </data-extraction-rules>

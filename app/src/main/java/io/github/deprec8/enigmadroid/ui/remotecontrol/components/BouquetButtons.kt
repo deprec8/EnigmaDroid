@@ -33,7 +33,7 @@ import io.github.deprec8.enigmadroid.model.RemoteControlButtonData
 
 @Composable
 fun BouquetButtons(
-    onButtonClicked: (RemoteControlKey) -> Unit, enabled: Boolean
+    onButtonClicked: (RemoteControlKey) -> Unit
 ) {
     Row(
         Modifier.widthIn(0.dp, 500.dp)
@@ -42,7 +42,6 @@ fun BouquetButtons(
             RemoteControlButton(
                 button = button,
                 onClick = { onButtonClicked(button.key) },
-                enabled = enabled,
                 modifier = Modifier.weight(1f),
                 aspectRatio = 1.5f
             )

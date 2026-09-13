@@ -69,9 +69,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import io.github.deprec8.enigmadroid.Device
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.constant.DefaultPorts
-import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.ui.components.DeviceSetupCard
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel

@@ -34,16 +34,16 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.data.ConnectionState
-import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
 import io.github.deprec8.enigmadroid.ui.components.InvalidResponse
+import io.github.deprec8.enigmadroid.ui.components.Loading
 import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.DrawerNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.onSuccess
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,14 +55,13 @@ fun SignalPage(
 ) {
 
     val signalInfoResult by signalViewModel.signalInfoResult.collectAsStateWithLifecycle()
-    val connectionState by signalViewModel.connectionState.collectAsStateWithLifecycle()
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     ObserveActiveState(signalViewModel)
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(connectionState) { signalViewModel.fetchData() }
+        FloatingReloadButton(signalInfoResult?.isSuccess == true) { signalViewModel.fetchData() }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         TopAppBar(
             windowInsets = topAppBarWithDrawerWindowInsets(),
@@ -75,29 +74,32 @@ fun SignalPage(
                 RemoteControlActionButton { onNavigateToRemoteControl() }
             })
     }) { innerPadding ->
-        if (signalInfoResult != null && connectionState == ConnectionState.CONNECTED) {
+        if (signalInfoResult != null) {
             signalInfoResult?.onSuccess { signalInfo ->
                 SignalContent(
                     modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                     signalInfo,
                     innerPadding
                 )
-            }?.onFailure {
+            }?.onFailure { e ->
                 InvalidResponse(
-                    Modifier
-                        .padding(innerPadding)
-                        .consumeWindowInsets(innerPadding),
-                )
+                    throwable = e, modifier = Modifier
+                        .consumeWindowInsets(innerPadding)
+                        .padding(
+                            innerPadding
+                        )
+                ) {
+                    signalViewModel.fetchData(true)
+                }
             }
         } else {
-            ConnectionDisplay(
+            Loading(
                 Modifier
                     .consumeWindowInsets(innerPadding)
-                    .padding(innerPadding),
-                connectionState = connectionState,
-                onCheckConnection = {
-                    signalViewModel.checkConnection()
-                })
+                    .padding(
+                        innerPadding
+                    )
+            )
         }
     }
 }

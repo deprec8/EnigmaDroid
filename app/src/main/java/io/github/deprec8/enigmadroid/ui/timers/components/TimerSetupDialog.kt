@@ -94,13 +94,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.common.enums.ContentFlag
+import io.github.deprec8.enigmadroid.core.common.utils.TimestampUtils
 import io.github.deprec8.enigmadroid.model.api.Service
 import io.github.deprec8.enigmadroid.model.api.ServiceBatch
 import io.github.deprec8.enigmadroid.model.api.ServiceBatchSet
 import io.github.deprec8.enigmadroid.model.api.Timer
 import io.github.deprec8.enigmadroid.ui.components.content.ContentFlagItem
 import io.github.deprec8.enigmadroid.ui.components.dialogs.AdaptiveDialog
-import io.github.deprec8.enigmadroid.utils.TimestampUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

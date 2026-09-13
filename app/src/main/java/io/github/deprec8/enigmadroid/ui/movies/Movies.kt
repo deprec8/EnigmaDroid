@@ -33,10 +33,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.data.ConnectionState
-import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
 import io.github.deprec8.enigmadroid.ui.components.InvalidResponse
+import io.github.deprec8.enigmadroid.ui.components.Loading
 import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
@@ -46,6 +45,7 @@ import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarDrawerN
 import io.github.deprec8.enigmadroid.ui.movies.components.MoviesActionBar
 import io.github.deprec8.enigmadroid.ui.movies.components.MoviesContent
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.onSuccess
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,16 +59,15 @@ fun MoviesPage(
     val movieBatchResult by moviesViewModel.movieBatchResult.collectAsStateWithLifecycle()
     val filteredMovies by moviesViewModel.filteredMovies.collectAsStateWithLifecycle()
     val searchHistory by moviesViewModel.searchHistory.collectAsStateWithLifecycle()
-    val connectionState by moviesViewModel.connectionState.collectAsStateWithLifecycle()
     val freeSpaceResult by moviesViewModel.freeSpaceResult.collectAsStateWithLifecycle()
 
     ObserveActiveState(moviesViewModel)
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(connectionState) { moviesViewModel.fetchData() }
+        FloatingReloadButton(movieBatchResult?.isSuccess == true) { moviesViewModel.fetchData() }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = movieBatchResult?.getOrNull()?.movies?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED,
+            enabled = movieBatchResult?.getOrNull()?.movies?.isNotEmpty() == true,
             textFieldState = moviesViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_movies),
             content = {
@@ -93,8 +92,7 @@ fun MoviesPage(
                             moviesViewModel.buildMovieStreamUri(
                                 fileName
                             )
-                        }
-                    )
+                        })
 
                 } ?: run {
                     SearchHistory(searchHistory = searchHistory, onSearchQuery = {
@@ -120,13 +118,12 @@ fun MoviesPage(
                 MoviesActionBar(
                     movieBatchResult?.getOrNull(),
                     freeSpaceResult?.getOrNull(),
-                    connectionState
                 )
             })
     }
 
     ) { innerPadding ->
-        if (movieBatchResult != null && connectionState == ConnectionState.CONNECTED) {
+        if (movieBatchResult != null) {
             movieBatchResult?.onSuccess { movieBatch ->
                 MoviesContent(
                     movies = movieBatch.movies,
@@ -152,22 +149,24 @@ fun MoviesPage(
                         )
                     },
                     buildMovieStreamUri = { fileName -> moviesViewModel.buildMovieStreamUri(fileName) })
-            }?.onFailure {
+            }?.onFailure { e ->
                 InvalidResponse(
-                    Modifier
-                        .padding(innerPadding)
-                        .consumeWindowInsets(innerPadding),
-                )
+                    throwable = e, modifier = Modifier
+                        .consumeWindowInsets(innerPadding)
+                        .padding(
+                            innerPadding
+                        )
+                ) {
+                    moviesViewModel.fetchData(true)
+                }
             }
         } else {
-            ConnectionDisplay(
+            Loading(
                 Modifier
                     .consumeWindowInsets(innerPadding)
-                    .padding(innerPadding),
-                onCheckConnection = {
-                    moviesViewModel.checkConnection()
-                },
-                connectionState = connectionState
+                    .padding(
+                        innerPadding
+                    )
             )
         }
     }

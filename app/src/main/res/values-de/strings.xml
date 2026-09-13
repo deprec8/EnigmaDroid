@@ -21,7 +21,7 @@
     <string name="tv">TV</string>
     <string name="movies">Filme</string>
     <string name="timers">Timer</string>
-    <string name="device">Gerät</string>
+    <string name="deviceEntity">Gerät</string>
     <string name="settings">Einstellungen</string>
     <string name="content">Inhalt</string>
     <string name="device_info">Geräteinfo</string>

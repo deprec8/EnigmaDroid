@@ -53,9 +53,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.data.ConnectionState
-import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.InvalidResponse
+import io.github.deprec8.enigmadroid.ui.components.Loading
 import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
@@ -65,6 +64,7 @@ import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarDrawerN
 import io.github.deprec8.enigmadroid.ui.timers.components.TimerSetupDialog
 import io.github.deprec8.enigmadroid.ui.timers.components.TimersContent
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.onSuccess
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,7 +78,6 @@ fun TimersPage(
     val timerBatchResult by timersViewModel.timerBatchResult.collectAsStateWithLifecycle()
     val serviceBatchSetResult by timersViewModel.serviceBatchSetResult.collectAsStateWithLifecycle()
     val searchHistory by timersViewModel.searchHistory.collectAsStateWithLifecycle()
-    val connectionState by timersViewModel.connectionState.collectAsStateWithLifecycle()
 
     var showTimerSetupDialog by rememberSaveable {
         mutableStateOf(false)
@@ -88,7 +87,7 @@ fun TimersPage(
 
     Scaffold(contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = timerBatchResult?.getOrNull()?.timers?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED,
+            enabled = timerBatchResult?.getOrNull()?.timers?.isNotEmpty() == true,
             textFieldState = timersViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_timers),
             content = {
@@ -130,7 +129,7 @@ fun TimersPage(
 
     }, floatingActionButton = {
         AnimatedVisibility(
-            connectionState == ConnectionState.CONNECTED, enter = scaleIn(), exit = scaleOut()
+            timerBatchResult?.isSuccess == true, enter = scaleIn(), exit = scaleOut()
         ) {
             Column(horizontalAlignment = Alignment.End) {
                 TooltipBox(
@@ -176,7 +175,7 @@ fun TimersPage(
     }
 
     ) { innerPadding ->
-        if (timerBatchResult != null && connectionState == ConnectionState.CONNECTED) {
+        if (timerBatchResult != null) {
             timerBatchResult?.onSuccess { timerBatch ->
                 TimersContent(
                     timers = timerBatch.timers,
@@ -192,22 +191,24 @@ fun TimersPage(
                     },
                     serviceBatchSet = serviceBatchSetResult?.getOrNull()
                 )
-            }?.onFailure {
+            }?.onFailure { e ->
                 InvalidResponse(
-                    Modifier
-                        .padding(innerPadding)
-                        .consumeWindowInsets(innerPadding),
-                )
+                    throwable = e, modifier = Modifier
+                        .consumeWindowInsets(innerPadding)
+                        .padding(
+                            innerPadding
+                        )
+                ) {
+                    timersViewModel.fetchData(true)
+                }
             }
         } else {
-            ConnectionDisplay(
+            Loading(
                 Modifier
                     .consumeWindowInsets(innerPadding)
-                    .padding(innerPadding),
-                onCheckConnection = {
-                    timersViewModel.checkConnection()
-                },
-                connectionState = connectionState
+                    .padding(
+                        innerPadding
+                    )
             )
         }
     }

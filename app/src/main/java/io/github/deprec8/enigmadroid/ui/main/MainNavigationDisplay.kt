@@ -43,7 +43,6 @@ import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
 import io.github.deprec8.enigmadroid.common.constant.MainKeys
 import io.github.deprec8.enigmadroid.common.constant.SettingsKeys
-import io.github.deprec8.enigmadroid.common.enums.ContentType
 import io.github.deprec8.enigmadroid.ui.components.isSmallScreenLayout
 import io.github.deprec8.enigmadroid.ui.components.navigation.DrawerNavigator
 import io.github.deprec8.enigmadroid.ui.components.navigation.fadeThroughTransition
@@ -74,7 +73,6 @@ fun MainNavigationDisplay(
 ) {
     val currentDevice by mainViewModel.currentDevice.collectAsStateWithLifecycle()
     val devices by mainViewModel.devices.collectAsStateWithLifecycle()
-    val connectionState by mainViewModel.connectionState.collectAsStateWithLifecycle()
 
     val isSmallScreenLayout = isSmallScreenLayout()
     val modalDrawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -274,16 +272,12 @@ fun MainNavigationDisplay(
                 currentDevice = currentDevice,
                 devices = devices,
                 scrollState = drawerScrollState,
-                connectionState = connectionState,
                 currentTopLevelRoute = drawerNavigationState.topLevelKey,
                 onNavigate = { route ->
                     if (isSmallScreenLayout) {
                         scope.launch { modalDrawerState.close() }
                     }
                     drawerNavigator.navigate(route)
-                },
-                onCheckConnection = {
-                    mainViewModel.checkConnection()
                 },
                 onSetCurrentDeviceId = mainViewModel::setCurrentDeviceId
             )

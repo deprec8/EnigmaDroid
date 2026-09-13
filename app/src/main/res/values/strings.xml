@@ -22,7 +22,7 @@
     <string name="tv">TV</string>
     <string name="movies">Movies</string>
     <string name="timers">Timers</string>
-    <string name="device">Device</string>
+    <string name="deviceEntity">Device</string>
     <string name="settings">Settings</string>
     <string name="content">Content</string>
     <string name="device_info">Device info</string>
@@ -41,8 +41,8 @@
     <string name="login">Login</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
-    <string name="edit_device">Edit device</string>
-    <string name="add_device">Add device</string>
+    <string name="edit_device">Edit deviceEntity</string>
+    <string name="add_device">Add deviceEntity</string>
     <string name="devices">Devices</string>
     <string name="add_timer">Add timer</string>
     <string name="description">Description</string>
@@ -59,7 +59,7 @@
     <string name="restart_gui">Restart GUI</string>
     <string name="shutdown">Shutdown</string>
     <string name="close">Close</string>
-    <string name="setup_device_creation_info">Let’s get you started by setting up your first device.</string>
+    <string name="setup_device_creation_info">Let’s get you started by setting up your first deviceEntity.</string>
     <string name="finish">Finish</string>
     <string name="welcome_to_enigmadroid">Welcome to EnigmaDroid!</string>
     <string name="live_port">Live Port</string>
@@ -71,7 +71,7 @@
     <string name="number">Number</string>
     <string name="snr" translatable="false">SNR</string>
     <string name="channel_down">Channel down</string>
-    <string name="current_device">Current device</string>
+    <string name="current_device">Current deviceEntity</string>
     <string name="editing_menu">Editing menu</string>
     <string name="no_results">No results</string>
     <string name="delete_movie">Delete movie?</string>
@@ -112,7 +112,7 @@
     <string name="action_menu">Action menu</string>
     <string name="enabled">Enabled</string>
     <string name="unable_to_connect">Unable to connect</string>
-    <string name="no_device_available">No device available</string>
+    <string name="no_device_available">No deviceEntity available</string>
     <string name="version_not_found">Version not found.</string>
     <string name="openwebif" translatable="false">OpenWebif</string>
     <string name="delete_timer">Delete timer?</string>
@@ -124,8 +124,8 @@
     <string name="retry">Retry</string>
     <string name="no_devices_found">No devices found</string>
     <string name="skip">Skip</string>
-    <string name="delete_device">Delete device?</string>
-    <string name="delete_device_warning">You can add this device again at any time.</string>
+    <string name="delete_device">Delete deviceEntity?</string>
+    <string name="delete_device_warning">You can add this deviceEntity again at any time.</string>
     <string name="pin_webif">Pin WebIf</string>
     <string name="standby">Standby</string>
     <string name="automatic">Automatic</string>
@@ -209,18 +209,18 @@
     <string name="view_epg_from">View EPG from \"%1$s\"</string>
     <string name="starting_at">Starting at %1$s</string>
     <string name="until">Until %1$s</string>
-    <string name="setup_skip_title">Not ready to set up a device?</string>
-    <string name="setup_skip_text">Most features require at least one device to be set up. You can always add one later.</string>
+    <string name="setup_skip_title">Not ready to set up a deviceEntity?</string>
+    <string name="setup_skip_text">Most features require at least one deviceEntity to be set up. You can always add one later.</string>
     <string name="onboarding_welcome_title">Welcome to EnigmaDroid</string>
     <string name="onboarding_welcome_description">Let\'s connect your Enigma2 devices in just a few steps.</string>
     <string name="onboarding_welcome_button">Get started</string>
     <string name="onboarding_permissions_title">Allow local network access</string>
     <string name="onboarding_permissions_description">EnigmaDroid needs local network access to discover and communicate with your Enigma2 devices.</string>
     <string name="onboarding_permissions_button">Allow access</string>
-    <string name="onboarding_device_setup_title">Add your first device</string>
-    <string name="onboarding_device_setup_description">Enter your device\'s connection details to get started.</string>
+    <string name="onboarding_device_setup_title">Add your first deviceEntity</string>
+    <string name="onboarding_device_setup_description">Enter your deviceEntity\'s connection details to get started.</string>
     <string name="onboarding_finish_title">You\'re all set!</string>
-    <string name="onboarding_finish_description">Your device is ready. Start exploring everything EnigmaDroid has to offer.</string>
+    <string name="onboarding_finish_description">Your deviceEntity is ready. Start exploring everything EnigmaDroid has to offer.</string>
     <string name="onboarding_finish_button">Start using EnigmaDroid</string>
     <string name="go_top">Go top</string>
     <string name="name_must_be_changed_and_can_t_be_blank">Name must be changed and can\'t be blank.</string>
@@ -242,10 +242,10 @@
     <string name="memory">Memory</string>
     <string name="chipset">Chipset</string>
     <string name="brand_model"><![CDATA[Brand & Model]]></string>
-    <string name="switch_device">Switch device</string>
-    <string name="no_device_selected">No device selected</string>
-    <string name="first_add_a_device">First, add a device.</string>
-    <string name="first_select_a_device">First, select a device.</string>
+    <string name="switch_device">Switch deviceEntity</string>
+    <string name="no_device_selected">No deviceEntity selected</string>
+    <string name="first_add_a_device">First, add a deviceEntity.</string>
+    <string name="first_select_a_device">First, select a deviceEntity.</string>
     <string name="screenshot_saved">Screenshot saved</string>
     <string name="screenshot_failed">Screenshot failed</string>
     <string name="view">View</string>
@@ -255,13 +255,13 @@
     <string name="select_which_search_histories_to_clear">Select which search histories to clear.</string>
     <string name="voice_search">Voice search</string>
     <string name="unable_to_view_image">Unable to view image</string>
-    <string name="please_make_sure_that_you_have_at_least_one_image_viewer_installed_on_your_device">Please make sure that you have at least one image viewer installed on your device.</string>
-    <string name="please_make_sure_that_you_have_at_least_one_calendar_app_installed_on_your_device">Please make sure that you have at least one calendar app installed on your device.</string>
+    <string name="please_make_sure_that_you_have_at_least_one_image_viewer_installed_on_your_device">Please make sure that you have at least one image viewer installed on your deviceEntity.</string>
+    <string name="please_make_sure_that_you_have_at_least_one_calendar_app_installed_on_your_device">Please make sure that you have at least one calendar app installed on your deviceEntity.</string>
     <string name="unable_to_add_reminder">Unable to add reminder</string>
-    <string name="please_make_sure_that_you_have_at_least_one_browser_installed_on_your_device">Please make sure that you have at least one browser installed on your device.</string>
+    <string name="please_make_sure_that_you_have_at_least_one_browser_installed_on_your_device">Please make sure that you have at least one browser installed on your deviceEntity.</string>
     <string name="unable_to_open_url">Unable to open URL</string>
     <string name="unable_to_play_media">Unable to play media</string>
-    <string name="please_make_sure_that_you_have_at_least_one_media_player_installed_on_your_device">Please make sure that you have at least one media player installed on your device.</string>
+    <string name="please_make_sure_that_you_have_at_least_one_media_player_installed_on_your_device">Please make sure that you have at least one media player installed on your deviceEntity.</string>
     <string name="the_timer_for_will_be_permanently_deleted">The timer for \"%1$s\" will be permanently deleted.</string>
     <string name="the_movie_will_be_permanently_deleted">The movie \"%1$s\" will be permanently deleted.</string>
 </resources>

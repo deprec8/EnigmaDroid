@@ -55,7 +55,7 @@ import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
 
 @Composable
 fun MediaButtons(
-    onKeyClicked: (RemoteControlKey) -> Unit, enabled: Boolean
+    onKeyClicked: (RemoteControlKey) -> Unit
 ) {
 
     Row(
@@ -70,28 +70,19 @@ fun MediaButtons(
                 .padding(8.dp),
             shape = MaterialTheme.shapes.extraLarge,
             colors = CardDefaults.cardColors(
-                containerColor = if (!enabled) {
-                    ButtonDefaults.buttonColors().disabledContainerColor
-                } else {
-                    MaterialTheme.colorScheme.secondaryContainer
-                }
+                containerColor = MaterialTheme.colorScheme.secondaryContainer
             )
         ) {
             OutlinedButton(
                 border = BorderStroke(
                     width = ButtonDefaults.outlinedButtonBorder().width,
-                    color = if (enabled) {
-                        MaterialTheme.colorScheme.onSecondaryContainer
-                    } else {
-                        ButtonDefaults.buttonColors().disabledContentColor
-                    },
+                    color = ButtonDefaults.buttonColors().disabledContentColor
                 ),
                 onClick = {
                     onKeyClicked(RemoteControlKey.VolumeUp)
                 },
                 shape = MaterialTheme.shapes.extraLarge,
                 contentPadding = PaddingValues(),
-                enabled = enabled,
                 modifier = Modifier
                     .weight(1f)
                     .padding(10.dp)
@@ -102,29 +93,24 @@ fun MediaButtons(
                 )
             }
             Text(
-                text = "VOL", textAlign = TextAlign.Center, color = if (!enabled) {
-                    ButtonDefaults.buttonColors().disabledContentColor
-                } else {
-                    MaterialTheme.colorScheme.onSecondaryContainer
-                }, modifier = Modifier
+                text = "VOL",
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(10.dp)
             )
             OutlinedButton(
                 border = BorderStroke(
                     width = ButtonDefaults.outlinedButtonBorder().width,
-                    color = if (enabled) {
-                        MaterialTheme.colorScheme.onSecondaryContainer
-                    } else {
-                        ButtonDefaults.buttonColors().disabledContentColor
-                    },
+                    color = ButtonDefaults.buttonColors().disabledContentColor
+
                 ),
                 onClick = {
                     onKeyClicked(RemoteControlKey.VolumeDown)
                 },
                 shape = MaterialTheme.shapes.extraLarge,
                 contentPadding = PaddingValues(),
-                enabled = enabled,
                 modifier = Modifier
                     .weight(1f)
                     .padding(10.dp)
@@ -146,7 +132,6 @@ fun MediaButtons(
                 },
                 shape = MaterialTheme.shapes.extraLarge,
                 contentPadding = PaddingValues(),
-                enabled = enabled,
                 modifier = Modifier
                     .padding(8.dp)
                     .weight(1f)
@@ -161,7 +146,6 @@ fun MediaButtons(
                 },
                 shape = MaterialTheme.shapes.extraLarge,
                 contentPadding = PaddingValues(),
-                enabled = enabled,
                 modifier = Modifier
                     .padding(8.dp)
                     .weight(1f)
@@ -178,7 +162,6 @@ fun MediaButtons(
                 },
                 shape = MaterialTheme.shapes.extraLarge,
                 contentPadding = PaddingValues(),
-                enabled = enabled,
                 modifier = Modifier
                     .padding(8.dp)
                     .weight(1f)
@@ -194,27 +177,20 @@ fun MediaButtons(
                 .padding(8.dp),
             shape = MaterialTheme.shapes.extraLarge,
             colors = CardDefaults.cardColors(
-                containerColor = if (!enabled) {
-                    ButtonDefaults.buttonColors().disabledContainerColor
-                } else {
-                    MaterialTheme.colorScheme.secondaryContainer
-                }
+                containerColor = MaterialTheme.colorScheme.secondaryContainer
+
             )
         ) {
             OutlinedButton(
                 border = BorderStroke(
                     width = ButtonDefaults.outlinedButtonBorder().width,
-                    color = if (enabled) {
-                        MaterialTheme.colorScheme.onSecondaryContainer
-                    } else {
-                        ButtonDefaults.buttonColors().disabledContentColor
-                    },
+                    color = ButtonDefaults.buttonColors().disabledContentColor
+
                 ),
                 onClick = {
                     onKeyClicked(RemoteControlKey.NextChannel)
                 },
                 contentPadding = PaddingValues(),
-                enabled = enabled,
                 modifier = Modifier
                     .weight(1f)
                     .padding(10.dp)
@@ -227,28 +203,23 @@ fun MediaButtons(
                 )
             }
             Text(
-                text = "CH", textAlign = TextAlign.Center, color = if (!enabled) {
-                    ButtonDefaults.buttonColors().disabledContentColor
-                } else {
-                    MaterialTheme.colorScheme.onSecondaryContainer
-                }, modifier = Modifier
+                text = "CH",
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(10.dp)
             )
             OutlinedButton(
                 border = BorderStroke(
                     width = ButtonDefaults.outlinedButtonBorder().width,
-                    color = if (enabled) {
-                        MaterialTheme.colorScheme.onSecondaryContainer
-                    } else {
-                        ButtonDefaults.buttonColors().disabledContentColor
-                    },
+                    color = ButtonDefaults.buttonColors().disabledContentColor
+
                 ),
                 onClick = {
                     onKeyClicked(RemoteControlKey.PreviousChannel)
                 },
                 contentPadding = PaddingValues(),
-                enabled = enabled,
                 modifier = Modifier
                     .weight(1f)
                     .padding(10.dp)

@@ -41,7 +41,6 @@ import io.github.deprec8.enigmadroid.model.RemoteControlButtonData
 fun RemoteControlButton(
     button: RemoteControlButtonData,
     onClick: () -> Unit,
-    enabled: Boolean,
     modifier: Modifier = Modifier,
     containerColor: Color = Color.Unspecified,
     contentColor: Color = Color.Unspecified,
@@ -52,7 +51,6 @@ fun RemoteControlButton(
     FilledTonalButton(
         onClick = onClick,
         contentPadding = PaddingValues(),
-        enabled = enabled,
         modifier = modifier
             .padding(8.dp)
             .aspectRatio(aspectRatio),
@@ -74,11 +72,7 @@ fun RemoteControlButton(
                     stringResource(button.iconLabelRes)
                 } else {
                     null
-                }, tint = if (!enabled) {
-                    ButtonDefaults.filledTonalButtonColors().disabledContentColor
-                } else {
-                    iconTint ?: LocalContentColor.current
-                }
+                }, tint = iconTint ?: LocalContentColor.current
             )
         }
     }

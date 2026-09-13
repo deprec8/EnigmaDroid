@@ -43,3 +43,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "EnigmaDroid"
 include(":app")
+include(":data")

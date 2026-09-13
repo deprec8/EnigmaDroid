@@ -35,16 +35,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.data.ConnectionState
-import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
 import io.github.deprec8.enigmadroid.ui.components.InvalidResponse
+import io.github.deprec8.enigmadroid.ui.components.Loading
 import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.DrawerNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.onSuccess
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,14 +56,12 @@ fun CurrentPage(
 ) {
 
     val currentInfoResult by currentViewModel.currentInfoResult.collectAsStateWithLifecycle()
-    val connectionState by currentViewModel.connectionState.collectAsStateWithLifecycle()
-
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
     ObserveActiveState(currentViewModel)
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(connectionState) { currentViewModel.fetchData() }
+        FloatingReloadButton(currentInfoResult?.isSuccess == true) { currentViewModel.fetchData() }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         TopAppBar(
             title = {
@@ -82,7 +80,7 @@ fun CurrentPage(
                 RemoteControlActionButton { onNavigateToRemoteControl() }
             })
     }) { innerPadding ->
-        if (currentInfoResult != null && connectionState == ConnectionState.CONNECTED) {
+        if (currentInfoResult != null) {
             currentInfoResult?.onSuccess { currentInfo ->
                 CurrentContent(
                     modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -96,23 +94,25 @@ fun CurrentPage(
                             serviceReference, serviceName
                         )
                     })
-            }?.onFailure {
+            }?.onFailure { e ->
                 InvalidResponse(
-                    Modifier
+                    throwable = e, modifier = Modifier
                         .consumeWindowInsets(innerPadding)
-                        .padding(innerPadding)
-                )
+                        .padding(
+                            innerPadding
+                        )
+                ) {
+                    currentViewModel.fetchData(true)
+                }
             }
 
         } else {
-            ConnectionDisplay(
+            Loading(
                 Modifier
                     .consumeWindowInsets(innerPadding)
-                    .padding(innerPadding),
-                onCheckConnection = {
-                    currentViewModel.checkConnection()
-                },
-                connectionState = connectionState
+                    .padding(
+                        innerPadding
+                    )
             )
         }
     }
