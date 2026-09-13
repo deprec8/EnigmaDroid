@@ -6,6 +6,13 @@ cable set-top box directly from your Android device.
 Everywhere in your home, **EnigmaDroid** gives you full access to your receiver’s features and
 content.
 
+> [!IMPORTANT]
+> EnigmaDroid is currently undergoing a complete rework. As a result, there will be no updates for an extended period of time.
+>
+> There are several known issues that will not be addressed until the rework is complete, including an issue that prevents the app from functioning on Android 17. In the meantime, if you encounter problems, it is recommended to use the OpenWebif website or an alternative app.
+>
+> Please continue to report any previously unreported issues. This will help ensure that they can be taken into account during the rework.
+
 ## Installation
 
 [<img src="https://f-droid.org/badge/get-it-on.png" alt="Get it on F-Droid" height="80">](https://f-droid.org/packages/io.github.deprec8.enigmadroid)
