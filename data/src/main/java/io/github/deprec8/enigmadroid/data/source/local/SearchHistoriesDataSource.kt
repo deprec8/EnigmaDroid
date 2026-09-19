@@ -30,7 +30,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-class SearchHistoriesDataSource(
+internal class SearchHistoriesDataSource(
     private val appDatabase: AppDatabase, private val dataStore: DataStore<Preferences>
 ) {
     private val useHistoriesKey = booleanPreferencesKey(PreferenceKeys.USE_SEARCH_HISTORIES)

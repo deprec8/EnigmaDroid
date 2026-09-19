@@ -23,7 +23,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
-import io.github.deprec8.enigmadroid.core.database.common.PreferenceKeys
+import io.github.deprec8.enigmadroid.data.constants.PreferenceKeys
 import kotlinx.coroutines.flow.map
 
 class SettingsDataSource(private val dataStore: DataStore<Preferences>) {

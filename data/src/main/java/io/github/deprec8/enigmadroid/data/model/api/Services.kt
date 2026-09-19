@@ -25,18 +25,6 @@ import io.github.deprec8.enigmadroid.data.constants.ServiceType
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-data class Bouquet(
-    val key: String, val reference: String, val name: String
-)
-
-data class Provider(
-    val key: String, val reference: String, val name: String
-)
-
-data class Satellite(
-    val key: String, val reference: String, val name: String
-)
-
 data class Service(
     val key: String, val number: Int, val reference: String, val name: String
 )
@@ -46,15 +34,15 @@ data class Service(
     primaryKeys = ["deviceId", "reference"],
     indices = [Index(value = ["type", "position"])]
 )
-data class BouquetEntity(
+internal data class BouquetEntity(
     val deviceId: Long,
     val position: Int,
     val type: ServiceType,
     val reference: String,
     val name: String
 ) {
-    fun toBouquet() = Bouquet(
-        key = "$deviceId:$reference", reference = reference, name = name
+    fun toBouquet() = Service(
+        key = "$deviceId:$reference", reference = reference, name = name, number = position
     )
 }
 
@@ -63,15 +51,15 @@ data class BouquetEntity(
     primaryKeys = ["deviceId", "reference"],
     indices = [Index(value = ["type", "position"])]
 )
-data class ProviderEntity(
+internal data class ProviderEntity(
     val deviceId: Long,
     val position: Int,
     val type: ServiceType,
     val reference: String,
     val name: String
 ) {
-    fun toProvider() = Provider(
-        key = "$deviceId:$reference", reference = reference, name = name
+    fun toProvider() = Service(
+        key = "$deviceId:$reference", reference = reference, name = name, number = position
     )
 }
 
@@ -80,15 +68,15 @@ data class ProviderEntity(
     primaryKeys = ["deviceId", "reference"],
     indices = [Index(value = ["type", "position"])]
 )
-data class SatelliteEntity(
+internal data class SatelliteEntity(
     val deviceId: Long,
     val position: Int,
     val type: ServiceType,
     val reference: String,
     val name: String
 ) {
-    fun toSatellite() = Satellite(
-        key = "$deviceId:$reference", reference = reference, name = name
+    fun toSatellite() = Service(
+        key = "$deviceId:$reference", reference = reference, name = name, number = position
     )
 }
 
@@ -97,7 +85,7 @@ data class SatelliteEntity(
     primaryKeys = ["deviceId", "parentReference", "reference", "uniquePosition"],
     indices = [Index(value = ["position"])]
 )
-data class ServiceEntity(
+internal data class ServiceEntity(
     val deviceId: Long,
     val parentReference: String,
     val uniquePosition: Int,
@@ -114,7 +102,7 @@ data class ServiceEntity(
 }
 
 @Serializable
-data class BouquetServiceDto(
+internal data class BouquetServiceDto(
     @SerialName("services") val bouquets: List<BouquetDto>
 ) {
     fun toBouquetEntities(deviceId: Long) = bouquets.map { bouquet ->
@@ -122,26 +110,26 @@ data class BouquetServiceDto(
 }
 
 @Serializable
-data class BouquetDto(
+internal data class BouquetDto(
     @SerialName("servicereference") val reference: String,
     @SerialName("servicename") val name: String,
     @SerialName("subservices") val services: List<ServiceDto>
 )
 
 @Serializable
-data class ServiceListDto(
+internal data class ServiceListDto(
     @SerialName("services") val services: List<ServiceDto>
 )
 
 @Serializable
-data class ServiceDto(
+internal data class ServiceDto(
     @SerialName("servicereference") val reference: String,
     @SerialName("servicename") val name: String,
     @SerialName("pos") val position: Int,
 )
 
 @Serializable
-data class SatelliteListDto(
+internal data class SatelliteListDto(
     @SerialName("satellites") val satellites: List<SatelliteDto>
 ) {
     fun toSatelliteEntities(deviceId: Long, serviceType: ServiceType) =
@@ -157,6 +145,6 @@ data class SatelliteListDto(
 }
 
 @Serializable
-data class SatelliteDto(
+internal data class SatelliteDto(
     @SerialName("service") val reference: String, @SerialName("name") val name: String
 )

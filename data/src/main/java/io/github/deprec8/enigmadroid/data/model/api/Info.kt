@@ -19,11 +19,8 @@
 
 package io.github.deprec8.enigmadroid.data.model.api
 
-import androidx.room3.Embedded
 import androidx.room3.Entity
-import androidx.room3.ForeignKey
 import androidx.room3.PrimaryKey
-import androidx.room3.Relation
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -38,8 +35,91 @@ data class StatusInfo(
     val standby: Boolean, val muted: Boolean, val volume: Int, val currentServiceReference: String
 )
 
+data class DeviceInfo(
+    val brand: String,
+    val model: String,
+    val chipset: String,
+    val boxType: String,
+    val imageDistro: String,
+    val imageVersion: String,
+    val kernelVersion: String,
+    val enigmaVersion: String,
+    val owifVersion: String,
+    val oeSystemVersion: String,
+    val driverDate: String,
+    val uptime: String,
+    val totalMemory: String,
+    val freeMemory: String,
+    val hdds: List<Hdd>,
+    val interfaces: List<Interface>,
+    val tuners: List<Tuner>
+)
+
+data class Hdd(
+    val mountDirectory: String, val capacity: String, val freeSpace: String, val model: String
+)
+
+data class Interface(
+    val ip: String,
+    val name: String,
+    val friendlyNic: String,
+    val gateway: String,
+    val linkSpeed: String,
+    val firstPublicIpv6: String,
+    val ipv4Method: String
+)
+
+data class Tuner(
+    val number: Int, val type: String, val name: String
+)
+
+internal fun toDeviceInfo(
+    deviceInfo: DeviceInfoEntity,
+    hdds: List<HddEntity>,
+    interfaces: List<InterfaceEntity>,
+    tuners: List<TunerEntity>
+) = DeviceInfo(
+    brand = deviceInfo.brand,
+    model = deviceInfo.model,
+    chipset = deviceInfo.chipset,
+    boxType = deviceInfo.boxType,
+    imageDistro = deviceInfo.imageDistro,
+    imageVersion = deviceInfo.imageVersion,
+    kernelVersion = deviceInfo.kernelVersion,
+    enigmaVersion = deviceInfo.enigmaVersion,
+    owifVersion = deviceInfo.owifVersion,
+    oeSystemVersion = deviceInfo.oeSystemVersion,
+    driverDate = deviceInfo.driverDate,
+    uptime = deviceInfo.uptime,
+    totalMemory = deviceInfo.totalMemory,
+    freeMemory = deviceInfo.freeMemory,
+    hdds = hdds.map {
+        Hdd(
+            mountDirectory = it.mountDirectory,
+            capacity = it.capacity,
+            freeSpace = it.freeSpace,
+            model = it.model
+        )
+    },
+    interfaces = interfaces.map {
+        Interface(
+            ip = it.ip,
+            name = it.name,
+            friendlyNic = it.friendlyNic,
+            gateway = it.gateway,
+            linkSpeed = it.linkSpeed,
+            firstPublicIpv6 = it.firstPublicIpv6,
+            ipv4Method = it.ipv4Method
+        )
+    },
+    tuners = tuners.map {
+        Tuner(
+            number = it.number, type = it.type, name = it.name
+        )
+    })
+
 @Entity(tableName = "device_infos")
-data class DeviceInfoCore(
+data class DeviceInfoEntity(
     @PrimaryKey val deviceId: Long,
     val brand: String,
     val model: String,
@@ -57,15 +137,8 @@ data class DeviceInfoCore(
     val freeMemory: String,
 )
 
-@Entity(
-    tableName = "hdds", primaryKeys = ["deviceId", "mountDirectory"], foreignKeys = [ForeignKey(
-        entity = DeviceInfoCore::class,
-        parentColumns = ["deviceId"],
-        childColumns = ["deviceId"],
-        onDelete = ForeignKey.CASCADE
-    )]
-)
-data class Hdd(
+@Entity(tableName = "hdds", primaryKeys = ["deviceId", "mountDirectory"])
+data class HddEntity(
     val deviceId: Long,
     val mountDirectory: String,
     val capacity: String,
@@ -73,15 +146,8 @@ data class Hdd(
     val model: String
 )
 
-@Entity(
-    tableName = "interfaces", primaryKeys = ["deviceId", "ip"], foreignKeys = [ForeignKey(
-        entity = DeviceInfoCore::class,
-        parentColumns = ["deviceId"],
-        childColumns = ["deviceId"],
-        onDelete = ForeignKey.CASCADE
-    )]
-)
-data class Interface(
+@Entity(tableName = "interfaces", primaryKeys = ["deviceId", "ip"])
+data class InterfaceEntity(
     val deviceId: Long,
     val ip: String,
     val name: String,
@@ -92,26 +158,9 @@ data class Interface(
     val ipv4Method: String
 )
 
-@Entity(
-    tableName = "tuners", primaryKeys = ["deviceId", "position"], foreignKeys = [ForeignKey(
-        entity = DeviceInfoCore::class,
-        parentColumns = ["deviceId"],
-        childColumns = ["deviceId"],
-        onDelete = ForeignKey.CASCADE
-    )]
-)
-data class Tuner(
-    val deviceId: Long, val position: Int, val type: String, val name: String
-)
-
-data class DeviceInfo(
-    @Embedded val deviceInfo: DeviceInfoCore, @Relation(
-        parentColumns = ["deviceId"], entityColumns = ["deviceId"]
-    ) val hdds: List<Hdd>, @Relation(
-        parentColumns = ["deviceId"], entityColumns = ["deviceId"]
-    ) val interfaces: List<Interface>, @Relation(
-        parentColumns = ["deviceId"], entityColumns = ["deviceId"]
-    ) val tuners: List<Tuner>
+@Entity(tableName = "tuners", primaryKeys = ["deviceId", "number"])
+data class TunerEntity(
+    val deviceId: Long, val number: Int, val type: String, val name: String
 )
 
 @Serializable
@@ -145,10 +194,10 @@ internal data class NetworkStatusInfo(
 }
 
 @Serializable
-internal data class NetworkDeviceInfo(
-    @SerialName("tuners") val tuners: List<NetworkTuner>,
-    @SerialName("ifaces") val interfaces: List<NetworkInterface> = emptyList(),
-    @SerialName("hdd") val hdds: List<NetworkHdd> = emptyList(),
+internal data class DeviceInfoDto(
+    @SerialName("tuners") val tuners: List<TunerDto>,
+    @SerialName("ifaces") val interfaces: List<InterfaceDto> = emptyList(),
+    @SerialName("hdd") val hdds: List<HddDto> = emptyList(),
     @SerialName("brand") val brand: String = "N/A",
     @SerialName("model") val model: String = "N/A",
     @SerialName("chipset") val chipset: String = "N/A",
@@ -164,51 +213,56 @@ internal data class NetworkDeviceInfo(
     @SerialName("mem1") val totalMemory: String,
     @SerialName("mem2") val freeMemory: String
 ) {
-    fun toDeviceInfo(deviceId: Long) = DeviceInfo(
-        deviceInfo = DeviceInfoCore(
+    fun toDeviceInfo(deviceId: Long) = DeviceInfoEntity(
+        deviceId = deviceId,
+        brand = brand,
+        model = model,
+        chipset = chipset,
+        boxType = boxType,
+        imageDistro = imageDistro,
+        imageVersion = imageVersion,
+        kernelVersion = kernelVersion,
+        enigmaVersion = enigmaVersion,
+        owifVersion = owifVersion,
+        oeSystemVersion = oeSystemVersion,
+        driverDate = driverDate,
+        uptime = uptime,
+        totalMemory = totalMemory,
+        freeMemory = freeMemory
+    )
+
+    fun toHddEntities(deviceId: Long) = hdds.map { hdd ->
+        HddEntity(
             deviceId = deviceId,
-            brand = brand,
-            model = model,
-            chipset = chipset,
-            boxType = boxType,
-            imageDistro = imageDistro,
-            imageVersion = imageVersion,
-            kernelVersion = kernelVersion,
-            enigmaVersion = enigmaVersion,
-            owifVersion = owifVersion,
-            oeSystemVersion = oeSystemVersion,
-            driverDate = driverDate,
-            uptime = uptime,
-            totalMemory = totalMemory,
-            freeMemory = freeMemory
-        ), hdds = hdds.map { hddDto ->
-            Hdd(
-                deviceId = deviceId,
-                mountDirectory = hddDto.mountDirectory,
-                capacity = hddDto.capacity,
-                freeSpace = hddDto.freeSpace,
-                model = hddDto.model
-            )
-        }, interfaces = interfaces.map { interfaceDto ->
-            Interface(
-                deviceId = deviceId,
-                ip = interfaceDto.ip,
-                name = interfaceDto.name,
-                friendlyNic = interfaceDto.friendlyNic,
-                gateway = interfaceDto.gateway,
-                linkSpeed = interfaceDto.linkSpeed,
-                firstPublicIpv6 = interfaceDto.firstPublicIpv6,
-                ipv4Method = interfaceDto.ipv4Method,
-            )
-        }, tuners = tuners.mapIndexed { index, tunerDto ->
-            Tuner(
-                deviceId = deviceId, position = index, type = tunerDto.type, name = tunerDto.name
-            )
-        })
+            mountDirectory = hdd.mountDirectory,
+            capacity = hdd.capacity,
+            freeSpace = hdd.freeSpace,
+            model = hdd.model
+        )
+    }
+
+    fun toInterfaceEntities(deviceId: Long) = interfaces.map { iface ->
+        InterfaceEntity(
+            deviceId = deviceId,
+            ip = iface.ip,
+            name = iface.name,
+            friendlyNic = iface.friendlyNic,
+            gateway = iface.gateway,
+            linkSpeed = iface.linkSpeed,
+            firstPublicIpv6 = iface.firstPublicIpv6,
+            ipv4Method = iface.ipv4Method
+        )
+    }
+
+    fun toTunerEntities(deviceId: Long) = tuners.mapIndexed { index, tuner ->
+        TunerEntity(
+            deviceId = deviceId, number = index + 1, type = tuner.type, name = tuner.name
+        )
+    }
 }
 
 @Serializable
-internal data class NetworkHdd(
+internal data class HddDto(
     @SerialName("capacity") val capacity: String = "N/A",
     @SerialName("mount") val mountDirectory: String = "N/A",
     @SerialName("free") val freeSpace: String = "N/A",
@@ -216,7 +270,7 @@ internal data class NetworkHdd(
 )
 
 @Serializable
-internal data class NetworkInterface(
+internal data class InterfaceDto(
     @SerialName("ip") val ip: String = "N/A",
     @SerialName("name") val name: String = "N/A",
     @SerialName("friendlynic") val friendlyNic: String = "N/A",
@@ -227,6 +281,6 @@ internal data class NetworkInterface(
 )
 
 @Serializable
-internal data class NetworkTuner(
+internal data class TunerDto(
     @SerialName("type") val type: String = "N/A", @SerialName("name") val name: String = "N/A"
 )

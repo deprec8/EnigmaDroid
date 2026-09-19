@@ -20,7 +20,7 @@
 package io.github.deprec8.enigmadroid.data.repositories
 
 import io.github.deprec8.enigmadroid.core.database.model.SearchHistoryItemEntity
-import io.github.deprec8.enigmadroid.core.database.source.SearchHistoriesDataSource
+import io.github.deprec8.enigmadroid.data.source.local.SearchHistoriesDataSource
 
 
 class SearchRepository(

@@ -29,7 +29,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import io.github.deprec8.enigmadroid.data.constants.PreferenceKeys
 
 
-class CurrentDeviceIdMigration1 : DataMigration<Preferences> {
+internal class CurrentDeviceIdMigration1 : DataMigration<Preferences> {
 
     private val oldKey = intPreferencesKey("current_device")
     private val newKey = longPreferencesKey(PreferenceKeys.CURRENT_DEVICE_ID)
@@ -49,7 +49,7 @@ class CurrentDeviceIdMigration1 : DataMigration<Preferences> {
     override suspend fun cleanUp() {}
 }
 
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
+internal val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
     name = "settings", produceMigrations = {
         listOf(
             CurrentDeviceIdMigration1()

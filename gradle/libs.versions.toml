@@ -5,7 +5,7 @@ android-minSdk = "29"
 android-compileSdk = "37"
 # Libraries
 aboutlibraries = "15.2.0"
-agp = "9.4.0"
+agp = "9.4.1"
 browser = "1.10.0"
 coreSplashscreen = "1.2.0"
 datastorePreferences = "1.2.1"

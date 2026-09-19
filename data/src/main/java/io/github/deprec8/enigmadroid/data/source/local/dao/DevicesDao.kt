@@ -24,23 +24,23 @@ import androidx.room3.Delete
 import androidx.room3.Insert
 import androidx.room3.Query
 import androidx.room3.Update
-import io.github.deprec8.enigmadroid.core.database.model.DeviceEntity
+import io.github.deprec8.enigmadroid.data.model.Device
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DevicesDao {
 
     @Insert
-    suspend fun insert(deviceEntity: DeviceEntity): Long
+    suspend fun insert(deviceEntity: Device): Long
 
     @Update
-    suspend fun update(deviceEntity: DeviceEntity)
+    suspend fun update(deviceEntity: Device)
 
     @Delete
-    suspend fun delete(deviceEntity: DeviceEntity)
+    suspend fun delete(deviceEntity: Device)
 
     @Query("SELECT * FROM devices")
-    fun getAll(): Flow<List<DeviceEntity>>
+    fun getAll(): Flow<List<Device>>
 
     @Query(
         """ 
@@ -65,10 +65,10 @@ interface DevicesDao {
     suspend fun getPreviousOrNextId(id: Long): Long?
 
     @Query("SELECT * FROM devices WHERE id = :id")
-    fun get(id: Long): Flow<DeviceEntity?>
+    fun get(id: Long): Flow<Device?>
 
     @Query("SELECT * FROM devices WHERE id = :id")
-    suspend fun getStatic(id: Long): DeviceEntity?
+    suspend fun getStatic(id: Long): Device?
 
     @Query("SELECT COUNT(*) FROM devices")
     suspend fun getCount(): Int

@@ -24,100 +24,95 @@ import androidx.room3.Insert
 import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
 import androidx.room3.Transaction
-import io.github.deprec8.enigmadroid.core.common.ServiceType
-import io.github.deprec8.enigmadroid.core.database.model.api.BouquetEntity
-import io.github.deprec8.enigmadroid.core.database.model.api.ProviderEntity
-import io.github.deprec8.enigmadroid.core.database.model.api.ServiceEntity
-import kotlin.collections.map
+import io.github.deprec8.enigmadroid.data.constants.ServiceType
+import io.github.deprec8.enigmadroid.data.model.api.BouquetEntity
+import io.github.deprec8.enigmadroid.data.model.api.ProviderEntity
+import io.github.deprec8.enigmadroid.data.model.api.ServiceEntity
 
 @Dao
-interface BouquetsDao {
+internal interface ServicesDao {
 
-    @Query("SELECT * FROM bouquets WHERE deviceId = :deviceId AND type = :serviceType ORDER BY position ASC")
-    suspend fun getAll(deviceId: Long, serviceType: ServiceType): List<BouquetEntity>
+    @Query("SELECT * FROM bouquets WHERE deviceId = :deviceId AND type = serviceType ORDER BY position ASC")
+    suspend fun getBouquets(deviceId: Long, serviceType: ServiceType): List<BouquetEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrUpdateAll(bouquets: List<BouquetEntity>)
+    suspend fun insertBouquets(bouquets: List<BouquetEntity>)
 
     @Query("DELETE FROM bouquets WHERE deviceId = :deviceId AND reference NOT IN (:references)")
-    suspend fun deleteMissingEntries(deviceId: Long, references: List<String>)
+    suspend fun clearMissingBouquets(deviceId: Long, references: List<String>)
+
+    @Query("DELETE FROM bouquets WHERE deviceId = :deviceId")
+    suspend fun clearBouquets(deviceId: Long)
 
     @Transaction
     suspend fun syncNetworkData(deviceId: Long, bouquets: List<BouquetEntity>) {
         if (bouquets.isEmpty()) {
-            deleteAllForDevice(deviceId)
+            clearProviders(deviceId)
             return
         }
 
         val currentReferences = bouquets.map { it.reference }
 
-        deleteMissingEntries(deviceId, currentReferences)
+        clearMissingBouquets(deviceId, currentReferences)
 
-        insertOrUpdateAll(bouquets)
+        insertBouquets(bouquets)
     }
 
-    @Query("DELETE FROM bouquets WHERE deviceId = :deviceId")
-    suspend fun deleteAllForDevice(deviceId: Long)
-}
-
-@Dao
-interface ProvidersDao {
 
     @Query("SELECT * FROM providers WHERE deviceId = :deviceId ORDER BY position ASC")
-    suspend fun getAll(deviceId: Long, serviceType: ServiceType): List<ProviderEntity>
+    suspend fun getProviders(deviceId: Long, serviceType: ServiceType): List<ProviderEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrUpdateAll(bouquets: List<ProviderEntity>)
+    suspend fun insertProviders(bouquets: List<ProviderEntity>)
 
     @Query("DELETE FROM providers WHERE deviceId = :deviceId AND reference NOT IN (:references)")
-    suspend fun deleteMissingEntries(deviceId: Long, references: List<String>)
+    suspend fun clearMissingProviders(deviceId: Long, references: List<String>)
 
     @Transaction
     suspend fun syncNetworkData(deviceId: Long, providers: List<ProviderEntity>) {
         if (providers.isEmpty()) {
-            deleteAllForDevice(deviceId)
+            clearProviders(deviceId)
             return
         }
 
         val currentReferences = providers.map { it.reference }
 
-        deleteMissingEntries(deviceId, currentReferences)
+        clearMissingProviders(deviceId, currentReferences)
 
-        insertOrUpdateAll(providers)
+        insertProviders(providers)
     }
 
     @Query("DELETE FROM providers WHERE deviceId = :deviceId")
-    suspend fun deleteAllForDevice(deviceId: Long)
-}
-
-@Dao
-interface ServicesDao {
+    suspend fun clearProviders(deviceId: Long)
 
     @Query("SELECT * FROM services WHERE deviceId = :deviceId AND parentReference = :parentReference ORDER BY number ASC")
-    suspend fun getAll(deviceId: Long, parentReference: String): List<ProviderEntity>
+    suspend fun getServices(deviceId: Long, parentReference: String): List<ServiceEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(bouquets: List<ServiceEntity>)
+    suspend fun insertServices(bouquets: List<ServiceEntity>)
 
     @Query("DELETE FROM services WHERE deviceId = :deviceId AND parentReference = :parentReference AND reference NOT IN (:references)")
-    suspend fun deleteMissing(deviceId: Long, parentReference: String, references: List<String>)
+    suspend fun clearMissingServices(
+        deviceId: Long, parentReference: String, references: List<String>
+    )
 
     @Transaction
     suspend fun syncNetworkData(
         deviceId: Long, parentReference: String, services: List<ServiceEntity>
     ) {
         if (services.isEmpty()) {
-            deleteAll(deviceId, parentReference)
+            clearServices(deviceId, parentReference)
             return
         }
 
         val currentReferences = services.map { it.reference }
 
-        deleteMissing(deviceId, parentReference, currentReferences)
+        clearMissingServices(deviceId, parentReference, currentReferences)
 
-        insertAll(services)
+        insertServices(services)
     }
 
     @Query("DELETE FROM services WHERE deviceId = :deviceId AND parentReference = :parentReference")
-    suspend fun deleteAll(deviceId: Long, parentReference: String)
+    suspend fun clearServices(deviceId: Long, parentReference: String)
+
 }

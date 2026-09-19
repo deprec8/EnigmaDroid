@@ -25,20 +25,21 @@ import androidx.room3.Insert
 import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
 import androidx.room3.Transaction
-import io.github.deprec8.enigmadroid.core.database.model.SearchHistoryItemEntity
+import io.github.deprec8.enigmadroid.data.constants.ContentType
+import io.github.deprec8.enigmadroid.data.model.SearchHistoryItem
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SearchHistoriesDao {
 
     @Query("SELECT * FROM search_histories WHERE type = :type ORDER BY timestamp DESC LIMIT 200")
-    fun get(type: ContentType): Flow<List<SearchHistoryItemEntity>>
+    fun get(type: ContentType): Flow<List<SearchHistoryItem>>
 
     @Query("SELECT DISTINCT type FROM search_histories")
     fun getTypesWithItems(): Flow<List<ContentType>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(item: SearchHistoryItemEntity)
+    suspend fun insert(item: SearchHistoryItem)
 
     @Query(
         """
@@ -55,13 +56,13 @@ interface SearchHistoriesDao {
     suspend fun trim(type: ContentType)
 
     @Transaction
-    suspend fun insertAndTrim(item: SearchHistoryItemEntity) {
+    suspend fun insertAndTrim(item: SearchHistoryItem) {
         insert(item)
         trim(item.type)
     }
 
     @Delete
-    suspend fun delete(item: SearchHistoryItemEntity)
+    suspend fun delete(item: SearchHistoryItem)
 
     @Query("DELETE FROM search_histories WHERE type = :type")
     suspend fun clear(type: ContentType)

@@ -23,8 +23,8 @@ import io.github.deprec8.enigmadroid.data.constants.ServiceType
 import io.github.deprec8.enigmadroid.data.model.Device
 import io.github.deprec8.enigmadroid.data.model.api.ActionResultDto
 import io.github.deprec8.enigmadroid.data.model.api.BouquetServiceDto
+import io.github.deprec8.enigmadroid.data.model.api.DeviceInfoDto
 import io.github.deprec8.enigmadroid.data.model.api.MovieListDto
-import io.github.deprec8.enigmadroid.data.model.api.NetworkDeviceInfo
 import io.github.deprec8.enigmadroid.data.model.api.NetworkSignalInfo
 import io.github.deprec8.enigmadroid.data.model.api.NetworkStatusInfo
 import io.github.deprec8.enigmadroid.data.model.api.SatelliteListDto
@@ -164,7 +164,7 @@ internal class NetworkDataSource {
     }
 
 
-    suspend fun getDeviceInfo(device: Device) = get<NetworkDeviceInfo>(device) {
+    suspend fun getDeviceInfo(device: Device) = get<DeviceInfoDto>(device) {
         appendPathSegments("api", "deviceinfo")
     }
 

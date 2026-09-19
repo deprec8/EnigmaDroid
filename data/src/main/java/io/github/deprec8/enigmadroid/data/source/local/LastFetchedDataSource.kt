@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import java.util.concurrent.TimeUnit
 
-enum class LastFetchCategory(val key: Key<Long>, val multiplier: Float = 1.0f) {
+internal enum class LastFetchCategory(val key: Key<Long>, val multiplier: Float = 1.0f) {
     TIMERS(longPreferencesKey("last_fetched_timers"), 0.5f),
     MOVIES(longPreferencesKey("last_fetched_movies"), 2.0f),
     BOUQUETS_SERVICES(longPreferencesKey("last_fetched_bouquets_services"), 1.0f),
@@ -41,7 +41,7 @@ enum class LastFetchCategory(val key: Key<Long>, val multiplier: Float = 1.0f) {
     DEVICE_INFO(longPreferencesKey("last_fetched_device_info"), 10.0f)
 }
 
-class LastFetchLocalDataSource(
+internal class LastFetchLocalDataSource(
     private val dataStore: DataStore<Preferences>
 ) {
     private val masterIntervalKey = intPreferencesKey("master_refresh_interval_minutes")

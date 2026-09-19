@@ -24,24 +24,23 @@ import androidx.room3.Insert
 import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
 import androidx.room3.Transaction
-import io.github.deprec8.enigmadroid.core.database.model.api.EventEntity
-import kotlin.collections.map
+import io.github.deprec8.enigmadroid.data.model.api.TimerEntity
 
 @Dao
-interface TimersDao {
+internal interface TimersDao {
 
     @Query("SELECT * FROM timers WHERE deviceId = :deviceId ORDER BY beginTimestamp ASC")
-    suspend fun getAll(deviceId: Long): List<EventEntity>
+    suspend fun getAll(deviceId: Long): List<TimerEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(bouquets: List<EventEntity>)
+    suspend fun insertAll(bouquets: List<TimerEntity>)
 
     @Query("DELETE FROM timers WHERE deviceId = :deviceId AND reference NOT IN (:references)")
     suspend fun deleteMissing(deviceId: Long, ids: List<Int>)
 
     @Transaction
     suspend fun syncNetworkData(
-        deviceId: Long, parentReference: String, events: List<EventEntity>
+        deviceId: Long, parentReference: String, events: List<TimerEntity>
     ) {
         val currentIds = events.map { it.id }
 

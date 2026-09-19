@@ -37,7 +37,7 @@ import org.koin.dsl.module
 import org.koin.plugin.module.dsl.create
 import org.koin.plugin.module.dsl.single
 
-val dataModel = module {
+val dataModule = module {
     single<DataStore<Preferences>> {
         create(::provideDataStore)
     }

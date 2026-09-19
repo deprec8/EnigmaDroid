@@ -20,10 +20,10 @@
 package io.github.deprec8.enigmadroid.data.source.local
 
 import io.github.deprec8.enigmadroid.core.common.ServiceType
-import io.github.deprec8.enigmadroid.core.database.model.api.BouquetEntity
-import io.github.deprec8.enigmadroid.core.database.model.api.ProviderEntity
 import io.github.deprec8.enigmadroid.core.database.model.api.ServiceEntity
-import io.github.deprec8.enigmadroid.core.database.room.AppDatabase
+import io.github.deprec8.enigmadroid.data.model.api.BouquetEntity
+import io.github.deprec8.enigmadroid.data.model.api.ProviderEntity
+import io.github.deprec8.enigmadroid.data.source.local.database.AppDatabase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -39,7 +39,7 @@ class ServiceDataSource(
     }
 
     suspend fun updateServices(services: List<ServiceEntity>) {
-        appDatabase.servicesDao().insertAll(services)
+        appDatabase.servicesDao().insertServices(services)
     }
 
     suspend fun getBouquets(deviceId: Long, serviceType: ServiceType) =
@@ -49,7 +49,7 @@ class ServiceDataSource(
         appDatabase.providersDao().getAll(deviceId, serviceType)
 
     suspend fun getServices(deviceId: Long, parentReference: String) =
-        appDatabase.servicesDao().getAll(deviceId, parentReference)
+        appDatabase.servicesDao().getServices(deviceId, parentReference)
 
 
 }

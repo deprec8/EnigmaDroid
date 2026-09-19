@@ -23,9 +23,9 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
-import io.github.deprec8.enigmadroid.core.database.common.PreferenceKeys
-import io.github.deprec8.enigmadroid.core.database.model.DeviceEntity
-import io.github.deprec8.enigmadroid.core.database.room.AppDatabase
+import io.github.deprec8.enigmadroid.data.constants.PreferenceKeys
+import io.github.deprec8.enigmadroid.data.model.Device
+import io.github.deprec8.enigmadroid.data.source.local.database.AppDatabase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -33,7 +33,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class DevicesDataSource(
+internal class DevicesDataSource(
     private val appDatabase: AppDatabase, private val dataStore: DataStore<Preferences>
 ) {
     private val currentDeviceIdKey = longPreferencesKey(PreferenceKeys.CURRENT_DEVICE_ID)
@@ -52,11 +52,11 @@ class DevicesDataSource(
         }
     }
 
-    suspend fun getCurrentStatic(): DeviceEntity? {
+    suspend fun getCurrentStatic(): Device? {
         return appDatabase.devicesDao().getStatic(currentId.first())
     }
 
-    fun getAll(): Flow<List<DeviceEntity>> {
+    fun getAll(): Flow<List<Device>> {
         return appDatabase.devicesDao().getAll()
     }
 
@@ -64,7 +64,7 @@ class DevicesDataSource(
         return appDatabase.devicesDao().getCount()
     }
 
-    suspend fun add(deviceEntity: DeviceEntity): Boolean {
+    suspend fun add(deviceEntity: Device): Boolean {
         val id = appDatabase.devicesDao().insert(deviceEntity)
 
         if (currentId.first() == -1L) {
@@ -75,13 +75,13 @@ class DevicesDataSource(
         return false
     }
 
-    suspend fun edit(oldDeviceEntity: DeviceEntity, newDeviceEntity: DeviceEntity): Boolean {
+    suspend fun edit(oldDeviceEntity: Device, newDeviceEntity: Device): Boolean {
         appDatabase.devicesDao().update(newDeviceEntity.copy(id = oldDeviceEntity.id))
 
         return currentId.first() == oldDeviceEntity.id
     }
 
-    suspend fun delete(deviceEntity: DeviceEntity): Boolean {
+    suspend fun delete(deviceEntity: Device): Boolean {
         appDatabase.devicesDao().delete(deviceEntity)
 
         if (currentId.first() == deviceEntity.id) {

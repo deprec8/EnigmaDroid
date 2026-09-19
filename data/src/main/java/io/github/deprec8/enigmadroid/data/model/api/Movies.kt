@@ -45,7 +45,7 @@ data class Movie(
     primaryKeys = ["deviceId", "directory", "fileName"],
     indices = [Index(value = ["eventName"])]
 )
-data class MovieEntity(
+internal data class MovieEntity(
     val deviceId: Long,
     val directory: String,
     val fileName: String,
@@ -61,7 +61,7 @@ data class MovieEntity(
 )
 
 @Serializable
-data class MovieListDto(
+internal data class MovieListDto(
     @SerialName("directory") val directory: String,
     @SerialName("movies") val movies: List<MovieDto>,
     @SerialName("locations") val directories: List<String>
@@ -69,7 +69,7 @@ data class MovieListDto(
     fun toMovieEntities(deviceId: Long) = movies.map { movieDto ->
         MovieEntity(
             deviceId = deviceId,
-            directory = "TODO",
+            directory = directory,
             fileName = movieDto.fileName,
             serviceReference = movieDto.serviceReference,
             length = movieDto.length,
@@ -85,7 +85,7 @@ data class MovieListDto(
 }
 
 @Serializable
-data class MovieDto(
+internal data class MovieDto(
     @SerialName("filename") val fileName: String,
     @SerialName("serviceref") val serviceReference: String,
     @SerialName("length") val length: String,

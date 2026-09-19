@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.utils
+package io.github.deprec8.enigmadroid.data.utils
 
 import java.text.SimpleDateFormat
 import java.util.Calendar

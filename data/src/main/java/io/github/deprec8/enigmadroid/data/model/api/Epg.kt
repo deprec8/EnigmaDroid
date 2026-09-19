@@ -39,7 +39,7 @@ data class Event(
     primaryKeys = ["deviceId", "parentReference", "id"],
     indices = [Index(value = ["beginTimestamp", "endTimestamp"])]
 )
-data class EventEntity(
+internal data class EventEntity(
     val deviceId: Long,
     val parentReference: String,
     val id: Int,
@@ -62,7 +62,7 @@ data class EventEntity(
 }
 
 @Serializable
-data class ServiceEpgDto(
+internal data class ServiceEpgDto(
     @SerialName("events") val events: List<EventDto>,
 ) {
     fun toEventEntities(deviceId: Long, parentReference: String) = events.map { eventDto ->
@@ -81,7 +81,7 @@ data class ServiceEpgDto(
 }
 
 @Serializable
-data class EventDto(
+internal data class EventDto(
     @SerialName("id") val id: Int = 0,
     @SerialName("begin_timestamp") val beginTimestamp: Long,
     @SerialName("duration_sec") val durationInSeconds: Long,
