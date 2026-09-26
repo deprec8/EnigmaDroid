@@ -19,37 +19,64 @@
 
 package io.github.deprec8.enigmadroid.data.repositories
 
-import io.github.deprec8.enigmadroid.core.database.model.SearchHistoryItemEntity
-import io.github.deprec8.enigmadroid.data.source.local.SearchHistoriesDataSource
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import io.github.deprec8.enigmadroid.data.constants.ContentType
+import io.github.deprec8.enigmadroid.data.constants.PreferenceKeys
+import io.github.deprec8.enigmadroid.data.model.SearchHistoryItem
+import io.github.deprec8.enigmadroid.data.source.local.database.AppDatabase
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 
 
-class SearchRepository(
-    private val searchHistoriesDataSource: SearchHistoriesDataSource,
+class SearchRepository private constructor(
+    private val appDatabase: AppDatabase, private val dataStore: DataStore<Preferences>
 ) {
 
-    val useHistories = searchHistoriesDataSource.useHistories
+    private val useHistoriesKey = booleanPreferencesKey(PreferenceKeys.USE_SEARCH_HISTORIES)
 
-    suspend fun setUseHistories(value: Boolean) {
-        searchHistoriesDataSource.setUseHistories(value)
+    val useHistories = dataStore.data.map { preferences ->
+        preferences[useHistoriesKey] ?: true
     }
 
-    fun getHistory(type: ContentType) = searchHistoriesDataSource.getHistory(type)
+    suspend fun setUseHistories(value: Boolean) {
+        if (!value) {
+            clearHistories()
+        }
+        dataStore.edit { preferences ->
+            preferences[useHistoriesKey] = value
+        }
+    }
 
-    fun getTypesWithHistory() = searchHistoriesDataSource.getTypesWithHistory()
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun getHistory(type: ContentType) = appDatabase.searchHistoriesDao().get(type)
+
+
+    fun getTypesWithHistory() =
+        appDatabase.searchHistoriesDao().getTypesWithItems().map { it.toSet() }
 
     suspend fun addToHistory(type: ContentType, query: String) {
-        searchHistoriesDataSource.addToHistory(type, query)
+        if (useHistories.first()) {
+            appDatabase.searchHistoriesDao().insertAndTrim(
+                SearchHistoryItem(
+                    type = type, query = query, timestamp = System.currentTimeMillis()
+                )
+            )
+        }
     }
 
     suspend fun clearHistories(types: Collection<ContentType>) {
-        searchHistoriesDataSource.clearHistories(types)
+        appDatabase.searchHistoriesDao().clear(types)
     }
 
     suspend fun clearHistories() {
-        searchHistoriesDataSource.clearHistories()
+        appDatabase.searchHistoriesDao().clearAll()
     }
 
-    suspend fun deleteFromHistory(item: SearchHistoryItemEntity) {
-        searchHistoriesDataSource.deleteFromHistory(item)
+    suspend fun deleteFromHistory(item: SearchHistoryItem) {
+        appDatabase.searchHistoriesDao().delete(item)
     }
 }

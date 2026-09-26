@@ -19,13 +19,25 @@
 
 package io.github.deprec8.enigmadroid.data.repositories
 
-import io.github.deprec8.enigmadroid.core.database.source.SettingsDataSource
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import io.github.deprec8.enigmadroid.data.constants.PreferenceKeys
+import kotlinx.coroutines.flow.map
 
-class SettingsRepository(private val settingsDataSource: SettingsDataSource) {
+class SettingsRepository(private val dataStore: DataStore<Preferences>) {
 
-    val remoteControlVibration = settingsDataSource.remoteControlVibration
+    private val remoteControlVibrationKey =
+        booleanPreferencesKey(PreferenceKeys.REMOTE_CONTROL_VIBRATION)
+
+    val remoteControlVibration = dataStore.data.map { preferences ->
+        preferences[remoteControlVibrationKey] ?: true
+    }
 
     suspend fun setRemoteControlVibration(value: Boolean) {
-        settingsDataSource.setRemoteControlVibration(value)
+        dataStore.edit { preferences ->
+            preferences[remoteControlVibrationKey] = value
+        }
     }
 }

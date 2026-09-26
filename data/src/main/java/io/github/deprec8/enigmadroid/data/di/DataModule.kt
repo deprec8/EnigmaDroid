@@ -23,13 +23,11 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.room3.Room
-import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
 import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
 import io.github.deprec8.enigmadroid.data.repositories.DownloadRepository
 import io.github.deprec8.enigmadroid.data.repositories.OnboardingRepository
 import io.github.deprec8.enigmadroid.data.repositories.SearchRepository
 import io.github.deprec8.enigmadroid.data.repositories.SettingsRepository
-import io.github.deprec8.enigmadroid.data.source.local.DevicesDataSource
 import io.github.deprec8.enigmadroid.data.source.local.database.AppDatabase
 import io.github.deprec8.enigmadroid.data.source.local.database.dataStore
 import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource

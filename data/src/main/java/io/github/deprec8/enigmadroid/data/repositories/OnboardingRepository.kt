@@ -19,14 +19,25 @@
 
 package io.github.deprec8.enigmadroid.data.repositories
 
-import io.github.deprec8.enigmadroid.core.database.source.OnboardingDataSource
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import io.github.deprec8.enigmadroid.data.constants.PreferenceKeys
+import kotlinx.coroutines.flow.map
 
 class OnboardingRepository(
-    private val onboardingDataSource: OnboardingDataSource
+    private val dataStore: DataStore<Preferences>
 ) {
-    val onboardingNeeded = onboardingDataSource.onboardingNeeded
+    private val onboardingNeededKey = booleanPreferencesKey(PreferenceKeys.ONBOARDING_NEEDED)
+
+    val onboardingNeeded = dataStore.data.map { preferences ->
+        preferences[onboardingNeededKey] ?: true
+    }
 
     suspend fun finishOnboarding() {
-        onboardingDataSource.finishOnboarding()
+        dataStore.edit { preferences ->
+            preferences[onboardingNeededKey] = false
+        }
     }
 }

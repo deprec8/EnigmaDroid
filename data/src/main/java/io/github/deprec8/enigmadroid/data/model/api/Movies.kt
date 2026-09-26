@@ -25,7 +25,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 data class Movie(
-    val key: Long,
+    val key: String,
     val directory: String,
     val fileName: String,
     val serviceReference: String,
@@ -35,7 +35,6 @@ data class Movie(
     val recordingTime: Long,
     val tags: String,
     val eventName: String,
-    val serviceName: String,
     val shortDescription: String,
     val longDescription: String,
 )
@@ -58,7 +57,22 @@ internal data class MovieEntity(
     val eventName: String,
     val shortDescription: String,
     val longDescription: String,
-)
+) {
+    fun toMovie() = Movie(
+        key = "${deviceId}_${directory}_${fileName}",
+        directory = directory,
+        fileName = fileName,
+        serviceReference = serviceReference,
+        length = length,
+        lastSeen = lastSeen,
+        fileSize = fileSize,
+        recordingTime = recordingTime,
+        tags = tags,
+        eventName = eventName,
+        shortDescription = shortDescription,
+        longDescription = longDescription
+    )
+}
 
 @Serializable
 internal data class MovieListDto(

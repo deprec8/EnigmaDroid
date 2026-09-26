@@ -19,36 +19,80 @@
 
 package io.github.deprec8.enigmadroid.data.repositories
 
-import io.github.deprec8.enigmadroid.core.database.model.DeviceEntity
-import io.github.deprec8.enigmadroid.core.database.source.DevicesDataSource
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.longPreferencesKey
+import io.github.deprec8.enigmadroid.data.constants.PreferenceKeys
+import io.github.deprec8.enigmadroid.data.model.Device
+import io.github.deprec8.enigmadroid.data.source.local.database.AppDatabase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class DevicesRepository(
-    private val devicesDataSource: DevicesDataSource
+class DevicesRepository private constructor(
+    private val appDatabase: AppDatabase, private val dataStore: DataStore<Preferences>
 ) {
 
-    val current = devicesDataSource.current
-    val currentId = devicesDataSource.currentId
+    private val currentDeviceIdKey = longPreferencesKey(PreferenceKeys.CURRENT_DEVICE_ID)
 
-    suspend fun setCurrentDeviceId(id: Long) {
-        devicesDataSource.setCurrentId(id)
+    val currentId = dataStore.data.map { preferences ->
+        preferences[currentDeviceIdKey] ?: -1L
     }
 
-    fun getDevices(): Flow<List<DeviceEntity>> {
-        return devicesDataSource.getAll()
+    val current = currentId.flatMapLatest { id ->
+        appDatabase.devicesDao().get(id)
     }
 
-    suspend fun addDevice(device: DeviceEntity) {
-        devicesDataSource.add(device)
+    suspend fun setCurrentId(id: Long) {
+        dataStore.edit { preferences ->
+            preferences[currentDeviceIdKey] = id
+        }
     }
 
-    suspend fun editDevice(oldDevice: DeviceEntity, newDevice: DeviceEntity) {
-        devicesDataSource.edit(oldDevice, newDevice)
+    suspend fun getCurrentStatic(): Device? {
+        return appDatabase.devicesDao().getStatic(currentId.first())
     }
 
-    suspend fun deleteDevice(device: DeviceEntity) {
-        devicesDataSource.delete(device)
+    fun getAll(): Flow<List<Device>> {
+        return appDatabase.devicesDao().getAll()
+    }
+
+    suspend fun getCount(): Int {
+        return appDatabase.devicesDao().getCount()
+    }
+
+    suspend fun add(deviceEntity: Device): Boolean {
+        val id = appDatabase.devicesDao().insert(deviceEntity)
+
+        if (currentId.first() == -1L) {
+            setCurrentId(id)
+            return true
+        }
+
+        return false
+    }
+
+    suspend fun edit(oldDeviceEntity: Device, newDeviceEntity: Device): Boolean {
+        appDatabase.devicesDao().update(newDeviceEntity.copy(id = oldDeviceEntity.id))
+
+        return currentId.first() == oldDeviceEntity.id
+    }
+
+    suspend fun delete(deviceEntity: Device): Boolean {
+        appDatabase.devicesDao().delete(deviceEntity)
+
+        if (currentId.first() == deviceEntity.id) {
+            dataStore.edit { preferences ->
+                preferences[currentDeviceIdKey] =
+                    appDatabase.devicesDao().getPreviousOrNextId(deviceEntity.id) ?: -1L
+            }
+            return true
+        }
+
+        return false
     }
 }
