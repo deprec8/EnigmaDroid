@@ -24,99 +24,7 @@ import androidx.room3.PrimaryKey
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-data class SignalInfo(
-    val agc: Double,
-    val tunerNumber: Int,
-    val snr: Double,
-    val tunerType: String,
-)
-
-data class StatusInfo(
-    val standby: Boolean, val muted: Boolean, val volume: Int, val currentServiceReference: String
-)
-
-data class DeviceInfo(
-    val brand: String,
-    val model: String,
-    val chipset: String,
-    val boxType: String,
-    val imageDistro: String,
-    val imageVersion: String,
-    val kernelVersion: String,
-    val enigmaVersion: String,
-    val owifVersion: String,
-    val oeSystemVersion: String,
-    val driverDate: String,
-    val uptime: String,
-    val totalMemory: String,
-    val freeMemory: String,
-    val hdds: List<Hdd>,
-    val interfaces: List<Interface>,
-    val tuners: List<Tuner>
-)
-
-data class Hdd(
-    val mountDirectory: String, val capacity: String, val freeSpace: String, val model: String
-)
-
-data class Interface(
-    val ip: String,
-    val name: String,
-    val friendlyNic: String,
-    val gateway: String,
-    val linkSpeed: String,
-    val firstPublicIpv6: String,
-    val ipv4Method: String
-)
-
-data class Tuner(
-    val number: Int, val type: String, val name: String
-)
-
-internal fun toDeviceInfo(
-    deviceInfo: DeviceInfoEntity,
-    hdds: List<HddEntity>,
-    interfaces: List<InterfaceEntity>,
-    tuners: List<TunerEntity>
-) = DeviceInfo(
-    brand = deviceInfo.brand,
-    model = deviceInfo.model,
-    chipset = deviceInfo.chipset,
-    boxType = deviceInfo.boxType,
-    imageDistro = deviceInfo.imageDistro,
-    imageVersion = deviceInfo.imageVersion,
-    kernelVersion = deviceInfo.kernelVersion,
-    enigmaVersion = deviceInfo.enigmaVersion,
-    owifVersion = deviceInfo.owifVersion,
-    oeSystemVersion = deviceInfo.oeSystemVersion,
-    driverDate = deviceInfo.driverDate,
-    uptime = deviceInfo.uptime,
-    totalMemory = deviceInfo.totalMemory,
-    freeMemory = deviceInfo.freeMemory,
-    hdds = hdds.map {
-        Hdd(
-            mountDirectory = it.mountDirectory,
-            capacity = it.capacity,
-            freeSpace = it.freeSpace,
-            model = it.model
-        )
-    },
-    interfaces = interfaces.map {
-        Interface(
-            ip = it.ip,
-            name = it.name,
-            friendlyNic = it.friendlyNic,
-            gateway = it.gateway,
-            linkSpeed = it.linkSpeed,
-            firstPublicIpv6 = it.firstPublicIpv6,
-            ipv4Method = it.ipv4Method
-        )
-    },
-    tuners = tuners.map {
-        Tuner(
-            number = it.number, type = it.type, name = it.name
-        )
-    })
+// Device
 
 @Entity(tableName = "device_infos")
 data class DeviceInfoEntity(
@@ -164,36 +72,6 @@ data class TunerEntity(
 )
 
 @Serializable
-internal data class NetworkSignalInfo(
-    @SerialName("agc") val agc: String,
-    @SerialName("tunernumber") val tunerNumber: String,
-    @SerialName("snr") val snr: String,
-    @SerialName("tunertype") val tunerType: String,
-) {
-    fun toSignalInfo(): SignalInfo = SignalInfo(
-        agc = agc.toDouble(),
-        tunerNumber = tunerNumber.toInt(),
-        snr = snr.toDouble(),
-        tunerType = tunerType
-    )
-}
-
-@Serializable
-internal data class NetworkStatusInfo(
-    @SerialName("inStandby") val standby: String,
-    @SerialName("muted") val muted: Boolean,
-    @SerialName("volume") val volume: Int,
-    @SerialName("currservice_serviceref") val currentServiceReference: String
-) {
-    fun toStatusInfo(): StatusInfo = StatusInfo(
-        standby = standby.toBooleanStrict(),
-        muted = muted,
-        volume = volume,
-        currentServiceReference = currentServiceReference
-    )
-}
-
-@Serializable
 internal data class DeviceInfoDto(
     @SerialName("tuners") val tuners: List<TunerDto>,
     @SerialName("ifaces") val interfaces: List<InterfaceDto> = emptyList(),
@@ -213,7 +91,7 @@ internal data class DeviceInfoDto(
     @SerialName("mem1") val totalMemory: String,
     @SerialName("mem2") val freeMemory: String
 ) {
-    fun toDeviceInfo(deviceId: Long) = DeviceInfoEntity(
+    fun toDeviceInfoEntity(deviceId: Long) = DeviceInfoEntity(
         deviceId = deviceId,
         brand = brand,
         model = model,
@@ -284,3 +162,46 @@ internal data class InterfaceDto(
 internal data class TunerDto(
     @SerialName("type") val type: String = "N/A", @SerialName("name") val name: String = "N/A"
 )
+
+// Status
+
+data class SignalInfo(
+    val agc: Double,
+    val tunerNumber: Int,
+    val snr: Double,
+    val tunerType: String,
+)
+
+data class StatusInfo(
+    val standby: Boolean, val muted: Boolean, val volume: Int, val currentServiceReference: String
+)
+
+@Serializable
+internal data class SignalInfoDto(
+    @SerialName("agc") val agc: String,
+    @SerialName("tunernumber") val tunerNumber: String,
+    @SerialName("snr") val snr: String,
+    @SerialName("tunertype") val tunerType: String,
+) {
+    fun toSignalInfo(): SignalInfo = SignalInfo(
+        agc = agc.toDouble(),
+        tunerNumber = tunerNumber.toInt(),
+        snr = snr.toDouble(),
+        tunerType = tunerType
+    )
+}
+
+@Serializable
+internal data class StatusInfoDto(
+    @SerialName("inStandby") val standby: String,
+    @SerialName("muted") val muted: Boolean,
+    @SerialName("volume") val volume: Int,
+    @SerialName("currservice_serviceref") val currentServiceReference: String
+) {
+    fun toStatusInfo(): StatusInfo = StatusInfo(
+        standby = standby.toBooleanStrict(),
+        muted = muted,
+        volume = volume,
+        currentServiceReference = currentServiceReference
+    )
+}

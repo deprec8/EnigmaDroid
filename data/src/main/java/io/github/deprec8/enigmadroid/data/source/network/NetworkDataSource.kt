@@ -22,14 +22,14 @@ package io.github.deprec8.enigmadroid.data.source.network
 import io.github.deprec8.enigmadroid.data.constants.ServiceType
 import io.github.deprec8.enigmadroid.data.model.Device
 import io.github.deprec8.enigmadroid.data.model.api.ActionResultDto
-import io.github.deprec8.enigmadroid.data.model.api.BouquetServiceDto
+import io.github.deprec8.enigmadroid.data.model.api.BouquetListDto
 import io.github.deprec8.enigmadroid.data.model.api.DeviceInfoDto
 import io.github.deprec8.enigmadroid.data.model.api.MovieListDto
-import io.github.deprec8.enigmadroid.data.model.api.NetworkSignalInfo
-import io.github.deprec8.enigmadroid.data.model.api.NetworkStatusInfo
 import io.github.deprec8.enigmadroid.data.model.api.SatelliteListDto
 import io.github.deprec8.enigmadroid.data.model.api.ServiceEpgDto
 import io.github.deprec8.enigmadroid.data.model.api.ServiceListDto
+import io.github.deprec8.enigmadroid.data.model.api.SignalInfoDto
+import io.github.deprec8.enigmadroid.data.model.api.StatusInfoDto
 import io.github.deprec8.enigmadroid.data.model.api.TimerDto
 import io.github.deprec8.enigmadroid.data.model.api.TimerListDto
 import io.ktor.client.HttpClient
@@ -103,7 +103,7 @@ internal class NetworkDataSource {
     // Services
 
     suspend fun getBouquetsWithServices(device: Device, serviceType: ServiceType) =
-        get<BouquetServiceDto>(device) {
+        get<BouquetListDto>(device) {
             appendPathSegments("api", "getallservices")
             if (serviceType == ServiceType.Radio) {
                 parameters.append(
@@ -112,19 +112,19 @@ internal class NetworkDataSource {
             }
         }
 
-    suspend fun getProviders(device: Device, serviceType: ServiceType) =
-        get<ServiceListDto>(device) {
-            appendPathSegments("api", "getservices")
-            parameters.append(
-                "sRef", "${serviceType.reference} FROM PROVIDERS ORDER BY name"
-            )
-        }
-
     suspend fun getSatellites(device: Device, serviceType: ServiceType) =
         get<SatelliteListDto>(device) {
             appendPathSegments("api", "getsatellites")
             parameters.append(
                 "stype", serviceType.string
+            )
+        }
+
+    suspend fun getServices(device: Device, serviceType: ServiceType) =
+        get<ServiceListDto>(device) {
+            appendPathSegments("api", "getservices")
+            parameters.append(
+                "sRef", "${serviceType.reference} ORDER BY name"
             )
         }
 
@@ -144,10 +144,14 @@ internal class NetworkDataSource {
             parameters.append("endTime", "10080")
         }
 
+    // Movies
+
     suspend fun getMovieList(device: Device) = get<MovieListDto>(device) {
         appendPathSegments("api", "movielist")
         parameters.append("recursive", "true")
     }
+
+    // Timers
 
     suspend fun getTimerBatch(device: Device) = get<TimerListDto>(device) {
         appendPathSegments("api", "timerlist")
@@ -155,11 +159,11 @@ internal class NetworkDataSource {
 
     // Device
 
-    suspend fun getSignalInfo(device: Device) = get<NetworkSignalInfo>(device) {
+    suspend fun getSignalInfo(device: Device) = get<SignalInfoDto>(device) {
         appendPathSegments("api", "tunersignal")
     }
 
-    suspend fun getStatusInfo(device: Device) = get<NetworkStatusInfo>(device) {
+    suspend fun getStatusInfo(device: Device) = get<StatusInfoDto>(device) {
         appendPathSegments("api", "statusinfo")
     }
 

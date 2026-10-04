@@ -17,23 +17,18 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.data.source.local.dao
+package io.github.deprec8.enigmadroid.data.source.local.dao.api
 
 import androidx.room3.Dao
 import androidx.room3.Insert
 import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
 import androidx.room3.Transaction
-import io.github.deprec8.enigmadroid.data.constants.ServiceType
 import io.github.deprec8.enigmadroid.data.model.api.BouquetEntity
-import io.github.deprec8.enigmadroid.data.model.api.ProviderEntity
 import io.github.deprec8.enigmadroid.data.model.api.ServiceEntity
 
 @Dao
 internal interface ServicesDao {
-
-    @Query("SELECT * FROM bouquets WHERE deviceId = :deviceId AND type = serviceType ORDER BY position ASC")
-    suspend fun getBouquets(deviceId: Long, serviceType: ServiceType): List<BouquetEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBouquets(bouquets: List<BouquetEntity>)
@@ -47,7 +42,7 @@ internal interface ServicesDao {
     @Transaction
     suspend fun syncNetworkData(deviceId: Long, bouquets: List<BouquetEntity>) {
         if (bouquets.isEmpty()) {
-            clearProviders(deviceId)
+            clearBouquets(deviceId)
             return
         }
 
@@ -57,33 +52,6 @@ internal interface ServicesDao {
 
         insertBouquets(bouquets)
     }
-
-
-    @Query("SELECT * FROM providers WHERE deviceId = :deviceId ORDER BY position ASC")
-    suspend fun getProviders(deviceId: Long, serviceType: ServiceType): List<ProviderEntity>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertProviders(bouquets: List<ProviderEntity>)
-
-    @Query("DELETE FROM providers WHERE deviceId = :deviceId AND reference NOT IN (:references)")
-    suspend fun clearMissingProviders(deviceId: Long, references: List<String>)
-
-    @Transaction
-    suspend fun syncNetworkData(deviceId: Long, providers: List<ProviderEntity>) {
-        if (providers.isEmpty()) {
-            clearProviders(deviceId)
-            return
-        }
-
-        val currentReferences = providers.map { it.reference }
-
-        clearMissingProviders(deviceId, currentReferences)
-
-        insertProviders(providers)
-    }
-
-    @Query("DELETE FROM providers WHERE deviceId = :deviceId")
-    suspend fun clearProviders(deviceId: Long)
 
     @Query("SELECT * FROM services WHERE deviceId = :deviceId AND parentReference = :parentReference ORDER BY number ASC")
     suspend fun getServices(deviceId: Long, parentReference: String): List<ServiceEntity>

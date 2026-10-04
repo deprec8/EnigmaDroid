@@ -20,29 +20,12 @@
 package io.github.deprec8.enigmadroid.data.model.api
 
 import androidx.room3.Entity
-import androidx.room3.Index
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-data class Movie(
-    val key: String,
-    val directory: String,
-    val fileName: String,
-    val serviceReference: String,
-    val length: String,
-    val lastSeen: Long,
-    val fileSize: Long,
-    val recordingTime: Long,
-    val tags: String,
-    val eventName: String,
-    val shortDescription: String,
-    val longDescription: String,
-)
-
 @Entity(
     tableName = "movies",
-    primaryKeys = ["deviceId", "directory", "fileName"],
-    indices = [Index(value = ["eventName"])]
+    primaryKeys = ["deviceId", "directory", "fileName"]
 )
 internal data class MovieEntity(
     val deviceId: Long,
@@ -57,22 +40,7 @@ internal data class MovieEntity(
     val eventName: String,
     val shortDescription: String,
     val longDescription: String,
-) {
-    fun toMovie() = Movie(
-        key = "${deviceId}_${directory}_${fileName}",
-        directory = directory,
-        fileName = fileName,
-        serviceReference = serviceReference,
-        length = length,
-        lastSeen = lastSeen,
-        fileSize = fileSize,
-        recordingTime = recordingTime,
-        tags = tags,
-        eventName = eventName,
-        shortDescription = shortDescription,
-        longDescription = longDescription
-    )
-}
+)
 
 @Serializable
 internal data class MovieListDto(
@@ -107,8 +75,8 @@ internal data class MovieDto(
     @SerialName("filesize") val fileSize: Long,
     @SerialName("recordingtime") val recordingTime: Long,
     @SerialName("tags") val tags: String,
-    @SerialName("eventname") val eventName: String = "N/A",
-    @SerialName("servicename") val serviceName: String = "N/A",
+    @SerialName("eventname") val eventName: String,
+    @SerialName("servicename") val serviceName: String,
     @SerialName("description") val shortDescription: String,
     @SerialName("descriptionExtended") val longDescription: String,
 )

@@ -20,7 +20,6 @@
 package io.github.deprec8.enigmadroid.data.model.api
 
 import androidx.room3.Entity
-import androidx.room3.Index
 import io.github.deprec8.enigmadroid.data.common.toBoolean
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
@@ -64,70 +63,13 @@ internal fun Int.toAfterEventState() = when (this) {
     else -> throw IllegalArgumentException("The integer doesn't represent an after event state: $this")
 }
 
-internal fun toTimer(timer: TimerEntity, logEntries: List<LogEntryEntity>) = Timer(
-    key = "$timer.deviceId:$timer.serviceReference:$timer.eventId",
-    serviceReference = timer.serviceReference,
-    serviceName = timer.serviceName,
-    eventId = timer.eventId,
-    title = timer.title,
-    shortDescription = timer.shortDescription,
-    longDescription = timer.longDescription,
-    disabled = timer.disabled,
-    beginTimestamp = timer.beginTimestamp,
-    endTimestamp = timer.endTimestamp,
-    justPlay = timer.justPlay,
-    afterEventState = timer.afterEventState.toAfterEventState(),
-    directoryName = timer.directoryName,
-    tags = timer.tags.split(" "),
-    state = timer.state.toTimerState(),
-    repeated = timer.repeated,
-    nextActivationTimestamp = timer.nextActivationTimestamp,
-    cancelled = timer.cancelled,
-    logEntries = logEntries.map { logEntryEntity ->
-        LogEntry(
-            key = "$timer.deviceId:$timer.serviceReference:$timer.eventId:$logEntryEntity.timestamp",
-            timestamp = logEntryEntity.timestamp,
-            code = logEntryEntity.code,
-            message = logEntryEntity.message
-        )
-    })
-
-data class Timer(
-    val key: String,
-    val serviceReference: String,
-    val serviceName: String,
-    val eventId: Int,
-    val title: String,
-    val shortDescription: String,
-    val longDescription: String,
-    val disabled: Boolean,
-    val beginTimestamp: Long,
-    val endTimestamp: Long,
-    val justPlay: Boolean,
-    val afterEventState: AfterEventState,
-    val directoryName: String,
-    val tags: List<String>,
-    val state: TimerState,
-    val repeated: Int,
-    val nextActivationTimestamp: Long?,
-    val cancelled: Boolean,
-    val logEntries: List<LogEntry>
-)
-
-data class LogEntry(
-    val key: String, val timestamp: Long, val code: Int, val message: String
-)
-
 @Entity(
-    tableName = "timers",
-    primaryKeys = ["deviceId", "serviceReference", "eventId"],
-    indices = [Index(value = ["beginTimestamp", "state"])]
+    tableName = "timers", primaryKeys = ["deviceId", "id"]
 )
 internal data class TimerEntity(
     val deviceId: Long,
+    val id: Int,
     val serviceReference: String,
-    val serviceName: String,
-    val eventId: Int,
     val title: String,
     val shortDescription: String,
     val longDescription: String,
@@ -145,28 +87,21 @@ internal data class TimerEntity(
 )
 
 @Entity(
-    tableName = "timer_log_entries",
-    primaryKeys = ["deviceId", "serviceReference", "eventId", "timestamp"]
+    tableName = "timers_log_entries", primaryKeys = ["deviceId", "id", "timestamp"]
 )
 internal data class LogEntryEntity(
-    val deviceId: Long,
-    val serviceReference: String,
-    val eventId: Int,
-    val timestamp: Long,
-    val code: Int,
-    val message: String
+    val deviceId: Long, val timerId: Int, val timestamp: Long, val code: Int, val message: String
 )
 
 @Serializable
 internal data class TimerListDto(
     @SerialName("timers") val timers: List<TimerDto>
 ) {
-    fun toTimerEntities(deviceId: Long) = timers.map { timerDto ->
+    fun toTimerEntities(deviceId: Long) = timers.mapIndexed { index, timerDto ->
         TimerEntity(
             deviceId = deviceId,
+            id = index,
             serviceReference = timerDto.serviceReference,
-            serviceName = timerDto.serviceName,
-            eventId = timerDto.eventId,
             title = timerDto.title,
             shortDescription = timerDto.shortDescription,
             longDescription = timerDto.longDescription,
@@ -184,12 +119,11 @@ internal data class TimerListDto(
         )
     }
 
-    fun toLogEntryEntities(deviceId: Long) = timers.flatMap { timerDto ->
+    fun toLogEntryEntities(deviceId: Long) = timers.flatMapIndexed { index, timerDto ->
         timerDto.logEntries.map { logEntryDto ->
             LogEntryEntity(
                 deviceId = deviceId,
-                serviceReference = timerDto.serviceReference,
-                eventId = timerDto.eventId,
+                timerId = index,
                 timestamp = logEntryDto.timestamp.times(1000),
                 code = logEntryDto.code,
                 message = logEntryDto.message
@@ -201,8 +135,6 @@ internal data class TimerListDto(
 @Serializable
 internal data class TimerDto(
     @SerialName("serviceref") val serviceReference: String,
-
-    @SerialName("servicename") val serviceName: String = "N/A",
 
     @SerialName("eit") val eventId: Int = 0,
 

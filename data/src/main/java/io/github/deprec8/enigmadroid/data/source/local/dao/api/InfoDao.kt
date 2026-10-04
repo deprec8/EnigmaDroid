@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.data.source.local.dao
+package io.github.deprec8.enigmadroid.data.source.local.dao.api
 
 import androidx.room3.Dao
 import androidx.room3.Insert
@@ -71,7 +71,7 @@ internal interface InfoDao {
 
     @Transaction
     suspend fun syncNetworkData(deviceId: Long, deviceInfo: DeviceInfoDto) {
-        insertDeviceInfo(deviceInfo.toDeviceInfo(deviceId))
+        insertDeviceInfo(deviceInfo.toDeviceInfoEntity(deviceId))
         insertHdds(deviceInfo.toHddEntities(deviceId))
         insertInterfaces(deviceInfo.toInterfaceEntities(deviceId))
         insertTuners(deviceInfo.toTunerEntities(deviceId))

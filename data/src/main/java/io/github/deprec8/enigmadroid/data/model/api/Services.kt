@@ -20,92 +20,60 @@
 package io.github.deprec8.enigmadroid.data.model.api
 
 import androidx.room3.Entity
-import androidx.room3.Index
 import io.github.deprec8.enigmadroid.data.constants.ServiceType
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-data class Service(
-    val key: String, val number: Int, val reference: String, val name: String
-)
+// Bouquets
 
 @Entity(
-    tableName = "bouquets",
-    primaryKeys = ["deviceId", "reference"],
-    indices = [Index(value = ["type", "position"])]
+    tableName = "bouquets", primaryKeys = ["deviceId", "reference"]
 )
 internal data class BouquetEntity(
-    val deviceId: Long,
-    val position: Int,
-    val type: ServiceType,
-    val reference: String,
-    val name: String
-) {
-    fun toBouquet() = Service(
-        key = "$deviceId:$reference", reference = reference, name = name, number = position
-    )
-}
+    val deviceId: Long, val reference: String, val name: String, val type: ServiceType
+)
 
 @Entity(
-    tableName = "providers",
-    primaryKeys = ["deviceId", "reference"],
-    indices = [Index(value = ["type", "position"])]
+    tableName = "bouquets_services",
+    primaryKeys = ["bouquetReference", "serviceReference", "position"]
 )
-internal data class ProviderEntity(
-    val deviceId: Long,
+internal data class BouquetServiceEntity(
+    val bouquetReference: String,
+    val serviceReference: String,
+    val displayPosition: Int,
     val position: Int,
-    val type: ServiceType,
-    val reference: String,
-    val name: String
-) {
-    fun toProvider() = Service(
-        key = "$deviceId:$reference", reference = reference, name = name, number = position
-    )
-}
-
-@Entity(
-    tableName = "satellites",
-    primaryKeys = ["deviceId", "reference"],
-    indices = [Index(value = ["type", "position"])]
+    val markerName: String? = null
 )
-internal data class SatelliteEntity(
-    val deviceId: Long,
-    val position: Int,
-    val type: ServiceType,
-    val reference: String,
-    val name: String
-) {
-    fun toSatellite() = Service(
-        key = "$deviceId:$reference", reference = reference, name = name, number = position
-    )
-}
-
-@Entity(
-    tableName = "services",
-    primaryKeys = ["deviceId", "parentReference", "reference", "uniquePosition"],
-    indices = [Index(value = ["position"])]
-)
-internal data class ServiceEntity(
-    val deviceId: Long,
-    val parentReference: String,
-    val uniquePosition: Int,
-    val position: Int,
-    val reference: String,
-    val name: String
-) {
-    fun toService() = Service(
-        key = "$deviceId:$parentReference:$reference",
-        number = position,
-        reference = reference,
-        name = name
-    )
-}
 
 @Serializable
-internal data class BouquetServiceDto(
+internal data class BouquetListDto(
     @SerialName("services") val bouquets: List<BouquetDto>
 ) {
-    fun toBouquetEntities(deviceId: Long) = bouquets.map { bouquet ->
+    fun toBouquetEntities(deviceId: Long, serviceType: ServiceType) = bouquets.map { bouquet ->
+        BouquetEntity(
+            deviceId = deviceId,
+            reference = bouquet.reference,
+            name = bouquet.name,
+            type = serviceType
+        )
+    }
+
+    fun toBouquetServiceEntities(deviceId: Long) = bouquets.flatMap { bouquet ->
+        bouquet.services.mapIndexedNotNull { index, serviceDto ->
+            val flag = serviceDto.reference.split(":")[1].toInt()
+
+            if ((flag and 320) == 320) {
+                null
+            } else {
+                BouquetServiceEntity(
+                    bouquetReference = bouquet.reference,
+                    serviceReference = serviceDto.reference,
+                    displayPosition = serviceDto.position,
+                    position = index,
+                    markerName = if ((flag and 64) != 0) serviceDto.name else null,
+                )
+            }
+        }
     }
 }
 
@@ -116,16 +84,23 @@ internal data class BouquetDto(
     @SerialName("subservices") val services: List<ServiceDto>
 )
 
-@Serializable
-internal data class ServiceListDto(
-    @SerialName("services") val services: List<ServiceDto>
+// Satellites
+
+@Entity(
+    tableName = "satellites", primaryKeys = ["deviceId", "reference"]
+)
+internal data class SatelliteEntity(
+    val deviceId: Long,
+    val reference: String,
+    val name: String,
+    val type: ServiceType,
 )
 
-@Serializable
-internal data class ServiceDto(
-    @SerialName("servicereference") val reference: String,
-    @SerialName("servicename") val name: String,
-    @SerialName("pos") val position: Int,
+@Entity(
+    tableName = "satellites_services", primaryKeys = ["satelliteReference", "serviceReference"]
+)
+internal data class SatelliteServiceEntity(
+    val satelliteReference: String, val serviceReference: String
 )
 
 @Serializable
@@ -133,10 +108,9 @@ internal data class SatelliteListDto(
     @SerialName("satellites") val satellites: List<SatelliteDto>
 ) {
     fun toSatelliteEntities(deviceId: Long, serviceType: ServiceType) =
-        satellites.mapIndexed { index, satelliteDto ->
+        satellites.map { satelliteDto ->
             SatelliteEntity(
                 deviceId = deviceId,
-                position = index,
                 type = serviceType,
                 reference = satelliteDto.reference,
                 name = satelliteDto.name
@@ -147,4 +121,45 @@ internal data class SatelliteListDto(
 @Serializable
 internal data class SatelliteDto(
     @SerialName("service") val reference: String, @SerialName("name") val name: String
+)
+
+internal fun ServiceListDto.toSatelliteServiceEntities(deviceId: Long, satelliteReference: String) =
+    this.services.map { serviceDto ->
+        SatelliteServiceEntity(
+            satelliteReference = satelliteReference, serviceReference = serviceDto.reference
+        )
+    }
+
+// Services
+
+@Entity(
+    tableName = "services", primaryKeys = ["deviceId", "reference"]
+)
+internal data class ServiceEntity(
+    val deviceId: Long,
+    val reference: String,
+    val name: String,
+    val provider: String? = null,
+    val type: ServiceType? = null
+)
+
+@Serializable
+internal data class ServiceListDto(
+    @SerialName("services") val services: List<ServiceDto>
+) {
+    fun toServiceEntities(deviceId: Long) = services.map { serviceDto ->
+        ServiceEntity(
+            deviceId = deviceId,
+            reference = serviceDto.reference,
+            name = serviceDto.name,
+            provider = serviceDto.provider.ifBlank { null })
+    }
+}
+
+@Serializable
+internal data class ServiceDto(
+    @SerialName("servicereference") val reference: String,
+    @SerialName("servicename") val name: String,
+    @SerialName("pos") val position: Int,
+    @SerialName("provider") val provider: String,
 )

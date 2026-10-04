@@ -19,12 +19,6 @@
 
 package io.github.deprec8.enigmadroid.data.constants
 
-enum class ServiceFlag(val value: Int) {
-    Service(0), Label(64), Spacer(
-        832
-    )
-}
-
 enum class ServiceType(val string: String, val reference: String) {
     Tv(
         "tv",
@@ -34,11 +28,3 @@ enum class ServiceType(val string: String, val reference: String) {
         "radio", "1:7:2:0:0:0:0:0:0:0:(type == 2) || (type == 10)"
     )
 }
-
-const val ALL_SERVICES_TV =
-    "1:7:1:0:0:0:0:0:0:0:(type%20==%201)%20||%20(type%20==%2017)%20||%20(type%20==%20195)%20||%20(type%20==%2025)%20ORDER%20BY%20name"
-const val ALL_SERVICES_RADIO = "1:7:2:0:0:0:0:0:0:0:(type%20==%202)%20ORDER%20BY%20name"
-const val ALL_PROVIDERS_TV =
-    "1:7:1:0:0:0:0:0:0:0:(type%20==%201)%20||%20(type%20==%2017)%20||%20(type%20==%20195)%20||%20(type%20==%2025)%20FROM%20PROVIDERS%20ORDER%20BY%20name"
-const val ALL_PROVIDERS_RADIO =
-    "1:7:2:0:0:0:0:0:0:0:(type%20==%202)%20FROM%20PROVIDERS%20ORDER%20BY%20name"

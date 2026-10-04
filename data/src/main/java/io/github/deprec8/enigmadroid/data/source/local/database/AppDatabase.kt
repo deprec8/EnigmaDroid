@@ -24,31 +24,45 @@ import androidx.room3.RoomDatabase
 import io.github.deprec8.enigmadroid.data.model.Device
 import io.github.deprec8.enigmadroid.data.model.SearchHistoryItem
 import io.github.deprec8.enigmadroid.data.model.api.BouquetEntity
+import io.github.deprec8.enigmadroid.data.model.api.BouquetServiceEntity
 import io.github.deprec8.enigmadroid.data.model.api.DeviceInfoEntity
 import io.github.deprec8.enigmadroid.data.model.api.EventEntity
 import io.github.deprec8.enigmadroid.data.model.api.HddEntity
 import io.github.deprec8.enigmadroid.data.model.api.InterfaceEntity
 import io.github.deprec8.enigmadroid.data.model.api.LogEntryEntity
 import io.github.deprec8.enigmadroid.data.model.api.MovieEntity
-import io.github.deprec8.enigmadroid.data.model.api.ProviderEntity
+import io.github.deprec8.enigmadroid.data.model.api.SatelliteServiceEntity
+import io.github.deprec8.enigmadroid.data.model.api.ServiceEntity
 import io.github.deprec8.enigmadroid.data.model.api.TimerEntity
 import io.github.deprec8.enigmadroid.data.model.api.TunerEntity
 import io.github.deprec8.enigmadroid.data.source.local.dao.DevicesDao
-import io.github.deprec8.enigmadroid.data.source.local.dao.InfoDao
 import io.github.deprec8.enigmadroid.data.source.local.dao.SearchHistoriesDao
-import io.github.deprec8.enigmadroid.data.source.local.dao.ServicesDao
+import io.github.deprec8.enigmadroid.data.source.local.dao.SyncDao
+import io.github.deprec8.enigmadroid.data.source.local.dao.api.EpgDao
+import io.github.deprec8.enigmadroid.data.source.local.dao.api.InfoDao
+import io.github.deprec8.enigmadroid.data.source.local.dao.api.MoviesDao
+import io.github.deprec8.enigmadroid.data.source.local.dao.api.ServicesDao
+import io.github.deprec8.enigmadroid.data.source.local.dao.api.TimersDao
 
 @Database(
-    entities = [Device::class, SearchHistoryItem::class, MovieEntity::class, TimerEntity::class, EventEntity::class, LogEntryEntity::class, BouquetEntity::class, ProviderEntity::class, DeviceInfoEntity::class, HddEntity::class, InterfaceEntity::class, TunerEntity::class],
+    entities = [Device::class, SearchHistoryItem::class, MovieEntity::class, TimerEntity::class, EventEntity::class, LogEntryEntity::class, BouquetEntity::class, DeviceInfoEntity::class, HddEntity::class, InterfaceEntity::class, TunerEntity::class, ServiceEntity::class, BouquetServiceEntity::class, SatelliteServiceEntity::class],
     version = 1
 )
 internal abstract class AppDatabase : RoomDatabase() {
-
-    abstract fun infoDao(): InfoDao
 
     abstract fun devicesDao(): DevicesDao
 
     abstract fun searchHistoriesDao(): SearchHistoriesDao
 
+    abstract fun syncDao(): SyncDao
+
+    abstract fun infoDao(): InfoDao
+
     abstract fun servicesDao(): ServicesDao
+
+    abstract fun epgDao(): EpgDao
+
+    abstract fun moviesDao(): MoviesDao
+
+    abstract fun timersDao(): TimersDao
 }

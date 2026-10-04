@@ -17,32 +17,32 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.data.source.local.dao
+package io.github.deprec8.enigmadroid.data.source.local.dao.api
 
 import androidx.room3.Dao
 import androidx.room3.Insert
 import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
 import androidx.room3.Transaction
-import io.github.deprec8.enigmadroid.core.database.model.api.EventEntity
-import kotlin.collections.map
+import io.github.deprec8.enigmadroid.data.model.api.EventEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface EpgDao {
+internal interface EpgDao {
 
-    @Query("SELECT * FROM events WHERE deviceId = :deviceId AND parentReference = :parentReference ORDER BY number ASC")
-    suspend fun getAll(deviceId: Long, parentReference: String): List<EventEntity>
+    @Query("SELECT * FROM events WHERE deviceId = :deviceId AND serviceReference = :parentReference ORDER BY name")
+    suspend fun get(deviceId: Long, serviceReference: String): Flow<List<EventEntity>>
 
-    @Query("SELECT * FROM events WHERE deviceId = :deviceId AND parentReference = :parentReference AND :currentTimestamp BETWEEN startTime AND endTime LIMIT 1")
+    @Query("SELECT * FROM events WHERE deviceId = :deviceId AND serviceReference = :serviceReference AND :currentTimestamp BETWEEN startTime AND endTime LIMIT 1")
     suspend fun getCurrent(
-        deviceId: Long, parentReference: String, currentTimestamp: Long
-    ): EventEntity?
+        deviceId: Long, serviceReference: String, currentTimestamp: Long
+    ): Flow<EventEntity?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(bouquets: List<EventEntity>)
 
-    @Query("DELETE FROM events WHERE deviceId = :deviceId AND parentReference = :parentReference AND id NOT IN (:ids)")
-    suspend fun deleteMissing(deviceId: Long, parentReference: String, ids: List<Int>)
+    @Query("DELETE FROM events WHERE deviceId = :deviceId AND serviceReference = :serviceReference AND id NOT IN (:ids)")
+    suspend fun deleteMissing(deviceId: Long, serviceReference: String, ids: List<Int>)
 
     @Transaction
     suspend fun syncNetworkData(

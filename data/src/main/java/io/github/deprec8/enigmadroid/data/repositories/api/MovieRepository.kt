@@ -25,8 +25,8 @@ import io.github.deprec8.enigmadroid.data.model.Device
 import io.github.deprec8.enigmadroid.data.model.SyncCategory
 import io.github.deprec8.enigmadroid.data.model.SyncMetadata
 import io.github.deprec8.enigmadroid.data.model.api.Movie
-import io.github.deprec8.enigmadroid.data.source.local.dao.MoviesDao
 import io.github.deprec8.enigmadroid.data.source.local.dao.SyncDao
+import io.github.deprec8.enigmadroid.data.source.local.dao.api.MoviesDao
 import io.github.deprec8.enigmadroid.data.source.local.database.AppDatabase
 import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
 import kotlinx.coroutines.flow.Flow

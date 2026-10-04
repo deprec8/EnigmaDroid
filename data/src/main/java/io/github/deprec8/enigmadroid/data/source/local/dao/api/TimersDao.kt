@@ -17,34 +17,35 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.data.source.local.dao
+package io.github.deprec8.enigmadroid.data.source.local.dao.api
 
 import androidx.room3.Dao
 import androidx.room3.Insert
 import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
 import androidx.room3.Transaction
-import io.github.deprec8.enigmadroid.data.model.api.MovieEntity
-import kotlinx.coroutines.flow.Flow
+import io.github.deprec8.enigmadroid.data.model.api.TimerEntity
 
 @Dao
-internal interface MoviesDao {
+internal interface TimersDao {
 
-    @Query("SELECT * FROM movies WHERE deviceId = :deviceId ORDER BY beginTimestamp ASC")
-    suspend fun getAll(deviceId: Long): Flow<List<MovieEntity>>
+    @Query("SELECT * FROM timers WHERE deviceId = :deviceId ORDER BY beginTimestamp ASC")
+    suspend fun getAll(deviceId: Long): List<TimerEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(movies: List<MovieEntity>)
+    suspend fun insertAll(bouquets: List<TimerEntity>)
 
-    @Query("DELETE FROM movies WHERE deviceId = :deviceId AND reference NOT IN (:references)")
+    @Query("DELETE FROM timers WHERE deviceId = :deviceId AND reference NOT IN (:references)")
     suspend fun deleteMissing(deviceId: Long, ids: List<Int>)
 
     @Transaction
-    suspend fun sync(
-        deviceId: Long, movies: List<MovieEntity>
+    suspend fun syncNetworkData(
+        deviceId: Long, parentReference: String, events: List<TimerEntity>
     ) {
-        deleteMissing(deviceId, listOf(1))
+        val currentIds = events.map { it.id }
 
-        insertAll(movies)
+        deleteMissing(deviceId, parentReference, currentIds)
+
+        insertAll(events)
     }
 }
