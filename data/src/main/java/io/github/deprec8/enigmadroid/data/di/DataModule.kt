@@ -28,6 +28,7 @@ import io.github.deprec8.enigmadroid.data.repositories.DownloadRepository
 import io.github.deprec8.enigmadroid.data.repositories.OnboardingRepository
 import io.github.deprec8.enigmadroid.data.repositories.SearchRepository
 import io.github.deprec8.enigmadroid.data.repositories.SettingsRepository
+import io.github.deprec8.enigmadroid.data.repositories.api.DeviceInfoRepository
 import io.github.deprec8.enigmadroid.data.source.local.database.AppDatabase
 import io.github.deprec8.enigmadroid.data.source.local.database.dataStore
 import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
@@ -42,15 +43,13 @@ val dataModule = module {
     single<AppDatabase> {
         create(::provideAppDatabase)
     }
-    single<DevicesDataSource>()
     single<NetworkDataSource>()
-
     single<DevicesRepository>()
     single<OnboardingRepository>()
-    single<ApiRepository>()
     single<DownloadRepository>()
     single<SearchRepository>()
     single<SettingsRepository>()
+    single<DeviceInfoRepository>()
 
 }
 

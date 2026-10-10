@@ -54,9 +54,6 @@ object MainKeys {
     data object Movies : NavKey
 
     @Serializable
-    data class MoviesDirectory(val path: String) : NavKey
-
-    @Serializable
     data object Timers : NavKey
 
     @Serializable

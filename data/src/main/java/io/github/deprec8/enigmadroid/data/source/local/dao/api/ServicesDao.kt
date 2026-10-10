@@ -20,67 +20,6 @@
 package io.github.deprec8.enigmadroid.data.source.local.dao.api
 
 import androidx.room3.Dao
-import androidx.room3.Insert
-import androidx.room3.OnConflictStrategy
-import androidx.room3.Query
-import androidx.room3.Transaction
-import io.github.deprec8.enigmadroid.data.model.api.BouquetEntity
-import io.github.deprec8.enigmadroid.data.model.api.ServiceEntity
 
 @Dao
-internal interface ServicesDao {
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertBouquets(bouquets: List<BouquetEntity>)
-
-    @Query("DELETE FROM bouquets WHERE deviceId = :deviceId AND reference NOT IN (:references)")
-    suspend fun clearMissingBouquets(deviceId: Long, references: List<String>)
-
-    @Query("DELETE FROM bouquets WHERE deviceId = :deviceId")
-    suspend fun clearBouquets(deviceId: Long)
-
-    @Transaction
-    suspend fun syncNetworkData(deviceId: Long, bouquets: List<BouquetEntity>) {
-        if (bouquets.isEmpty()) {
-            clearBouquets(deviceId)
-            return
-        }
-
-        val currentReferences = bouquets.map { it.reference }
-
-        clearMissingBouquets(deviceId, currentReferences)
-
-        insertBouquets(bouquets)
-    }
-
-    @Query("SELECT * FROM services WHERE deviceId = :deviceId AND parentReference = :parentReference ORDER BY number ASC")
-    suspend fun getServices(deviceId: Long, parentReference: String): List<ServiceEntity>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertServices(bouquets: List<ServiceEntity>)
-
-    @Query("DELETE FROM services WHERE deviceId = :deviceId AND parentReference = :parentReference AND reference NOT IN (:references)")
-    suspend fun clearMissingServices(
-        deviceId: Long, parentReference: String, references: List<String>
-    )
-
-    @Transaction
-    suspend fun syncNetworkData(
-        deviceId: Long, parentReference: String, services: List<ServiceEntity>
-    ) {
-        if (services.isEmpty()) {
-            clearServices(deviceId, parentReference)
-            return
-        }
-
-        val currentReferences = services.map { it.reference }
-
-        clearMissingServices(deviceId, parentReference, currentReferences)
-
-        insertServices(services)
-    }
-
-    @Query("DELETE FROM services WHERE deviceId = :deviceId AND parentReference = :parentReference")
-    suspend fun clearServices(deviceId: Long, parentReference: String)
-
-}
+internal interface ServicesDao

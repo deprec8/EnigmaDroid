@@ -19,32 +19,19 @@
 
 package io.github.deprec8.enigmadroid.ui.deviceinfo
 
-import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
-import io.github.deprec8.enigmadroid.ui.components.InvalidResponse
-import io.github.deprec8.enigmadroid.ui.components.Loading
-import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
-import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.navigation.DrawerNavigationButton
-import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
-import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.onSuccess
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,53 +41,20 @@ fun DeviceInfoPage(
     deviceInfoViewModel: DeviceInfoViewModel = koinViewModel()
 ) {
 
-    val deviceInfoResult by deviceInfoViewModel.deviceInfoResult.collectAsStateWithLifecycle()
+    val deviceInfo by deviceInfoViewModel.deviceInfo.collectAsStateWithLifecycle()
 
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-
-    ObserveActiveState(deviceInfoViewModel)
-
-    Scaffold(floatingActionButton = {
-        FloatingReloadButton(deviceInfoResult?.isSuccess == true) { deviceInfoViewModel.fetchData() }
-    }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
-        TopAppBar(windowInsets = topAppBarWithDrawerWindowInsets(), title = {
-            Text(
-                text = stringResource(id = R.string.device_info),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }, scrollBehavior = scrollBehavior, navigationIcon = {
-            DrawerNavigationButton(drawerState)
-        }, actions = {
-            RemoteControlActionButton { onNavigateToRemoteControl() }
-        })
-    }) { innerPadding ->
-        if (deviceInfoResult != null) {
-            deviceInfoResult?.onSuccess { deviceInfo ->
-                DeviceInfoContent(
-                    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                    deviceInfo,
-                    innerPadding
-                )
-            }?.onFailure { e ->
-                InvalidResponse(
-                    throwable = e, modifier = Modifier
-                        .consumeWindowInsets(innerPadding)
-                        .padding(
-                            innerPadding
-                        )
-                ) {
-                    deviceInfoViewModel.fetchData(true)
-                }
+    Scaffold { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            Text(deviceInfo?.boxType ?: "No info")
+            Button(onClick = { deviceInfoViewModel.refresh() }) {
+                Text("Refresh")
             }
-        } else {
-            Loading(
-                Modifier
-                    .consumeWindowInsets(innerPadding)
-                    .padding(
-                        innerPadding
-                    )
-            )
+
         }
     }
+
 }

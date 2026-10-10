@@ -25,14 +25,13 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import io.github.deprec8.enigmadroid.data.constants.ContentType
 import io.github.deprec8.enigmadroid.data.constants.PreferenceKeys
-import io.github.deprec8.enigmadroid.data.model.SearchHistoryItem
+import io.github.deprec8.enigmadroid.data.model.SearchHistoryItemEntity
 import io.github.deprec8.enigmadroid.data.source.local.database.AppDatabase
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 
-class SearchRepository private constructor(
+class SearchRepository internal constructor(
     private val appDatabase: AppDatabase, private val dataStore: DataStore<Preferences>
 ) {
 
@@ -51,9 +50,8 @@ class SearchRepository private constructor(
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun getHistory(type: ContentType) = appDatabase.searchHistoriesDao().get(type)
-
+        .map { it.map { entity -> entity.toSearchHistoryItem() } }
 
     fun getTypesWithHistory() =
         appDatabase.searchHistoriesDao().getTypesWithItems().map { it.toSet() }
@@ -61,7 +59,7 @@ class SearchRepository private constructor(
     suspend fun addToHistory(type: ContentType, query: String) {
         if (useHistories.first()) {
             appDatabase.searchHistoriesDao().insertAndTrim(
-                SearchHistoryItem(
+                SearchHistoryItemEntity(
                     type = type, query = query, timestamp = System.currentTimeMillis()
                 )
             )
@@ -76,7 +74,7 @@ class SearchRepository private constructor(
         appDatabase.searchHistoriesDao().clearAll()
     }
 
-    suspend fun deleteFromHistory(item: SearchHistoryItem) {
-        appDatabase.searchHistoriesDao().delete(item)
+    suspend fun deleteFromHistory(id: Long) {
+        appDatabase.searchHistoriesDao().delete(id)
     }
 }

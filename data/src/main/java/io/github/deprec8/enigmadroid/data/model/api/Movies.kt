@@ -23,15 +23,12 @@ import androidx.room3.Entity
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-@Entity(
-    tableName = "movies",
-    primaryKeys = ["deviceId", "directory", "fileName"]
-)
-internal data class MovieEntity(
-    val deviceId: Long,
+data class Movie(
+    val key: String,
     val directory: String,
     val fileName: String,
     val serviceReference: String,
+    val serviceName: String,
     val length: String,
     val lastSeen: Long,
     val fileSize: Long,
@@ -41,6 +38,41 @@ internal data class MovieEntity(
     val shortDescription: String,
     val longDescription: String,
 )
+
+@Entity(
+    tableName = "movies", primaryKeys = ["deviceId", "directory", "fileName"]
+)
+internal data class MovieEntity(
+    val deviceId: Long,
+    val directory: String,
+    val fileName: String,
+    val serviceReference: String,
+    val serviceName: String,
+    val length: String,
+    val lastSeen: Long,
+    val fileSize: Long,
+    val recordingTime: Long,
+    val tags: String,
+    val eventName: String,
+    val shortDescription: String,
+    val longDescription: String,
+) {
+    fun toMovie() = Movie(
+        key = "${deviceId}_${directory}_{$fileName}",
+        directory = directory,
+        fileName = fileName,
+        serviceReference = serviceReference,
+        serviceName = serviceName,
+        length = length,
+        lastSeen = lastSeen,
+        fileSize = fileSize,
+        recordingTime = recordingTime,
+        tags = tags,
+        eventName = eventName,
+        shortDescription = shortDescription,
+        longDescription = longDescription
+    )
+}
 
 @Serializable
 internal data class MovieListDto(
@@ -54,6 +86,7 @@ internal data class MovieListDto(
             directory = directory,
             fileName = movieDto.fileName,
             serviceReference = movieDto.serviceReference,
+            serviceName = movieDto.serviceName,
             length = movieDto.length,
             lastSeen = movieDto.lastSeen,
             fileSize = movieDto.fileSize,

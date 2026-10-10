@@ -23,9 +23,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AutoAwesomeMosaic
 import androidx.compose.material.icons.outlined.Bookmark
-import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -40,36 +38,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.ContentFlag
 
 @Composable
-fun ContentFlagItem(name: String, flag: ContentFlag) {
-    val icon = when (flag) {
-        ContentFlag.Marker -> Icons.Outlined.Bookmark
-        ContentFlag.Directory -> Icons.Outlined.Folder
-        ContentFlag.Group -> Icons.Outlined.AutoAwesomeMosaic
-        else -> null
-    }
-    val contentDescription = when (flag) {
-        ContentFlag.Marker -> stringResource(R.string.marker)
-        ContentFlag.Directory -> stringResource(R.string.directory)
-        ContentFlag.Group -> stringResource(R.string.group)
-        else -> ""
-    }
-
-    if (icon != null) {
-        Column {
-            ListItem(
-                headlineContent = {
-                    Text(
-                        name, maxLines = 1, overflow = TextOverflow.Ellipsis
-                    )
-                }, leadingContent = {
-                    Icon(icon, contentDescription)
-                }, colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-            )
-            HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-        }
+fun MarkerItem(name: String) {
+    Column {
+        ListItem(
+            headlineContent = {
+                Text(
+                    name, maxLines = 1, overflow = TextOverflow.Ellipsis
+                )
+            }, leadingContent = {
+                Icon(Icons.Outlined.Bookmark, stringResource(R.string.marker))
+            }, colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+        )
+        HorizontalDivider(Modifier.padding(horizontal = 16.dp))
     }
 }
 

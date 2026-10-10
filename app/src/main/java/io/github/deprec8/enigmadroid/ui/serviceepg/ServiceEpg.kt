@@ -19,31 +19,9 @@
 
 package io.github.deprec8.enigmadroid.ui.serviceepg
 
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
-import io.github.deprec8.enigmadroid.ui.components.InvalidResponse
-import io.github.deprec8.enigmadroid.ui.components.Loading
-import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
-import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.navigation.ArrowNavigationButton
-import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
-import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
-import io.github.deprec8.enigmadroid.ui.epg.EpgContent
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
-import kotlin.onSuccess
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,75 +29,8 @@ fun ServiceEpgPage(
     serviceName: String,
     serviceReference: String,
     onNavigateBack: () -> Unit,
-    serviceEpgViewModel: ServiceEpgViewModel = koinViewModel(parameters = {
-        parametersOf(
-            serviceReference
-        )
-    })
+    serviceEpgViewModel: ServiceEpgViewModel = koinViewModel()
 ) {
-    val eventBatchResult by serviceEpgViewModel.eventBatchResult.collectAsStateWithLifecycle()
-    val filteredEvents by serviceEpgViewModel.filteredEvents.collectAsStateWithLifecycle()
-    val searchHistory by serviceEpgViewModel.searchHistory.collectAsStateWithLifecycle()
 
-    ObserveActiveState(serviceEpgViewModel)
 
-    Scaffold(floatingActionButton = {
-        FloatingReloadButton(eventBatchResult?.isSuccess == true) { serviceEpgViewModel.fetchData() }
-    }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
-        SearchTopAppBar(
-            enabled = eventBatchResult?.getOrNull()?.events?.isNotEmpty() == true,
-            textFieldState = serviceEpgViewModel.searchFieldState,
-            placeholder = stringResource(R.string.search_epg_from, serviceName),
-            content = {
-                filteredEvents?.let {
-                    EpgContent(
-                        events = it,
-                        paddingValues = PaddingValues(0.dp),
-                        showChannelName = true,
-                        onAddTimerForEvent = { event -> serviceEpgViewModel.addTimerForEvent(event) })
-                } ?: run {
-                    SearchHistory(searchHistory = searchHistory, onSearchQuery = {
-                        serviceEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
-                        serviceEpgViewModel.updateSearchInput()
-                    }, onInsertQuery = {
-                        serviceEpgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
-                    }, onRemoveItem = {
-                        serviceEpgViewModel.deleteFromSearchHistory(it)
-                    })
-                }
-            },
-            navigationButton = {
-                ArrowNavigationButton { onNavigateBack() }
-            },
-            onSearch = {
-                serviceEpgViewModel.updateSearchInput()
-            })
-    }) { innerPadding ->
-        if (eventBatchResult != null) {
-            eventBatchResult?.onSuccess { eventBatch ->
-                EpgContent(
-                    events = eventBatch.events,
-                    innerPadding,
-                    onAddTimerForEvent = { serviceEpgViewModel.addTimerForEvent(it) })
-            }?.onFailure { e ->
-                InvalidResponse(
-                    throwable = e, modifier = Modifier
-                        .consumeWindowInsets(innerPadding)
-                        .padding(
-                            innerPadding
-                        )
-                ) {
-                    serviceEpgViewModel.fetchData(true)
-                }
-            }
-        } else {
-            Loading(
-                Modifier
-                    .consumeWindowInsets(innerPadding)
-                    .padding(
-                        innerPadding
-                    )
-            )
-        }
-    }
 }

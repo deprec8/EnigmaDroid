@@ -53,7 +53,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.data.source.local.SearchHistoryItem
+import io.github.deprec8.enigmadroid.data.model.SearchHistoryItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,7 +61,7 @@ fun SearchHistory(
     searchHistory: List<SearchHistoryItem>,
     onSearchQuery: (String) -> Unit,
     onInsertQuery: (String) -> Unit,
-    onRemoveItem: (SearchHistoryItem) -> Unit
+    onRemoveItem: (Long) -> Unit
 ) {
     if (searchHistory.isNotEmpty()) {
         LazyColumn(
@@ -69,7 +69,7 @@ fun SearchHistory(
                 .fillMaxSize()
                 .imePadding()
         ) {
-            items(searchHistory, key = { item -> item.id }) { item ->
+            items(searchHistory, key = { item -> item.key }) { item ->
                 var showRemoveDialog by rememberSaveable { mutableStateOf(false) }
 
                 ListItem(
@@ -98,11 +98,9 @@ fun SearchHistory(
                         Icon(Icons.Default.History, contentDescription = null)
                     },
                     modifier = Modifier
-                        .combinedClickable(
-                            onClick = { onSearchQuery(item.query) },
-                            onLongClick = {
-                                showRemoveDialog = true
-                            })
+                        .combinedClickable(onClick = { onSearchQuery(item.query) }, onLongClick = {
+                            showRemoveDialog = true
+                        })
                         .animateItem(),
                     colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                 )
@@ -114,7 +112,7 @@ fun SearchHistory(
                         }
                     }, confirmButton = {
                         TextButton(onClick = {
-                            onRemoveItem(item)
+                            onRemoveItem(item.key)
                             showRemoveDialog = false
                         }) {
                             Text(stringResource(R.string.remove))

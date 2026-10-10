@@ -41,8 +41,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
-import io.github.deprec8.enigmadroid.common.constant.MainKeys
-import io.github.deprec8.enigmadroid.common.constant.SettingsKeys
+import io.github.deprec8.enigmadroid.data.constants.ContentType
+import io.github.deprec8.enigmadroid.model.MainKeys
+import io.github.deprec8.enigmadroid.model.SettingsKeys
 import io.github.deprec8.enigmadroid.ui.components.isSmallScreenLayout
 import io.github.deprec8.enigmadroid.ui.components.navigation.DrawerNavigator
 import io.github.deprec8.enigmadroid.ui.components.navigation.fadeThroughTransition
@@ -53,7 +54,6 @@ import io.github.deprec8.enigmadroid.ui.current.CurrentPage
 import io.github.deprec8.enigmadroid.ui.deviceinfo.DeviceInfoPage
 import io.github.deprec8.enigmadroid.ui.epg.EpgPage
 import io.github.deprec8.enigmadroid.ui.live.LivePage
-import io.github.deprec8.enigmadroid.ui.movies.MoviesDirectoryPage
 import io.github.deprec8.enigmadroid.ui.movies.MoviesPage
 import io.github.deprec8.enigmadroid.ui.serviceepg.ServiceEpgPage
 import io.github.deprec8.enigmadroid.ui.settings.SettingsPage
@@ -157,31 +157,8 @@ fun MainNavigationDisplay(
         ) {
             MoviesPage(
                 onNavigateToRemoteControl = { onNavigateToRemoteControl() },
-                onNavigateToDirectory = { path ->
-                    drawerNavigator.navigate(
-                        MainKeys.MoviesDirectory(path)
-                    )
-                },
                 modalDrawerState
             )
-        }
-        entry<MainKeys.MoviesDirectory>(
-            metadata = sharedAxisXTransition()
-        ) { backStackEntry ->
-            MoviesDirectoryPage(
-                path = backStackEntry.path,
-                onNavigateToRemoteControl = { onNavigateToRemoteControl() },
-                onNavigateToDirectory = { path ->
-                    drawerNavigator.navigate(
-                        MainKeys.MoviesDirectory(path)
-                    )
-                },
-                onNavigateBack = {
-                    drawerNavigator.goBack()
-                },
-                onNavigateToTop = {
-                    drawerNavigator.goTop()
-                })
         }
         entry<MainKeys.Timers>(
             metadata = fadeThroughTransition()

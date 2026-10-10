@@ -19,47 +19,6 @@
 
 package io.github.deprec8.enigmadroid.ui.serviceepg
 
-import androidx.lifecycle.viewModelScope
-import io.github.deprec8.enigmadroid.core.data.repositories.ApiRepository
-import io.github.deprec8.enigmadroid.model.api.Event
-import io.github.deprec8.enigmadroid.model.api.EventBatch
-import io.github.deprec8.enigmadroid.model.api.search
-import io.github.deprec8.enigmadroid.ui.components.viewmodels.SearchableContentViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
-import org.koin.core.annotation.InjectedParam
+import androidx.lifecycle.ViewModel
 
-class ServiceEpgViewModel(
-    @InjectedParam private val serviceReference: String, private val apiRepository: ApiRepository
-) : SearchableContentViewModel(ContentType.ServiceEpg) {
-
-    private val _eventBatchResult = MutableStateFlow<Result<EventBatch>?>(null)
-    val eventBatchResult: StateFlow<Result<EventBatch>?> = _eventBatchResult.asStateFlow()
-
-    val filteredEvents = combine(_eventBatchResult, searchInput) { eventBatchResult, searchInput ->
-        eventBatchResult?.getOrNull()?.events?.search(searchInput)
-    }.stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), null
-    )
-
-    fun addTimerForEvent(event: Event) {
-        viewModelScope.launch {
-            apiRepository.addTimerForEvent(
-                event.serviceReference, event.id
-            )
-        }
-    }
-
-    override fun onClearData() {
-        _eventBatchResult.value = null
-    }
-
-    override suspend fun onGetData() {
-        _eventBatchResult.value = apiRepository.fetchServiceEpgBatch(serviceReference)
-    }
-}
+class ServiceEpgViewModel : ViewModel()

@@ -21,37 +21,37 @@ package io.github.deprec8.enigmadroid.ui.settings.devices
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.deprec8.enigmadroid.Device
-import io.github.deprec8.enigmadroid.core.data.repositories.DevicesRepository
+import io.github.deprec8.enigmadroid.data.model.Device
+import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class DevicesViewModel(private val devicesRepository: DevicesRepository) : ViewModel() {
 
-    val currentDeviceId = devicesRepository.getCurrentDeviceId().stateIn(
+    val currentDeviceId = devicesRepository.currentId.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000), -1
     )
 
-    val devices = devicesRepository.getDevices().stateIn(
+    val devices = devicesRepository.devices.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
     )
 
     fun setCurrentDeviceId(id: Long) {
         viewModelScope.launch {
-            devicesRepository.setCurrentDeviceId(id)
+            devicesRepository.setCurrentId(id)
         }
     }
 
     fun deleteDevice(device: Device) {
         viewModelScope.launch {
-            devicesRepository.deleteDevice(device)
+            devicesRepository.delete(device)
         }
     }
 
     fun addDevice(newDevice: Device) {
         viewModelScope.launch {
-            devicesRepository.addDevice(
+            devicesRepository.add(
                 newDevice
             )
         }
@@ -59,7 +59,7 @@ class DevicesViewModel(private val devicesRepository: DevicesRepository) : ViewM
 
     fun editDevice(oldDevice: Device, newDevice: Device) {
         viewModelScope.launch {
-            devicesRepository.editDevice(
+            devicesRepository.edit(
                 oldDevice, newDevice
             )
         }

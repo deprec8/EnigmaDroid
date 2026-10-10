@@ -27,13 +27,12 @@ import io.github.deprec8.enigmadroid.data.constants.PreferenceKeys
 import io.github.deprec8.enigmadroid.data.model.Device
 import io.github.deprec8.enigmadroid.data.source.local.database.AppDatabase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class DevicesRepository private constructor(
+class DevicesRepository internal constructor(
     private val appDatabase: AppDatabase, private val dataStore: DataStore<Preferences>
 ) {
 
@@ -47,6 +46,8 @@ class DevicesRepository private constructor(
         appDatabase.devicesDao().get(id)
     }
 
+    val devices = appDatabase.devicesDao().getAll()
+
     suspend fun setCurrentId(id: Long) {
         dataStore.edit { preferences ->
             preferences[currentDeviceIdKey] = id
@@ -55,10 +56,6 @@ class DevicesRepository private constructor(
 
     suspend fun getCurrentStatic(): Device? {
         return appDatabase.devicesDao().getStatic(currentId.first())
-    }
-
-    fun getAll(): Flow<List<Device>> {
-        return appDatabase.devicesDao().getAll()
     }
 
     suspend fun getCount(): Int {

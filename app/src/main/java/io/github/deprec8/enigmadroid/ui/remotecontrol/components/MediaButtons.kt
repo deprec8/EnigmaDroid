@@ -51,11 +51,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
+import io.github.deprec8.enigmadroid.data.constants.RemoteControl
 
 @Composable
 fun MediaButtons(
-    onKeyClicked: (RemoteControlKey) -> Unit
+    onKeyClicked: (RemoteControl) -> Unit
 ) {
 
     Row(
@@ -79,7 +79,7 @@ fun MediaButtons(
                     color = ButtonDefaults.buttonColors().disabledContentColor
                 ),
                 onClick = {
-                    onKeyClicked(RemoteControlKey.VolumeUp)
+                    onKeyClicked(RemoteControl.VolumeUp)
                 },
                 shape = MaterialTheme.shapes.extraLarge,
                 contentPadding = PaddingValues(),
@@ -107,7 +107,7 @@ fun MediaButtons(
 
                 ),
                 onClick = {
-                    onKeyClicked(RemoteControlKey.VolumeDown)
+                    onKeyClicked(RemoteControl.VolumeDown)
                 },
                 shape = MaterialTheme.shapes.extraLarge,
                 contentPadding = PaddingValues(),
@@ -128,7 +128,7 @@ fun MediaButtons(
         ) {
             FilledTonalButton(
                 onClick = {
-                    onKeyClicked(RemoteControlKey.Audio)
+                    onKeyClicked(RemoteControl.Audio)
                 },
                 shape = MaterialTheme.shapes.extraLarge,
                 contentPadding = PaddingValues(),
@@ -142,7 +142,7 @@ fun MediaButtons(
             }
             FilledTonalButton(
                 onClick = {
-                    onKeyClicked(RemoteControlKey.Mute)
+                    onKeyClicked(RemoteControl.Mute)
                 },
                 shape = MaterialTheme.shapes.extraLarge,
                 contentPadding = PaddingValues(),
@@ -158,7 +158,7 @@ fun MediaButtons(
             }
             FilledTonalButton(
                 onClick = {
-                    onKeyClicked(RemoteControlKey.Help)
+                    onKeyClicked(RemoteControl.Help)
                 },
                 shape = MaterialTheme.shapes.extraLarge,
                 contentPadding = PaddingValues(),
@@ -188,7 +188,7 @@ fun MediaButtons(
 
                 ),
                 onClick = {
-                    onKeyClicked(RemoteControlKey.NextChannel)
+                    onKeyClicked(RemoteControl.NextChannel)
                 },
                 contentPadding = PaddingValues(),
                 modifier = Modifier
@@ -217,7 +217,7 @@ fun MediaButtons(
 
                 ),
                 onClick = {
-                    onKeyClicked(RemoteControlKey.PreviousChannel)
+                    onKeyClicked(RemoteControl.PreviousChannel)
                 },
                 contentPadding = PaddingValues(),
                 modifier = Modifier

@@ -29,9 +29,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
-import io.github.deprec8.enigmadroid.common.constant.IntentKeys
-import io.github.deprec8.enigmadroid.core.data.repositories.DevicesRepository
-import io.github.deprec8.enigmadroid.core.data.repositories.OnboardingRepository
+import io.github.deprec8.enigmadroid.constant.IntentKeys
+import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
+import io.github.deprec8.enigmadroid.data.repositories.OnboardingRepository
 import io.github.deprec8.enigmadroid.ui.root.RootNavigationDisplay
 import io.github.deprec8.enigmadroid.ui.theme.EnigmaDroidTheme
 import kotlinx.coroutines.flow.first
@@ -82,7 +82,7 @@ class MainActivity : ComponentActivity() {
                     IntentKeys.OPEN_WITH_DEVICE_ACTION -> intent.getLongExtra(
                         IntentKeys.DEVICE_ID_EXTRA, -1L
                     ).let { id ->
-                        devicesRepository.setCurrentDeviceId(id)
+                        devicesRepository.setCurrentId(id)
                     }
                 }
             } else {

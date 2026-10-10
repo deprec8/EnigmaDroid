@@ -30,21 +30,16 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 internal interface MoviesDao {
 
-    @Query("SELECT * FROM movies WHERE deviceId = :deviceId ORDER BY beginTimestamp ASC")
-    suspend fun get(deviceId: Long): Flow<List<MovieEntity>>
+    @Query("SELECT * FROM movies WHERE deviceId = :deviceId")
+    fun get(deviceId: Long): Flow<List<MovieEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(movies: List<MovieEntity>)
-
-    @Query("DELETE FROM movies WHERE deviceId = :deviceId AND reference NOT IN (:references)")
-    suspend fun deleteMissing(deviceId: Long, ids: List<Int>)
 
     @Transaction
     suspend fun sync(
         deviceId: Long, movies: List<MovieEntity>
     ) {
-        deleteMissing(deviceId, listOf(1))
-
         insertAll(movies)
     }
 }

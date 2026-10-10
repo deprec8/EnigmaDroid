@@ -22,6 +22,7 @@ plugins {
     alias(libs.plugins.koin.compiler)
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.androidx.room3)
+    alias(libs.plugins.jetbrains.kotlin.serialization)
 }
 
 android {

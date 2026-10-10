@@ -87,7 +87,7 @@ internal data class TimerEntity(
 )
 
 @Entity(
-    tableName = "timers_log_entries", primaryKeys = ["deviceId", "id", "timestamp"]
+    tableName = "timers_log_entries", primaryKeys = ["deviceId", "timerId", "timestamp"]
 )
 internal data class LogEntryEntity(
     val deviceId: Long, val timerId: Int, val timestamp: Long, val code: Int, val message: String

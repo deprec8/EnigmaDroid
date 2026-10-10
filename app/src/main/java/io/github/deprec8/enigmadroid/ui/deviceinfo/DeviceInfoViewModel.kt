@@ -19,24 +19,36 @@
 
 package io.github.deprec8.enigmadroid.ui.deviceinfo
 
-import io.github.deprec8.enigmadroid.core.data.repositories.ApiRepository
-import io.github.deprec8.enigmadroid.model.api.DeviceInfo
-import io.github.deprec8.enigmadroid.ui.components.viewmodels.ContentViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
+import io.github.deprec8.enigmadroid.data.repositories.api.DeviceInfoRepository
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class DeviceInfoViewModel(
-    private val apiRepository: ApiRepository,
-) : ContentViewModel() {
+    private val devicesRepository: DevicesRepository,
+    private val deviceInfoRepository: DeviceInfoRepository
+) : ViewModel() {
 
-    private val _deviceInfoResult = MutableStateFlow<Result<DeviceInfo>?>(null)
-    val deviceInfoResult = _deviceInfoResult.asStateFlow()
+    val currentDevice = devicesRepository.current.stateIn(
+        scope = viewModelScope, started = SharingStarted.WhileSubscribed(5000), initialValue = null
+    )
 
-    override fun onClearData() {
-        _deviceInfoResult.value = null
-    }
+    val deviceInfo = currentDevice.map {
+        deviceInfoRepository.observeDeviceInfo(it?.id ?: -1L).first()
+    }.stateIn(
+        scope = viewModelScope, started = SharingStarted.WhileSubscribed(5000), initialValue = null
+    )
 
-    override suspend fun onGetData() {
-        _deviceInfoResult.value = apiRepository.fetchDeviceInfo()
+    fun refresh() {
+        viewModelScope.launch {
+            currentDevice.first()?.let {
+                deviceInfoRepository.refresh(it)
+            }
+        }
     }
 }

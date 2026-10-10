@@ -19,61 +19,11 @@
 
 package io.github.deprec8.enigmadroid.ui.epg
 
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DrawerState
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.PlainTooltip
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TooltipAnchorPosition
-import androidx.compose.material3.TooltipBox
-import androidx.compose.material3.TooltipDefaults
-import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.model.api.Bouquet
-import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
-import io.github.deprec8.enigmadroid.ui.components.InvalidResponse
-import io.github.deprec8.enigmadroid.ui.components.Loading
-import io.github.deprec8.enigmadroid.ui.components.NoResults
-import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
-import io.github.deprec8.enigmadroid.ui.components.content.ContentTab
-import io.github.deprec8.enigmadroid.ui.components.content.ContentTabRow
-import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
-import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
-import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
-import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarDrawerNavigationButton
-import kotlinx.coroutines.launch
+import io.github.deprec8.enigmadroid.data.constants.ContentType
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
-import kotlin.collections.isNotEmpty
-import kotlin.onSuccess
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,174 +31,53 @@ fun EpgPage(
     contentType: ContentType,
     onNavigateToRemoteControl: () -> Unit,
     drawerState: DrawerState,
-    epgViewModel: EpgViewModel = koinViewModel(parameters = { parametersOf(contentType) })
+    epgViewModel: EpgViewModel = koinViewModel()
 ) {
-    val eventBatchSetResult by epgViewModel.eventBatchSetResult.collectAsStateWithLifecycle()
-    val bouquetsResult by epgViewModel.bouquetsResult.collectAsStateWithLifecycle()
-    val currentBouquetReference by epgViewModel.currentBouquetReference.collectAsStateWithLifecycle()
-    val filteredEvents by epgViewModel.filteredEvents.collectAsStateWithLifecycle()
-    val searchHistory by epgViewModel.searchHistory.collectAsStateWithLifecycle()
 
-    val scope = rememberCoroutineScope()
-    val pagerState = rememberPagerState(pageCount = {
-        eventBatchSetResult?.getOrNull()?.eventBatches?.size ?: 0
-    })
-    val selectedTabIndex by remember {
-        derivedStateOf {
-            pagerState.currentPage.coerceIn(
-                0,
-                ((eventBatchSetResult?.getOrNull()?.eventBatches?.size ?: 0) - 1).coerceAtLeast(0)
-            )
-        }
-    }
-
-    ObserveActiveState(epgViewModel)
-
-    Scaffold(floatingActionButton = {
-        FloatingReloadButton(eventBatchSetResult?.isSuccess == true) {
-            epgViewModel.fetchData()
-        }
-    }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
-        SearchTopAppBar(
-            enabled = eventBatchSetResult?.getOrNull()?.eventBatches?.isNotEmpty() == true,
-            textFieldState = epgViewModel.searchFieldState,
-            placeholder = stringResource(R.string.search_epg),
-            content = {
-                filteredEvents?.let {
-                    EpgContent(
-                        events = it,
-                        paddingValues = PaddingValues(0.dp),
-                        showChannelName = true,
-                        onAddTimerForEvent = { event -> epgViewModel.addTimerForEvent(event) })
-                } ?: run {
-                    SearchHistory(searchHistory = searchHistory, onSearchQuery = {
-                        epgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
-                        epgViewModel.updateSearchInput()
-                    }, onInsertQuery = {
-                        epgViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
-                    }, onRemoveItem = {
-                        epgViewModel.deleteFromSearchHistory(it)
-                    })
-                }
-            },
-            navigationButton = { searchBarState ->
-                SearchTopAppBarDrawerNavigationButton(drawerState, searchBarState)
-            },
-            actionButtons = {
-                Row {
-                    BouquetMenu(
-                        bouquetsResult?.getOrNull(), currentBouquetReference
-                    ) { bouquetReference -> epgViewModel.setCurrentBouquet(bouquetReference) }
-                    RemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
-                }
-            },
-            onSearch = {
-                epgViewModel.updateSearchInput()
-            },
-            actionBar = {
-                eventBatchSetResult?.onSuccess { eventBatchSet ->
-                    if (eventBatchSet.eventBatches.isNotEmpty()) {
-                        ContentTabRow(selectedTabIndex) {
-                            eventBatchSet.eventBatches.forEachIndexed { index, eventBatch ->
-                                ContentTab(
-                                    name = eventBatch.name, selected = index == selectedTabIndex
-                                ) {
-                                    scope.launch {
-                                        pagerState.animateScrollToPage(index)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            })
-    }
-
-    ) { innerPadding ->
-        if (eventBatchSetResult != null) {
-            eventBatchSetResult?.onSuccess { eventBatchSet ->
-                if (eventBatchSet.eventBatches.isNotEmpty()) {
-                    HorizontalPager(
-                        modifier = Modifier.fillMaxSize(),
-                        state = pagerState,
-                    ) { service ->
-                        EpgContent(
-                            events = eventBatchSet.eventBatches[service].events,
-                            innerPadding,
-                            onAddTimerForEvent = { epgViewModel.addTimerForEvent(it) })
-                    }
-                } else {
-                    NoResults(
-                        Modifier
-                            .consumeWindowInsets(innerPadding)
-                            .padding(innerPadding)
-                    )
-                }
-            }?.onFailure { e ->
-                InvalidResponse(
-                    throwable = e, modifier = Modifier
-                        .consumeWindowInsets(innerPadding)
-                        .padding(
-                            innerPadding
-                        )
-                ) {
-                    epgViewModel.fetchData(true)
-                }
-            }
-        } else {
-            Loading(
-                Modifier
-                    .consumeWindowInsets(innerPadding)
-                    .padding(
-                        innerPadding
-                    )
-            )
-        }
-    }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun BouquetMenu(
-    bouquets: List<Bouquet>?, currentBouquetReference: String, onBouquetChange: (String) -> Unit
-) {
-    var showMenu by rememberSaveable { mutableStateOf(false) }
-
-    TooltipBox(
-        tooltip = {
-            PlainTooltip {
-                Text(stringResource(R.string.bouquet_menu))
-            }
-        },
-        state = rememberTooltipState(),
-        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-            TooltipAnchorPosition.Below, 4.dp
-        )
-    ) {
-        IconButton(
-            onClick = {
-                showMenu = true
-            }, enabled = bouquets?.isNotEmpty() == true
-        ) {
-            Icon(
-                Icons.Default.MoreVert, contentDescription = stringResource(R.string.bouquet_menu)
-            )
-            DropdownMenu(
-                expanded = showMenu, onDismissRequest = { showMenu = false }) {
-                bouquets?.forEach { bouquet ->
-                    DropdownMenuItem(text = { Text(bouquet.name) }, onClick = {
-                        onBouquetChange(bouquet.reference)
-                        showMenu = false
-                    }, leadingIcon = {
-                        if (currentBouquetReference == bouquet.reference) {
-                            Icon(
-                                Icons.Filled.Check,
-                                contentDescription = stringResource(R.string.current_bouquet)
-                            )
-                        }
-                    })
-                }
-            }
-        }
-    }
-}
+//@OptIn(ExperimentalMaterial3Api::class)
+//@Composable
+//private fun BouquetMenu(
+//    bouquets: List<Bouquet>?, currentBouquetReference: String, onBouquetChange: (String) -> Unit
+//) {
+//    var showMenu by rememberSaveable { mutableStateOf(false) }
+//
+//    TooltipBox(
+//        tooltip = {
+//            PlainTooltip {
+//                Text(stringResource(R.string.bouquet_menu))
+//            }
+//        },
+//        state = rememberTooltipState(),
+//        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+//            TooltipAnchorPosition.Below, 4.dp
+//        )
+//    ) {
+//        IconButton(
+//            onClick = {
+//                showMenu = true
+//            }, enabled = bouquets?.isNotEmpty() == true
+//        ) {
+//            Icon(
+//                Icons.Default.MoreVert, contentDescription = stringResource(R.string.bouquet_menu)
+//            )
+//            DropdownMenu(
+//                expanded = showMenu, onDismissRequest = { showMenu = false }) {
+//                bouquets?.forEach { bouquet ->
+//                    DropdownMenuItem(text = { Text(bouquet.name) }, onClick = {
+//                        onBouquetChange(bouquet.reference)
+//                        showMenu = false
+//                    }, leadingIcon = {
+//                        if (currentBouquetReference == bouquet.reference) {
+//                            Icon(
+//                                Icons.Filled.Check,
+//                                contentDescription = stringResource(R.string.current_bouquet)
+//                            )
+//                        }
+//                    })
+//                }
+//            }
+//        }
+//    }
+//}

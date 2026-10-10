@@ -19,25 +19,6 @@
 
 package io.github.deprec8.enigmadroid.ui.signal
 
-import io.github.deprec8.enigmadroid.core.data.repositories.ApiRepository
-import io.github.deprec8.enigmadroid.model.api.SignalInfo
-import io.github.deprec8.enigmadroid.ui.components.viewmodels.ContentViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import androidx.lifecycle.ViewModel
 
-class SignalViewModel(
-    private val apiRepository: ApiRepository
-) : ContentViewModel() {
-
-    private val _signalInfoResult = MutableStateFlow<Result<SignalInfo>?>(null)
-    val signalInfoResult: StateFlow<Result<SignalInfo>?> = _signalInfoResult.asStateFlow()
-
-    override fun onClearData() {
-        _signalInfoResult.value = null
-    }
-
-    override suspend fun onGetData() {
-        _signalInfoResult.value = apiRepository.fetchSignalInfo()
-    }
-}
+class SignalViewModel : ViewModel()

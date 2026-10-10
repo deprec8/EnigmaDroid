@@ -28,7 +28,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.scene.DialogSceneStrategy
 import androidx.navigation3.ui.NavDisplay
-import io.github.deprec8.enigmadroid.common.constant.RootKeys
+import io.github.deprec8.enigmadroid.model.RootKeys
 import io.github.deprec8.enigmadroid.ui.components.navigation.fadeThroughTransition
 import io.github.deprec8.enigmadroid.ui.components.navigation.sharedAxisXTransition
 import io.github.deprec8.enigmadroid.ui.main.MainNavigationDisplay

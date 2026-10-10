@@ -84,11 +84,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
-import io.github.deprec8.enigmadroid.Device
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.constant.MainKeys
+import io.github.deprec8.enigmadroid.data.model.Device
 import io.github.deprec8.enigmadroid.model.DrawerPage
 import io.github.deprec8.enigmadroid.model.DrawerPageGroup
+import io.github.deprec8.enigmadroid.model.MainKeys
 import io.github.deprec8.enigmadroid.ui.components.dialogs.UrlIntentErrorDialog
 import kotlinx.coroutines.launch
 

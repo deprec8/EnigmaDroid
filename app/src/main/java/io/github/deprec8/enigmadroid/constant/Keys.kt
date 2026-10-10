@@ -17,7 +17,7 @@
  * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package io.github.deprec8.enigmadroid.common.constant
+package io.github.deprec8.enigmadroid.constant
 
 object IntentKeys {
     const val OPEN_WITH_DEVICE_ACTION = "io.github.deprec8.enigmadroid.OPEN_WITH_DEVICE"

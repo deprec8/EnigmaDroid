@@ -28,12 +28,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
+import io.github.deprec8.enigmadroid.data.constants.RemoteControl
 import io.github.deprec8.enigmadroid.model.RemoteControlButtonData
 
 @Composable
 fun BouquetButtons(
-    onButtonClicked: (RemoteControlKey) -> Unit
+    onButtonClicked: (RemoteControl) -> Unit
 ) {
     Row(
         Modifier.widthIn(0.dp, 500.dp)
@@ -53,17 +53,17 @@ private val bouquetButtons = listOf(
     RemoteControlButtonData(
         icon = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
         iconLabelRes = R.string.bouquet_down,
-        key = RemoteControlKey.PreviousBouquet
+        key = RemoteControl.PreviousBouquet
     ),
     RemoteControlButtonData(
-        text = "INFO", key = RemoteControlKey.Info
+        text = "INFO", key = RemoteControl.Info
     ),
     RemoteControlButtonData(
-        text = "TEXT", key = RemoteControlKey.Text
+        text = "TEXT", key = RemoteControl.Text
     ),
     RemoteControlButtonData(
         icon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
         iconLabelRes = R.string.bouquet_up,
-        key = RemoteControlKey.NextBouquet
+        key = RemoteControl.NextBouquet
     ),
 )

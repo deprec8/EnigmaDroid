@@ -39,7 +39,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -51,17 +51,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.RemoteControlPowerKey
+import io.github.deprec8.enigmadroid.data.constants.RemoteControlPower
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ActionMenu(
     onFetchScreenshot: () -> Unit,
-    onPowerKeyClicked: (RemoteControlPowerKey) -> Unit
+    onPowerKeyClicked: (RemoteControlPower) -> Unit
 ) {
     var showMenu by rememberSaveable { mutableStateOf(false) }
     var showPowerMenu by rememberSaveable { mutableStateOf(false) }
-    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
+    val windowSizeClass = currentWindowAdaptiveInfoV2().windowSizeClass
     val isSmallScreenLayout =
         !windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) || (windowSizeClass.isHeightAtLeastBreakpoint(
             WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
@@ -113,7 +113,7 @@ fun ActionMenu(
                     }, onClick = {
                         showMenu = false
                         onPowerKeyClicked(
-                            RemoteControlPowerKey.ToggleStandby
+                            RemoteControlPower.ToggleStandby
                         )
                     }, leadingIcon = {
                         Icon(
@@ -129,7 +129,7 @@ fun ActionMenu(
                     }, onClick = {
                         showMenu = false
                         onPowerKeyClicked(
-                            RemoteControlPowerKey.Restart
+                            RemoteControlPower.Restart
                         )
                     }, leadingIcon = {
                         Icon(
@@ -145,7 +145,7 @@ fun ActionMenu(
                     }, onClick = {
                         showMenu = false
                         onPowerKeyClicked(
-                            RemoteControlPowerKey.RestartGui
+                            RemoteControlPower.RestartGui
                         )
                     }, leadingIcon = {
                         Icon(
@@ -161,7 +161,7 @@ fun ActionMenu(
                     }, onClick = {
                         showMenu = false
                         onPowerKeyClicked(
-                            RemoteControlPowerKey.Shutdown
+                            RemoteControlPower.Shutdown
                         )
                     }, leadingIcon = {
                         Icon(
@@ -222,7 +222,7 @@ fun ActionMenu(
                         }, onClick = {
                             showPowerMenu = false
                             onPowerKeyClicked(
-                                RemoteControlPowerKey.ToggleStandby
+                                RemoteControlPower.ToggleStandby
                             )
                         }, leadingIcon = {
                             Icon(
@@ -238,7 +238,7 @@ fun ActionMenu(
                         }, onClick = {
                             showPowerMenu = false
                             onPowerKeyClicked(
-                                RemoteControlPowerKey.Restart
+                                RemoteControlPower.Restart
                             )
                         }, leadingIcon = {
                             Icon(
@@ -254,7 +254,7 @@ fun ActionMenu(
                         }, onClick = {
                             showPowerMenu = false
                             onPowerKeyClicked(
-                                RemoteControlPowerKey.RestartGui
+                                RemoteControlPower.RestartGui
                             )
                         }, leadingIcon = {
                             Icon(
@@ -270,7 +270,7 @@ fun ActionMenu(
                         }, onClick = {
                             showPowerMenu = false
                             onPowerKeyClicked(
-                                RemoteControlPowerKey.Shutdown
+                                RemoteControlPower.Shutdown
                             )
                         }, leadingIcon = {
                             Icon(

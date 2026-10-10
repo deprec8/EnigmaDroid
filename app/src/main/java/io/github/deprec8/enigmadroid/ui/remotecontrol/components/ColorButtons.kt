@@ -28,11 +28,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
+import io.github.deprec8.enigmadroid.data.constants.RemoteControl
 import io.github.deprec8.enigmadroid.model.RemoteControlButtonData
 
 @Composable
-fun ColorButtons(onKeyClicked: (RemoteControlKey) -> Unit) {
+fun ColorButtons(onKeyClicked: (RemoteControl) -> Unit) {
     Row(
         Modifier.widthIn(0.dp, 500.dp)
     ) {
@@ -53,24 +53,24 @@ private val colorButtons = listOf(
         icon = Icons.Default.TripOrigin,
         iconLabelRes = R.string.red,
         iconTint = Color.Red,
-        key = RemoteControlKey.Red
+        key = RemoteControl.Red
     ),
     RemoteControlButtonData(
         icon = Icons.Default.TripOrigin,
         iconLabelRes = R.string.green,
         iconTint = Color.Green,
-        key = RemoteControlKey.Green
+        key = RemoteControl.Green
     ),
     RemoteControlButtonData(
         icon = Icons.Default.TripOrigin,
         iconLabelRes = R.string.yellow,
         iconTint = Color.Yellow,
-        key = RemoteControlKey.Yellow
+        key = RemoteControl.Yellow
     ),
     RemoteControlButtonData(
         icon = Icons.Default.TripOrigin,
         iconLabelRes = R.string.blue,
         iconTint = Color.Blue,
-        key = RemoteControlKey.Blue
+        key = RemoteControl.Blue
     ),
 )

@@ -24,45 +24,56 @@ import io.github.deprec8.enigmadroid.data.common.RefreshResult
 import io.github.deprec8.enigmadroid.data.model.Device
 import io.github.deprec8.enigmadroid.data.model.SyncCategory
 import io.github.deprec8.enigmadroid.data.model.SyncMetadata
-import io.github.deprec8.enigmadroid.data.model.api.Movie
-import io.github.deprec8.enigmadroid.data.source.local.dao.SyncDao
-import io.github.deprec8.enigmadroid.data.source.local.dao.api.MoviesDao
+import io.github.deprec8.enigmadroid.data.model.api.DeviceInfo
+import io.github.deprec8.enigmadroid.data.model.api.Hdd
+import io.github.deprec8.enigmadroid.data.model.api.Interface
+import io.github.deprec8.enigmadroid.data.model.api.Tuner
 import io.github.deprec8.enigmadroid.data.source.local.database.AppDatabase
 import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-class MovieRepository internal constructor(
+class DeviceInfoRepository internal constructor(
     private val appDatabase: AppDatabase,
-    private val movieDao: MoviesDao,
-    private val syncDao: SyncDao,
     private val networkDataSource: NetworkDataSource,
 ) {
 
-    suspend fun observeMovies(deviceId: Long): Flow<List<Movie>> = movieDao.get(deviceId).map {
-        it.map { entity -> entity.toMovie() }
-    }
+    fun observeDeviceInfo(deviceId: Long): Flow<DeviceInfo?> =
+        appDatabase.infoDao().getDeviceInfo(deviceId).map {
+            it?.toDeviceInfo()
+        }
+
+    fun observeHdds(deviceId: Long): Flow<List<Hdd>> =
+        appDatabase.infoDao().getHdds(deviceId).map { hdds ->
+            hdds.map { it.toHdd() }
+        }
+
+    fun observeTuners(deviceId: Long): Flow<List<Tuner>> =
+        appDatabase.infoDao().getTuners(deviceId).map { tuners ->
+            tuners.map { it.toTuner() }
+        }
+
+    fun observeInterfaces(deviceId: Long): Flow<List<Interface>> =
+        appDatabase.infoDao().getInterfaces(deviceId).map { interfaces ->
+            interfaces.map { it.toInterface() }
+        }
 
     fun observeSync(deviceId: Long): Flow<SyncMetadata?> =
-        syncDao.get(deviceId, SyncCategory.MOVIES).map { entity ->
+        appDatabase.syncDao().get(deviceId, SyncCategory.DEVICE_INFO).map { entity ->
             entity?.toSyncMetadata()
         }
 
     suspend fun refresh(device: Device): RefreshResult {
         val timestamp = System.currentTimeMillis()
 
-        return networkDataSource.getMovieList(device).fold(
+        return networkDataSource.getDeviceInfo(device).fold(
             onSuccess = { dto ->
                 appDatabase.withWriteTransaction {
-                    movieDao.sync(
+                    appDatabase.infoDao().syncNetworkData(device.id, dto)
+                    appDatabase.syncDao().update(
                         deviceId = device.id,
-                        movies = dto.toMovieEntities(device.id),
-                    )
-
-                    syncDao.update(
-                        deviceId = device.id,
-                        category = SyncCategory.MOVIES,
+                        category = SyncCategory.DEVICE_INFO,
                         timestamp = timestamp,
                         success = true,
                     )
@@ -71,7 +82,7 @@ class MovieRepository internal constructor(
                 RefreshResult.Success
             },
             onFailure = { exception ->
-                syncDao.update(
+                appDatabase.syncDao().update(
                     deviceId = device.id,
                     category = SyncCategory.MOVIES,
                     timestamp = timestamp,
@@ -87,9 +98,9 @@ class MovieRepository internal constructor(
         device: Device,
         maxAge: Long = 5 * 60 * 1000L,
     ): RefreshResult? {
-        val syncMetadata = syncDao.get(
+        val syncMetadata = appDatabase.syncDao().get(
             deviceId = device.id,
-            category = SyncCategory.MOVIES,
+            category = SyncCategory.DEVICE_INFO,
         ).first()
 
         val lastRefresh = syncMetadata?.lastSuccess

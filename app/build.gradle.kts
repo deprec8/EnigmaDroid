@@ -24,10 +24,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.koin.compiler)
-    alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.mikepenz.aboutlibraries)
     alias(libs.plugins.jetbrains.kotlin.serialization)
-    alias(libs.plugins.androidx.room3)
 }
 
 android {
@@ -105,6 +103,7 @@ kotlin {
 dependencies {
 
     // Modules
+    implementation(project(":data"))
 
     // Koin
     implementation(platform(libs.koin.bom))
@@ -129,22 +128,6 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     debugImplementation(libs.androidx.compose.ui.tooling)
 
-    // Ktor
-    implementation(platform(libs.ktor.bom))
-    implementation(libs.ktor.client.core)
-    implementation(libs.ktor.client.cio)
-    implementation(libs.ktor.client.okhttp)
-    implementation(libs.ktor.client.content.negotiation)
-    implementation(libs.ktor.serialization.kotlinx.json)
-    implementation(libs.ktor.client.encoding)
-
-    // Datastore
-    implementation(libs.androidx.datastore.preferences)
-
-    // Room
-    implementation(libs.androidx.room3.runtime)
-    ksp(libs.androidx.room3.compiler)
-
     // Activity
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.activity.compose)
@@ -155,10 +138,6 @@ dependencies {
 
     // Browser
     implementation(libs.androidx.browser)
-
-    // Jsoup
-    implementation(libs.jsoup)
-    implementation(libs.re2j)
 
     // Coroutines
     implementation(libs.jetbrains.kotlinx.coroutines.core)
@@ -173,18 +152,13 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.runtime.compose)
-    ksp(libs.androidx.lifecycle.compiler)
 
     // Savedstate
     implementation(libs.androidx.savedstate.ktx)
 }
 
-room3 {
-    schemaDirectory("$projectDir/schemas")
-}
-
 tasks.withType<CompileArtProfileTask>().configureEach {
-    if (name.contains("fdroid")) {
+    if (name.contains("foss")) {
         enabled = false
     }
 }

@@ -35,6 +35,6 @@ enum class RemoteControl(val id: Int) {
     Two(3), Three(4), Four(5), Five(6), Six(7), Seven(8), Eight(9), Nine(10), Zero(11)
 }
 
-enum class RemoteControlPowerKey(val id: Int) {
+enum class RemoteControlPower(val id: Int) {
     Restart(2), ToggleStandby(0), RestartGui(3), Shutdown(1)
 }

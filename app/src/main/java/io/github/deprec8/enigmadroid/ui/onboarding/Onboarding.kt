@@ -69,8 +69,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import io.github.deprec8.enigmadroid.Device
 import io.github.deprec8.enigmadroid.R
+import io.github.deprec8.enigmadroid.data.constants.Ports
+import io.github.deprec8.enigmadroid.data.model.Device
 import io.github.deprec8.enigmadroid.ui.components.DeviceSetupCard
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
@@ -289,15 +290,15 @@ private fun DeviceSetupStep(paddingValues: PaddingValues, onContinue: (Device?) 
 
     val nameState = rememberTextFieldState("")
     val hostState = rememberTextFieldState("")
-    val portState = rememberTextFieldState(DefaultPorts.HTTP)
-    val livePortState = rememberTextFieldState(DefaultPorts.LIVE)
+    val portState = rememberTextFieldState(Ports.HTTP)
+    val livePortState = rememberTextFieldState(Ports.LIVE)
     val userState = rememberTextFieldState("")
     val passwordState = rememberTextFieldState("")
 
     val ready by remember {
         derivedStateOf {
             if (nameState.text.isBlank() || hostState.text.isBlank() || portState.text.isBlank() || livePortState.text.isBlank()) return@derivedStateOf false
-            return@derivedStateOf if (login) userState.text.isNotBlank() && passwordState.text.isNotBlank() else true
+            return@derivedStateOf !login || userState.text.isNotBlank() && passwordState.text.isNotBlank()
         }
     }
 
@@ -345,10 +346,10 @@ private fun DeviceSetupStep(paddingValues: PaddingValues, onContinue: (Device?) 
             passwordState = passwordState,
             onHttpsChange = {
                 https = !https
-                if (portState.text == DefaultPorts.HTTP && https) {
-                    portState.setTextAndPlaceCursorAtEnd(DefaultPorts.HTTPS)
-                } else if (portState.text == DefaultPorts.HTTPS && !https) {
-                    portState.setTextAndPlaceCursorAtEnd(DefaultPorts.HTTP)
+                if (portState.text == Ports.HTTP && https) {
+                    portState.setTextAndPlaceCursorAtEnd(Ports.HTTPS)
+                } else if (portState.text == Ports.HTTPS && !https) {
+                    portState.setTextAndPlaceCursorAtEnd(Ports.HTTP)
                 }
             },
             onLoginChange = {

@@ -25,12 +25,12 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
+import io.github.deprec8.enigmadroid.data.constants.RemoteControl
 import io.github.deprec8.enigmadroid.model.RemoteControlButtonData
 
 @Composable
 fun NumberButtons(
-    onKeyClicked: (RemoteControlKey) -> Unit
+    onKeyClicked: (RemoteControl) -> Unit
 ) {
     Row(Modifier.widthIn(0.dp, 500.dp)) {
         numberButtons.forEach { column ->
@@ -49,34 +49,34 @@ fun NumberButtons(
 private val numberButtons = listOf(
     listOf(
         RemoteControlButtonData(
-            text = "1", key = RemoteControlKey.One
+            text = "1", key = RemoteControl.One
         ), RemoteControlButtonData(
-            text = "4 ghi", key = RemoteControlKey.Four
+            text = "4 ghi", key = RemoteControl.Four
         ), RemoteControlButtonData(
-            text = "7 pqrs", key = RemoteControlKey.Seven
+            text = "7 pqrs", key = RemoteControl.Seven
         )
     ), listOf(
         RemoteControlButtonData(
-            text = "2 abc", key = RemoteControlKey.Two
+            text = "2 abc", key = RemoteControl.Two
         ),
         RemoteControlButtonData(
-            text = "5 jkl", key = RemoteControlKey.Five
+            text = "5 jkl", key = RemoteControl.Five
         ),
         RemoteControlButtonData(
-            text = "8 tuv", key = RemoteControlKey.Eight
+            text = "8 tuv", key = RemoteControl.Eight
         ),
         RemoteControlButtonData(
-            text = "0", key = RemoteControlKey.Zero
+            text = "0", key = RemoteControl.Zero
         ),
     ), listOf(
         RemoteControlButtonData(
-            text = "3 def", key = RemoteControlKey.Three
+            text = "3 def", key = RemoteControl.Three
         ),
         RemoteControlButtonData(
-            text = "6 mno", key = RemoteControlKey.Six
+            text = "6 mno", key = RemoteControl.Six
         ),
         RemoteControlButtonData(
-            text = "9 wxyz", key = RemoteControlKey.Nine
+            text = "9 wxyz", key = RemoteControl.Nine
         ),
     )
 )

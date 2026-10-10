@@ -20,41 +20,6 @@
 package io.github.deprec8.enigmadroid.data.source.local.dao.api
 
 import androidx.room3.Dao
-import androidx.room3.Insert
-import androidx.room3.OnConflictStrategy
-import androidx.room3.Query
-import androidx.room3.Transaction
-import io.github.deprec8.enigmadroid.data.model.api.EventEntity
-import kotlinx.coroutines.flow.Flow
 
 @Dao
-internal interface EpgDao {
-
-    @Query("SELECT * FROM events WHERE deviceId = :deviceId AND serviceReference = :parentReference ORDER BY name")
-    suspend fun get(deviceId: Long, serviceReference: String): Flow<List<EventEntity>>
-
-    @Query("SELECT * FROM events WHERE deviceId = :deviceId AND serviceReference = :serviceReference AND :currentTimestamp BETWEEN startTime AND endTime LIMIT 1")
-    suspend fun getCurrent(
-        deviceId: Long, serviceReference: String, currentTimestamp: Long
-    ): Flow<EventEntity?>
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(bouquets: List<EventEntity>)
-
-    @Query("DELETE FROM events WHERE deviceId = :deviceId AND serviceReference = :serviceReference AND id NOT IN (:ids)")
-    suspend fun deleteMissing(deviceId: Long, serviceReference: String, ids: List<Int>)
-
-    @Transaction
-    suspend fun syncNetworkData(
-        deviceId: Long, parentReference: String, events: List<EventEntity>
-    ) {
-        val currentIds = events.map { it.id }
-
-        deleteMissing(deviceId, parentReference, currentIds)
-
-        insertAll(events)
-    }
-
-    @Query("DELETE FROM events WHERE endTimeStamp < :currentTimestamp")
-    suspend fun clean(currentTimestamp: Long)
-}
+internal interface EpgDao

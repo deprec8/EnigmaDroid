@@ -26,31 +26,42 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
-import io.github.deprec8.enigmadroid.core.database.source.DevicesDataSource
-import io.github.deprec8.enigmadroid.core.network.buildMovieStreamUri
-import io.github.deprec8.enigmadroid.core.network.model.NetworkMovieList
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.longPreferencesKey
+import io.github.deprec8.enigmadroid.data.constants.MissingDeviceException
+import io.github.deprec8.enigmadroid.data.constants.PreferenceKeys
+import io.github.deprec8.enigmadroid.data.source.local.database.AppDatabase
 import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.io.IOException
 
-class DownloadRepository(
+class DownloadRepository internal constructor(
     private val context: Context,
-    private val devicesDataSource: DevicesDataSource,
+    private val appDatabase: AppDatabase,
+    private val dataStore: DataStore<Preferences>,
     private val networkDataSource: NetworkDataSource
 ) {
 
-    suspend fun downloadMovie(movie: NetworkMovieList.Movie) {
+    private val currentDeviceIdKey = longPreferencesKey(PreferenceKeys.CURRENT_DEVICE_ID)
+
+    suspend fun downloadMovie(fileName: String, eventName: String) {
         try {
-            val deviceEntity = devicesDataSource.getCurrentStatic()
+            val deviceEntity =
+                appDatabase.devicesDao().getStatic(dataStore.data.map { preferences ->
+                    preferences[currentDeviceIdKey] ?: -1L
+                }.first()) ?: throw MissingDeviceException()
 
             val request =
-                DownloadManager.Request(deviceEntity.buildMovieStreamUri(movie.fileName)).apply {
+                DownloadManager.Request(deviceEntity.buildMovieStreamUri(fileName)).apply {
                     //setTitle(context.getString(R.string.downloading, movie.eventName))
                     setMimeType("video/mp4")
                     setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                     setDestinationInExternalPublicDir(
-                        Environment.DIRECTORY_MOVIES, "${movie.eventName}.mp4"
+                        Environment.DIRECTORY_MOVIES, "${eventName}.mp4"
                     )
                 }
 
@@ -62,7 +73,9 @@ class DownloadRepository(
     }
 
     suspend fun fetchScreenshot(): Result<Uri> = runCatching {
-        val deviceEntity = devicesDataSource.getCurrentStatic()
+        val deviceEntity = appDatabase.devicesDao().getStatic(dataStore.data.map { preferences ->
+            preferences[currentDeviceIdKey] ?: -1L
+        }.first()) ?: throw MissingDeviceException()
 
         val bytes = networkDataSource.getScreenshot(deviceEntity).getOrThrow()
 

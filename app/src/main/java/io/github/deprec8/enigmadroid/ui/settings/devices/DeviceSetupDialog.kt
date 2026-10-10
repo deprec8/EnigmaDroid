@@ -33,8 +33,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import io.github.deprec8.enigmadroid.Device
 import io.github.deprec8.enigmadroid.R
+import io.github.deprec8.enigmadroid.data.constants.Ports
+import io.github.deprec8.enigmadroid.data.model.Device
 import io.github.deprec8.enigmadroid.ui.components.DeviceSetupCard
 import io.github.deprec8.enigmadroid.ui.components.dialogs.AdaptiveDialog
 
@@ -48,9 +49,9 @@ fun DeviceSetupDialog(
 
     val nameState = rememberTextFieldState(oldDevice?.name ?: "")
     val hostState = rememberTextFieldState(oldDevice?.host ?: "")
-    val portState = rememberTextFieldState((oldDevice?.port ?: DefaultPorts.HTTP).toString())
+    val portState = rememberTextFieldState((oldDevice?.port ?: Ports.HTTP).toString())
     val livePortState =
-        rememberTextFieldState((oldDevice?.livePort ?: DefaultPorts.LIVE).toString())
+        rememberTextFieldState((oldDevice?.livePort ?: Ports.LIVE).toString())
     val userState = rememberTextFieldState(oldDevice?.user ?: "")
     val passwordState = rememberTextFieldState(oldDevice?.password ?: "")
 
@@ -62,7 +63,7 @@ fun DeviceSetupDialog(
                 oldDevice == null || nameState.text.trim() != oldDevice.name || hostState.text != oldDevice.host || portState.text != oldDevice.port.toString() || livePortState.text != oldDevice.livePort.toString()
 
             return@derivedStateOf if (login) {
-                baseNotEqual && userState.text.isNotBlank() && passwordState.text.isNotBlank() && if (oldDevice != null) userState.text != oldDevice.user || passwordState.text != oldDevice.password else true
+                baseNotEqual && userState.text.isNotBlank() && passwordState.text.isNotBlank() && (oldDevice == null || userState.text != oldDevice.user || passwordState.text != oldDevice.password)
             } else {
                 baseNotEqual
             }
@@ -116,10 +117,10 @@ fun DeviceSetupDialog(
             passwordState = passwordState,
             onHttpsChange = {
                 https = !https
-                if (portState.text == DefaultPorts.HTTP && https) {
-                    portState.setTextAndPlaceCursorAtEnd(DefaultPorts.HTTPS)
-                } else if (portState.text == DefaultPorts.HTTPS && !https) {
-                    portState.setTextAndPlaceCursorAtEnd(DefaultPorts.HTTP)
+                if (portState.text == Ports.HTTP && https) {
+                    portState.setTextAndPlaceCursorAtEnd(Ports.HTTPS)
+                } else if (portState.text == Ports.HTTPS && !https) {
+                    portState.setTextAndPlaceCursorAtEnd(Ports.HTTP)
 
                 }
             },

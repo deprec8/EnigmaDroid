@@ -21,7 +21,8 @@ package io.github.deprec8.enigmadroid.ui.settings.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.deprec8.enigmadroid.core.data.repositories.SearchRepository
+import io.github.deprec8.enigmadroid.data.constants.ContentType
+import io.github.deprec8.enigmadroid.data.repositories.SearchRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,14 +30,14 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class SearchSettingsViewModel(
-    private var searchRepository: SearchRepository
+    private var searchRepository: SearchRepository,
 ) : ViewModel() {
 
     val typesWithHistory = searchRepository.getTypesWithHistory().stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000), emptySet()
     )
 
-    val useSearchHistories = searchRepository.getUseHistories().stateIn(
+    val useSearchHistories = searchRepository.useHistories.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000), true
     )
 

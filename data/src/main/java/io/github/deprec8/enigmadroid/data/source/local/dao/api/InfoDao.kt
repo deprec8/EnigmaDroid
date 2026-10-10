@@ -24,38 +24,27 @@ import androidx.room3.Insert
 import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
 import androidx.room3.Transaction
-import io.github.deprec8.enigmadroid.data.model.api.DeviceInfo
 import io.github.deprec8.enigmadroid.data.model.api.DeviceInfoDto
 import io.github.deprec8.enigmadroid.data.model.api.DeviceInfoEntity
 import io.github.deprec8.enigmadroid.data.model.api.HddEntity
 import io.github.deprec8.enigmadroid.data.model.api.InterfaceEntity
 import io.github.deprec8.enigmadroid.data.model.api.TunerEntity
-import io.github.deprec8.enigmadroid.data.model.api.toDeviceInfo
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 internal interface InfoDao {
 
     @Query("SELECT * FROM device_infos WHERE deviceId = :deviceId")
-    suspend fun getDeviceInfo(deviceId: Long): DeviceInfoEntity
+    fun getDeviceInfo(deviceId: Long): Flow<DeviceInfoEntity?>
 
     @Query("SELECT * FROM hdds WHERE deviceId = :deviceId")
-    suspend fun getHdds(deviceId: Long): List<HddEntity>
+    fun getHdds(deviceId: Long): Flow<List<HddEntity>>
 
     @Query("SELECT * FROM interfaces WHERE deviceId = :deviceId")
-    suspend fun getInterfaces(deviceId: Long): List<InterfaceEntity>
+    fun getInterfaces(deviceId: Long): Flow<List<InterfaceEntity>>
 
     @Query("SELECT * FROM tuners WHERE deviceId = :deviceId")
-    suspend fun getTuners(deviceId: Long): List<TunerEntity>
-
-    @Transaction
-    suspend fun getInfo(deviceId: Long): DeviceInfo {
-        val deviceInfo = getDeviceInfo(deviceId)
-        val hdds = getHdds(deviceId)
-        val interfaces = getInterfaces(deviceId)
-        val tuners = getTuners(deviceId)
-
-        return toDeviceInfo(deviceInfo, hdds, interfaces, tuners)
-    }
+    fun getTuners(deviceId: Long): Flow<List<TunerEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDeviceInfo(deviceInfo: DeviceInfoEntity)

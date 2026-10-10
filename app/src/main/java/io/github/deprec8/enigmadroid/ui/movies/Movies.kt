@@ -19,155 +19,18 @@
 
 package io.github.deprec8.enigmadroid.ui.movies
 
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
-import io.github.deprec8.enigmadroid.ui.components.InvalidResponse
-import io.github.deprec8.enigmadroid.ui.components.Loading
-import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
-import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
-import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
-import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
-import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarDrawerNavigationButton
-import io.github.deprec8.enigmadroid.ui.movies.components.MoviesActionBar
-import io.github.deprec8.enigmadroid.ui.movies.components.MoviesContent
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.onSuccess
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MoviesPage(
     onNavigateToRemoteControl: () -> Unit,
-    onNavigateToDirectory: (String) -> Unit,
     drawerState: DrawerState,
     moviesViewModel: MoviesViewModel = koinViewModel()
 ) {
 
-    val movieBatchResult by moviesViewModel.movieBatchResult.collectAsStateWithLifecycle()
-    val filteredMovies by moviesViewModel.filteredMovies.collectAsStateWithLifecycle()
-    val searchHistory by moviesViewModel.searchHistory.collectAsStateWithLifecycle()
-    val freeSpaceResult by moviesViewModel.freeSpaceResult.collectAsStateWithLifecycle()
 
-    ObserveActiveState(moviesViewModel)
-
-    Scaffold(floatingActionButton = {
-        FloatingReloadButton(movieBatchResult?.isSuccess == true) { moviesViewModel.fetchData() }
-    }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
-        SearchTopAppBar(
-            enabled = movieBatchResult?.getOrNull()?.movies?.isNotEmpty() == true,
-            textFieldState = moviesViewModel.searchFieldState,
-            placeholder = stringResource(R.string.search_movies),
-            content = {
-                filteredMovies?.let {
-                    MoviesContent(
-                        movies = it,
-                        paddingValues = PaddingValues(0.dp),
-                        onPlayMovieOnDevice = { movie -> moviesViewModel.playOnDevice(movie.serviceReference) },
-                        onDeleteMovie = { movie -> moviesViewModel.delete(movie.serviceReference) },
-                        onRenameMovie = { movie, newName ->
-                            moviesViewModel.rename(
-                                movie.serviceReference, newName
-                            )
-                        },
-                        onMoveMovie = { movie, newLocation ->
-                            moviesViewModel.move(
-                                movie.serviceReference, newLocation
-                            )
-                        },
-                        onDownloadMovie = { movie -> moviesViewModel.download(movie) },
-                        buildMovieStreamUri = { fileName ->
-                            moviesViewModel.buildMovieStreamUri(
-                                fileName
-                            )
-                        })
-
-                } ?: run {
-                    SearchHistory(searchHistory = searchHistory, onSearchQuery = {
-                        moviesViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
-                        moviesViewModel.updateSearchInput()
-                    }, onInsertQuery = {
-                        moviesViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
-                    }, onRemoveItem = {
-                        moviesViewModel.deleteFromSearchHistory(it)
-                    })
-                }
-            },
-            navigationButton = { searchBarState ->
-                SearchTopAppBarDrawerNavigationButton(drawerState, searchBarState)
-            },
-            actionButtons = {
-                RemoteControlActionButton(onNavigateToRemoteControl = { onNavigateToRemoteControl() })
-            },
-            onSearch = {
-                moviesViewModel.updateSearchInput()
-            },
-            actionBar = {
-                MoviesActionBar(
-                    movieBatchResult?.getOrNull(),
-                    freeSpaceResult?.getOrNull(),
-                )
-            })
-    }
-
-    ) { innerPadding ->
-        if (movieBatchResult != null) {
-            movieBatchResult?.onSuccess { movieBatch ->
-                MoviesContent(
-                    movies = movieBatch.movies,
-                    bookmarks = movieBatch.bookmarks,
-                    directory = movieBatch.directory,
-                    paddingValues = innerPadding,
-                    onPlayMovieOnDevice = { movie -> moviesViewModel.playOnDevice(movie.serviceReference) },
-                    onDeleteMovie = { movie -> moviesViewModel.delete(movie.serviceReference) },
-                    onRenameMovie = { movie, newName ->
-                        moviesViewModel.rename(
-                            movie.serviceReference, newName
-                        )
-                    },
-                    onMoveMovie = { movie, newLocation ->
-                        moviesViewModel.move(
-                            movie.serviceReference, newLocation
-                        )
-                    },
-                    onDownloadMovie = { movie -> moviesViewModel.download(movie) },
-                    onNavigateToDirectory = { path ->
-                        onNavigateToDirectory(
-                            path
-                        )
-                    },
-                    buildMovieStreamUri = { fileName -> moviesViewModel.buildMovieStreamUri(fileName) })
-            }?.onFailure { e ->
-                InvalidResponse(
-                    throwable = e, modifier = Modifier
-                        .consumeWindowInsets(innerPadding)
-                        .padding(
-                            innerPadding
-                        )
-                ) {
-                    moviesViewModel.fetchData(true)
-                }
-            }
-        } else {
-            Loading(
-                Modifier
-                    .consumeWindowInsets(innerPadding)
-                    .padding(
-                        innerPadding
-                    )
-            )
-        }
-    }
 }

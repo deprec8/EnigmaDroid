@@ -19,31 +19,10 @@
 
 package io.github.deprec8.enigmadroid.ui.signal
 
-import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
-import io.github.deprec8.enigmadroid.ui.components.InvalidResponse
-import io.github.deprec8.enigmadroid.ui.components.Loading
-import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
-import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.navigation.DrawerNavigationButton
-import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
-import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.onSuccess
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,52 +33,5 @@ fun SignalPage(
     signalViewModel: SignalViewModel = koinViewModel()
 ) {
 
-    val signalInfoResult by signalViewModel.signalInfoResult.collectAsStateWithLifecycle()
 
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-
-    ObserveActiveState(signalViewModel)
-
-    Scaffold(floatingActionButton = {
-        FloatingReloadButton(signalInfoResult?.isSuccess == true) { signalViewModel.fetchData() }
-    }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
-        TopAppBar(
-            windowInsets = topAppBarWithDrawerWindowInsets(),
-            title = { Text(text = stringResource(R.string.signal)) },
-            scrollBehavior = scrollBehavior,
-            navigationIcon = {
-                DrawerNavigationButton(drawerState)
-            },
-            actions = {
-                RemoteControlActionButton { onNavigateToRemoteControl() }
-            })
-    }) { innerPadding ->
-        if (signalInfoResult != null) {
-            signalInfoResult?.onSuccess { signalInfo ->
-                SignalContent(
-                    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                    signalInfo,
-                    innerPadding
-                )
-            }?.onFailure { e ->
-                InvalidResponse(
-                    throwable = e, modifier = Modifier
-                        .consumeWindowInsets(innerPadding)
-                        .padding(
-                            innerPadding
-                        )
-                ) {
-                    signalViewModel.fetchData(true)
-                }
-            }
-        } else {
-            Loading(
-                Modifier
-                    .consumeWindowInsets(innerPadding)
-                    .padding(
-                        innerPadding
-                    )
-            )
-        }
-    }
 }

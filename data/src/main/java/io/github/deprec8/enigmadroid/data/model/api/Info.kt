@@ -26,6 +26,41 @@ import kotlinx.serialization.Serializable
 
 // Device
 
+data class DeviceInfo(
+    val brand: String,
+    val model: String,
+    val chipset: String,
+    val boxType: String,
+    val imageDistro: String,
+    val imageVersion: String,
+    val kernelVersion: String,
+    val enigmaVersion: String,
+    val owifVersion: String,
+    val oeSystemVersion: String,
+    val driverDate: String,
+    val uptime: String,
+    val totalMemory: String,
+    val freeMemory: String,
+)
+
+data class Hdd(
+    val mountDirectory: String, val capacity: String, val freeSpace: String, val model: String
+)
+
+data class Interface(
+    val ip: String,
+    val name: String,
+    val friendlyNic: String,
+    val gateway: String,
+    val linkSpeed: String,
+    val firstPublicIpv6: String,
+    val ipv4Method: String
+)
+
+data class Tuner(
+    val number: Int, val type: String, val name: String
+)
+
 @Entity(tableName = "device_infos")
 data class DeviceInfoEntity(
     @PrimaryKey val deviceId: Long,
@@ -43,7 +78,24 @@ data class DeviceInfoEntity(
     val uptime: String,
     val totalMemory: String,
     val freeMemory: String,
-)
+) {
+    fun toDeviceInfo() = DeviceInfo(
+        brand = brand,
+        model = model,
+        chipset = chipset,
+        boxType = boxType,
+        imageDistro = imageDistro,
+        imageVersion = imageVersion,
+        kernelVersion = kernelVersion,
+        enigmaVersion = enigmaVersion,
+        owifVersion = owifVersion,
+        oeSystemVersion = oeSystemVersion,
+        driverDate = driverDate,
+        uptime = uptime,
+        totalMemory = totalMemory,
+        freeMemory = freeMemory
+    )
+}
 
 @Entity(tableName = "hdds", primaryKeys = ["deviceId", "mountDirectory"])
 data class HddEntity(
@@ -52,7 +104,11 @@ data class HddEntity(
     val capacity: String,
     val freeSpace: String,
     val model: String
-)
+) {
+    fun toHdd() = Hdd(
+        mountDirectory = mountDirectory, capacity = capacity, freeSpace = freeSpace, model = model
+    )
+}
 
 @Entity(tableName = "interfaces", primaryKeys = ["deviceId", "ip"])
 data class InterfaceEntity(
@@ -64,12 +120,26 @@ data class InterfaceEntity(
     val linkSpeed: String,
     val firstPublicIpv6: String,
     val ipv4Method: String
-)
+) {
+    fun toInterface() = Interface(
+        ip = ip,
+        name = name,
+        friendlyNic = friendlyNic,
+        gateway = gateway,
+        linkSpeed = linkSpeed,
+        firstPublicIpv6 = firstPublicIpv6,
+        ipv4Method = ipv4Method
+    )
+}
 
 @Entity(tableName = "tuners", primaryKeys = ["deviceId", "number"])
 data class TunerEntity(
     val deviceId: Long, val number: Int, val type: String, val name: String
-)
+) {
+    fun toTuner() = Tuner(
+        number = number, type = type, name = name
+    )
+}
 
 @Serializable
 internal data class DeviceInfoDto(

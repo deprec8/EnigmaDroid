@@ -22,7 +22,8 @@ package io.github.deprec8.enigmadroid.data.source.local.database
 import androidx.room3.Database
 import androidx.room3.RoomDatabase
 import io.github.deprec8.enigmadroid.data.model.Device
-import io.github.deprec8.enigmadroid.data.model.SearchHistoryItem
+import io.github.deprec8.enigmadroid.data.model.SearchHistoryItemEntity
+import io.github.deprec8.enigmadroid.data.model.SyncMetadataEntity
 import io.github.deprec8.enigmadroid.data.model.api.BouquetEntity
 import io.github.deprec8.enigmadroid.data.model.api.BouquetServiceEntity
 import io.github.deprec8.enigmadroid.data.model.api.DeviceInfoEntity
@@ -45,7 +46,7 @@ import io.github.deprec8.enigmadroid.data.source.local.dao.api.ServicesDao
 import io.github.deprec8.enigmadroid.data.source.local.dao.api.TimersDao
 
 @Database(
-    entities = [Device::class, SearchHistoryItem::class, MovieEntity::class, TimerEntity::class, EventEntity::class, LogEntryEntity::class, BouquetEntity::class, DeviceInfoEntity::class, HddEntity::class, InterfaceEntity::class, TunerEntity::class, ServiceEntity::class, BouquetServiceEntity::class, SatelliteServiceEntity::class],
+    entities = [Device::class, SearchHistoryItemEntity::class, MovieEntity::class, TimerEntity::class, EventEntity::class, LogEntryEntity::class, BouquetEntity::class, DeviceInfoEntity::class, HddEntity::class, InterfaceEntity::class, TunerEntity::class, ServiceEntity::class, BouquetServiceEntity::class, SatelliteServiceEntity::class, SyncMetadataEntity::class],
     version = 1
 )
 internal abstract class AppDatabase : RoomDatabase() {

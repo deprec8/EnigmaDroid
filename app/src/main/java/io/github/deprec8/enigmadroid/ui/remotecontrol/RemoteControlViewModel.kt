@@ -22,29 +22,27 @@ package io.github.deprec8.enigmadroid.ui.remotecontrol
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
-import io.github.deprec8.enigmadroid.common.enums.RemoteControlPowerKey
-import io.github.deprec8.enigmadroid.core.data.repositories.ApiRepository
-import io.github.deprec8.enigmadroid.core.data.repositories.DevicesRepository
-import io.github.deprec8.enigmadroid.core.data.repositories.DownloadRepository
-import io.github.deprec8.enigmadroid.core.data.repositories.SettingsRepository
+import io.github.deprec8.enigmadroid.data.constants.RemoteControl
+import io.github.deprec8.enigmadroid.data.constants.RemoteControlPower
+import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
+import io.github.deprec8.enigmadroid.data.repositories.DownloadRepository
+import io.github.deprec8.enigmadroid.data.repositories.SettingsRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class RemoteControlViewModel(
-    private val apiRepository: ApiRepository,
     private val downloadRepository: DownloadRepository,
     devicesRepository: DevicesRepository,
     settingsRepository: SettingsRepository
 ) : ViewModel() {
-    val currentDevice = devicesRepository.getCurrentDevice().stateIn(
+    val currentDevice = devicesRepository.current.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000), null
     )
 
     val remoteControlVibration: StateFlow<Boolean> =
-        settingsRepository.getRemoteControlVibration().stateIn(
+        settingsRepository.remoteControlVibration.stateIn(
             viewModelScope, SharingStarted.WhileSubscribed(5000), false
         )
 
@@ -52,15 +50,15 @@ class RemoteControlViewModel(
         return downloadRepository.fetchScreenshot()
     }
 
-    fun onKeyClicked(key: RemoteControlKey) {
+    fun onKeyClicked(key: RemoteControl) {
         viewModelScope.launch {
-            apiRepository.remoteControlCall(key)
+            // apiRepository.remoteControlCall(key)
         }
     }
 
-    fun onPowerKeyClicked(powerKey: RemoteControlPowerKey) {
+    fun onPowerKeyClicked(powerKey: RemoteControlPower) {
         viewModelScope.launch {
-            apiRepository.setPowerState(powerKey)
+            // apiRepository.setPowerState(powerKey)
         }
     }
 }

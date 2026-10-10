@@ -24,12 +24,18 @@ import androidx.room3.Index
 import androidx.room3.PrimaryKey
 import io.github.deprec8.enigmadroid.data.constants.ContentType
 
+data class SearchHistoryItem(
+    val key: Long, val query: String
+)
+
 @Entity(
     tableName = "search_histories", indices = [Index(value = ["type", "query"], unique = true)]
 )
-data class SearchHistoryItem(
+internal data class SearchHistoryItemEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0L,
     val type: ContentType,
     val query: String,
     val timestamp: Long
-)
+) {
+    fun toSearchHistoryItem() = SearchHistoryItem(id, query)
+}

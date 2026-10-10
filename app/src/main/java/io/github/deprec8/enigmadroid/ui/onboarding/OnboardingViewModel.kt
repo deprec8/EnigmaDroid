@@ -21,9 +21,9 @@ package io.github.deprec8.enigmadroid.ui.onboarding
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.deprec8.enigmadroid.Device
-import io.github.deprec8.enigmadroid.core.data.repositories.DevicesRepository
-import io.github.deprec8.enigmadroid.core.data.repositories.OnboardingRepository
+import io.github.deprec8.enigmadroid.data.model.Device
+import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
+import io.github.deprec8.enigmadroid.data.repositories.OnboardingRepository
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -43,7 +43,7 @@ class OnboardingViewModel(
         viewModelScope.launch {
             withContext(NonCancellable) {
                 pendingDevice?.let {
-                    devicesRepository.addDevice(it)
+                    devicesRepository.add(it)
                 }
                 onboardingRepository.finishOnboarding()
             }

@@ -65,7 +65,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.isSmallScreenLayout
 import io.github.deprec8.enigmadroid.ui.components.navigation.ArrowNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
@@ -125,7 +124,7 @@ fun SearchTopAppBar(
                 if (enabled) {
                     content()
                 } else {
-                    NoResults()
+
                 }
             }
         } else {
@@ -144,7 +143,7 @@ fun SearchTopAppBar(
                 if (enabled) {
                     content()
                 } else {
-                    NoResults()
+
                 }
             }
         }

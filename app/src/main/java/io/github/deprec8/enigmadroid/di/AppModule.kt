@@ -19,9 +19,7 @@
 
 package io.github.deprec8.enigmadroid.di
 
-import io.github.deprec8.enigmadroid.core.data.di.dataModule
-import io.github.deprec8.enigmadroid.core.database.di.databaseModule
-import io.github.deprec8.enigmadroid.core.network.di.networkModule
+import io.github.deprec8.enigmadroid.data.di.dataModule
 import io.github.deprec8.enigmadroid.ui.current.CurrentViewModel
 import io.github.deprec8.enigmadroid.ui.deviceinfo.DeviceInfoViewModel
 import io.github.deprec8.enigmadroid.ui.epg.EpgViewModel
@@ -40,7 +38,7 @@ import org.koin.dsl.module
 import org.koin.plugin.module.dsl.viewModel
 
 val appModule = module {
-    includes(dataModule, databaseModule, networkModule)
+    includes(dataModule)
 
     viewModel<MainViewModel>()
     viewModel<RemoteControlViewModel>()

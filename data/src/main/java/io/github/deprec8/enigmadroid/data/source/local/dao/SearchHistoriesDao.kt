@@ -20,26 +20,25 @@
 package io.github.deprec8.enigmadroid.data.source.local.dao
 
 import androidx.room3.Dao
-import androidx.room3.Delete
 import androidx.room3.Insert
 import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
 import androidx.room3.Transaction
 import io.github.deprec8.enigmadroid.data.constants.ContentType
-import io.github.deprec8.enigmadroid.data.model.SearchHistoryItem
+import io.github.deprec8.enigmadroid.data.model.SearchHistoryItemEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface SearchHistoriesDao {
+internal interface SearchHistoriesDao {
 
     @Query("SELECT * FROM search_histories WHERE type = :type ORDER BY timestamp DESC LIMIT 200")
-    fun get(type: ContentType): Flow<List<SearchHistoryItem>>
+    fun get(type: ContentType): Flow<List<SearchHistoryItemEntity>>
 
     @Query("SELECT DISTINCT type FROM search_histories")
     fun getTypesWithItems(): Flow<List<ContentType>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(item: SearchHistoryItem)
+    suspend fun insert(item: SearchHistoryItemEntity)
 
     @Query(
         """
@@ -56,13 +55,13 @@ interface SearchHistoriesDao {
     suspend fun trim(type: ContentType)
 
     @Transaction
-    suspend fun insertAndTrim(item: SearchHistoryItem) {
+    suspend fun insertAndTrim(item: SearchHistoryItemEntity) {
         insert(item)
         trim(item.type)
     }
 
-    @Delete
-    suspend fun delete(item: SearchHistoryItem)
+    @Query("DELETE FROM search_histories WHERE id = :id")
+    suspend fun delete(id: Long)
 
     @Query("DELETE FROM search_histories WHERE type = :type")
     suspend fun clear(type: ContentType)

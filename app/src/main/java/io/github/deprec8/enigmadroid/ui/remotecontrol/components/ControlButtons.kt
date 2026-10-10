@@ -32,12 +32,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
+import io.github.deprec8.enigmadroid.data.constants.RemoteControl
 import io.github.deprec8.enigmadroid.model.RemoteControlButtonData
 
 @Composable
 fun ControlButtons(
-    onKeyClicked: (RemoteControlKey) -> Unit
+    onKeyClicked: (RemoteControl) -> Unit
 ) {
     controlButtons.forEach { row ->
         Row(Modifier.widthIn(0.dp, 500.dp)) {
@@ -58,35 +58,35 @@ private val controlButtons = listOf(
         RemoteControlButtonData(
             icon = Icons.Default.FastRewind,
             iconLabelRes = R.string.rewind,
-            key = RemoteControlKey.Rewind
+            key = RemoteControl.Rewind
         ),
         RemoteControlButtonData(
             icon = Icons.Default.PlayArrow,
             iconLabelRes = R.string.play,
-            key = RemoteControlKey.Play
+            key = RemoteControl.Play
         ),
         RemoteControlButtonData(
-            icon = Icons.Default.Pause, iconLabelRes = R.string.pause, key = RemoteControlKey.Pause
+            icon = Icons.Default.Pause, iconLabelRes = R.string.pause, key = RemoteControl.Pause
         ),
         RemoteControlButtonData(
             icon = Icons.Default.FastForward,
             iconLabelRes = R.string.forward,
-            key = RemoteControlKey.Forward
+            key = RemoteControl.Forward
         ),
     ), listOf(
         RemoteControlButtonData(
-            text = "Tv", key = RemoteControlKey.Tv
+            text = "Tv", key = RemoteControl.Tv
         ),
         RemoteControlButtonData(
             icon = Icons.Default.Circle,
             iconLabelRes = R.string.record,
-            key = RemoteControlKey.Record
+            key = RemoteControl.Record
         ),
         RemoteControlButtonData(
-            icon = Icons.Default.Stop, iconLabelRes = R.string.stop, key = RemoteControlKey.Stop
+            icon = Icons.Default.Stop, iconLabelRes = R.string.stop, key = RemoteControl.Stop
         ),
         RemoteControlButtonData(
-            text = "Radio", key = RemoteControlKey.Radio
+            text = "Radio", key = RemoteControl.Radio
         ),
     )
 )
