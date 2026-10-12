@@ -9,9 +9,12 @@ content.
 > [!IMPORTANT]
 > EnigmaDroid is currently undergoing a complete rework. As a result, there will be no updates for an extended period of time.
 >
-> There are several known issues that will not be addressed until the rework is complete, including an issue that prevents the app from functioning on Android 17. In the meantime, if you encounter problems, it is recommended to use the OpenWebif website or an alternative app.
+> There are several known issues that will not be addressed until the rework is complete. In the meantime, if you encounter problems, it is recommended to use the OpenWebif website or an alternative app.
 >
 > Please continue to report any previously unreported issues. This will help ensure that they can be taken into account during the rework.
+
+> [!NOTE]
+> For EnigmaDroid to work on Android 17 you may need to manually allow the nearby devices permission in settings.
 
 ## Installation
 
