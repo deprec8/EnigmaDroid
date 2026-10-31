@@ -20,19 +20,7 @@
 package io.github.deprec8.enigmadroid
 
 import android.app.Application
-import io.github.deprec8.enigmadroid.di.appModule
-import org.koin.android.ext.koin.androidContext
-import org.koin.android.ext.koin.androidLogger
-import org.koin.plugin.module.dsl.startKoin
+import dagger.hilt.android.HiltAndroidApp
 
-class MainApplication : Application() {
-    override fun onCreate() {
-        super.onCreate()
-
-        startKoin<MainApplication> {
-            androidLogger()
-            androidContext(this@MainApplication)
-            modules(appModule)
-        }
-    }
-}
+@HiltAndroidApp
+class MainApplication : Application()

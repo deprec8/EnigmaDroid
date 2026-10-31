@@ -28,41 +28,52 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.data.ConnectionState
-import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
+import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.model.api.DeviceInfo
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
-import io.github.deprec8.enigmadroid.ui.components.InvalidResponse
-import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
+import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.DrawerNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
-import org.koin.compose.viewmodel.koinViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeviceInfoPage(
     onNavigateToRemoteControl: () -> Unit,
     drawerState: DrawerState,
-    deviceInfoViewModel: DeviceInfoViewModel = koinViewModel()
+    deviceInfoViewModel: DeviceInfoViewModel = hiltViewModel()
 ) {
 
-    val connectionState by deviceInfoViewModel.connectionState.collectAsStateWithLifecycle()
-    val deviceInfoResult by deviceInfoViewModel.deviceInfoResult.collectAsStateWithLifecycle()
+    val loadingState by deviceInfoViewModel.loadingState.collectAsStateWithLifecycle()
+    val deviceInfo by deviceInfoViewModel.deviceInfo.collectAsStateWithLifecycle()
 
+    val scope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
-    ObserveActiveState(deviceInfoViewModel)
+    LaunchedEffect(Unit) {
+        deviceInfoViewModel.updateLoadingState(false)
+    }
+
+    LaunchedEffect(loadingState) {
+        if (loadingState == LoadingState.LOADED) {
+            deviceInfoViewModel.fetchData()
+        }
+    }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(connectionState) { deviceInfoViewModel.fetchData() }
+        FloatingReloadButton(loadingState) { deviceInfoViewModel.fetchData(isForced = true) }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         TopAppBar(windowInsets = topAppBarWithDrawerWindowInsets(), title = {
             Text(
@@ -76,30 +87,25 @@ fun DeviceInfoPage(
             RemoteControlActionButton { onNavigateToRemoteControl() }
         })
     }) { innerPadding ->
-        if (deviceInfoResult != null && connectionState == ConnectionState.CONNECTED) {
-            deviceInfoResult?.onSuccess { deviceInfo ->
-                DeviceInfoContent(
-                    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                    deviceInfo,
-                    innerPadding
-                )
-            }?.onFailure {
-                InvalidResponse(
-                    Modifier
-                        .padding(innerPadding)
-                        .consumeWindowInsets(innerPadding),
-                )
-            }
-
+        if (deviceInfo != null && loadingState == LoadingState.LOADED) {
+            DeviceInfoContent(
+                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                deviceInfo ?: DeviceInfo(),
+                innerPadding
+            )
         } else {
-            ConnectionDisplay(
+            LoadingScreen(
                 Modifier
                     .padding(innerPadding)
                     .consumeWindowInsets(innerPadding),
-                onCheckConnection = {
-                    deviceInfoViewModel.checkConnection()
+                onReload = {
+                    scope.launch {
+                        deviceInfoViewModel.updateLoadingState(
+                            it
+                        )
+                    }
                 },
-                connectionState = connectionState
+                loadingState = loadingState
             )
         }
     }

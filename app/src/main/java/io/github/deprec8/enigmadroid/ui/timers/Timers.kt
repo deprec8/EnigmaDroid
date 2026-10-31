@@ -43,20 +43,21 @@ import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.data.ConnectionState
-import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
-import io.github.deprec8.enigmadroid.ui.components.InvalidResponse
-import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
+import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
@@ -64,31 +65,41 @@ import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarDrawerNavigationButton
 import io.github.deprec8.enigmadroid.ui.timers.components.TimerSetupDialog
 import io.github.deprec8.enigmadroid.ui.timers.components.TimersContent
-import org.koin.compose.viewmodel.koinViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimersPage(
     onNavigateToRemoteControl: () -> Unit,
     drawerState: DrawerState,
-    timersViewModel: TimersViewModel = koinViewModel()
+    timersViewModel: TimersViewModel = hiltViewModel()
 ) {
 
     val filteredTimers by timersViewModel.filteredTimers.collectAsStateWithLifecycle()
-    val timerBatchResult by timersViewModel.timerBatchResult.collectAsStateWithLifecycle()
-    val serviceBatchSetResult by timersViewModel.serviceBatchSetResult.collectAsStateWithLifecycle()
+    val timerBatch by timersViewModel.timerBatch.collectAsStateWithLifecycle()
+    val serviceBatchSet by timersViewModel.serviceBatchSet.collectAsStateWithLifecycle()
     val searchHistory by timersViewModel.searchHistory.collectAsStateWithLifecycle()
-    val connectionState by timersViewModel.connectionState.collectAsStateWithLifecycle()
+    val loadingState by timersViewModel.loadingState.collectAsStateWithLifecycle()
+    val highlightedWords by timersViewModel.highlightedWords.collectAsStateWithLifecycle()
 
+    val scope = rememberCoroutineScope()
     var showTimerSetupDialog by rememberSaveable {
         mutableStateOf(false)
     }
 
-    ObserveActiveState(timersViewModel)
+    LaunchedEffect(Unit) {
+        timersViewModel.updateLoadingState(false)
+    }
+
+    LaunchedEffect(loadingState) {
+        if (loadingState == LoadingState.LOADED) {
+            timersViewModel.fetchData()
+        }
+    }
 
     Scaffold(contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = timerBatchResult?.getOrNull()?.timers?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED,
+            enabled = timerBatch?.timers?.isNotEmpty() == true && loadingState == LoadingState.LOADED,
             textFieldState = timersViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_timers),
             content = {
@@ -96,6 +107,7 @@ fun TimersPage(
                     TimersContent(
                         timers = filteredTimers,
                         paddingValues = PaddingValues(0.dp),
+                        highlightedWords = highlightedWords,
                         onToggleTimerStatus = {
                             timersViewModel.toggleTimerStatus(it)
                         },
@@ -105,16 +117,16 @@ fun TimersPage(
                         onDeleteTimer = {
                             timersViewModel.deleteTimer(it)
                         },
-                        serviceBatchSet = serviceBatchSetResult?.getOrNull()
+                        serviceBatchSet = serviceBatchSet
                     )
                 } ?: run {
-                    SearchHistory(searchHistory = searchHistory, onSearchQuery = {
+                    SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
                         timersViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
                         timersViewModel.updateSearchInput()
-                    }, onInsertQuery = {
-                        timersViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
-                    }, onRemoveItem = {
-                        timersViewModel.deleteFromSearchHistory(it)
+                    }, onTermInsertClick = {
+                        timersViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
+                            it
+                        )
                     })
                 }
             },
@@ -130,7 +142,7 @@ fun TimersPage(
 
     }, floatingActionButton = {
         AnimatedVisibility(
-            connectionState == ConnectionState.CONNECTED, enter = scaleIn(), exit = scaleOut()
+            loadingState == LoadingState.LOADED, enter = scaleIn(), exit = scaleOut()
         ) {
             Column(horizontalAlignment = Alignment.End) {
                 TooltipBox(
@@ -145,7 +157,7 @@ fun TimersPage(
                     )
                 ) {
                     SmallFloatingActionButton(onClick = {
-                        timersViewModel.fetchData()
+                        timersViewModel.fetchData(isForced = true)
                     }) {
                         Icon(
                             Icons.Default.Refresh,
@@ -176,38 +188,34 @@ fun TimersPage(
     }
 
     ) { innerPadding ->
-        if (timerBatchResult != null && connectionState == ConnectionState.CONNECTED) {
-            timerBatchResult?.onSuccess { timerBatch ->
-                TimersContent(
-                    timers = timerBatch.timers,
-                    paddingValues = innerPadding,
-                    onToggleTimerStatus = {
-                        timersViewModel.toggleTimerStatus(it)
-                    },
-                    onEditTimer = { oldTimer, newTimer ->
-                        timersViewModel.editTimer(oldTimer, newTimer)
-                    },
-                    onDeleteTimer = {
-                        timersViewModel.deleteTimer(it)
-                    },
-                    serviceBatchSet = serviceBatchSetResult?.getOrNull()
-                )
-            }?.onFailure {
-                InvalidResponse(
-                    Modifier
-                        .padding(innerPadding)
-                        .consumeWindowInsets(innerPadding),
-                )
-            }
+        if (timerBatch != null && loadingState == LoadingState.LOADED) {
+            TimersContent(
+                timers = timerBatch?.timers ?: emptyList(),
+                paddingValues = innerPadding,
+                onToggleTimerStatus = {
+                    timersViewModel.toggleTimerStatus(it)
+                },
+                onEditTimer = { oldTimer, newTimer ->
+                    timersViewModel.editTimer(oldTimer, newTimer)
+                },
+                onDeleteTimer = {
+                    timersViewModel.deleteTimer(it)
+                },
+                serviceBatchSet = serviceBatchSet
+            )
         } else {
-            ConnectionDisplay(
+            LoadingScreen(
                 Modifier
                     .consumeWindowInsets(innerPadding)
                     .padding(innerPadding),
-                onCheckConnection = {
-                    timersViewModel.checkConnection()
+                onReload = {
+                    scope.launch {
+                        timersViewModel.updateLoadingState(
+                            it
+                        )
+                    }
                 },
-                connectionState = connectionState
+                loadingState = loadingState
             )
         }
     }
@@ -219,7 +227,7 @@ fun TimersPage(
                 timersViewModel.addTimer(newTimer)
                 showTimerSetupDialog = false
             },
-            serviceBatchSet = serviceBatchSetResult?.getOrNull(),
+            serviceBatchSet = serviceBatchSet,
         )
     }
 }

@@ -19,34 +19,114 @@
 
 package io.github.deprec8.enigmadroid.ui.onboarding
 
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.deprec8.enigmadroid.common.constant.DefaultPorts
 import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
 import io.github.deprec8.enigmadroid.data.repositories.OnboardingRepository
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
-import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class OnboardingViewModel(
+@HiltViewModel
+class OnboardingViewModel @Inject constructor(
     private val onboardingRepository: OnboardingRepository,
     private val devicesRepository: DevicesRepository
 ) : ViewModel() {
 
-    private var pendingDevice: Device? = null
+    val nameState = TextFieldState("")
 
-    fun setDevice(device: Device?) {
-        pendingDevice = device
+    val ipState = TextFieldState("")
+
+    val portState = TextFieldState(DefaultPorts.HTTP)
+
+    val livePortState = TextFieldState(DefaultPorts.LIVE)
+
+    var isHttps by mutableStateOf(false)
+        private set
+
+    var isLogin by mutableStateOf(false)
+        private set
+
+    val userState = TextFieldState("")
+
+    val passwordState = TextFieldState("")
+
+    private val _isEveryFieldFilled = MutableStateFlow(false)
+    val isEveryFieldFilled = _isEveryFieldFilled.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            val baseFlow = combine(
+                snapshotFlow { nameState.text },
+                snapshotFlow { ipState.text },
+                snapshotFlow { portState.text },
+                snapshotFlow { livePortState.text }) { name, ip, port, livePort ->
+                listOf(name, ip, port, livePort).all { it.isNotBlank() }
+            }
+
+            val loginFlow = combine(
+                snapshotFlow { userState.text },
+                snapshotFlow { passwordState.text },
+                snapshotFlow { isLogin }) { user, password, isLogin ->
+                !isLogin || (user.isNotBlank() && password.isNotBlank())
+            }
+
+            combine(baseFlow, loginFlow) { baseFilled, loginFilled ->
+                baseFilled && loginFilled
+            }.collectLatest {
+                _isEveryFieldFilled.value = it
+            }
+        }
     }
+
+    fun toggleHttps() {
+        isHttps = !isHttps
+        if (portState.text == DefaultPorts.HTTP && isHttps) {
+            portState.setTextAndPlaceCursorAtEnd(DefaultPorts.HTTPS)
+        } else if (portState.text == DefaultPorts.HTTPS && !isHttps) {
+            portState.setTextAndPlaceCursorAtEnd(DefaultPorts.HTTP)
+
+        }
+    }
+
+    fun toggleLogin() {
+        isLogin = !isLogin
+    }
+
+    fun finishOnboardingWithDevice() {
+        viewModelScope.launch {
+            onboardingRepository.finishOnboarding()
+            val newDevice = Device(
+                0,
+                nameState.text.toString(),
+                ipState.text.toString().trim(),
+                isHttps,
+                isLogin,
+                userState.text.toString(),
+                passwordState.text.toString(),
+                portState.text.toString().trim(),
+                livePortState.text.toString().trim()
+            )
+            devicesRepository.addDevice(newDevice)
+        }
+    }
+
 
     fun finishOnboarding() {
         viewModelScope.launch {
-            withContext(NonCancellable) {
-                pendingDevice?.let {
-                    devicesRepository.addDevice(it)
-                }
-                onboardingRepository.finishOnboarding()
-            }
+            onboardingRepository.finishOnboarding()
         }
     }
 }

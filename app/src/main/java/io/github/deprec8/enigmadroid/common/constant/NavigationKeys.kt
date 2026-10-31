@@ -20,6 +20,7 @@
 package io.github.deprec8.enigmadroid.common.constant
 
 import androidx.navigation3.runtime.NavKey
+import io.github.deprec8.enigmadroid.model.api.MovieBatch
 import kotlinx.serialization.Serializable
 
 object RootKeys {
@@ -54,7 +55,7 @@ object MainKeys {
     data object Movies : NavKey
 
     @Serializable
-    data class MoviesDirectory(val path: String) : NavKey
+    data class MoviesDirectory(val path: String, val preloadBatch: MovieBatch?) : NavKey
 
     @Serializable
     data object Timers : NavKey

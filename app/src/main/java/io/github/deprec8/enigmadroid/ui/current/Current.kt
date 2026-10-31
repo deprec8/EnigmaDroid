@@ -28,23 +28,25 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.data.ConnectionState
-import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
+import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.model.api.CurrentInfo
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
-import io.github.deprec8.enigmadroid.ui.components.InvalidResponse
-import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
+import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.DrawerNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
-import org.koin.compose.viewmodel.koinViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,18 +54,27 @@ fun CurrentPage(
     onNavigateToRemoteControl: () -> Unit,
     onNavigateToServiceEpg: (String, String) -> Unit,
     drawerState: DrawerState,
-    currentViewModel: CurrentViewModel = koinViewModel()
+    currentViewModel: CurrentViewModel = hiltViewModel()
 ) {
 
-    val currentInfoResult by currentViewModel.currentInfoResult.collectAsStateWithLifecycle()
-    val connectionState by currentViewModel.connectionState.collectAsStateWithLifecycle()
+    val currentEventInfo by currentViewModel.currentInfo.collectAsStateWithLifecycle()
+    val loadingState by currentViewModel.loadingState.collectAsStateWithLifecycle()
 
+    val scope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
-    ObserveActiveState(currentViewModel)
+    LaunchedEffect(Unit) {
+        currentViewModel.updateLoadingState(false)
+    }
+
+    LaunchedEffect(loadingState) {
+        if (loadingState == LoadingState.LOADED) {
+            currentViewModel.fetchData()
+        }
+    }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(connectionState) { currentViewModel.fetchData() }
+        FloatingReloadButton(loadingState) { currentViewModel.fetchData(isForced = true) }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         TopAppBar(
             title = {
@@ -82,37 +93,30 @@ fun CurrentPage(
                 RemoteControlActionButton { onNavigateToRemoteControl() }
             })
     }) { innerPadding ->
-        if (currentInfoResult != null && connectionState == ConnectionState.CONNECTED) {
-            currentInfoResult?.onSuccess { currentInfo ->
-                CurrentContent(
-                    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                    currentInfo,
-                    innerPadding,
-                    buildLiveStreamUri = {
-                        currentViewModel.buildLiveStreamUri(it)
-                    },
-                    onNavigateToServiceEpg = { serviceReference, serviceName ->
-                        onNavigateToServiceEpg(
-                            serviceReference, serviceName
-                        )
-                    })
-            }?.onFailure {
-                InvalidResponse(
-                    Modifier
-                        .consumeWindowInsets(innerPadding)
-                        .padding(innerPadding)
-                )
-            }
-
+        if (currentEventInfo != null && loadingState == LoadingState.LOADED) {
+            CurrentContent(
+                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                currentEventInfo ?: CurrentInfo(),
+                innerPadding,
+                onBuildLiveStreamUrl = {
+                    currentViewModel.buildLiveStreamUrl(it)
+                },
+                onNavigateToServiceEpg = { serviceReference, serviceName ->
+                    onNavigateToServiceEpg(
+                        serviceReference, serviceName
+                    )
+                })
         } else {
-            ConnectionDisplay(
+            LoadingScreen(
                 Modifier
                     .consumeWindowInsets(innerPadding)
-                    .padding(innerPadding),
-                onCheckConnection = {
-                    currentViewModel.checkConnection()
-                },
-                connectionState = connectionState
+                    .padding(innerPadding), onReload = {
+                    scope.launch {
+                        currentViewModel.updateLoadingState(
+                            it
+                        )
+                    }
+                }, loadingState = loadingState
             )
         }
     }

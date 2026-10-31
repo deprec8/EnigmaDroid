@@ -19,73 +19,84 @@
 
 package io.github.deprec8.enigmadroid.data.repositories
 
-import io.github.deprec8.enigmadroid.data.ConnectionState
-import io.github.deprec8.enigmadroid.data.ConnectionStateHolder
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
+import io.github.deprec8.enigmadroid.common.constant.PreferenceKeys
+import io.github.deprec8.enigmadroid.common.enums.LoadingState
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.data.source.local.devices.DevicesLocalDataSource
 import io.github.deprec8.enigmadroid.data.source.network.NetworkDataSource
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class DevicesRepository(
-    private val connectionStateHolder: ConnectionStateHolder,
+class DevicesRepository @Inject constructor(
+    private val dataStore: DataStore<Preferences>,
     private val networkDataSource: NetworkDataSource,
     private val devicesLocalDataSource: DevicesLocalDataSource
 ) {
-    private var checkJob: Job? = null
+    private val loadingStateKey = intPreferencesKey(PreferenceKeys.LOADING_STATE)
 
-    private suspend fun checkConnection() {
-        checkJob?.cancel()
-        checkJob = withContext(Dispatchers.IO) {
-            launch { networkDataSource.checkConnection() }
+    private suspend fun updateLoadingState() {
+        dataStore.edit { preferences ->
+            preferences[loadingStateKey] = LoadingState.LOADING.id
+        }
+
+        if (networkDataSource.isDeviceOnline()) {
+            dataStore.edit { preferences ->
+                preferences[loadingStateKey] = LoadingState.LOADED.id
+            }
         }
     }
 
-    suspend fun setCurrentDeviceId(id: Long) {
-        devicesLocalDataSource.setCurrentId(id)
-        checkConnection()
+    suspend fun setCurrentDevice(device: Device) {
+        devicesLocalDataSource.setCurrentDevice(device)
+        updateLoadingState()
+    }
+
+    suspend fun setCurrentDeviceId(id: Int) {
+        devicesLocalDataSource.setCurrentDeviceId(id)
+        updateLoadingState()
     }
 
     fun getCurrentDevice(): Flow<Device?> {
-        return devicesLocalDataSource.getCurrent()
+        return devicesLocalDataSource.getCurrentDeviceFlow()
     }
 
-    fun getCurrentDeviceId(): Flow<Long> {
-        return devicesLocalDataSource.getCurrentId()
+    fun getCurrentDeviceId(): Flow<Int> {
+        return devicesLocalDataSource.getCurrentDeviceIdFlow()
     }
 
-    suspend fun getCurrentDeviceIdStatic(): Long {
-        return devicesLocalDataSource.getCurrentIdStatic()
+    fun getAllDevices(): Flow<List<Device>> {
+        return devicesLocalDataSource.getAllDevicesFlow()
     }
 
-    fun getDevices(): Flow<List<Device>> {
-        return devicesLocalDataSource.getAll()
-    }
+    suspend fun deleteDevice(device: Device) = withContext(NonCancellable) {
+        devicesLocalDataSource.deleteDevice(device)
 
-    suspend fun addDevice(device: Device) {
-        if (devicesLocalDataSource.add(device)) {
-            checkConnection()
+        if (devicesLocalDataSource.getAllDevicesStatic().isEmpty()) {
+            dataStore.edit { preferences ->
+                preferences[loadingStateKey] = LoadingState.NO_DEVICE_AVAILABLE.id
+            }
         }
     }
 
-    suspend fun editDevice(oldDevice: Device, newDevice: Device) {
-        if (devicesLocalDataSource.edit(oldDevice, newDevice)) {
-            checkConnection()
+    suspend fun editDevice(oldDevice: Device, newDevice: Device) = withContext(NonCancellable) {
+        devicesLocalDataSource.editDevice(oldDevice, newDevice)
+        if (devicesLocalDataSource.getCurrentDeviceIdStatic() == oldDevice.id) {
+            updateLoadingState()
         }
     }
 
-    suspend fun deleteDevice(device: Device) {
-        if (devicesLocalDataSource.delete(device)) {
-            checkConnection()
-        }
-
-        if (devicesLocalDataSource.getCount() == 0) {
-            connectionStateHolder.updateConnectionState(ConnectionState.NO_DEVICE_AVAILABLE)
+    suspend fun addDevice(device: Device) = withContext(NonCancellable) {
+        devicesLocalDataSource.addDevice(device)
+        if (devicesLocalDataSource.getAllDevicesStatic().size == 1) {
+            updateLoadingState()
         }
     }
 }

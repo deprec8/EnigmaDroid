@@ -19,24 +19,66 @@
 
 package io.github.deprec8.enigmadroid.ui.deviceinfo
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.deprec8.enigmadroid.common.enums.LoadingState
 import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
+import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
+import io.github.deprec8.enigmadroid.data.repositories.LoadingRepository
 import io.github.deprec8.enigmadroid.model.api.DeviceInfo
-import io.github.deprec8.enigmadroid.ui.components.viewmodels.ContentViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class DeviceInfoViewModel(
+@HiltViewModel
+class DeviceInfoViewModel @Inject constructor(
     private val apiRepository: ApiRepository,
-) : ContentViewModel() {
+    private val loadingRepository: LoadingRepository,
+    private val devicesRepository: DevicesRepository
+) : ViewModel() {
 
-    private val _deviceInfoResult = MutableStateFlow<Result<DeviceInfo>?>(null)
-    val deviceInfoResult = _deviceInfoResult.asStateFlow()
+    private val _deviceInfo = MutableStateFlow<DeviceInfo?>(null)
+    val deviceInfo: StateFlow<DeviceInfo?> = _deviceInfo.asStateFlow()
 
-    override fun onClearData() {
-        _deviceInfoResult.value = null
+    private val _loadingState = MutableStateFlow(LoadingState.LOADING)
+    val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
+
+    private var fetchJob: Job? = null
+
+    private var loadedDeviceId: Int? = null
+
+    init {
+        viewModelScope.launch {
+            loadingRepository.getLoadingState().collectLatest { state ->
+                _loadingState.value = state
+            }
+        }
     }
 
-    override suspend fun onGetData() {
-        _deviceInfoResult.value = apiRepository.fetchDeviceInfo()
+    suspend fun updateLoadingState(isForcedUpdate: Boolean) {
+        loadingRepository.updateLoadingState(isForcedUpdate)
+    }
+
+    fun fetchData(isForced: Boolean = false) {
+        viewModelScope.launch {
+            val currentDeviceId = devicesRepository.getCurrentDeviceId().first()
+            if (currentDeviceId != loadedDeviceId || isForced) {
+                _deviceInfo.value = null
+                loadedDeviceId = currentDeviceId
+            }
+
+            if (_deviceInfo.value == null) {
+                fetchJob?.cancel()
+                fetchJob = launch {
+                    _deviceInfo.value = apiRepository.fetchDeviceInfo()
+                }
+            }
+        }
     }
 }

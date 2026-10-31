@@ -23,7 +23,6 @@ import androidx.compose.runtime.Immutable
 import io.github.deprec8.enigmadroid.data.serialization.HtmlDecodedStringSerializer
 import io.github.deprec8.enigmadroid.data.serialization.LenientBooleanIntSerializer
 import io.github.deprec8.enigmadroid.data.serialization.LogEntrySerializer
-import io.github.deprec8.enigmadroid.utils.FuzzySearchUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerialName
@@ -72,44 +71,37 @@ suspend fun List<Timer>.search(filter: String): List<Timer>? {
     return withContext(Dispatchers.Default) {
         if (filter.isBlank() || timers.isEmpty()) return@withContext null
 
-        val filterTerms =
-            filter.split(" ").filter { it.isNotBlank() }.map { FuzzySearchUtils.normalize(it) }
+        val filterTerms = filter.lowercase().split(" ").filter { it.isNotBlank() }
 
         return@withContext timers.asSequence().map { timer ->
-            val nTitle = FuzzySearchUtils.normalize(timer.title)
-            val nExtDesc = FuzzySearchUtils.normalize(timer.descriptionextended)
-            val nShortDesc = FuzzySearchUtils.normalize(timer.shortDescription)
-            val nService = FuzzySearchUtils.normalize(timer.serviceName)
-            val nTags = FuzzySearchUtils.normalize(timer.tags)
-            val nBegin = FuzzySearchUtils.normalize(timer.begin)
-            val nEnd = FuzzySearchUtils.normalize(timer.end)
+            val lcTitle = timer.title.lowercase()
+            val lcExtDesc = timer.descriptionextended.lowercase()
+            val lcShortDesc = timer.shortDescription.lowercase()
+            val lcService = timer.serviceName.lowercase()
+            val lcTags = timer.tags.lowercase()
+            val lcBegin = timer.begin.lowercase()
+            val lcEnd = timer.end.lowercase()
 
             val matches = filterTerms.all { term ->
-                FuzzySearchUtils.fuzzyMatch(nTitle, term) || FuzzySearchUtils.fuzzyMatch(
-                    nExtDesc, term
-                ) || FuzzySearchUtils.fuzzyMatch(nShortDesc, term) || FuzzySearchUtils.fuzzyMatch(
-                    nService, term
-                ) || FuzzySearchUtils.fuzzyMatch(nTags, term) || FuzzySearchUtils.fuzzyMatch(
-                    nBegin, term
-                ) || FuzzySearchUtils.fuzzyMatch(nEnd, term)
+                lcTitle.contains(term) || lcExtDesc.contains(term) || lcShortDesc.contains(term) || lcService.contains(
+                    term
+                ) || lcTags.contains(term) || lcBegin.contains(term) || lcEnd.contains(term)
             }
 
             val score = if (matches) {
-                filterTerms.sumOf { term ->
-                    FuzzySearchUtils.calculateScore(
-                        nTitle, term
-                    ) * 7 + FuzzySearchUtils.calculateScore(
-                        nExtDesc, term
-                    ) * 6 + FuzzySearchUtils.calculateScore(
-                        nShortDesc, term
-                    ) * 5 + FuzzySearchUtils.calculateScore(
-                        nService, term
-                    ) * 4 + FuzzySearchUtils.calculateScore(
-                        nTags, term
-                    ) * 3 + FuzzySearchUtils.calculateScore(
-                        nBegin, term
-                    ) * 2 + FuzzySearchUtils.calculateScore(nEnd, term) * 1
-                }
+                filterTerms.count { lcTitle.contains(it) } * 7 + filterTerms.count {
+                    lcExtDesc.contains(
+                        it
+                    )
+                } * 6 + filterTerms.count { lcShortDesc.contains(it) } * 5 + filterTerms.count {
+                    lcService.contains(
+                        it
+                    )
+                } * 4 + filterTerms.count { lcTags.contains(it) } * 3 + filterTerms.count {
+                    lcBegin.contains(
+                        it
+                    )
+                } * 2 + filterTerms.count { lcEnd.contains(it) } * 1
             } else 0
 
             Triple(timer, matches, score)

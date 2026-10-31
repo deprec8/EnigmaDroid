@@ -22,7 +22,6 @@ package io.github.deprec8.enigmadroid.ui.settings.devices
 import android.content.Intent
 import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
-import android.graphics.drawable.Icon
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandIn
 import androidx.compose.animation.fadeIn
@@ -77,19 +76,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.common.constant.IntentKeys
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.ArrowNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
-import org.koin.compose.viewmodel.koinViewModel
+import io.github.deprec8.enigmadroid.utils.IntentUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DevicesPage(
     onNavigateBack: () -> Unit,
-    devicesViewModel: DevicesViewModel = koinViewModel(),
+    devicesViewModel: DevicesViewModel = hiltViewModel(),
 ) {
 
     val currentDevice by devicesViewModel.currentDeviceId.collectAsStateWithLifecycle()
@@ -176,13 +176,13 @@ fun DevicesPage(
                     ListItem(
                         headlineContent = { Text(text = device.name) }, supportingContent = {
                             Text(
-                                text = "${device.host}:${device.port}"
+                                text = "${device.ip}:${device.port}"
                             )
                         }, modifier = Modifier
                             .clickable(
                                 onClick = {
                                     if (device.id != currentDevice) {
-                                        devicesViewModel.setCurrentDeviceId(device.id)
+                                        devicesViewModel.setCurrentDevice(device)
                                     }
                                 })
                             .animateItem(), leadingContent = {
@@ -228,18 +228,8 @@ fun DevicesPage(
                                         },
                                         onClick = {
                                             showDropDownMenu = false
-                                            shortcutManager.requestPinShortcut(
-                                                ShortcutInfo.Builder(
-                                                    context, "device_${device.id}"
-                                                ).setIcon(
-                                                    Icon.createWithResource(
-                                                        context, R.mipmap.ic_shortcut_device
-                                                    )
-                                                ).setShortLabel(device.name).setIntent(
-                                                    Intent(
-                                                        IntentKeys.OPEN_WITH_DEVICE_ACTION,
-                                                    ).putExtra("device_id", device.id)
-                                                ).build(), null
+                                            IntentUtils.pinDevice(
+                                                context, device
                                             )
 
                                         })
@@ -252,19 +242,10 @@ fun DevicesPage(
                                         },
                                         onClick = {
                                             showDropDownMenu = false
-                                            shortcutManager.requestPinShortcut(
-                                                ShortcutInfo.Builder(
-                                                    context, "openwebif_${device.id}"
-                                                ).setIcon(
-                                                    Icon.createWithResource(
-                                                        context, R.mipmap.ic_shortcut_owif
-                                                    )
-                                                ).setShortLabel(device.name).setIntent(
-                                                    Intent(
-                                                        Intent.ACTION_VIEW,
-                                                        device.buildOWifUri()
-                                                    )
-                                                ).build(), null
+                                            IntentUtils.pinOwifDevice(
+                                                context,
+                                                device,
+                                                devicesViewModel.buildDeviceOwifUrl(device)
                                             )
 
                                         })
@@ -338,10 +319,12 @@ fun DevicesPage(
                                     shortcutManager.updateShortcuts(
                                         listOf(
                                             ShortcutInfo.Builder(context, "openwebif_${it.id}")
-                                                .setShortLabel(newDevice.name).setIntent(
+                                                .setShortLabel("${newDevice.name} (Web)").setIntent(
                                                     Intent(
-                                                        Intent.ACTION_VIEW,
-                                                        newDevice.buildOWifUri()
+                                                        Intent.ACTION_DEFAULT,
+                                                        devicesViewModel.buildDeviceOwifUrl(
+                                                            newDevice
+                                                        ).toUri()
                                                     )
                                                 ).build(),
                                             ShortcutInfo.Builder(context, "device_${it.id}")

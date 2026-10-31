@@ -1,0 +1,169 @@
+/*
+ * Copyright (C) 2025-2026 deprec8
+ *
+ * This file is part of EnigmaDroid.
+ *
+ * EnigmaDroid is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * EnigmaDroid is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with EnigmaDroid.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package io.github.deprec8.enigmadroid.ui.live.tv
+
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.deprec8.enigmadroid.common.enums.ContentType
+import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
+import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
+import io.github.deprec8.enigmadroid.data.repositories.LoadingRepository
+import io.github.deprec8.enigmadroid.data.repositories.SearchHistoryRepository
+import io.github.deprec8.enigmadroid.data.repositories.SettingsRepository
+import io.github.deprec8.enigmadroid.model.api.Event
+import io.github.deprec8.enigmadroid.model.api.EventBatch
+import io.github.deprec8.enigmadroid.model.api.search
+import io.github.deprec8.enigmadroid.ui.components.search.asHighlightedWords
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class TvViewModel @Inject constructor(
+    private val apiRepository: ApiRepository,
+    private val loadingRepository: LoadingRepository,
+    private val searchHistoryRepository: SearchHistoryRepository,
+    private val settingsRepository: SettingsRepository,
+    private val devicesRepository: DevicesRepository
+) : ViewModel() {
+
+    private val _filteredEvents = MutableStateFlow<List<Event>?>(null)
+    val filteredEvents: StateFlow<List<Event>?> = _filteredEvents.asStateFlow()
+
+    private val _eventBatches = MutableStateFlow<List<EventBatch>?>(null)
+    val eventBatches: StateFlow<List<EventBatch>?> = _eventBatches.asStateFlow()
+
+    private val _loadingState = MutableStateFlow(LoadingState.LOADING)
+    val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
+
+    private val _searchHistory = MutableStateFlow<List<String>>(emptyList())
+    val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()
+
+    val searchFieldState = TextFieldState()
+
+    private val currentBouquetIndex = MutableStateFlow(0)
+
+    private val searchInput = MutableStateFlow("")
+    private val useSearchHighlighting = MutableStateFlow(true)
+
+    val highlightedWords: StateFlow<List<String>> =
+        searchInput.asHighlightedWords(useSearchHighlighting).stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+    private var fetchJob: Job? = null
+
+    private var loadedDeviceId: Int? = null
+
+    init {
+        viewModelScope.launch {
+            loadingRepository.getLoadingState().collectLatest { state ->
+                _loadingState.value = state
+            }
+        }
+        viewModelScope.launch {
+            combine(
+                _eventBatches, searchInput, currentBouquetIndex
+            ) { eventBatches, searchInput, currentBouquetIndex ->
+                eventBatches?.getOrNull(currentBouquetIndex)?.events?.search(searchInput)
+            }.collectLatest {
+                _filteredEvents.value = it
+            }
+        }
+        viewModelScope.launch {
+            searchHistoryRepository.getTvSearchHistory().collectLatest {
+                _searchHistory.value = it
+            }
+        }
+        viewModelScope.launch {
+            settingsRepository.getUseSearchHighlighting().collectLatest {
+                useSearchHighlighting.value = it
+            }
+        }
+    }
+
+    suspend fun updateLoadingState(isForcedUpdate: Boolean) {
+        loadingRepository.updateLoadingState(isForcedUpdate)
+    }
+
+    suspend fun buildLiveStreamUrl(serviceReference: String): String {
+        return apiRepository.buildLiveStreamUrl(serviceReference)
+    }
+
+    fun fetchData(isForced: Boolean = false) {
+        viewModelScope.launch {
+            val currentDeviceId = devicesRepository.getCurrentDeviceId().first()
+            if (currentDeviceId != loadedDeviceId || isForced) {
+                _eventBatches.value = null
+                loadedDeviceId = currentDeviceId
+            }
+
+            if (_eventBatches.value == null) {
+                fetchJob?.cancel()
+                fetchJob = launch {
+                    apiRepository.fetchEventBatches(ContentType.Tv).collect { events ->
+                        _eventBatches.value = _eventBatches.value?.plus(events) ?: listOf(events)
+                    }
+                }
+            }
+        }
+    }
+
+    fun playOnDevice(serviceReference: String) {
+        viewModelScope.launch {
+            apiRepository.playOnDevice(serviceReference)
+        }
+    }
+
+    fun addTimerForEvent(event: Event) {
+        viewModelScope.launch {
+            apiRepository.addTimerForEvent(
+                event.serviceReference, event.id
+            )
+        }
+    }
+
+    fun updateCurrentBouquetIndex(index: Int) {
+        currentBouquetIndex.value = index
+    }
+
+    fun updateSearchInput() {
+        val input = searchFieldState.text.toString()
+        if (input.isNotBlank()) {
+            viewModelScope.launch {
+                searchHistoryRepository.addToTvSearchHistory(input)
+            }
+        }
+        searchInput.value = input
+    }
+}

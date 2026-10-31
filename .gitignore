@@ -16,4 +16,3 @@ local.properties
 /.kotlin
 /.idea/deploymentTargetSelector.xml
 *.backup
-/.artifacts/

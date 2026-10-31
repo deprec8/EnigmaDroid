@@ -19,9 +19,6 @@
 
 package io.github.deprec8.enigmadroid.ui.current
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -41,11 +38,7 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
@@ -55,8 +48,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.model.api.CurrentInfo
-import io.github.deprec8.enigmadroid.ui.components.dialogs.MediaIntentErrorDialog
 import io.github.deprec8.enigmadroid.ui.components.isSmallScreenLayout
+import io.github.deprec8.enigmadroid.utils.IntentUtils
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
 import kotlinx.coroutines.launch
 
@@ -64,37 +57,17 @@ import kotlinx.coroutines.launch
 @Composable
 fun CurrentContent(
     modifier: Modifier = Modifier,
-    currentInfo: CurrentInfo,
+    currentEventInfo: CurrentInfo,
     paddingValues: PaddingValues,
-    buildLiveStreamUri: suspend (String) -> Uri?,
+    onBuildLiveStreamUrl: suspend (String) -> String,
     onNavigateToServiceEpg: (String, String) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val scrollState = rememberScrollState()
     val isExpandedScreenLayout = !isSmallScreenLayout()
-    var showMediaIntentErrorDialog by rememberSaveable { mutableStateOf(false) }
 
-    fun playMedia() {
-        scope.launch {
-            val uri = buildLiveStreamUri(currentInfo.now.serviceReference) ?: return@launch
-
-            val intent = Intent(Intent.ACTION_VIEW).apply {
-                setDataAndTypeAndNormalize(
-                    uri, "video/mp4"
-                )
-                putExtra("title", currentInfo.now.title)
-            }
-
-            try {
-                context.startActivity(intent)
-            } catch (_: ActivityNotFoundException) {
-                showMediaIntentErrorDialog = true
-            }
-        }
-    }
-
-    if (currentInfo.info.result == true) {
+    if (currentEventInfo.info.result == true) {
         Column(
             modifier
                 .fillMaxSize()
@@ -107,14 +80,14 @@ fun CurrentContent(
                     ListItem(
                         headlineContent = { Text(text = stringResource(R.string.channel)) },
                         supportingContent = {
-                            Text(text = currentInfo.now.serviceName)
+                            Text(text = currentEventInfo.now.serviceName)
                         },
                         modifier = Modifier.fillMaxWidth(0.5f)
                     )
                     ListItem(
                         headlineContent = { Text(text = stringResource(R.string.provider)) },
                         supportingContent = {
-                            Text(text = currentInfo.now.provider)
+                            Text(text = currentEventInfo.now.provider)
                         },
                         modifier = Modifier.fillMaxWidth(1f)
                     )
@@ -123,12 +96,12 @@ fun CurrentContent(
                 ListItem(
                     headlineContent = { Text(text = stringResource(R.string.channel)) },
                     supportingContent = {
-                        Text(text = currentInfo.now.serviceName)
+                        Text(text = currentEventInfo.now.serviceName)
                     })
                 ListItem(
                     headlineContent = { Text(text = stringResource(R.string.provider)) },
                     supportingContent = {
-                        Text(text = currentInfo.now.provider)
+                        Text(text = currentEventInfo.now.provider)
                     })
             }
 
@@ -140,16 +113,16 @@ fun CurrentContent(
                                 Text(
                                     text = stringResource(R.string.now) + " - " + stringResource(
                                         R.string.until, TimestampUtils.formatApiTimestampToTime(
-                                            currentInfo.now.beginTimestamp + currentInfo.now.durationInSeconds
+                                            currentEventInfo.now.beginTimestamp + currentEventInfo.now.durationInSeconds
                                         )
                                     )
                                 )
                             },
-                            headlineContent = { Text(text = currentInfo.now.title) },
-                            supportingContent = if (currentInfo.next.shortDescription.isNotBlank()) {
+                            headlineContent = { Text(text = currentEventInfo.now.title) },
+                            supportingContent = if (currentEventInfo.next.shortDescription.isNotBlank()) {
                                 {
                                     Text(
-                                        text = currentInfo.now.shortDescription
+                                        text = currentEventInfo.now.shortDescription
                                     )
                                 }
                             } else {
@@ -157,8 +130,8 @@ fun CurrentContent(
                             })
                         LinearProgressIndicator(
                             progress = {
-                                if (currentInfo.now.durationInSeconds > 0) {
-                                    ((currentInfo.now.nowTimestamp - currentInfo.now.beginTimestamp).toFloat() / currentInfo.now.durationInSeconds)
+                                if (currentEventInfo.now.durationInSeconds > 0) {
+                                    ((currentEventInfo.now.nowTimestamp - currentEventInfo.now.beginTimestamp).toFloat() / currentEventInfo.now.durationInSeconds)
                                 } else {
                                     0f
                                 }
@@ -176,16 +149,16 @@ fun CurrentContent(
                             Text(
                                 text = stringResource(R.string.next) + " - " + stringResource(
                                     R.string.starting_at, TimestampUtils.formatApiTimestampToTime(
-                                        currentInfo.next.beginTimestamp
+                                        currentEventInfo.next.beginTimestamp
                                     )
                                 )
                             )
                         },
-                        headlineContent = { Text(text = currentInfo.next.title) },
-                        supportingContent = if (currentInfo.next.shortDescription.isNotBlank()) {
+                        headlineContent = { Text(text = currentEventInfo.next.title) },
+                        supportingContent = if (currentEventInfo.next.shortDescription.isNotBlank()) {
                             {
                                 Text(
-                                    text = currentInfo.next.shortDescription
+                                    text = currentEventInfo.next.shortDescription
                                 )
                             }
                         } else {
@@ -199,16 +172,16 @@ fun CurrentContent(
                         Text(
                             text = stringResource(R.string.now) + " - " + stringResource(
                                 R.string.until, TimestampUtils.formatApiTimestampToTime(
-                                    currentInfo.now.beginTimestamp + currentInfo.now.durationInSeconds
+                                    currentEventInfo.now.beginTimestamp + currentEventInfo.now.durationInSeconds
                                 )
                             )
                         )
                     },
-                    headlineContent = { Text(text = currentInfo.now.title) },
-                    supportingContent = if (currentInfo.next.shortDescription.isNotBlank()) {
+                    headlineContent = { Text(text = currentEventInfo.now.title) },
+                    supportingContent = if (currentEventInfo.next.shortDescription.isNotBlank()) {
                         {
                             Text(
-                                text = currentInfo.now.shortDescription
+                                text = currentEventInfo.now.shortDescription
                             )
                         }
                     } else {
@@ -216,8 +189,8 @@ fun CurrentContent(
                     })
                 LinearProgressIndicator(
                     progress = {
-                        if (currentInfo.now.durationInSeconds > 0) {
-                            ((currentInfo.now.nowTimestamp - currentInfo.now.beginTimestamp).toFloat() / currentInfo.now.durationInSeconds)
+                        if (currentEventInfo.now.durationInSeconds > 0) {
+                            ((currentEventInfo.now.nowTimestamp - currentEventInfo.now.beginTimestamp).toFloat() / currentEventInfo.now.durationInSeconds)
                         } else {
                             0f
                         }
@@ -235,16 +208,16 @@ fun CurrentContent(
                         Text(
                             text = stringResource(R.string.next) + " - " + stringResource(
                                 R.string.starting_at, TimestampUtils.formatApiTimestampToTime(
-                                    currentInfo.next.beginTimestamp
+                                    currentEventInfo.next.beginTimestamp
                                 )
                             )
                         )
                     },
-                    headlineContent = { Text(text = currentInfo.next.title) },
-                    supportingContent = if (currentInfo.next.shortDescription.isNotBlank()) {
+                    headlineContent = { Text(text = currentEventInfo.next.title) },
+                    supportingContent = if (currentEventInfo.next.shortDescription.isNotBlank()) {
                         {
                             Text(
-                                text = currentInfo.next.shortDescription
+                                text = currentEventInfo.next.shortDescription
                             )
                         }
                     } else {
@@ -256,22 +229,28 @@ fun CurrentContent(
                 Row {
                     FilledTonalButton(
                         onClick = {
-                            playMedia()
+                            scope.launch {
+                                IntentUtils.playMedia(
+                                    context,
+                                    onBuildLiveStreamUrl(currentEventInfo.now.serviceReference),
+                                    currentEventInfo.now.serviceName
+                                )
+                            }
                         }, Modifier
                             .fillMaxWidth(0.5f)
                             .padding(start = 16.dp)
                     ) {
                         Text(
                             text = stringResource(
-                                R.string.stream_service, currentInfo.now.serviceName
+                                R.string.stream_service, currentEventInfo.now.serviceName
                             )
                         )
                     }
                     OutlinedButton(
                         onClick = {
                             onNavigateToServiceEpg(
-                                currentInfo.now.serviceReference,
-                                currentInfo.now.serviceName
+                                currentEventInfo.now.serviceReference,
+                                currentEventInfo.now.serviceName
                             )
                         }, Modifier
                             .fillMaxWidth(1f)
@@ -283,14 +262,20 @@ fun CurrentContent(
             } else {
                 FilledTonalButton(
                     onClick = {
-                        playMedia()
+                        scope.launch {
+                            IntentUtils.playMedia(
+                                context,
+                                onBuildLiveStreamUrl(currentEventInfo.now.serviceReference),
+                                currentEventInfo.now.serviceName
+                            )
+                        }
                     }, Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
                 ) {
                     Text(
                         text = stringResource(
-                            R.string.stream_service, currentInfo.now.serviceName
+                            R.string.stream_service, currentEventInfo.now.serviceName
                         )
                     )
                 }
@@ -298,7 +283,7 @@ fun CurrentContent(
                 OutlinedButton(
                     onClick = {
                         onNavigateToServiceEpg(
-                            currentInfo.now.serviceReference, currentInfo.now.serviceName
+                            currentEventInfo.now.serviceReference, currentEventInfo.now.serviceName
                         )
                     }, Modifier
                         .fillMaxWidth()
@@ -306,7 +291,7 @@ fun CurrentContent(
                 ) {
                     Text(
                         text = stringResource(
-                            R.string.view_epg_from, currentInfo.now.serviceName
+                            R.string.view_epg_from, currentEventInfo.now.serviceName
                         )
                     )
                 }
@@ -323,12 +308,10 @@ fun CurrentContent(
                 .padding(paddingValues), contentAlignment = Alignment.Center
         ) {
             Text(
-                text = stringResource(R.string.no_channel_is_playing), textAlign = TextAlign.Center
+                text = stringResource(R.string.device_is_not_playing_any_channel),
+                textAlign = TextAlign.Center
             )
         }
     }
 
-    if (showMediaIntentErrorDialog) {
-        MediaIntentErrorDialog { showMediaIntentErrorDialog = false }
-    }
 }

@@ -19,60 +19,183 @@
 
 package io.github.deprec8.enigmadroid.ui.movies
 
-import android.net.Uri
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.deprec8.enigmadroid.common.enums.ContentType
+import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.deprec8.enigmadroid.common.enums.LoadingState
 import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
+import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
 import io.github.deprec8.enigmadroid.data.repositories.DownloadRepository
+import io.github.deprec8.enigmadroid.data.repositories.LoadingRepository
+import io.github.deprec8.enigmadroid.data.repositories.SearchHistoryRepository
+import io.github.deprec8.enigmadroid.data.repositories.SettingsRepository
 import io.github.deprec8.enigmadroid.model.api.Movie
 import io.github.deprec8.enigmadroid.model.api.MovieBatch
 import io.github.deprec8.enigmadroid.model.api.search
-import io.github.deprec8.enigmadroid.ui.components.viewmodels.SearchableContentViewModel
+import io.github.deprec8.enigmadroid.ui.components.search.asHighlightedWords
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import org.koin.core.annotation.InjectedParam
+import javax.inject.Inject
 
-class MoviesViewModel(
-    @InjectedParam private var path: String? = null,
+@HiltViewModel
+class MoviesViewModel @Inject constructor(
     private val apiRepository: ApiRepository,
-    private val downloadRepository: DownloadRepository
-) : SearchableContentViewModel(ContentType.Movies) {
+    private val loadingRepository: LoadingRepository,
+    private val downloadRepository: DownloadRepository,
+    private val searchHistoryRepository: SearchHistoryRepository,
+    private val settingsRepository: SettingsRepository,
+    private val devicesRepository: DevicesRepository
+) : ViewModel() {
 
-    private val _movieBatchResult = MutableStateFlow<Result<MovieBatch>?>(null)
-    val movieBatchResult: StateFlow<Result<MovieBatch>?> = _movieBatchResult.asStateFlow()
+    private val _filteredMovies = MutableStateFlow<List<Movie>?>(null)
+    val filteredMovies: StateFlow<List<Movie>?> = _filteredMovies.asStateFlow()
 
-    private val _freeSpaceResult = MutableStateFlow<Result<String>?>(null)
-    val freeSpaceResult: StateFlow<Result<String>?> = _freeSpaceResult.asStateFlow()
+    private val _movieBatch = MutableStateFlow<MovieBatch?>(null)
+    val movieBatch: StateFlow<MovieBatch?> = _movieBatch.asStateFlow()
 
-    val filteredMovies = combine(_movieBatchResult, searchInput) { movieBatchResult, searchInput ->
-        movieBatchResult?.getOrNull()?.movies?.search(searchInput)
-    }.stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), null
-    )
+    private val _loadingState = MutableStateFlow(LoadingState.LOADING)
+    val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
+
+    private val _searchHistory = MutableStateFlow<List<String>>(emptyList())
+    val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()
+
+    private val _preloadBatches = MutableStateFlow<Map<String, MovieBatch>>(emptyMap())
+    val preloadBatches: StateFlow<Map<String, MovieBatch>> = _preloadBatches.asStateFlow()
+
+    val searchFieldState = TextFieldState()
+
+    private val searchInput = MutableStateFlow("")
+    private val useSearchHighlighting = MutableStateFlow(true)
+
+    private var path: String? = null
+
+    val highlightedWords: StateFlow<List<String>> =
+        searchInput.asHighlightedWords(useSearchHighlighting).stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+    private var fetchJob: Job? = null
+
+    private var loadedDeviceId: Int? = null
+
+    init {
+        viewModelScope.launch {
+            loadingRepository.getLoadingState().collectLatest { state ->
+                _loadingState.value = state
+            }
+        }
+        viewModelScope.launch {
+            combine(_movieBatch, searchInput) { movieBatch, searchInput ->
+                movieBatch?.movies?.search(searchInput)
+            }.collectLatest {
+                _filteredMovies.value = it
+            }
+        }
+        viewModelScope.launch {
+            searchHistoryRepository.getMoviesSearchHistory().collectLatest {
+                _searchHistory.value = it
+            }
+        }
+        viewModelScope.launch {
+            settingsRepository.getUseSearchHighlighting().collectLatest {
+                useSearchHighlighting.value = it
+            }
+        }
+    }
+
+    fun initialize(path: String, movieBatch: MovieBatch?) {
+        this.path = path
+        _movieBatch.value = movieBatch
+    }
+
+    suspend fun updateLoadingState(isForcedUpdate: Boolean) {
+        loadingRepository.updateLoadingState(isForcedUpdate)
+    }
+
+    fun fetchData(isForced: Boolean = false) {
+        viewModelScope.launch {
+            val currentDeviceId = devicesRepository.getCurrentDeviceId().first()
+            if (currentDeviceId != loadedDeviceId || isForced) {
+                _movieBatch.value = null
+                _preloadBatches.value = emptyMap()
+                loadedDeviceId = currentDeviceId
+            }
+
+            if (_movieBatch.value == null || _preloadBatches.value.isEmpty()) {
+                fetchJob?.cancel()
+                fetchJob = launch {
+                    val batch = apiRepository.fetchMovieBatch(path)
+                    _movieBatch.value = batch
+
+                    val directory = batch.directory
+
+                    batch.bookmarks.asSequence()
+                        .filter { bookmark -> _preloadBatches.value[bookmark] == null }
+                        .forEach { bookmark ->
+                            ensureActive()
+
+                            val result = apiRepository.fetchMovieBatch("$directory$bookmark")
+
+                            _preloadBatches.value += (bookmark to result)
+                        }
+                }
+            }
+        }
+    }
 
     fun rename(serviceReference: String, newName: String) {
         viewModelScope.launch {
             apiRepository.renameMovie(serviceReference, newName)
-            fetchData(false)
+            fetchJob?.cancel()
+            fetchJob = viewModelScope.launch {
+                _movieBatch.value = apiRepository.fetchMovieBatch(path)
+            }
         }
     }
 
     fun move(serviceReference: String, dirName: String) {
         viewModelScope.launch {
             apiRepository.moveMovie(serviceReference, dirName)
-            fetchData(false)
+            fetchJob?.cancel()
+            _preloadBatches.value = emptyMap()
+            fetchJob = viewModelScope.launch {
+                val batch = apiRepository.fetchMovieBatch(path)
+                _movieBatch.value = batch
+
+                val directory = batch.directory
+
+                batch.bookmarks.asSequence()
+                    .filter { bookmark -> _preloadBatches.value[bookmark] == null }
+                    .forEach { bookmark ->
+                        ensureActive()
+
+                        val result = apiRepository.fetchMovieBatch("$directory$bookmark")
+
+                        _preloadBatches.value += (bookmark to result)
+                    }
+            }
         }
     }
 
     fun delete(serviceReference: String) {
         viewModelScope.launch {
             apiRepository.deleteMovie(serviceReference)
-            fetchData(false)
+            fetchJob?.cancel()
+            fetchJob = viewModelScope.launch {
+                _movieBatch.value = apiRepository.fetchMovieBatch(path)
+            }
         }
     }
 
@@ -82,29 +205,23 @@ class MoviesViewModel(
         }
     }
 
-    suspend fun buildMovieStreamUri(fileName: String): Uri? {
-        return apiRepository.buildMovieStreamUri(fileName)
+    fun updateSearchInput() {
+        val input = searchFieldState.text.toString()
+        if (input.isNotBlank()) {
+            viewModelScope.launch {
+                searchHistoryRepository.addToMoviesSearchHistory(input)
+            }
+        }
+        searchInput.value = input
+    }
+
+    suspend fun buildMovieStreamUrl(fileName: String): String {
+        return apiRepository.buildMovieStreamUrl(fileName)
     }
 
     fun playOnDevice(serviceReference: String) {
         viewModelScope.launch {
             apiRepository.playOnDevice(serviceReference)
-        }
-    }
-
-    override fun onClearData() {
-        _movieBatchResult.value = null
-        _freeSpaceResult.value = null
-    }
-
-    override suspend fun onGetData() {
-        val movieBatchResult = apiRepository.fetchMovieBatch(path)
-        _movieBatchResult.value = movieBatchResult
-
-        movieBatchResult.onSuccess { batch ->
-            _freeSpaceResult.value = apiRepository.fetchFreeSpace(batch.directory)
-        }.onFailure {
-            _freeSpaceResult.value = Result.failure(it)
         }
     }
 }

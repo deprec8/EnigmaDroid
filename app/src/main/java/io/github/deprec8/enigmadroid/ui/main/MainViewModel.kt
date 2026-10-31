@@ -19,28 +19,66 @@
 
 package io.github.deprec8.enigmadroid.ui.main
 
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
 import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
-import io.github.deprec8.enigmadroid.ui.components.viewmodels.ConnectionViewModel
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.stateIn
+import io.github.deprec8.enigmadroid.data.repositories.LoadingRepository
+import io.github.deprec8.enigmadroid.data.source.local.devices.Device
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MainViewModel(
-    private val devicesRepository: DevicesRepository
-) : ConnectionViewModel() {
+@HiltViewModel
+class MainViewModel @Inject constructor(
+    private val devicesRepository: DevicesRepository,
+    private val loadingRepository: LoadingRepository,
+    private val apiRepository: ApiRepository
+) : ViewModel() {
 
-    val currentDevice = devicesRepository.getCurrentDevice().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), null
-    )
+    private val _currentDevice = MutableStateFlow<Device?>(null)
+    val currentDevice: StateFlow<Device?> = _currentDevice.asStateFlow()
 
-    val devices = devicesRepository.getDevices().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
-    )
+    private val _devices = MutableStateFlow<List<Device>>(emptyList())
+    val devices = _devices.asStateFlow()
 
-    fun setCurrentDeviceId(id: Long) {
+    private val _loadingState = MutableStateFlow(LoadingState.LOADING)
+    val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
+
+    init {
         viewModelScope.launch {
-            devicesRepository.setCurrentDeviceId(id)
+            devicesRepository.getCurrentDevice().collectLatest { currentDevice ->
+                _currentDevice.value = currentDevice
+            }
+        }
+        viewModelScope.launch {
+            loadingRepository.getLoadingState().collectLatest { state ->
+                _loadingState.value = state
+            }
+        }
+        viewModelScope.launch {
+            devicesRepository.getAllDevices().collectLatest { devices ->
+                _devices.value = devices
+            }
+        }
+    }
+
+    suspend fun updateLoadingState(forceUpdate: Boolean) {
+        loadingRepository.updateLoadingState(forceUpdate)
+    }
+
+    suspend fun buildOwifUrl(): String {
+        return apiRepository.buildOwifUrl()
+    }
+
+    fun setCurrentDevice(device: Device) {
+        viewModelScope.launch {
+            devicesRepository.setCurrentDevice(device)
         }
     }
 }

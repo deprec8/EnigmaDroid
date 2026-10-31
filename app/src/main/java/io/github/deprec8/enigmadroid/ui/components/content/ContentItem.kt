@@ -54,6 +54,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.model.MenuItemGroup
+import io.github.deprec8.enigmadroid.ui.components.search.HighlightedText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,6 +69,7 @@ fun ContentItem(
     shortDescription: String,
     longDescription: String,
     editMenuItemGroup: MenuItemGroup? = null,
+    highlightedWords: List<String> = emptyList(),
     additionalDescription: String? = null,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -79,19 +81,21 @@ fun ContentItem(
     Column(Modifier.clickable { showBottomSheet = true }) {
         ListItem(
             headlineContent = {
-                Text(
+                HighlightedText(
                     text = headlineText,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    highlightedWords
                 )
             },
             leadingContent = leadingContent,
             overlineContent = if (!overlineText.isNullOrEmpty()) {
                 {
-                    Text(
+                    HighlightedText(
                         text = overlineText,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        highlightedWords
                     )
                 }
             } else {
@@ -99,16 +103,18 @@ fun ContentItem(
             },
             supportingContent = {
                 Column {
-                    Text(
+                    HighlightedText(
                         text = supportingText,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        highlightedWords
                     )
                     if (!additionalInfo.isNullOrEmpty()) {
-                        Text(
+                        HighlightedText(
                             text = additionalInfo,
                             maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
+                            overflow = TextOverflow.Ellipsis,
+                            highlightedWords
                         )
                     }
                 }
@@ -210,6 +216,7 @@ fun ContentItem(
                 longDescription = longDescription,
                 menuItemGroups = menuItemGroups,
                 editMenuItemGroup = editMenuItemGroup,
+                highlightedWords = highlightedWords,
                 onHideBottomSheet = { showBottomSheet = false },
                 additionalDescription = additionalDescription
             )

@@ -19,58 +19,158 @@
 
 package io.github.deprec8.enigmadroid.ui.timers
 
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.deprec8.enigmadroid.common.enums.ContentType
+import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.deprec8.enigmadroid.common.enums.LoadingState
 import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
+import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
+import io.github.deprec8.enigmadroid.data.repositories.LoadingRepository
+import io.github.deprec8.enigmadroid.data.repositories.SearchHistoryRepository
+import io.github.deprec8.enigmadroid.data.repositories.SettingsRepository
 import io.github.deprec8.enigmadroid.model.api.ServiceBatchSet
 import io.github.deprec8.enigmadroid.model.api.Timer
 import io.github.deprec8.enigmadroid.model.api.TimerBatch
 import io.github.deprec8.enigmadroid.model.api.search
-import io.github.deprec8.enigmadroid.ui.components.viewmodels.SearchableContentViewModel
+import io.github.deprec8.enigmadroid.ui.components.search.asHighlightedWords
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class TimersViewModel(
-    private val apiRepository: ApiRepository
-) : SearchableContentViewModel(ContentType.Timers) {
+@HiltViewModel
+class TimersViewModel @Inject constructor(
+    private val apiRepository: ApiRepository,
+    private val loadingRepository: LoadingRepository,
+    private val searchHistoryRepository: SearchHistoryRepository,
+    private val settingsRepository: SettingsRepository,
+    private val devicesRepository: DevicesRepository
+) : ViewModel() {
 
-    private val _timerBatchResult = MutableStateFlow<Result<TimerBatch>?>(null)
-    val timerBatchResult: StateFlow<Result<TimerBatch>?> = _timerBatchResult.asStateFlow()
+    private val _filteredTimers = MutableStateFlow<List<Timer>?>(null)
+    val filteredTimers: StateFlow<List<Timer>?> = _filteredTimers.asStateFlow()
 
-    private val _serviceBatchSetResult = MutableStateFlow<Result<ServiceBatchSet>?>(null)
-    val serviceBatchSetResult: StateFlow<Result<ServiceBatchSet>?> =
-        _serviceBatchSetResult.asStateFlow()
+    private val _timerBatch = MutableStateFlow<TimerBatch?>(null)
+    val timerBatch: StateFlow<TimerBatch?> = _timerBatch.asStateFlow()
 
-    val filteredTimers = combine(_timerBatchResult, searchInput) { timerBatchResult, searchInput ->
-        timerBatchResult?.getOrNull()?.timers?.search(searchInput)
-    }.stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), null
-    )
+    private val _loadingState = MutableStateFlow(LoadingState.LOADING)
+    val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
+
+    private val _serviceBatchSet = MutableStateFlow<ServiceBatchSet?>(null)
+    val serviceBatchSet: StateFlow<ServiceBatchSet?> = _serviceBatchSet.asStateFlow()
+
+    private val _searchHistory = MutableStateFlow<List<String>>(emptyList())
+    val searchHistory: StateFlow<List<String>> = _searchHistory.asStateFlow()
+
+    val searchFieldState = TextFieldState()
+
+    private val searchInput = MutableStateFlow("")
+    private val useSearchHighlighting = MutableStateFlow(true)
+
+    val highlightedWords: StateFlow<List<String>> =
+        searchInput.asHighlightedWords(useSearchHighlighting).stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+    private var fetchJob: Job? = null
+
+    private var loadedDeviceId: Int? = null
+
+    init {
+        viewModelScope.launch {
+            loadingRepository.getLoadingState().collectLatest { state ->
+                _loadingState.value = state
+            }
+        }
+        viewModelScope.launch {
+            combine(_timerBatch, searchInput) { timerBatch, searchInput ->
+                timerBatch?.timers?.search(searchInput)
+            }.collectLatest {
+                _filteredTimers.value = it
+            }
+        }
+        viewModelScope.launch {
+            searchHistoryRepository.getTimersSearchHistory().collectLatest {
+                _searchHistory.value = it
+            }
+        }
+        viewModelScope.launch {
+            settingsRepository.getUseSearchHighlighting().collectLatest {
+                useSearchHighlighting.value = it
+            }
+        }
+    }
+
+    suspend fun updateLoadingState(isForcedUpdate: Boolean) {
+        loadingRepository.updateLoadingState(isForcedUpdate)
+    }
+
+    fun fetchData(isForced: Boolean = false) {
+        viewModelScope.launch {
+            val currentDeviceId = devicesRepository.getCurrentDeviceId().first()
+            if (currentDeviceId != loadedDeviceId || isForced) {
+                _timerBatch.value = null
+                _serviceBatchSet.value = null
+                loadedDeviceId = currentDeviceId
+            }
+
+            if (_timerBatch.value == null || _serviceBatchSet.value == null) {
+                fetchJob?.cancel()
+                fetchJob = launch {
+                    _timerBatch.value = apiRepository.fetchTimerBatch()
+                    _serviceBatchSet.value = apiRepository.fetchServiceBatchSet()
+                }
+            }
+        }
+    }
 
     fun deleteTimer(timer: Timer) {
         viewModelScope.launch {
             apiRepository.deleteTimer(timer)
-            fetchData(false)
+            fetchJob?.cancel()
+            fetchJob = viewModelScope.launch {
+                _timerBatch.value = apiRepository.fetchTimerBatch()
+            }
         }
     }
 
     fun toggleTimerStatus(timer: Timer) {
         viewModelScope.launch {
             apiRepository.toggleTimerStatus(timer)
-            fetchData(false)
+            fetchJob?.cancel()
+            fetchJob = viewModelScope.launch {
+                _timerBatch.value = apiRepository.fetchTimerBatch()
+            }
         }
     }
 
+    fun updateSearchInput() {
+        val input = searchFieldState.text.toString()
+        if (input.isNotBlank()) {
+            viewModelScope.launch {
+                searchHistoryRepository.addToTimersSearchHistory(input)
+            }
+        }
+        searchInput.value = input
+    }
 
     fun addTimer(newTimer: Timer) {
         viewModelScope.launch {
             apiRepository.addTimer(newTimer)
-            fetchData(false)
+            fetchJob?.cancel()
+            fetchJob = viewModelScope.launch {
+                _timerBatch.value = apiRepository.fetchTimerBatch()
+            }
         }
     }
 
@@ -79,18 +179,8 @@ class TimersViewModel(
             apiRepository.editTimer(oldTimer, newTimer)
             fetchJob?.cancel()
             fetchJob = viewModelScope.launch {
-                _timerBatchResult.value = apiRepository.fetchTimerBatch()
+                _timerBatch.value = apiRepository.fetchTimerBatch()
             }
         }
-    }
-
-    override fun onClearData() {
-        _timerBatchResult.value = null
-        _serviceBatchSetResult.value = null
-    }
-
-    override suspend fun onGetData() {
-        _timerBatchResult.value = apiRepository.fetchTimerBatch()
-        _serviceBatchSetResult.value = apiRepository.fetchServiceBatchSet()
     }
 }

@@ -62,13 +62,14 @@ import io.github.deprec8.enigmadroid.model.api.ServiceBatchSet
 import io.github.deprec8.enigmadroid.model.api.Timer
 import io.github.deprec8.enigmadroid.ui.components.NoResults
 import io.github.deprec8.enigmadroid.ui.components.content.ContentItem
-import io.github.deprec8.enigmadroid.ui.components.dialogs.DeleteDialog
+import io.github.deprec8.enigmadroid.ui.components.dialogs.ConfirmDeleteDialog
 import io.github.deprec8.enigmadroid.utils.TimestampUtils
 
 @Composable
 fun TimersContent(
     timers: List<Timer>,
     paddingValues: PaddingValues,
+    highlightedWords: List<String> = emptyList(),
     onToggleTimerStatus: (Timer) -> Unit,
     onEditTimer: (Timer, Timer) -> Unit,
     onDeleteTimer: (Timer) -> Unit,
@@ -90,6 +91,7 @@ fun TimersContent(
                 var showLogDialog by rememberSaveable { mutableStateOf(false) }
 
                 ContentItem(
+                    highlightedWords = highlightedWords,
                     headlineText = timer.title,
                     overlineText = "${timer.serviceName} - ${timer.getState()}${
                         if (timer.cancelled) {
@@ -157,11 +159,9 @@ fun TimersContent(
                 }
 
                 if (showDeleteDialog) {
-                    DeleteDialog(
+                    ConfirmDeleteDialog(
                         title = stringResource(R.string.delete_timer),
-                        text = stringResource(
-                            R.string.the_timer_for_will_be_permanently_deleted, timer.title
-                        ),
+                        text = stringResource(R.string.delete_timer_warning),
                         onDismissRequest = { showDeleteDialog = false },
                         onConfirmRequest = {
                             onDeleteTimer(timer)

@@ -21,17 +21,29 @@ package io.github.deprec8.enigmadroid.ui.settings.remotecontrol
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.deprec8.enigmadroid.data.repositories.SettingsRepository
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class RemoteControlSettingsViewModel(private var settingsRepository: SettingsRepository) :
+@HiltViewModel
+class RemoteControlSettingsViewModel @Inject constructor(private var settingsRepository: SettingsRepository) :
     ViewModel() {
 
-    val remoteControlVibration = settingsRepository.getRemoteControlVibration().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), true
-    )
+    private val _remoteControlVibration = MutableStateFlow<Boolean?>(null)
+    val remoteControlVibration: StateFlow<Boolean?> = _remoteControlVibration.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            settingsRepository.getRemoteControlVibration().collectLatest {
+                _remoteControlVibration.value = it
+            }
+        }
+    }
 
     fun setRemoteControlVibration(value: Boolean) {
         viewModelScope.launch {

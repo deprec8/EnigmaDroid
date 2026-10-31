@@ -22,23 +22,22 @@ import com.android.build.gradle.internal.tasks.CompileArtProfileTask
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.koin.compiler)
+    alias(libs.plugins.google.dagger.hilt.android)
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.mikepenz.aboutlibraries)
     alias(libs.plugins.jetbrains.kotlin.serialization)
-    alias(libs.plugins.androidx.room3)
 }
 
 android {
     namespace = "io.github.deprec8.enigmadroid"
-    compileSdk = 37
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "io.github.deprec8.enigmadroid"
         minSdk = 28
-        targetSdk = 37
-        versionCode = 19
-        versionName = "1.9.2"
+        targetSdk = 36
+        versionCode = 20
+        versionName = "1.9.3"
 
         vectorDrawables {
             useSupportLibrary = true
@@ -93,13 +92,10 @@ android {
 
 dependencies {
 
-    // Koin
-    implementation(platform(libs.koin.bom))
-    implementation(libs.koin.core)
-    implementation(libs.koin.annotations)
-    implementation(libs.koin.android)
-    implementation(libs.koin.compose)
-    implementation(libs.koin.compose.viewmodel)
+    // Hilt
+    implementation(libs.google.dagger.hilt.android)
+    ksp(libs.google.dagger.hilt.android.compiler)
+    implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
 
     // Serialization
     implementation(libs.jetbrains.kotlinx.serialization.core)
@@ -128,8 +124,9 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
 
     // Room
-    implementation(libs.androidx.room3.runtime)
-    ksp(libs.androidx.room3.compiler)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
 
     // Activity
     implementation(libs.androidx.activity.ktx)
@@ -163,10 +160,6 @@ dependencies {
 
     // Savedstate
     implementation(libs.androidx.savedstate.ktx)
-}
-
-room3 {
-    schemaDirectory("$projectDir/schemas")
 }
 
 tasks.withType<CompileArtProfileTask> {

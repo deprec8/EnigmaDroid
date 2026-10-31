@@ -19,50 +19,63 @@
 
 package io.github.deprec8.enigmadroid.data.source.network
 
-import io.github.deprec8.enigmadroid.data.ConnectionState
-import io.github.deprec8.enigmadroid.data.ConnectionStateHolder
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
+import io.github.deprec8.enigmadroid.common.constant.PreferenceKeys
+import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.common.enums.RemoteControlKey
 import io.github.deprec8.enigmadroid.data.source.local.devices.DevicesLocalDataSource
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.request.get
-import io.ktor.client.request.head
 import io.ktor.client.request.header
-import io.ktor.client.request.post
 import io.ktor.client.statement.bodyAsText
-import io.ktor.client.statement.readRawBytes
 import io.ktor.http.HttpHeaders
-import io.ktor.http.URLBuilder
-import io.ktor.http.appendPathSegments
-import io.ktor.http.takeFrom
 import io.ktor.utils.io.CancellationException
 import io.ktor.utils.io.ClosedByteChannelException
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import okhttp3.ConnectionPool
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
-class NetworkDataSource(
-    private val connectionStateHolder: ConnectionStateHolder,
+class NetworkDataSource @Inject constructor(
+    private val dataStore: DataStore<Preferences>,
     private val devicesLocalDataSource: DevicesLocalDataSource
 ) {
+    private val loadingStateKey = intPreferencesKey(PreferenceKeys.LOADING_STATE)
 
-    private suspend fun handleException(e: Throwable) {
-        val hasDevices = devicesLocalDataSource.getCount() > 0
+    private suspend fun updateLoadingState(exception: Exception) {
+        when (exception) {
+            is ClosedByteChannelException -> {
+                dataStore.edit { preferences ->
+                    preferences[loadingStateKey] = LoadingState.INVALID_DEVICE_RESPONSE.id
+                }
+            }
 
-        when (e) {
-            is CancellationException -> throw e
+            else -> {
+                val currentLoadingState = dataStore.data.map { preferences ->
+                    LoadingState.entries[preferences[loadingStateKey] ?: 3]
+                }.first()
 
-            is NoCurrentDeviceException if hasDevices -> connectionStateHolder.updateConnectionState(
-                ConnectionState.NO_DEVICE_SELECTED
-            )
+                if (currentLoadingState != LoadingState.LOADING) {
+                    dataStore.edit { preferences ->
+                        preferences[loadingStateKey] = LoadingState.LOADING.id
+                    }
+                }
 
-            is ClosedByteChannelException -> connectionStateHolder.updateConnectionState(
-                ConnectionState.INVALID_DEVICE_RESPONSE
-            )
-
-            else -> if (!hasDevices) {
-                connectionStateHolder.updateConnectionState(ConnectionState.NO_DEVICE_AVAILABLE)
-            } else {
-                connectionStateHolder.updateConnectionState(ConnectionState.NOT_CONNECTED)
+                if (devicesLocalDataSource.getAllDevicesStatic().isEmpty().not()) {
+                    dataStore.edit { preferences ->
+                        preferences[loadingStateKey] = LoadingState.DEVICE_NOT_ONLINE.id
+                    }
+                } else {
+                    dataStore.edit { preferences ->
+                        preferences[loadingStateKey] = LoadingState.NO_DEVICE_AVAILABLE.id
+                    }
+                }
             }
         }
     }
@@ -93,73 +106,66 @@ class NetworkDataSource(
         }
     }
 
-    suspend fun checkConnection() {
-        connectionStateHolder.updateConnectionState(ConnectionState.CONNECTING)
-        try {
-            val currentDevice =
-                devicesLocalDataSource.getCurrentStatic() ?: throw NoCurrentDeviceException()
-            checkClient.head {
-                header(HttpHeaders.Connection, "close")
-                url {
-                    takeFrom(currentDevice.getUrlBuilder())
-                    appendPathSegments("api", "currenttime")
-                }
-            }
-            connectionStateHolder.updateConnectionState(ConnectionState.CONNECTED)
-        } catch (e: Exception) {
-            handleException(e)
-        }
-    }
-
-    suspend fun post(addEndpoint: URLBuilder.() -> Unit) {
-        try {
-            val currentDevice =
-                devicesLocalDataSource.getCurrentStatic() ?: throw NoCurrentDeviceException()
-            client.post {
-                header(HttpHeaders.Connection, "close")
-                url.takeFrom(currentDevice.getUrlBuilder())
-                url.addEndpoint()
-            }
-        } catch (e: Exception) {
-            handleException(e)
-        }
-    }
-
-    suspend fun get(addEndpoint: URLBuilder.() -> Unit) = runCatching {
-        val currentState = connectionStateHolder.connectionState.value
-        if ((currentState != ConnectionState.CONNECTED) && (currentState != ConnectionState.CONNECTING)) {
-            connectionStateHolder.updateConnectionState(ConnectionState.CONNECTING)
-        }
-        val currentDevice =
-            devicesLocalDataSource.getCurrentStatic() ?: throw NoCurrentDeviceException()
-        val response = client.get {
+    suspend fun isDeviceOnline(): Boolean = try {
+        val url = devicesLocalDataSource.getCurrentDeviceStatic()?.buildUrl("currenttime")
+            ?: throw NullPointerException()
+        checkClient.get(url) {
             header(HttpHeaders.Connection, "close")
-            url.takeFrom(currentDevice.getUrlBuilder())
-            url.addEndpoint()
+        }
+        true
+    } catch (e: Exception) {
+        if (e is CancellationException) {
+            throw e
+        } else {
+            updateLoadingState(e)
+        }
+        false
+    }
+
+    suspend fun post(endpoint: String) {
+        try {
+            val url = devicesLocalDataSource.getCurrentDeviceStatic()?.buildUrl(endpoint)
+                ?: throw NullPointerException()
+            client.get(url) {
+                header(HttpHeaders.Connection, "close")
+            }
+        } catch (e: Exception) {
+            if (e is CancellationException) {
+                throw e
+            } else {
+                updateLoadingState(e)
+            }
+        }
+    }
+
+    suspend fun post(key: RemoteControlKey) {
+        try {
+            val url = devicesLocalDataSource.getCurrentDeviceStatic()?.buildUrl(key)
+                ?: throw NullPointerException()
+            client.get(url) {
+                header(HttpHeaders.Connection, "close")
+            }
+        } catch (e: Exception) {
+            if (e is CancellationException) {
+                throw e
+            } else {
+                updateLoadingState(e)
+            }
+        }
+    }
+
+    suspend fun fetchJson(endpoint: String): String = try {
+        val url = devicesLocalDataSource.getCurrentDeviceStatic()?.buildUrl(endpoint)
+            ?: throw NullPointerException()
+        client.get(url) {
+            header(HttpHeaders.Connection, "close")
         }.bodyAsText()
-        connectionStateHolder.updateConnectionState(ConnectionState.CONNECTED)
-        return@runCatching response
-    }.onFailure { exception ->
-        handleException(exception)
-    }
-
-    suspend fun getScreenshot() = runCatching {
-        val currentDevice =
-            devicesLocalDataSource.getCurrentStatic() ?: throw NoCurrentDeviceException()
-        val result = client.get {
-            header(HttpHeaders.Connection, "close")
-            url {
-                takeFrom(currentDevice.getUrlBuilder())
-                appendPathSegments("grab")
-                parameters.append("format", "png")
-            }
-        }.readRawBytes()
-        return@runCatching Pair(result, currentDevice)
-    }.onFailure { exception ->
-        handleException(exception)
-    }
-
-    private companion object {
-        private class NoCurrentDeviceException : Exception()
+    } catch (e: Exception) {
+        if (e is CancellationException) {
+            throw e
+        } else {
+            updateLoadingState(e)
+        }
+        ""
     }
 }

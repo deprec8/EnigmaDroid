@@ -19,6 +19,10 @@
 
 package io.github.deprec8.enigmadroid.common.enums
 
+enum class ContentType {
+    Radio, Tv
+}
+
 enum class ContentFlag(val flag: Int) {
     Channel(0), Marker(64), NumberedMarker(320), Directory(7), Group(128), Invisible(512), InvisibleNumberedMarker(
         832

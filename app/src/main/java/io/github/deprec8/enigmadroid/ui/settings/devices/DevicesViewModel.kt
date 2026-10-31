@@ -21,25 +21,44 @@ package io.github.deprec8.enigmadroid.ui.settings.devices
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class DevicesViewModel(private val devicesRepository: DevicesRepository) : ViewModel() {
+@HiltViewModel
+class DevicesViewModel @Inject constructor(private val devicesRepository: DevicesRepository) :
+    ViewModel() {
 
-    val currentDeviceId = devicesRepository.getCurrentDeviceId().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), -1
-    )
+    private val _currentDeviceId = MutableStateFlow(-1)
+    val currentDeviceId: StateFlow<Int> = _currentDeviceId.asStateFlow()
 
-    val devices = devicesRepository.getDevices().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList()
-    )
+    private val _devices = MutableStateFlow<List<Device>>(emptyList())
+    val devices: StateFlow<List<Device>> = _devices.asStateFlow()
 
-    fun setCurrentDeviceId(id: Long) {
+    init {
         viewModelScope.launch {
-            devicesRepository.setCurrentDeviceId(id)
+            devicesRepository.getAllDevices().collectLatest { allDevices ->
+                _devices.value = allDevices
+            }
+        }
+        viewModelScope.launch {
+            devicesRepository.getCurrentDeviceId().collectLatest { currentDeviceId ->
+                _currentDeviceId.value = currentDeviceId
+            }
+        }
+    }
+
+    fun buildDeviceOwifUrl(device: Device) = device.buildOwifUrl()
+
+    fun setCurrentDevice(device: Device) {
+        viewModelScope.launch {
+            devicesRepository.setCurrentDevice(device)
         }
     }
 

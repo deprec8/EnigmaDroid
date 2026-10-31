@@ -28,19 +28,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import io.github.deprec8.enigmadroid.common.constant.IntentKeys
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
 import io.github.deprec8.enigmadroid.data.repositories.OnboardingRepository
 import io.github.deprec8.enigmadroid.ui.root.RootNavigationDisplay
 import io.github.deprec8.enigmadroid.ui.theme.EnigmaDroidTheme
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import org.koin.android.ext.android.inject
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val devicesRepository: DevicesRepository by inject()
-    private val onboardingRepository: OnboardingRepository by inject()
+    @Inject
+    lateinit var devicesRepository: DevicesRepository
+
+    @Inject
+    lateinit var onboardingRepository: OnboardingRepository
 
     private var isOnboardingNeeded by mutableStateOf(false)
     private var isRemoteControlDeepLink by mutableStateOf(false)
@@ -89,21 +93,18 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun checkIsOnboardingNeeded(): Boolean = runBlocking {
-        return@runBlocking onboardingRepository.getOnboardingNeeded()
+        return@runBlocking onboardingRepository.isOnboardingNeeded()
     }
 
     private fun handleDeviceIntent(intent: Intent?) = runBlocking {
         intent ?: return@runBlocking
-        if (intent.action != IntentKeys.OPEN_WITH_DEVICE_ACTION) return@runBlocking
-
-        intent.getLongExtra(IntentKeys.DEVICE_ID_EXTRA, -1L).takeIf { it != -1L }
-            ?: intent.getIntExtra(
-                IntentKeys.DEVICE_ID_EXTRA, -1
-            ).takeIf { it != -1 }?.toLong()?.let { id ->
-                val currentDeviceId = devicesRepository.getCurrentDeviceIdStatic()
-                if (id != currentDeviceId) {
-                    devicesRepository.setCurrentDeviceId(id)
-                }
+        if (intent.action != "io.github.deprec8.enigmadroid.OPEN_WITH_DEVICE") return@runBlocking
+        val id = intent.getIntExtra("device_id", -1)
+        if (id != -1) {
+            val currentDeviceId = devicesRepository.getCurrentDeviceId().first()
+            if (id != currentDeviceId) {
+                devicesRepository.setCurrentDeviceId(id)
             }
+        }
     }
 }

@@ -21,55 +21,138 @@ package io.github.deprec8.enigmadroid.ui.settings.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.deprec8.enigmadroid.common.enums.ContentType
-import io.github.deprec8.enigmadroid.data.repositories.SearchRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.deprec8.enigmadroid.data.repositories.SearchHistoryRepository
+import io.github.deprec8.enigmadroid.data.repositories.SettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SearchSettingsViewModel(
-    private var searchRepository: SearchRepository
+@HiltViewModel
+class SearchSettingsViewModel @Inject constructor(
+    private var searchHistoryRepository: SearchHistoryRepository,
+    private var settingsRepository: SettingsRepository
 ) : ViewModel() {
 
-    val typesWithHistory = searchRepository.getTypesWithHistory().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), emptySet()
-    )
+    private val _tvSearchHistory = MutableStateFlow<List<String>>(emptyList())
+    val tvSearchHistory = _tvSearchHistory.asStateFlow()
 
-    val useSearchHistories = searchRepository.getUseHistories().stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), true
-    )
+    private val _radioSearchHistory = MutableStateFlow<List<String>>(emptyList())
+    val radioSearchHistory = _radioSearchHistory.asStateFlow()
 
-    private val _selectedTypes = MutableStateFlow<Set<ContentType>>(emptySet())
-    val selectedTypes = _selectedTypes.asStateFlow()
+    private val _moviesSearchHistory = MutableStateFlow<List<String>>(emptyList())
+    val moviesSearchHistory = _moviesSearchHistory.asStateFlow()
 
-    fun toggleTypeSelection(type: ContentType) {
-        _selectedTypes.value = if (_selectedTypes.value.contains(type)) {
-            _selectedTypes.value - type
-        } else {
-            _selectedTypes.value + type
-        }
-    }
+    private val _timersSearchHistory = MutableStateFlow<List<String>>(emptyList())
+    val timersSearchHistory = _timersSearchHistory.asStateFlow()
 
-    fun toggleAllSelection(availableTypes: Set<ContentType>) {
-        _selectedTypes.value = if (_selectedTypes.value.size == availableTypes.size) {
-            emptySet()
-        } else {
-            availableTypes
-        }
-    }
+    private val _tvEpgSearchHistory = MutableStateFlow<List<String>>(emptyList())
+    val tvEpgSearchHistory = _tvEpgSearchHistory.asStateFlow()
 
-    fun setUseSearchHistory(value: Boolean) {
+    private val _radioEpgSearchHistory = MutableStateFlow<List<String>>(emptyList())
+    val radioEpgSearchHistory = _radioEpgSearchHistory.asStateFlow()
+
+    private val _serviceEpgSearchHistory = MutableStateFlow<List<String>>(emptyList())
+    val serviceEpgSearchHistory = _serviceEpgSearchHistory.asStateFlow()
+
+    private val _useSearchHistory = MutableStateFlow<Boolean?>(null)
+    val useSearchHistory = _useSearchHistory.asStateFlow()
+
+    private val _useSearchHighlighting = MutableStateFlow<Boolean?>(null)
+    val useSearchHighlighting = _useSearchHighlighting.asStateFlow()
+
+    init {
         viewModelScope.launch {
-            searchRepository.setUseHistories(value)
+            searchHistoryRepository.getUseSearchHistory().collect {
+                _useSearchHistory.value = it
+            }
+        }
+        viewModelScope.launch {
+            searchHistoryRepository.getTvSearchHistory().collect {
+                _tvSearchHistory.value = it
+            }
+        }
+        viewModelScope.launch {
+            searchHistoryRepository.getRadioSearchHistory().collect {
+                _radioSearchHistory.value = it
+            }
+        }
+        viewModelScope.launch {
+            searchHistoryRepository.getMoviesSearchHistory().collect {
+                _moviesSearchHistory.value = it
+            }
+        }
+        viewModelScope.launch {
+            searchHistoryRepository.getTimersSearchHistory().collect {
+                _timersSearchHistory.value = it
+            }
+        }
+        viewModelScope.launch {
+            searchHistoryRepository.getTvEpgSearchHistory().collect {
+                _tvEpgSearchHistory.value = it
+            }
+        }
+        viewModelScope.launch {
+            searchHistoryRepository.getServiceEpgSearchHistory().collect {
+                _serviceEpgSearchHistory.value = it
+            }
+        }
+        viewModelScope.launch {
+            searchHistoryRepository.getRadioEpgSearchHistory().collect {
+                _radioEpgSearchHistory.value = it
+            }
+        }
+        viewModelScope.launch {
+            settingsRepository.getUseSearchHighlighting().collect {
+                _useSearchHighlighting.value = it
+            }
         }
     }
 
-    fun clearSelectedHistories() {
+    fun setUseSearchHistory(useSearchHistory: Boolean) {
         viewModelScope.launch {
-            searchRepository.clearHistories(_selectedTypes.value)
-            _selectedTypes.value = emptySet()
+            searchHistoryRepository.setUseSearchHistory(useSearchHistory)
+        }
+    }
+
+    fun setUseSearchHighlighting(useSearchHighlighting: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.setUseSearchHighlighting(useSearchHighlighting)
+        }
+    }
+
+    fun clearSearchHistory(
+        tv: Boolean,
+        radio: Boolean,
+        movies: Boolean,
+        timers: Boolean,
+        tvEpg: Boolean,
+        radioEpg: Boolean,
+        serviceEpg: Boolean
+    ) {
+        viewModelScope.launch {
+            if (tv) {
+                searchHistoryRepository.clearTvSearchHistory()
+            }
+            if (radio) {
+                searchHistoryRepository.clearRadioSearchHistory()
+            }
+            if (movies) {
+                searchHistoryRepository.clearMoviesSearchHistory()
+            }
+            if (timers) {
+                searchHistoryRepository.clearTimersSearchHistory()
+            }
+            if (tvEpg) {
+                searchHistoryRepository.clearTvEpgSearchHistory()
+            }
+            if (radioEpg) {
+                searchHistoryRepository.clearRadioEpgSearchHistory()
+            }
+            if (serviceEpg) {
+                searchHistoryRepository.clearServiceEpgSearchHistory()
+            }
         }
     }
 }

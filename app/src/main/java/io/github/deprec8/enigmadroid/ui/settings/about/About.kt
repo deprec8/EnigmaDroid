@@ -19,8 +19,6 @@
 
 package io.github.deprec8.enigmadroid.ui.settings.about
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -47,31 +45,19 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.core.net.toUri
 import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.util.withContext
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
-import io.github.deprec8.enigmadroid.ui.components.dialogs.UrlIntentErrorDialog
 import io.github.deprec8.enigmadroid.ui.components.navigation.ArrowNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
-
-private const val DEV_URL = "github.com/deprec8"
-private const val SOURCE_URL = "github.com/deprec8/EnigmaDroid/"
-private const val ISSUE_URL = "github.com/deprec8/EnigmaDroid/issues"
-private const val TRANSLATION_URL = "crowdin.com/project/enigmadroid"
-private const val LICENSE_URL = "www.gnu.org/licenses/gpl-3.0.de.html"
-
+import io.github.deprec8.enigmadroid.utils.IntentUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,9 +65,9 @@ fun AboutPage(
     onNavigateBack: () -> Unit, onNavigateToLibraries: () -> Unit
 ) {
     val context = LocalContext.current
-    val version = context.packageManager.getPackageInfo(
+    val info = context.packageManager.getPackageInfo(
         context.packageName, PackageManager.GET_ACTIVITIES
-    ).versionName ?: stringResource(R.string.version_not_found)
+    )
     val libraries = remember {
         try {
             Libs.Builder().withContext(context).build().libraries
@@ -89,19 +75,14 @@ fun AboutPage(
             null
         }
     }
-    var showUrlIntentErrorDialog by rememberSaveable { mutableStateOf(false) }
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val scrollState = rememberScrollState()
 
-    fun openUrl(url: String) {
-        val intent = Intent(Intent.ACTION_VIEW, ("https://$url").toUri())
-
-        try {
-            context.startActivity(intent)
-        } catch (_: ActivityNotFoundException) {
-            showUrlIntentErrorDialog = true
-        }
-    }
+    val appDeveloperURL = stringResource(R.string.app_developer_url)
+    val appSourceURL = stringResource(R.string.app_source_url)
+    val appIssueURL = stringResource(R.string.app_issue_url)
+    val appTranslationURL = stringResource(R.string.app_translation_url)
+    val appLicenseURL = stringResource(R.string.app_license_url)
 
     Scaffold(
         contentWindowInsets = contentWithDrawerWindowInsets(),
@@ -130,17 +111,19 @@ fun AboutPage(
                 trailingContent = {
                     Icon(Icons.Outlined.Link, contentDescription = null)
                 },
-                supportingContent = { Text(text = DEV_URL) },
+                supportingContent = { Text(text = stringResource(R.string.app_developer)) },
                 leadingContent = { Icon(Icons.Outlined.Person, contentDescription = null) },
                 modifier = Modifier.clickable {
-                    openUrl(DEV_URL)
+                    IntentUtils.openUrl(context, appDeveloperURL)
                 })
 
             ListItem(
                 headlineContent = { Text(text = stringResource(R.string.version)) },
                 leadingContent = { Icon(Icons.Outlined.Info, contentDescription = null) },
                 supportingContent = {
-                    Text(text = version)
+                    Text(
+                        text = info.versionName ?: stringResource(R.string.version_not_found)
+                    )
                 })
 
             ListItem(
@@ -148,10 +131,10 @@ fun AboutPage(
                 trailingContent = {
                     Icon(Icons.Outlined.Link, contentDescription = null)
                 },
-                supportingContent = { Text(text = SOURCE_URL) },
+                supportingContent = { Text(text = stringResource(R.string.app_source)) },
                 leadingContent = { Icon(Icons.Outlined.Code, contentDescription = null) },
                 modifier = Modifier.clickable {
-                    openUrl(SOURCE_URL)
+                    IntentUtils.openUrl(context, appSourceURL)
                 })
 
             ListItem(
@@ -159,10 +142,12 @@ fun AboutPage(
                 trailingContent = {
                     Icon(Icons.Outlined.Link, contentDescription = null)
                 },
-                supportingContent = { Text(text = ISSUE_URL) },
+                supportingContent = { Text(text = stringResource(R.string.app_issue)) },
                 leadingContent = { Icon(Icons.Outlined.ReportProblem, contentDescription = null) },
                 modifier = Modifier.clickable {
-                    openUrl(ISSUE_URL)
+                    IntentUtils.openUrl(
+                        context, appIssueURL
+                    )
                 })
 
             ListItem(
@@ -170,10 +155,12 @@ fun AboutPage(
                 trailingContent = {
                     Icon(Icons.Outlined.Link, contentDescription = null)
                 },
-                supportingContent = { Text(text = TRANSLATION_URL) },
+                supportingContent = { Text(text = stringResource(R.string.app_translation)) },
                 leadingContent = { Icon(Icons.Outlined.Translate, contentDescription = null) },
                 modifier = Modifier.clickable {
-                    openUrl(TRANSLATION_URL)
+                    IntentUtils.openUrl(
+                        context, appTranslationURL
+                    )
                 })
 
             ListItem(
@@ -186,7 +173,7 @@ fun AboutPage(
                 },
                 leadingContent = { Icon(Icons.Outlined.Shield, contentDescription = null) },
                 modifier = Modifier.clickable {
-                    openUrl(LICENSE_URL)
+                    IntentUtils.openUrl(context, appLicenseURL)
                 })
             ListItem(
                 headlineContent = { Text(text = stringResource(R.string.third_party_libraries)) },
@@ -210,12 +197,6 @@ fun AboutPage(
                     )
                 },
                 modifier = Modifier.clickable { onNavigateToLibraries() })
-        }
-    }
-
-    if (showUrlIntentErrorDialog) {
-        UrlIntentErrorDialog {
-            showUrlIntentErrorDialog = false
         }
     }
 }

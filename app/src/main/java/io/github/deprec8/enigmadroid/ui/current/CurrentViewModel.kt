@@ -19,29 +19,70 @@
 
 package io.github.deprec8.enigmadroid.ui.current
 
-import android.net.Uri
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.deprec8.enigmadroid.common.enums.LoadingState
 import io.github.deprec8.enigmadroid.data.repositories.ApiRepository
+import io.github.deprec8.enigmadroid.data.repositories.DevicesRepository
+import io.github.deprec8.enigmadroid.data.repositories.LoadingRepository
 import io.github.deprec8.enigmadroid.model.api.CurrentInfo
-import io.github.deprec8.enigmadroid.ui.components.viewmodels.ContentViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class CurrentViewModel(
-    private val apiRepository: ApiRepository
-) : ContentViewModel() {
+@HiltViewModel
+class CurrentViewModel @Inject constructor(
+    private val apiRepository: ApiRepository,
+    private val loadingRepository: LoadingRepository,
+    private val devicesRepository: DevicesRepository
+) : ViewModel() {
 
-    private val _currentInfoResult = MutableStateFlow<Result<CurrentInfo>?>(null)
-    val currentInfoResult = _currentInfoResult.asStateFlow()
+    private val _currentInfo = MutableStateFlow<CurrentInfo?>(null)
+    val currentInfo: StateFlow<CurrentInfo?> = _currentInfo.asStateFlow()
 
-    suspend fun buildLiveStreamUri(serviceReference: String): Uri? {
-        return apiRepository.buildLiveStreamUri(serviceReference)
+    private val _loadingState = MutableStateFlow(LoadingState.LOADING)
+    val loadingState: StateFlow<LoadingState> = _loadingState.asStateFlow()
+
+    private var fetchJob: Job? = null
+
+    private var loadedDeviceId: Int? = null
+
+    init {
+        viewModelScope.launch {
+            loadingRepository.getLoadingState().collectLatest { state ->
+                _loadingState.value = state
+            }
+        }
     }
 
-    override fun onClearData() {
-        _currentInfoResult.value = null
+    suspend fun updateLoadingState(isForcedUpdate: Boolean) {
+        loadingRepository.updateLoadingState(isForcedUpdate)
     }
 
-    override suspend fun onGetData() {
-        _currentInfoResult.value = apiRepository.fetchCurrentInfo()
+    fun fetchData(isForced: Boolean = false) {
+        viewModelScope.launch {
+            val currentDeviceId = devicesRepository.getCurrentDeviceId().first()
+            if (currentDeviceId != loadedDeviceId || isForced) {
+                _currentInfo.value = null
+                loadedDeviceId = currentDeviceId
+            }
+
+            if (_currentInfo.value == null) {
+                fetchJob?.cancel()
+                fetchJob = launch {
+                    _currentInfo.value = apiRepository.fetchCurrentInfo()
+                }
+            }
+        }
+    }
+
+    suspend fun buildLiveStreamUrl(serviceReference: String): String {
+        return apiRepository.buildLiveStreamUrl(serviceReference)
     }
 }

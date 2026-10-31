@@ -28,22 +28,24 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.data.ConnectionState
-import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
+import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.model.api.SignalInfo
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
-import io.github.deprec8.enigmadroid.ui.components.InvalidResponse
-import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
+import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.DrawerNavigationButton
 import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.components.topAppBarWithDrawerWindowInsets
-import org.koin.compose.viewmodel.koinViewModel
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,18 +53,26 @@ import org.koin.compose.viewmodel.koinViewModel
 fun SignalPage(
     onNavigateToRemoteControl: () -> Unit,
     drawerState: DrawerState,
-    signalViewModel: SignalViewModel = koinViewModel()
+    signalViewModel: SignalViewModel = hiltViewModel()
 ) {
 
-    val signalInfoResult by signalViewModel.signalInfoResult.collectAsStateWithLifecycle()
-    val connectionState by signalViewModel.connectionState.collectAsStateWithLifecycle()
+    val signalInfo by signalViewModel.signalInfo.collectAsStateWithLifecycle()
+    val loadingState by signalViewModel.loadingState.collectAsStateWithLifecycle()
 
+    val scope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
-    ObserveActiveState(signalViewModel)
+    LaunchedEffect(Unit) {
+        signalViewModel.updateLoadingState(false)
+    }
+    LaunchedEffect(loadingState) {
+        if (loadingState == LoadingState.LOADED) {
+            signalViewModel.fetchData()
+        }
+    }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(connectionState) { signalViewModel.fetchData() }
+        FloatingReloadButton(loadingState) { signalViewModel.fetchData(isForced = true) }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         TopAppBar(
             windowInsets = topAppBarWithDrawerWindowInsets(),
@@ -75,28 +85,22 @@ fun SignalPage(
                 RemoteControlActionButton { onNavigateToRemoteControl() }
             })
     }) { innerPadding ->
-        if (signalInfoResult != null && connectionState == ConnectionState.CONNECTED) {
-            signalInfoResult?.onSuccess { signalInfo ->
-                SignalContent(
-                    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                    signalInfo,
-                    innerPadding
-                )
-            }?.onFailure {
-                InvalidResponse(
-                    Modifier
-                        .padding(innerPadding)
-                        .consumeWindowInsets(innerPadding),
-                )
-            }
+        if (signalInfo != null && loadingState == LoadingState.LOADED) {
+            SignalContent(
+                modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                signalInfo ?: SignalInfo(),
+                innerPadding
+            )
         } else {
-            ConnectionDisplay(
+            LoadingScreen(
                 Modifier
                     .consumeWindowInsets(innerPadding)
                     .padding(innerPadding),
-                connectionState = connectionState,
-                onCheckConnection = {
-                    signalViewModel.checkConnection()
+                loadingState = loadingState,
+                onReload = {
+                    scope.launch {
+                        signalViewModel.updateLoadingState(it)
+                    }
                 })
         }
     }

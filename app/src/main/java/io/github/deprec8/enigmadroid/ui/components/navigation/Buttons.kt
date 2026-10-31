@@ -32,13 +32,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.window.core.layout.WindowSizeClass
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.ui.components.isSmallScreenLayout
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -69,8 +70,12 @@ fun ArrowNavigationButton(onNavigateBack: () -> Unit) {
 fun DrawerNavigationButton(
     drawerState: DrawerState
 ) {
+    val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     val scope = rememberCoroutineScope()
-    val isSmallScreenLayout = isSmallScreenLayout()
+    val isSmallScreenLayout =
+        !windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) || !windowSizeClass.isHeightAtLeastBreakpoint(
+            WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
+        )
 
     if (isSmallScreenLayout) {
         TooltipBox(

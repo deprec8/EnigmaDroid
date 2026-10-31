@@ -19,8 +19,6 @@
 
 package io.github.deprec8.enigmadroid.ui.main
 
-import android.content.ActivityNotFoundException
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -85,35 +83,32 @@ import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
 import io.github.deprec8.enigmadroid.R
 import io.github.deprec8.enigmadroid.common.constant.MainKeys
-import io.github.deprec8.enigmadroid.data.ConnectionState
+import io.github.deprec8.enigmadroid.common.enums.LoadingState
 import io.github.deprec8.enigmadroid.data.source.local.devices.Device
 import io.github.deprec8.enigmadroid.model.DrawerPage
 import io.github.deprec8.enigmadroid.model.DrawerPageGroup
-import io.github.deprec8.enigmadroid.ui.components.dialogs.UrlIntentErrorDialog
-import kotlinx.coroutines.launch
 
 @Composable
 fun DrawerContent(
     currentDevice: Device?,
     devices: List<Device>,
-    connectionState: ConnectionState,
+    loadingState: LoadingState,
     currentTopLevelRoute: NavKey,
     scrollState: ScrollState,
-    onCheckConnection: () -> Unit,
+    onOpenOwif: () -> Unit,
+    onUpdateDeviceStatus: () -> Unit,
     onNavigate: (NavKey) -> Unit,
-    onSetCurrentDeviceId: (Long) -> Unit
+    onSetCurrentDevice: (Device) -> Unit
 ) {
     Column(
         Modifier
@@ -125,9 +120,10 @@ fun DrawerContent(
         DeviceItem(
             currentDevice = currentDevice,
             devices = devices,
-            connectionState = connectionState,
-            onCheckConnection = { onCheckConnection() },
-            onSetCurrentDeviceId = onSetCurrentDeviceId
+            loadingState = loadingState,
+            onOpenOwif = { onOpenOwif() },
+            onUpdateDeviceStatus = { onUpdateDeviceStatus() },
+            onSetCurrentDevice = onSetCurrentDevice
         )
 
         drawerPageGroups.forEachIndexed { index, group ->
@@ -177,31 +173,23 @@ fun DrawerItem(
 fun DeviceItem(
     currentDevice: Device?,
     devices: List<Device>,
-    connectionState: ConnectionState,
-    onCheckConnection: () -> Unit,
-    onSetCurrentDeviceId: (Long) -> Unit
+    loadingState: LoadingState,
+    onOpenOwif: () -> Unit,
+    onUpdateDeviceStatus: () -> Unit,
+    onSetCurrentDevice: (Device) -> Unit
 ) {
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
     var showDevicesMenu by rememberSaveable {
-        mutableStateOf(false)
-    }
-    var showUrlIntentErrorDialog by rememberSaveable {
         mutableStateOf(false)
     }
 
     ListItem(
         headlineContent = {
             Text(
-                text = if (devices.isNotEmpty()) {
-                    currentDevice?.name ?: stringResource(R.string.no_device_selected)
-                } else {
-                    stringResource(R.string.no_device_available)
-                },
+                text = currentDevice?.name ?: stringResource(R.string.no_device_available),
             )
         },
         trailingContent = {
-            AnimatedContent(connectionState, label = "", transitionSpec = {
+            AnimatedContent(loadingState, label = "", transitionSpec = {
                 scaleIn(
                     initialScale = 0f, animationSpec = spring(
                         dampingRatio = Spring.DampingRatioMediumBouncy,
@@ -210,7 +198,7 @@ fun DeviceItem(
                 ) + fadeIn() togetherWith scaleOut(targetScale = 0f) + fadeOut()
             }) {
                 when (it) {
-                    ConnectionState.CONNECTED if currentDevice != null -> {
+                    LoadingState.LOADED -> {
                         TooltipBox(
                             tooltip = {
                                 PlainTooltip {
@@ -223,19 +211,7 @@ fun DeviceItem(
                             )
                         ) {
                             IconButton(onClick = {
-                                scope.launch {
-                                    try {
-                                        CustomTabsIntent.Builder().setShowTitle(true)
-                                            .setDownloadButtonEnabled(false)
-                                            .setBookmarksButtonEnabled(false).setShareState(
-                                                CustomTabsIntent.SHARE_STATE_ON
-                                            ).setUrlBarHidingEnabled(true).build().launchUrl(
-                                                context, currentDevice.buildOWifUri()
-                                            )
-                                    } catch (_: ActivityNotFoundException) {
-                                        showUrlIntentErrorDialog = true
-                                    }
-                                }
+                                onOpenOwif()
                             }) {
                                 Icon(
                                     Icons.Default.Web,
@@ -245,7 +221,7 @@ fun DeviceItem(
                         }
                     }
 
-                    ConnectionState.CONNECTING -> {
+                    LoadingState.LOADING -> {
                         IconButton(onClick = {}, enabled = false) {
                             CircularProgressIndicator(Modifier.size(24.dp))
                         }
@@ -263,7 +239,7 @@ fun DeviceItem(
                                 TooltipAnchorPosition.Below, 4.dp
                             )
                         ) {
-                            IconButton(onClick = { onCheckConnection() }) {
+                            IconButton(onClick = { onUpdateDeviceStatus() }) {
                                 Icon(
                                     Icons.Default.RestartAlt,
                                     contentDescription = stringResource(R.string.retry),
@@ -277,55 +253,45 @@ fun DeviceItem(
         },
         supportingContent = {
             AnimatedContent(
-                connectionState,
+                loadingState,
                 label = "",
                 transitionSpec = { fadeIn() togetherWith fadeOut() }) {
                 when (it) {
-                    ConnectionState.CONNECTED -> {
-                        currentDevice?.let { device ->
-                            Text(
-                                "${device.host}:${device.port}",
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                    }
-
-                    ConnectionState.NOT_CONNECTED -> {
+                    LoadingState.LOADED -> {
                         Text(
-                            stringResource(id = R.string.unable_to_connect),
+                            stringResource(R.string.connected),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                     }
 
-                    ConnectionState.NO_DEVICE_AVAILABLE -> {
+                    LoadingState.DEVICE_NOT_ONLINE -> {
                         Text(
-                            stringResource(R.string.first_add_a_device),
+                            stringResource(id = R.string.device_not_connected),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                     }
 
-                    ConnectionState.NO_DEVICE_SELECTED -> {
+                    LoadingState.NO_DEVICE_AVAILABLE -> {
                         Text(
-                            stringResource(R.string.first_select_a_device),
+                            stringResource(R.string.add_a_device_to_connect_to),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                     }
 
-                    ConnectionState.CONNECTING -> {
+                    LoadingState.LOADING -> {
                         Text(
-                            stringResource(R.string.connecting),
+                            stringResource(R.string.searching_for_device),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                     }
 
-                    ConnectionState.INVALID_DEVICE_RESPONSE -> {
+                    LoadingState.INVALID_DEVICE_RESPONSE -> {
                         Text(
-                            stringResource(id = R.string.invalid_response),
+                            stringResource(id = R.string.invalid_device_response),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -358,7 +324,7 @@ fun DeviceItem(
                                 DropdownMenuItem(text = {
                                     Text(device.name)
                                 }, onClick = {
-                                    if (device.id != currentDevice?.id) onSetCurrentDeviceId(device.id)
+                                    if (device.id != currentDevice?.id) onSetCurrentDevice(device)
                                     showDevicesMenu = false
                                 }, leadingIcon = {
                                     if (device.id == currentDevice?.id) {
@@ -381,12 +347,6 @@ fun DeviceItem(
         modifier = Modifier.padding(
             horizontal = 12.dp
         ))
-
-    if (showUrlIntentErrorDialog) {
-        UrlIntentErrorDialog {
-            showUrlIntentErrorDialog = false
-        }
-    }
 }
 
 private val drawerPageGroups = listOf(

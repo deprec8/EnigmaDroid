@@ -34,21 +34,21 @@ import io.github.deprec8.enigmadroid.model.api.DeviceInfo
 import io.github.deprec8.enigmadroid.model.api.EventBatch
 import io.github.deprec8.enigmadroid.model.api.EventBatchSet
 import io.github.deprec8.enigmadroid.model.api.MovieBatch
+import io.github.deprec8.enigmadroid.model.api.ServiceBatch
 import io.github.deprec8.enigmadroid.model.api.ServiceBatchSet
 import io.github.deprec8.enigmadroid.model.api.SignalInfo
 import io.github.deprec8.enigmadroid.model.api.Timer
 import io.github.deprec8.enigmadroid.model.api.TimerBatch
-import io.ktor.http.URLBuilder
-import io.ktor.http.appendPathSegments
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
-import kotlin.coroutines.cancellation.CancellationException
+import javax.inject.Inject
 
-class ApiRepository(
+class ApiRepository @Inject constructor(
     private val context: Context,
     private val networkDataSource: NetworkDataSource,
     private val devicesLocalDataSource: DevicesLocalDataSource
@@ -60,21 +60,14 @@ class ApiRepository(
         isLenient = true
     }
 
-    suspend fun buildLiveStreamUri(serviceReference: String) =
-        devicesLocalDataSource.getCurrentStatic()?.buildLiveStreamUri(serviceReference)
+    suspend fun buildOwifUrl(): String =
+        devicesLocalDataSource.getCurrentDeviceStatic()?.buildOwifUrl() ?: ""
 
-    suspend fun buildMovieStreamUri(file: String) =
-        devicesLocalDataSource.getCurrentStatic()?.buildMovieStreamUri(file)
+    suspend fun buildLiveStreamUrl(serviceReference: String): String =
+        devicesLocalDataSource.getCurrentDeviceStatic()?.buildLiveStreamUrl(serviceReference) ?: ""
 
-    private suspend fun <T> fetchDecoded(
-        serializer: KSerializer<T>, urlBuilder: URLBuilder.() -> Unit
-    ): Result<T> = networkDataSource.get(urlBuilder).mapCatching { raw ->
-        withContext(Dispatchers.Default) {
-            json.decodeFromString(serializer, raw)
-        }
-    }.onFailure { exception ->
-        if (exception is CancellationException) throw exception
-    }
+    suspend fun buildMovieStreamUrl(file: String): String =
+        devicesLocalDataSource.getCurrentDeviceStatic()?.buildMovieStreamUrl(file) ?: ""
 
     private fun ContentFlag.shouldBeNumbered(): Boolean {
         return when (this) {
@@ -89,256 +82,278 @@ class ApiRepository(
         return ContentFlag.entries.firstOrNull { it.flag == flag } ?: ContentFlag.Channel
     }
 
-    suspend fun fetchCurrentInfo() = fetchDecoded(CurrentInfo.serializer()) {
-        appendPathSegments("api", "getcurrent")
+    suspend fun fetchCurrentInfo(): CurrentInfo {
+        val rawJson = networkDataSource.fetchJson("getcurrent")
+
+        return withContext(Dispatchers.Default) {
+            runCatching {
+                json.decodeFromString(
+                    CurrentInfo.serializer(), rawJson
+                )
+            }.getOrDefault(CurrentInfo())
+        }
     }
 
-    suspend fun fetchEpgEventBatchSet(bouquetReference: String) =
-        fetchDecoded(EventBatch.serializer()) {
-            appendPathSegments("api", "epgmulti")
-            parameters.append("bRef", bouquetReference)
-            parameters.append("endTime", "10080")
-        }.map { batch ->
-            EventBatchSet(eventBatches = batch.events.groupBy { it.serviceName }
-                .map { (serviceName, events) -> EventBatch(name = serviceName, events = events) })
-        }
+    suspend fun fetchEpgEventBatchSet(bouquetReference: String): EventBatchSet {
+        val rawJson = networkDataSource.fetchJson(
+            "epgmulti?bRef=${
+                bouquetReference.replace(
+                    "\\\"", "\""
+                )
+            }&endTime=10080"
+        )
 
-    suspend fun fetchServiceEpgBatch(serviceReference: String) =
-        fetchDecoded(EventBatch.serializer()) {
-            appendPathSegments("api", "epgservice")
-            parameters.append("sRef", serviceReference)
-            parameters.append("endTime", "10080")
-        }
+        return withContext(Dispatchers.Default) {
+            runCatching {
+                val epgEventBatch = json.decodeFromString(
+                    EventBatch.serializer(), rawJson
+                )
 
-    suspend fun fetchMovieBatch(directory: String? = null) = fetchDecoded(MovieBatch.serializer()) {
-        appendPathSegments("api", "movielist")
-        directory?.let { parameters.append("dirname", it) }
+                EventBatchSet(eventBatches = epgEventBatch.events.groupBy { it.serviceName }
+                    .map { (serviceName, events) ->
+                        EventBatch(
+                            name = serviceName, events = events
+                        )
+                    })
+
+            }.getOrDefault(EventBatchSet())
+        }
     }
 
-    suspend fun fetchFreeSpace(directory: String) = fetchDecoded(DeviceInfo.serializer()) {
-        appendPathSegments("api", "deviceinfo")
-    }.mapCatching { deviceInfo ->
-        deviceInfo.hdds.firstOrNull { directory.startsWith(it.mountDirectory) }?.freeSpace
-            ?: throw NullPointerException()
+    suspend fun fetchServiceEpgBatch(serviceReference: String): EventBatch {
+        val rawJson =
+            networkDataSource.fetchJson("epgservice?sRef=${serviceReference}&endTime=10080")
+
+        return withContext(Dispatchers.Default) {
+            runCatching {
+                json.decodeFromString(
+                    EventBatch.serializer(), rawJson
+                )
+            }.getOrDefault(EventBatch())
+        }
+    }
+
+    suspend fun fetchMovieBatch(directory: String? = null): MovieBatch {
+        val endpoint = if (directory == null) "movielist" else "movielist?dirname=$directory"
+        val rawJson = networkDataSource.fetchJson(endpoint)
+
+        return withContext(Dispatchers.Default) {
+            runCatching {
+                json.decodeFromString(
+                    MovieBatch.serializer(), rawJson
+                )
+            }.getOrDefault(MovieBatch())
+        }
     }
 
     suspend fun renameMovie(serviceReference: String, newName: String) {
-        networkDataSource.post {
-            appendPathSegments("api", "movierename")
-            parameters.append("sRef", serviceReference)
-            parameters.append("newname", newName)
-        }
+        networkDataSource.post("movierename?sRef=$serviceReference&newname=$newName")
     }
 
     suspend fun moveMovie(serviceReference: String, dirName: String) {
-        networkDataSource.post {
-            appendPathSegments("api", "moviemove")
-            parameters.append("sRef", serviceReference)
-            parameters.append("dirname", dirName)
-        }
+        networkDataSource.post("moviemove?sRef=$serviceReference&dirname=$dirName")
     }
 
     suspend fun deleteMovie(serviceReference: String) {
-        networkDataSource.post {
-            appendPathSegments("api", "moviedelete")
-            parameters.append("sRef", serviceReference)
-        }
+        networkDataSource.post("moviedelete?sRef=$serviceReference")
     }
 
-    suspend fun fetchServiceBatchSet(): Result<ServiceBatchSet> {
-        val tvResult = networkDataSource.get {
-            appendPathSegments("api", "getallservices")
-        }
-        val radioResult = networkDataSource.get {
-            appendPathSegments("api", "getallservices")
-            parameters.append("type", "radio")
-        }
+    suspend fun fetchServiceBatchSet(): ServiceBatchSet {
+        val rawTvJson = networkDataSource.fetchJson("getallservices")
+        val rawRadioJson = networkDataSource.fetchJson("getallservices?type=radio")
 
         return withContext(Dispatchers.Default) {
             runCatching {
                 val tvServiceBatchSet = json.decodeFromString(
-                    ServiceBatchSet.serializer(), tvResult.getOrThrow()
+                    ServiceBatchSet.serializer(), rawTvJson
                 )
+
                 val radioServiceBatchSet = json.decodeFromString(
-                    ServiceBatchSet.serializer(), radioResult.getOrThrow()
+                    ServiceBatchSet.serializer(), rawRadioJson
                 )
 
                 val rawServiceBatches =
                     tvServiceBatchSet.serviceBatches + radioServiceBatchSet.serviceBatches
 
-                val uiServiceBatches = rawServiceBatches.map { serviceBatch ->
+                val uiServiceBatches = mutableListOf<ServiceBatch>()
+
+                rawServiceBatches.forEach { serviceBatch ->
                     var counter = 1
-                    serviceBatch.copy(services = serviceBatch.services.map { service ->
+
+                    val uiServices = serviceBatch.services.map { service ->
                         val flag = service.serviceReference.toContentFlag()
                         val displayIndex = if (flag.shouldBeNumbered()) counter++ else null
-                        service.copy(displayIndex = displayIndex, flag = flag)
-                    })
-                }
 
-                ServiceBatchSet(serviceBatches = uiServiceBatches)
-            }
-        }
-    }
-
-    fun fetchEventBatches(type: ContentType): Flow<Result<EventBatch>> = flow {
-        fetchBouquets(type).map { bouquets ->
-            bouquets.forEach { bouquet ->
-                emit(fetchDecoded(EventBatch.serializer()) {
-                    appendPathSegments("api", "epgnow")
-                    parameters.append("bRef", bouquet.reference)
-                }.map { batch ->
-                    var counter = 1
-                    val uiEvents = batch.events.map { event ->
-                        val flag = event.serviceReference.toContentFlag()
-                        val displayIndex = if (flag.shouldBeNumbered()) counter++ else null
-                        event.copy(displayIndex = displayIndex, flag = flag)
+                        service.copy(
+                            displayIndex = displayIndex, flag = flag
+                        )
                     }
-                    batch.copy(name = bouquet.name, events = uiEvents)
-                })
-            }
+
+                    uiServiceBatches.add(
+                        serviceBatch.copy(
+                            services = uiServices
+                        )
+                    )
+                }
+                ServiceBatchSet(
+                    serviceBatches = uiServiceBatches
+                )
+            }.getOrDefault(ServiceBatchSet())
         }
     }
 
-    suspend fun fetchBouquets(type: ContentType): Result<List<Bouquet>> {
-        val userResult = networkDataSource.get {
-            appendPathSegments("api", "bouquets")
-            parameters.append(
-                "stype", if (type == ContentType.Tv || type == ContentType.TvEpg) "tv" else "radio"
+    fun fetchEventBatches(type: ContentType): Flow<EventBatch> = flow {
+        fetchBouquets(type).forEach { bouquet ->
+            val newBouquetReference = bouquet.reference.replace("\\\"", "\"")
+
+            val rawJson = networkDataSource.fetchJson("epgnow?bRef=$newBouquetReference")
+
+            val rawBatch = json.decodeFromString(
+                EventBatch.serializer(), rawJson
+            )
+
+            var counter = 1
+
+            val uiEvents = rawBatch.events.map { event ->
+                val flag = event.serviceReference.toContentFlag()
+
+                val displayIndex = if (flag.shouldBeNumbered()) counter++ else null
+
+                event.copy(
+                    displayIndex = displayIndex, flag = flag
+                )
+            }
+
+            emit(
+                rawBatch.copy(
+                    name = bouquet.name, events = uiEvents
+                )
             )
         }
-        val providerResult = networkDataSource.get {
-            appendPathSegments("api", "epgnow")
-            parameters.append(
-                "bRef",
-                if (type == ContentType.Tv || type == ContentType.TvEpg) ALL_PROVIDERS_TV else ALL_PROVIDERS_RADIO
-            )
-        }
+
+    }.flowOn(Dispatchers.Default).catch {
+        emit(EventBatch())
+    }
+
+    suspend fun fetchBouquets(type: ContentType): List<Bouquet> {
+        val rawUserJson =
+            networkDataSource.fetchJson("bouquets?stype=${if (type == ContentType.Tv) "tv" else "radio"}")
+        val rawProviderJson = networkDataSource.fetchJson(
+            if (type == ContentType.Tv) {
+                "epgnow?bRef=$ALL_PROVIDERS_TV"
+            } else {
+                "epgnow?bRef=$ALL_PROVIDERS_RADIO"
+            }
+        )
 
         return withContext(Dispatchers.Default) {
             runCatching {
                 val bouquets = mutableListOf<Bouquet>()
                 json.decodeFromString(
-                    BouquetBatch.serializer(), userResult.getOrThrow()
+                    BouquetBatch.serializer(), rawUserJson
                 ).bouquets.forEach { bouquet ->
                     if (bouquet[0].toContentFlag() != ContentFlag.InvisibleDirectory) {
-                        bouquets.add(Bouquet(reference = bouquet[0], name = bouquet[1]))
+                        bouquets.add(
+                            Bouquet(
+                                reference = bouquet[0], name = bouquet[1]
+                            )
+                        )
                     }
                 }
                 bouquets.add(
                     Bouquet(
-                        if (type == ContentType.Tv) ALL_SERVICES_TV else ALL_SERVICES_RADIO,
-                        context.getString(R.string.all_services)
+                        if (type == ContentType.Tv) {
+                            ALL_SERVICES_TV
+                        } else {
+                            ALL_SERVICES_RADIO
+                        }, context.getString(R.string.all_services)
                     )
                 )
                 json.decodeFromString(
-                    EventBatch.serializer(), providerResult.getOrThrow()
+                    EventBatch.serializer(), rawProviderJson
                 ).events.forEach { provider ->
                     if (provider.serviceReference.toContentFlag() != ContentFlag.InvisibleDirectory) {
-                        bouquets.add(Bouquet(provider.serviceReference, provider.serviceName))
+                        bouquets.add(
+                            Bouquet(
+                                provider.serviceReference, provider.serviceName
+                            )
+                        )
                     }
                 }
                 bouquets
-            }
+            }.getOrDefault(emptyList())
         }
     }
 
     suspend fun playOnDevice(serviceReference: String) {
-        networkDataSource.post {
-            appendPathSegments("api", "zap")
-            parameters.append("sRef", serviceReference)
+        networkDataSource.post("zap?sRef=$serviceReference")
+    }
+
+    suspend fun fetchDeviceInfo(): DeviceInfo {
+        val rawJson = networkDataSource.fetchJson("deviceinfo")
+
+        return withContext(Dispatchers.Default) {
+            runCatching {
+                json.decodeFromString(
+                    DeviceInfo.serializer(), rawJson
+                )
+            }.getOrDefault(DeviceInfo())
         }
     }
 
-    suspend fun fetchDeviceInfo() = fetchDecoded(DeviceInfo.serializer()) {
-        appendPathSegments("api", "deviceinfo")
-    }
+    suspend fun fetchSignalInfo(): SignalInfo {
+        val rawJson = networkDataSource.fetchJson("tunersignal")
 
-    suspend fun fetchSignalInfo() = fetchDecoded(SignalInfo.serializer()) {
-        appendPathSegments("api", "tunersignal")
+        return withContext(Dispatchers.Default) {
+            runCatching {
+                json.decodeFromString(
+                    SignalInfo.serializer(), rawJson
+                )
+            }.getOrDefault(SignalInfo())
+        }
     }
 
     suspend fun addTimer(timer: Timer) {
-        networkDataSource.post {
-            appendPathSegments("api", "timeradd")
-            parameters.append("sRef", timer.serviceReference)
-            parameters.append("begin", timer.beginTimestamp.toString())
-            parameters.append("end", timer.endTimestamp.toString())
-            parameters.append("name", timer.title)
-            parameters.append("disabled", timer.disabled.toString())
-            parameters.append("justplay", timer.justPlay.toString())
-            parameters.append("afterevent", timer.afterEvent.toString())
-            parameters.append("repeated", timer.repeated.toString())
-            parameters.append("description", timer.shortDescription)
-            parameters.append("always_zap", timer.alwaysZap.toString())
-        }
+        networkDataSource.post("timeradd?sRef=${timer.serviceReference}&begin=${timer.beginTimestamp}&end=${timer.endTimestamp}&name=${timer.title}&disabled=${timer.disabled}&justplay=${timer.justPlay}&afterevent=${timer.afterEvent}&repeated=${timer.repeated}&description=${timer.shortDescription}&always_zap=${timer.alwaysZap}")
     }
 
     suspend fun addTimerForEvent(serviceReference: String, eventId: Int) {
-        networkDataSource.post {
-            appendPathSegments("api", "timeraddbyeventid")
-            parameters.append("sRef", serviceReference)
-            parameters.append("eventid", eventId.toString())
-        }
+        networkDataSource.post("timeraddbyeventid?sRef=${serviceReference}&eventid=${eventId}")
     }
 
     suspend fun editTimer(oldTimer: Timer, newTimer: Timer) {
-        networkDataSource.post {
-            appendPathSegments("api", "timerchange")
-            parameters.append("sRef", newTimer.serviceReference)
-            parameters.append("begin", newTimer.beginTimestamp.toString())
-            parameters.append("end", newTimer.endTimestamp.toString())
-            parameters.append("name", newTimer.title)
-            parameters.append("channelOld", oldTimer.serviceReference)
-            parameters.append("beginOld", oldTimer.beginTimestamp.toString())
-            parameters.append("endOld", oldTimer.endTimestamp.toString())
-            parameters.append("disabled", newTimer.disabled.toString())
-            parameters.append("justplay", newTimer.justPlay.toString())
-            parameters.append("afterevent", newTimer.afterEvent.toString())
-            parameters.append("dirname", oldTimer.directoryName)
-            parameters.append("tags", oldTimer.tags)
-            parameters.append("repeated", newTimer.repeated.toString())
-            parameters.append("description", newTimer.shortDescription)
-            parameters.append("always_zap", newTimer.alwaysZap.toString())
-        }
+        networkDataSource.post("timerchange?sRef=${newTimer.serviceReference}&begin=${newTimer.beginTimestamp}&end=${newTimer.endTimestamp}&name=${newTimer.title}&channelOld=${oldTimer.serviceReference}&beginOld=${oldTimer.beginTimestamp}&endOld=${oldTimer.endTimestamp}&disabled=${newTimer.disabled}&justplay=${newTimer.justPlay}&afterevent=${newTimer.afterEvent}&dirname=${oldTimer.directoryName}&tags=${oldTimer.tags}&repeated=${newTimer.repeated}&description=${newTimer.shortDescription}&always_zap=${newTimer.alwaysZap}")
     }
 
     suspend fun deleteTimer(timer: Timer) {
-        networkDataSource.post {
-            appendPathSegments("api", "timerdelete")
-            parameters.append("sRef", timer.serviceReference)
-            parameters.append("begin", timer.beginTimestamp.toString())
-            parameters.append("end", timer.endTimestamp.toString())
-        }
+        networkDataSource.post("timerdelete?sRef=${timer.serviceReference}&begin=${timer.beginTimestamp}&end=${timer.endTimestamp}")
     }
 
     suspend fun toggleTimerStatus(timer: Timer) {
-        networkDataSource.post {
-            appendPathSegments("api", "timertogglestatus")
-            parameters.append("sRef", timer.serviceReference)
-            parameters.append("begin", timer.beginTimestamp.toString())
-            parameters.append("end", timer.endTimestamp.toString())
-        }
+        networkDataSource.post("timertogglestatus?sRef=${timer.serviceReference}&begin=${timer.beginTimestamp}&end=${timer.endTimestamp}")
     }
 
-    suspend fun fetchTimerBatch() = fetchDecoded(TimerBatch.serializer()) {
-        appendPathSegments("api", "timerlist")
+    suspend fun fetchTimerBatch(): TimerBatch {
+        val rawJson = networkDataSource.fetchJson("timerlist")
+
+        return withContext(Dispatchers.Default) {
+            runCatching {
+                json.decodeFromString(
+                    TimerBatch.serializer(), rawJson
+                )
+            }.getOrDefault(TimerBatch())
+        }
     }
 
     suspend fun remoteControlCall(key: RemoteControlKey) {
-        networkDataSource.post {
-            appendPathSegments("web", "remotecontrol")
-            parameters.append("command", key.id.toString())
-        }
+        networkDataSource.post(key)
     }
 
     suspend fun setPowerState(powerKey: RemoteControlPowerKey) {
-        networkDataSource.post {
-            appendPathSegments("api", "powerstate")
-            parameters.append("newstate", powerKey.id.toString())
-        }
+        networkDataSource.post("powerstate?newstate=${powerKey.id}")
     }
 
-    private companion object {
+    companion object {
         private const val ALL_SERVICES_TV =
             "1:7:1:0:0:0:0:0:0:0:(type%20==%201)%20||%20(type%20==%2017)%20||%20(type%20==%20195)%20||%20(type%20==%2025)%20ORDER%20BY%20name"
         private const val ALL_SERVICES_RADIO =

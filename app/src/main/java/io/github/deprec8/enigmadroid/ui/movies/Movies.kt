@@ -27,17 +27,20 @@ import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.deprec8.enigmadroid.R
-import io.github.deprec8.enigmadroid.data.ConnectionState
-import io.github.deprec8.enigmadroid.ui.components.ConnectionDisplay
+import io.github.deprec8.enigmadroid.common.enums.LoadingState
+import io.github.deprec8.enigmadroid.model.api.MovieBatch
 import io.github.deprec8.enigmadroid.ui.components.FloatingReloadButton
-import io.github.deprec8.enigmadroid.ui.components.InvalidResponse
-import io.github.deprec8.enigmadroid.ui.components.ObserveActiveState
+import io.github.deprec8.enigmadroid.ui.components.LoadingScreen
 import io.github.deprec8.enigmadroid.ui.components.contentWithDrawerWindowInsets
 import io.github.deprec8.enigmadroid.ui.components.navigation.RemoteControlActionButton
 import io.github.deprec8.enigmadroid.ui.components.search.SearchHistory
@@ -45,30 +48,43 @@ import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBar
 import io.github.deprec8.enigmadroid.ui.components.search.SearchTopAppBarDrawerNavigationButton
 import io.github.deprec8.enigmadroid.ui.movies.components.MoviesActionBar
 import io.github.deprec8.enigmadroid.ui.movies.components.MoviesContent
-import org.koin.compose.viewmodel.koinViewModel
+import io.github.deprec8.enigmadroid.utils.IntentUtils
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MoviesPage(
     onNavigateToRemoteControl: () -> Unit,
-    onNavigateToDirectory: (String) -> Unit,
+    onNavigateToDirectory: (String, MovieBatch?) -> Unit,
     drawerState: DrawerState,
-    moviesViewModel: MoviesViewModel = koinViewModel()
+    moviesViewModel: MoviesViewModel = hiltViewModel()
 ) {
 
-    val movieBatchResult by moviesViewModel.movieBatchResult.collectAsStateWithLifecycle()
+    val movieBatch by moviesViewModel.movieBatch.collectAsStateWithLifecycle()
     val filteredMovies by moviesViewModel.filteredMovies.collectAsStateWithLifecycle()
     val searchHistory by moviesViewModel.searchHistory.collectAsStateWithLifecycle()
-    val connectionState by moviesViewModel.connectionState.collectAsStateWithLifecycle()
-    val freeSpaceResult by moviesViewModel.freeSpaceResult.collectAsStateWithLifecycle()
+    val loadingState by moviesViewModel.loadingState.collectAsStateWithLifecycle()
+    val highlightedWords by moviesViewModel.highlightedWords.collectAsStateWithLifecycle()
+    val preloadBatches by moviesViewModel.preloadBatches.collectAsStateWithLifecycle()
 
-    ObserveActiveState(moviesViewModel)
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        moviesViewModel.updateLoadingState(false)
+    }
+
+    LaunchedEffect(loadingState) {
+        if (loadingState == LoadingState.LOADED) {
+            moviesViewModel.fetchData()
+        }
+    }
 
     Scaffold(floatingActionButton = {
-        FloatingReloadButton(connectionState) { moviesViewModel.fetchData() }
+        FloatingReloadButton(loadingState) { moviesViewModel.fetchData(isForced = true) }
     }, contentWindowInsets = contentWithDrawerWindowInsets(), topBar = {
         SearchTopAppBar(
-            enabled = movieBatchResult?.getOrNull()?.movies?.isNotEmpty() == true && connectionState == ConnectionState.CONNECTED,
+            enabled = movieBatch?.movies?.isNotEmpty() == true && loadingState == LoadingState.LOADED,
             textFieldState = moviesViewModel.searchFieldState,
             placeholder = stringResource(R.string.search_movies),
             content = {
@@ -76,6 +92,16 @@ fun MoviesPage(
                     MoviesContent(
                         movies = it,
                         paddingValues = PaddingValues(0.dp),
+                        highlightedWords = highlightedWords,
+                        onStreamMovie = { movie ->
+                            scope.launch {
+                                IntentUtils.playMedia(
+                                    context,
+                                    moviesViewModel.buildMovieStreamUrl(movie.fileName),
+                                    movie.eventName
+                                )
+                            }
+                        },
                         onPlayMovieOnDevice = { movie -> moviesViewModel.playOnDevice(movie.serviceReference) },
                         onDeleteMovie = { movie -> moviesViewModel.delete(movie.serviceReference) },
                         onRenameMovie = { movie, newName ->
@@ -88,22 +114,16 @@ fun MoviesPage(
                                 movie.serviceReference, newLocation
                             )
                         },
-                        onDownloadMovie = { movie -> moviesViewModel.download(movie) },
-                        buildMovieStreamUri = { fileName ->
-                            moviesViewModel.buildMovieStreamUri(
-                                fileName
-                            )
-                        }
-                    )
+                        onDownloadMovie = { movie -> moviesViewModel.download(movie) })
 
                 } ?: run {
-                    SearchHistory(searchHistory = searchHistory, onSearchQuery = {
+                    SearchHistory(searchHistory = searchHistory, onTermSearchClick = {
                         moviesViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
                         moviesViewModel.updateSearchInput()
-                    }, onInsertQuery = {
-                        moviesViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(it)
-                    }, onRemoveItem = {
-                        moviesViewModel.deleteFromSearchHistory(it)
+                    }, onTermInsertClick = {
+                        moviesViewModel.searchFieldState.setTextAndPlaceCursorAtEnd(
+                            it
+                        )
                     })
                 }
             },
@@ -117,57 +137,56 @@ fun MoviesPage(
                 moviesViewModel.updateSearchInput()
             },
             actionBar = {
-                MoviesActionBar(
-                    movieBatchResult?.getOrNull(),
-                    freeSpaceResult?.getOrNull(),
-                    connectionState
-                )
+                MoviesActionBar(movieBatch, loadingState)
             })
     }
 
     ) { innerPadding ->
-        if (movieBatchResult != null && connectionState == ConnectionState.CONNECTED) {
-            movieBatchResult?.onSuccess { movieBatch ->
-                MoviesContent(
-                    movies = movieBatch.movies,
-                    bookmarks = movieBatch.bookmarks,
-                    directory = movieBatch.directory,
-                    paddingValues = innerPadding,
-                    onPlayMovieOnDevice = { movie -> moviesViewModel.playOnDevice(movie.serviceReference) },
-                    onDeleteMovie = { movie -> moviesViewModel.delete(movie.serviceReference) },
-                    onRenameMovie = { movie, newName ->
-                        moviesViewModel.rename(
-                            movie.serviceReference, newName
+        if (movieBatch != null && loadingState == LoadingState.LOADED) {
+            MoviesContent(
+                movies = movieBatch?.movies ?: emptyList(),
+                bookmarks = movieBatch?.bookmarks ?: emptyList(),
+                directory = movieBatch?.directory ?: "",
+                paddingValues = innerPadding,
+                preloadBatches = preloadBatches,
+                onStreamMovie = { movie ->
+                    scope.launch {
+                        IntentUtils.playMedia(
+                            context,
+                            moviesViewModel.buildMovieStreamUrl(movie.fileName),
+                            movie.eventName
                         )
-                    },
-                    onMoveMovie = { movie, newLocation ->
-                        moviesViewModel.move(
-                            movie.serviceReference, newLocation
-                        )
-                    },
-                    onDownloadMovie = { movie -> moviesViewModel.download(movie) },
-                    onNavigateToDirectory = { path ->
-                        onNavigateToDirectory(
-                            path
-                        )
-                    },
-                    buildMovieStreamUri = { fileName -> moviesViewModel.buildMovieStreamUri(fileName) })
-            }?.onFailure {
-                InvalidResponse(
-                    Modifier
-                        .padding(innerPadding)
-                        .consumeWindowInsets(innerPadding),
-                )
-            }
+                    }
+                },
+                onPlayMovieOnDevice = { movie -> moviesViewModel.playOnDevice(movie.serviceReference) },
+                onDeleteMovie = { movie -> moviesViewModel.delete(movie.serviceReference) },
+                onRenameMovie = { movie, newName ->
+                    moviesViewModel.rename(
+                        movie.serviceReference, newName
+                    )
+                },
+                onMoveMovie = { movie, newLocation ->
+                    moviesViewModel.move(
+                        movie.serviceReference, newLocation
+                    )
+                },
+                onDownloadMovie = { movie -> moviesViewModel.download(movie) },
+                onNavigateToDirectory = { path, preloadBatch ->
+                    onNavigateToDirectory(path, preloadBatch)
+                })
         } else {
-            ConnectionDisplay(
+            LoadingScreen(
                 Modifier
                     .consumeWindowInsets(innerPadding)
                     .padding(innerPadding),
-                onCheckConnection = {
-                    moviesViewModel.checkConnection()
+                onReload = {
+                    scope.launch {
+                        moviesViewModel.updateLoadingState(
+                            it
+                        )
+                    }
                 },
-                connectionState = connectionState
+                loadingState = loadingState
             )
         }
     }
