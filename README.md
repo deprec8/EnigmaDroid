@@ -13,6 +13,9 @@ content.
 >
 > Please continue to report any previously unreported issues. This will help ensure that they can be taken into account during the rework.
 
+> [!NOTE] 
+> The latest patch (version 1.9.3) has resolved the Android 17 compatibility issue. All users are advised to update.
+
 ## Installation
 
 [<img src="https://f-droid.org/badge/get-it-on.png" alt="Get it on F-Droid" height="80">](https://f-droid.org/packages/io.github.deprec8.enigmadroid)
